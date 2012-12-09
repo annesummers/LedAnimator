@@ -76,7 +76,6 @@ void Animation::setFrameFrequency(int frameFrequency) {
     iFrameFrequency = frameFrequency;
 }
 
-
 void Animation::play() {
     if(!iIsPlaying) {
         iPlayTimer = new QTimer(this);

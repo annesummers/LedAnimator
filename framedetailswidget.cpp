@@ -31,9 +31,12 @@ void FrameDetailsWidget::ledColourChanged(int row, int column, int frame) {
 
 }
 
-// events -----------
+// ----------------
+
+// events ---------
 
 void FrameDetailsWidget::resizeEvent(QResizeEvent*) {
     iFrameSlider->resize(width() - 20, iFrameSlider->height());
 }
 
+// ----------------
