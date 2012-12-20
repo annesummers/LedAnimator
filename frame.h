@@ -15,6 +15,7 @@ public:
     void setColour(QColor colour);
 
 signals:
+    void colourChanged();
     
 public slots:
 

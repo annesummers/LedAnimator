@@ -17,8 +17,13 @@ public:
 
     void setupNew(int numRows, int numColumns, int numFrames);
 
+    QString fileName();
+    void setFileName(QString fileName);
+
+    bool saved();
+    void setSaved(bool saved);
+
     int currentFrame();
-    void setCurrentFrame(int frame);
 
     int numFrames();
     void setNumFrames(int numFrames);
@@ -36,24 +41,15 @@ public:
     bool isPlaying();
 
     Led& ledAt(int row, int column);
-
-    QString fileName();
-    void setFileName(QString fileName);
-
-    bool saved();
-    void setSaved(bool saved);
-
-    void ledColourChanged(Led& led, int frame);
     
 signals:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
 
-    void ledColourChanged(int row, int column, int frame);
-
     void newLed(Led& led);
     
 public slots:
+    void setCurrentFrame(int frame);
     void nextFrame();
 
 private:

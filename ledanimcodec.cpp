@@ -69,7 +69,7 @@ void LedAnimCodec::readAnimation() {
 
         for(int row = 0; row < ledRows; row++) {
             for(int column = 0; column < ledColumns; column++) {
-                iAnimation.ledAt(row, column).setColourAt(frame, readColour());
+                iAnimation.ledAt(row, column).setColourAt(frame + 1, readColour());
             }
         }
     }

@@ -1,10 +1,16 @@
+/*******************************/
+/* Copyright Anne Summers 2012 */
+/*******************************/
+
 #include "ledgridwidget.h"
 
-#include "ledwidget.h"
+#include "ledwidgets.h"
+#include "mainwindow.h"
+
 #include "defaults.h"
 
-LedGridWidget::LedGridWidget(QWidget* parent) :
-    QWidget(parent),
+LedGridWidget::LedGridWidget(QWidget* parent, Animation& animation) :
+    LedContainerWidget(parent, animation),
     iLedGridLayout(NULL) {
 
     iLedGridLayout = new QGridLayout(this);
@@ -14,39 +20,6 @@ LedGridWidget::LedGridWidget(QWidget* parent) :
     iDragStartPosition.setY(0);
 
     iDragArea.setRect(0, 0, 0, 0);
-}
-
-void LedGridWidget::addWidget(LedWidget& widget, int row, int column) {
-    iLedGridLayout->addWidget(&widget, row, column);
-
-    iLedGridLayout->setColumnMinimumWidth(column, widget.width() + 2);
-    iLedGridLayout->setRowMinimumHeight(row, widget.height() + 2);
-
-    resize(gridWidth(), gridHeight());
-
-    setMaximumHeight(gridHeight());
-    setMaximumWidth(gridWidth());
-
-    setMinimumHeight(gridHeight());
-    setMinimumWidth(gridWidth());
-}
-
-void LedGridWidget::clearLedSelection() {
-    for(int i = 0; i < iLedGridLayout->count(); i++) {
-        selectLed(i, false);
-    }
-
-    update();
-}
-
-void LedGridWidget::selectLed(int index, bool select) {
-    LedWidget* widget = static_cast<LedWidget*>(iLedGridLayout->itemAt(index)->widget());
-    widget->led().select(select);
-}
-
-void LedGridWidget::selectLed(int x, int y, bool select) {
-    LedWidget* widget = static_cast<LedWidget*>(iLedGridLayout->itemAtPosition(x, y)->widget());
-    widget->led().select(select);
 }
 
 int LedGridWidget::gridWidth() {
@@ -67,25 +40,44 @@ int LedGridWidget::gridHeight() {
     }
 }
 
-void LedGridWidget::currentFrameChanged(int currentFrame) {
-    for(int i = 0; i < iLedGridLayout->count(); i++) {
-        LedWidget* widget = static_cast<LedWidget*>(iLedGridLayout->itemAt(i)->widget());
-        widget->setToolTip(QString("h: %1\ns: %2\nv: %3")
-                           .arg(widget->led().currentColour().hue())
-                           .arg(widget->led().currentColour().saturation())
-                           .arg(widget->led().currentColour().value()));
-    }
-
-    update();
+int LedGridWidget::count() {
+    return iLedGridLayout->count();
 }
 
-void LedGridWidget::ledColourChanged(int row, int column, int frame) {
-    //if(frame == )
-    LedWidget* widget = static_cast<LedWidget*>(iLedGridLayout->itemAtPosition(row, column)->widget());
-    widget->setToolTip(QString("h: %1\ns: %2\nv: %3")
-                       .arg(widget->led().currentColour().hue())
-                       .arg(widget->led().currentColour().saturation())
-                       .arg(widget->led().currentColour().value()));
+Led& LedGridWidget::ledAt(int index) {
+    return static_cast<LedWidget*>(iLedGridLayout->itemAt(index)->widget())->led();
+}
+
+Led& LedGridWidget::ledAtPosition(int row, int column) {
+    return static_cast<LedWidget*>(iLedGridLayout->itemAtPosition(row, column)->widget())->led();
+}
+
+// slots --------------------
+
+void LedGridWidget::addLed(Led &led) {
+    LedWidget* widget = new LedWidget(this, iAnimation, *this, led);
+
+    iLedGridLayout->addWidget(widget, led.row(), led.column());
+    widget->resize(30, 30);
+
+    iLedGridLayout->setColumnMinimumWidth(led.column(), widget->width() + 2);
+    iLedGridLayout->setRowMinimumHeight(led.row(), widget->height() + 2);
+
+    resize(gridWidth(), gridHeight());
+
+    setMaximumHeight(gridHeight());
+    setMaximumWidth(gridWidth());
+
+    setMinimumHeight(gridHeight());
+    setMinimumWidth(gridWidth());
+
+    parentWidget()->resize(gridWidth() + LED_GRID_BORDER*2, gridHeight() + LED_GRID_BORDER*2);
+
+    parentWidget()->setMaximumHeight(gridHeight() + LED_GRID_BORDER*2);
+    parentWidget()->setMaximumWidth(gridWidth() + LED_GRID_BORDER*2);
+
+    parentWidget()->setMinimumHeight(gridHeight() + LED_GRID_BORDER*2);
+    parentWidget()->setMinimumWidth(gridWidth() + LED_GRID_BORDER*2);
 }
 
 // events --------------
@@ -95,14 +87,16 @@ void LedGridWidget::mouseDoubleClickEvent(QMouseEvent* event) {
        (QApplication::keyboardModifiers() & Qt::ControlModifier) != 0) {
 
         QColor colour = QColorDialog::getColor(Qt::green, this, "Select Color", QColorDialog::DontUseNativeDialog);
-        for(int i = 0; i < iLedGridLayout->count(); i++) {
-            LedWidget* widget = static_cast<LedWidget*>(iLedGridLayout->itemAt(i)->widget());
-            if(widget->led().selected()) {
-                widget->led().setCurrentColour(colour);
+        if(colour.isValid()) {
+            for(int i = 0; i < iLedGridLayout->count(); i++) {
+                Led& led = ledAt(i);
+                if(led.isSelected()) {
+                    led.setCurrentColour(colour);
+                }
             }
-        }
 
-        update();
+            update();
+        }
     }
 }
 
@@ -126,10 +120,15 @@ void LedGridWidget::mouseMoveEvent(QMouseEvent* event) {
 
     for(int i = 0; i < iLedGridLayout->rowCount(); i++) {
         for(int j = 0; j < iLedGridLayout->columnCount(); j++) {
-            selectLed(i, j, iDragArea.contains(iLedGridLayout->cellRect(i, j)));
-
-            update();
+            Led& led = ledAtPosition(i, j);
+            bool selected = iDragArea.contains(iLedGridLayout->cellRect(i, j));
+            bool wasSelected = led.isSelected();
+            if((selected && !wasSelected) || (!selected && wasSelected)) {
+                led.select(selected);
+            }
         }
+
+        update();
     }
 }
 
@@ -148,65 +147,27 @@ void LedGridWidget::paintEvent(QPaintEvent *) {
 
 // -------------------
 
-LedGridContainerWidget::LedGridContainerWidget(QWidget* parent, MainWindow &mainWindow) :
-    QWidget(parent),
-    iMainWindow(mainWindow),
-    iLedGridWidget(NULL),
-    iBorder(LED_GRID_BORDER){
+// TODO get rid
 
-    iLedGridWidget = new LedGridWidget(this);
-    iLedGridWidget->move(iBorder, iBorder);
+LedGridContainerWidget::LedGridContainerWidget(QWidget* parent) :
+    QWidget(parent){
 
     QSizePolicy policy = sizePolicy();
     policy.setHorizontalStretch(0);
     policy.setVerticalStretch(0);
     setSizePolicy(policy);
+
+    // TODO sort the stretch out in mainwindo
 }
 
-void LedGridContainerWidget::newLed(Led &led) {
-    LedWidget* widget = new LedWidget(*iLedGridWidget, led);
-
-    int row = led.position().y();
-    int column = led.position().x();
-
-    iLedGridWidget->addWidget(*widget, row, column);
-
-    int gridWidth = iLedGridWidget->gridWidth();
-    int gridHeight = iLedGridWidget->gridHeight();
-
-    resize(gridWidth + iBorder*2, gridHeight + iBorder*2);
-
-    setMaximumHeight(gridHeight + iBorder*2);
-    setMaximumWidth(gridWidth + iBorder*2);
-
-    setMinimumHeight(gridHeight + iBorder*2);
-    setMinimumWidth(gridWidth + iBorder*2);
-}
-
-// slots --------------------
-
-void LedGridContainerWidget::currentFrameChanged(int currentFrame) {
-    iLedGridWidget->currentFrameChanged(currentFrame);
-}
-
-void LedGridContainerWidget::ledColourChanged(int row, int column, int frame) {
-    iLedGridWidget->ledColourChanged(row, column, frame);
-}
-
-// -------------------------
-
-// events -------------------
+// events -------------------------------------
 
 void LedGridContainerWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
     painter.setPen(Qt::black);
 
-    painter.drawRect(iBorder, iBorder, width() - iBorder*2, height() - iBorder*2);
+    painter.drawRect(LED_GRID_BORDER, LED_GRID_BORDER, width() - LED_GRID_BORDER*2, height() - LED_GRID_BORDER*2);
 }
 
-void LedGridContainerWidget::mousePressEvent(QMouseEvent* event) {
-
-}
-
-// ---------------------------
+// ---------------------------------------------

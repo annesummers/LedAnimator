@@ -1,12 +1,12 @@
 #include "playinfowidget.h"
 
-#include "mainwindow.h"
+#include "animation.h"
 
 #include <QtDebug>
 
-PlayInfoWidget::PlayInfoWidget(QWidget* parent, MainWindow& mainWindow) :
+PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
     QWidget(parent),
-    iMainWindow(mainWindow),
+    iAnimation(animation),
     iPlayButton(NULL),
     iFrameNumberLabel(NULL) {
 
@@ -20,9 +20,7 @@ PlayInfoWidget::PlayInfoWidget(QWidget* parent, MainWindow& mainWindow) :
     iFrameNumberLabel->move(20, 80);
     iFrameNumberLabel->resize(40, 20);
 
-    QObject::connect(iPlayButton, SIGNAL(clicked()), &iMainWindow, SLOT(playClicked()));
     QObject::connect(iPlayButton, SIGNAL(clicked()), this, SLOT(playClicked()));
-
     QObject::connect(iFirstButton, SIGNAL(clicked()), this, SLOT(firstClicked()));
 
     QSizePolicy policy = sizePolicy();
@@ -34,15 +32,17 @@ PlayInfoWidget::PlayInfoWidget(QWidget* parent, MainWindow& mainWindow) :
 // slots ---------------------------------
 
 void PlayInfoWidget::playClicked() {
-    if(iPlayButton->text() == "Play") {
+    if(!iAnimation.isPlaying()) {
+        iAnimation.play();
         iPlayButton->setText("Stop");
     } else {
+        iAnimation.stop();
         iPlayButton->setText("Play");
     }
 }
 
 void PlayInfoWidget::firstClicked() {
-    iMainWindow.setCurrentFrame(0);
+    iAnimation.setCurrentFrame(0);
 }
 
 void PlayInfoWidget::currentFrameChanged(int currentFrame) {

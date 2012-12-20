@@ -6,13 +6,13 @@
 #include <QPushButton>
 #include <QLabel>
 
-class MainWindow;
+class Animation;
 
 class PlayInfoWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PlayInfoWidget(QWidget* parent, MainWindow& mainWindow);
+    explicit PlayInfoWidget(QWidget* parent, Animation &animation);
     
 signals:
     
@@ -23,7 +23,7 @@ public slots:
     void currentFrameChanged(int currentFrame);
 
 private:
-    MainWindow&     iMainWindow;
+    Animation&      iAnimation;
 
     QPushButton*    iFirstButton;
     QPushButton*    iPlayButton;

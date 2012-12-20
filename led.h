@@ -14,7 +14,7 @@ class Led : public QObject
 {
     Q_OBJECT
 public:
-    explicit Led(Animation& animation, QPoint position);
+    explicit Led(Animation& animation, int row, int column);
 
     QColor      currentColour();
     void        setCurrentColour(QColor colour);
@@ -22,18 +22,23 @@ public:
     QColor      colourAt(int frameNum);
     void        setColourAt(int frameNum, QColor colour);
 
-    QPoint      position();
+    int         row();
+    int         column();
 
-    bool        selected();
-    void        select(bool selected);
+    bool        isSelected();
+    void        select(bool isSelected);
+
+    Frame&      frameAt(int frameNum);
 
 signals:
-    void        colourChanged(QPoint position, int frame);
+    void        selected();
+    void        currentColourChanged();
 
 private:
     Animation& iAnimation;
 
-    QPoint iPosition;
+    int iRow;
+    int iColumn;
     QList<Frame*> iFrames;
 
     bool    iIsSelected;

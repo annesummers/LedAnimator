@@ -14,4 +14,6 @@ QColor Frame::colour() {
 
 void Frame::setColour(QColor colour) {
     iColour = colour;
+
+    emit colourChanged();
 }

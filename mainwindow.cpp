@@ -2,23 +2,17 @@
 
 #include "ui_mainwindow.h"
 #include "led.h"
-#include "ledwidget.h"
+#include "ledwidgets.h"
 #include "ledgridwidget.h"
 #include "playinfowidget.h"
 #include "engine.h"
 #include "animation.h"
-#include "framedetailswidget.h"
+#include "animationdetailswidgets.h"
 
 #include "defaults.h"
 
 MainWindow::MainWindow(Engine& engine) :
-    iEngine(engine),
-    //iKittenWidget(NULL),
-    //iSplitterHorizontal(NULL),
-    //iSplitterVertical(NULL),
-    iLedGridWidget(NULL),
-    iPlayInfoWidget(NULL),
-    iFrameDetailsWidget(NULL) {
+    iEngine(engine){
 
     setWindowTitle(APP_NAME);
 
@@ -51,32 +45,35 @@ MainWindow::MainWindow(Engine& engine) :
     QSplitter* splitterHorizontal = new QSplitter(splitterVertical);
     splitterHorizontal->setOrientation(Qt::Horizontal);
 
-    iLedGridWidget = new LedGridContainerWidget(splitterHorizontal, *this);
-    //iKittenWidget = new QWidget(iSplitterHorizontal);
-    iPlayInfoWidget = new PlayInfoWidget(splitterHorizontal, *this);
+    LedGridContainerWidget* gridContainer = new LedGridContainerWidget(splitterHorizontal);
+    LedGridWidget* ledGridWidget = new LedGridWidget(gridContainer, animation());
+    ledGridWidget->move(LED_GRID_BORDER, LED_GRID_BORDER);
 
-    splitterHorizontal->addWidget(iLedGridWidget);
-    splitterHorizontal->addWidget(iPlayInfoWidget);
+    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(splitterHorizontal, animation());
 
-    iFrameDetailsWidget = new FrameDetailsWidget(splitterVertical, *this);
+    splitterHorizontal->addWidget(gridContainer);
+    splitterHorizontal->addWidget(playInfoWidget);
+
+     QWidget* animationDetailsContainer = new QWidget(splitterVertical);
+    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(animationDetailsContainer, animation());//animationDetailsContainer->widget();
+
+    animationDetailsWidget->move(LED_GRID_BORDER, 0);
+    animationDetailsWidget->resize(animationDetailsContainer->width() - LED_GRID_BORDER*2, animationDetailsContainer->height());
 
     splitterVertical->addWidget(splitterHorizontal);
-    splitterVertical->addWidget(iFrameDetailsWidget);
+    splitterVertical->addWidget(animationDetailsContainer);
 
-    QObject::connect(&(iEngine.animation()), SIGNAL(numFramesChanged(int)), iFrameDetailsWidget, SLOT(numFramesChanged(int)));
+    QObject::connect(&animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
 
-    QObject::connect(&(iEngine.animation()), SIGNAL(currentFrameChanged(int)), iLedGridWidget, SLOT(currentFrameChanged(int)));
-    QObject::connect(&(iEngine.animation()), SIGNAL(currentFrameChanged(int)), iPlayInfoWidget, SLOT(currentFrameChanged(int)));
-    QObject::connect(&(iEngine.animation()), SIGNAL(currentFrameChanged(int)), iFrameDetailsWidget, SLOT(currentFrameChanged(int)));
+    QObject::connect(&animation(), SIGNAL(currentFrameChanged(int)), playInfoWidget, SLOT(currentFrameChanged(int)));
+    QObject::connect(&animation(), SIGNAL(currentFrameChanged(int)), animationDetailsWidget, SLOT(currentFrameChanged(int)));
 
-    QObject::connect(&(iEngine.animation()), SIGNAL(ledColourChanged(int, int, int)), iLedGridWidget, SLOT(ledColourChanged(int, int, int)));
-    QObject::connect(&(iEngine.animation()), SIGNAL(ledColourChanged(int, int, int)), iFrameDetailsWidget, SLOT(ledColourChanged(int, int, int)));
-
-    QObject::connect(&(iEngine.animation()), SIGNAL(newLed(Led&)), iLedGridWidget, SLOT(newLed(Led&)));
-    QObject::connect(&(iEngine.animation()), SIGNAL(newLed(Led&)), iFrameDetailsWidget, SLOT(newLed(Led&)));
+    QObject::connect(&animation(), SIGNAL(newLed(Led&)), ledGridWidget, SLOT(addLed(Led&)));
+    QObject::connect(&animation(), SIGNAL(newLed(Led&)), animationDetailsWidget, SLOT(newLed(Led&)));
 }
 
-MainWindow::~MainWindow() {
+Animation& MainWindow::animation() {
+    return iEngine.animation();
 }
 
 void MainWindow::writeSettings() {
@@ -97,6 +94,8 @@ void MainWindow::readSettings() {
     settings.endGroup();
 }
 
+// events --------------------------------------
+
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (iEngine.askSaveAnimation()) {
         writeSettings();
@@ -106,18 +105,5 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     }
 }
 
-// slots -----------------------------------------
+// -------------------------------------------
 
-void MainWindow::setCurrentFrame(int frame) {
-    iEngine.animation().setCurrentFrame(frame);
-}
-
-void MainWindow::playClicked() {
-    if(!iEngine.animation().isPlaying()) {
-        iEngine.animation().play();
-    } else {
-        iEngine.animation().stop();
-    }
-}
-
-// -----------------------------------------------

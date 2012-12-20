@@ -42,6 +42,8 @@ Animation& Engine::animation() {
 void Engine::newAnimation() {
     setupUI();
 
+    // TODO sort out new animation dialog
+
     iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
     iMainWindow->show();
 }

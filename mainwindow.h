@@ -8,25 +8,24 @@
 
 class Led;
 class LedWidget;
-class LedGridContainerWidget;
+class LedGridWidget;
 class PlayInfoWidget;
 class Engine;
-class FrameDetailsWidget;
+class AnimationDetailsWidget;
+class Animation;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT    
 public:
     explicit MainWindow(Engine& engine);
-    ~MainWindow();
 
     void readSettings();
     void writeSettings();
 
-public slots:
-    void setCurrentFrame(int frame);
+    Animation& animation();
 
-    void playClicked();
+public slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -36,9 +35,9 @@ private:
 
    // QWidget*        iKittenWidget;
 
-    LedGridContainerWidget* iLedGridWidget;
+    LedGridWidget*          iLedGridWidget;
     PlayInfoWidget*         iPlayInfoWidget;
-    FrameDetailsWidget*     iFrameDetailsWidget;
+    AnimationDetailsWidget*     iFrameDetailsWidget;
 };
 
 #endif // MAINWINDOW_H

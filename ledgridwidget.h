@@ -6,28 +6,22 @@
 #include <QPoint>
 #include <QRect>
 
+#include "ledwidgets.h"
+
 class MainWindow;
 class LedWidget;
 class Led;
+class LedGridGroup;
 
-class LedGridWidget : public QWidget {
+class LedGridWidget : public LedContainerWidget {
     Q_OBJECT
 public:
-    explicit LedGridWidget(QWidget* parent);
-
-    void clearLedSelection();
-    void selectLed(int index, bool select);
-    void selectLed(int x, int y, bool select);
-
-    void addWidget(LedWidget& widget, int row, int column);
-
-    int gridWidth();
-    int gridHeight();
-
-    void currentFrameChanged(int currentFrame);
-    void ledColourChanged(int row, int column, int frame);
+    explicit LedGridWidget(QWidget* parent, Animation &animation);
 
 signals:
+
+public slots:
+    void addLed(Led& led);
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -37,40 +31,38 @@ protected:
 
     void paintEvent(QPaintEvent*);
 
+    int count();
+
+    Led& ledAt(int index);
+
 private:
+
+    int gridWidth();
+    int gridHeight();
+
+    Led& ledAtPosition(int x, int y);
+
     QGridLayout*    iLedGridLayout;
 
-    QPoint  iDragStartPosition;
-    QRect   iDragArea;
+    QPoint          iDragStartPosition;
+    QRect           iDragArea;
 };
 
 class LedGridContainerWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LedGridContainerWidget(QWidget* parent, MainWindow& mainWindow);
-
-    void addLed(Led& led);
+    explicit LedGridContainerWidget(QWidget* parent);
 
 signals:
 
 public slots:
-    void newLed(Led& led);
-    void currentFrameChanged(int currentFrame);
-    void ledColourChanged(int row, int column, int frame);
 
 protected:
     void paintEvent(QPaintEvent *event);
-    void mousePressEvent(QMouseEvent *);
 
 private:
-    MainWindow& iMainWindow;
 
-    LedGridWidget*  iLedGridWidget;
-
-    int             iBorder;
 };
-
-
 
 #endif // LEDGRID_H

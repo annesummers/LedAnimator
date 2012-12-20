@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = LedAnimator
 TEMPLATE = app
-
+CONFIG += qtestlib
 
 SOURCES += main.cpp\
         mainwindow.cpp \

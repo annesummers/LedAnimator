@@ -2,7 +2,7 @@
 
 #include "led.h"
 #include "mainwindow.h"
-#include "ledwidget.h"
+#include "ledwidgets.h"
 
 #include "defaults.h"
 #include "exceptions.h"
@@ -15,7 +15,7 @@ Animation::Animation(Engine& engine) :
     iNumRows(0),
     iNumColumns(0),
     iNumFrames(0),
-    iCurrentFrame(0),
+    iCurrentFrame(1),
     iFrameFrequency(DEFAULT_FRAME_FREQUENCY),
     iIsPlaying(false),
     iFileName(""),
@@ -26,7 +26,7 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames) {
     iNumRows = numRows;
     iNumColumns = numColumns;
     iNumFrames = numFrames;
-    iCurrentFrame = 0;
+    iCurrentFrame = 1;
     iIsSaved = false;
 
     Led* led = NULL;
@@ -38,8 +38,7 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames) {
 
     for(int i = 0; i < iNumColumns; i++) {
         for(int j = 0; j < iNumRows; j++) {
-            QPoint position = QPoint(i, j);
-            led = new Led(*this, position);
+            led = new Led(*this, j, i);
             iLeds.append(led);
 
             emit newLed(*led);
@@ -56,6 +55,7 @@ int Animation::currentFrame() {
 
 void Animation::setCurrentFrame(int frame) {
     iCurrentFrame = frame;
+
     emit currentFrameChanged(iCurrentFrame);
 }
 
@@ -65,6 +65,7 @@ int Animation::numFrames() {
 
 void Animation::setNumFrames(int numFrames) {
     iNumFrames = numFrames;
+
     emit numFramesChanged(iNumFrames);
 }
 
@@ -136,12 +137,6 @@ void Animation::setSaved(bool saved) {
     iIsSaved = saved;
 }
 
-void Animation::ledColourChanged(Led &led, int frame) {
-    iIsSaved = false;
-
-    emit ledColourChanged(led.position().y(), led.position().x(), frame);
-}
-
 // slots --------
 
 void Animation::nextFrame() {
@@ -149,7 +144,7 @@ void Animation::nextFrame() {
 
     iCurrentFrame++;
     if(iCurrentFrame >= iNumFrames) {
-        iCurrentFrame = 0;
+        iCurrentFrame = 1;  // frames are indexed from 1
     }
 }
 

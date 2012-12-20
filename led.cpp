@@ -1,23 +1,25 @@
 #include "led.h"
 
-#include "ledwidget.h"
+#include "ledwidgets.h"
 #include "frame.h"
 #include "animation.h"
 #include "defaults.h"
 
-Led::Led(Animation& animation, QPoint position) :
+Led::Led(Animation& animation, int row, int column) :
     QObject(&animation),
     iAnimation(animation),
-    iPosition(position),
+    iRow(row),
+    iColumn(column),
     iIsSelected(false) {
 
     for(int i = 0; i < animation.numFrames(); i++) {
-        iFrames.append(new Frame(this));
+        Frame* frame = new Frame(this);
+        iFrames.append(frame);
     }
 }
 
 QColor Led::currentColour() {
-    return iFrames.at(iAnimation.currentFrame())->colour();
+    return colourAt(iAnimation.currentFrame());
 }
 
 void Led::setCurrentColour(QColor colour) {
@@ -25,23 +27,35 @@ void Led::setCurrentColour(QColor colour) {
 }
 
 QColor Led::colourAt(int frameNum) {
-    return iFrames.at(frameNum)->colour();
+    return iFrames.at(frameNum - 1)->colour(); // frames are indexed from 1!
 }
 
 void Led::setColourAt(int frameNum, QColor colour) {
-    iFrames.at(frameNum)->setColour(colour);
+    iFrames.at(frameNum - 1)->setColour(colour);  // frames are indexed from 1!
 
-    iAnimation.ledColourChanged(*this, frameNum);
+    if(frameNum == iAnimation.currentFrame()) {
+        emit currentColourChanged();
+    }
 }
 
-QPoint Led::position() {
-    return iPosition;
+int Led::row() {
+    return iRow;
 }
 
-bool Led::selected() {
+int Led::column() {
+    return iColumn;
+}
+
+Frame& Led::frameAt(int frameNum) {
+    return *(iFrames.at(frameNum));
+}
+
+bool Led::isSelected() {
     return iIsSelected;
 }
 
-void Led::select(bool selected) {
-    iIsSelected = selected;
+void Led::select(bool isSelected) {
+    iIsSelected = isSelected;
+
+    emit selected();
 }

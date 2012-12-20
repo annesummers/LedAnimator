@@ -1,0 +1,42 @@
+#ifndef LEDDETAILSWIDGET_H
+#define LEDDETAILSWIDGET_H
+
+#include <QWidget>
+#include <QLabel>
+
+#include "ledcontainerwidget.h"
+
+class LedPositionWidget;
+class FrameListWidget;
+class Led;
+class LedWidget;
+
+class LedDetailsWidget : public LedContainerWidget
+{
+    Q_OBJECT
+public:
+    explicit LedDetailsWidget(QWidget *parent, int index, Led &led, MainWindow& mainWindow);
+    
+    int frameListStartX();
+    void resized(int newWidth);
+
+signals:
+    
+public slots:
+    void currentFrameChanged(int currentFrame);
+    void numFramesChanged(int numFrames);
+
+    void ledColourChanged(int row, int column, int frame);
+
+public:
+    void clearLedSelection();
+
+private:
+    QLabel*             iPositionLabel;
+    LedWidget*          iCurrentFrameWidget;
+    FrameListWidget*    iFramesWidget;
+
+    int iFramesWidgetWidth;
+};
+
+#endif // LEDDETAILSWIDGET_H
