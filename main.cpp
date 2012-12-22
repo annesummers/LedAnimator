@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include <QApplication>
 #include "mainwindow.h"
 #include "engine.h"

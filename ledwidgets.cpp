@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "ledwidgets.h"
 
 #include "led.h"
@@ -8,7 +14,9 @@
 
 #include "defaults.h"
 
-LedWidget::LedWidget(QWidget* parent, Animation& animation, LedContainerWidget& ledGroup, Led& led)  :
+using namespace Ui;
+
+LedWidget::LedWidget(QWidget* parent, const Animation& animation, LedContainerWidget& ledGroup, Led& led)  :
     QWidget(parent),
     iLedGroup(ledGroup),
     iLed(led) {
@@ -21,7 +29,7 @@ LedWidget::LedWidget(QWidget* parent, Animation& animation, LedContainerWidget& 
     QObject::connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
 }
 
-Led& LedWidget::led() {
+Led &LedWidget::led() const {
     return iLed;
 }
 
@@ -130,7 +138,7 @@ void LedWidget::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-LedContainerWidget::LedContainerWidget(QWidget *parent, Animation &animation) :
+LedContainerWidget::LedContainerWidget(QWidget *parent, const Animation &animation) :
     QWidget(parent),
     iAnimation(animation) {
 }

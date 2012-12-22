@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDGRID_H
 #define LEDGRID_H
 
@@ -8,20 +14,22 @@
 
 #include "ledwidgets.h"
 
-class MainWindow;
-class LedWidget;
+//class MainWindow;
 class Led;
+
+namespace Ui {
+
+class LedWidget;
 class LedGridGroup;
 
 class LedGridWidget : public LedContainerWidget {
     Q_OBJECT
+
 public:
-    explicit LedGridWidget(QWidget* parent, Animation &animation);
+    explicit LedGridWidget(QWidget* parent, const Animation &animation);
 
-signals:
-
-public slots:
-    void addLed(Led& led);
+private slots:
+    void addLed(int row, int column);
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -36,7 +44,6 @@ protected:
     Led& ledAt(int index);
 
 private:
-
     int gridWidth();
     int gridHeight();
 
@@ -48,21 +55,15 @@ private:
     QRect           iDragArea;
 };
 
-class LedGridContainerWidget : public QWidget
-{
+class LedGridContainerWidget : public QWidget {
     Q_OBJECT
+
 public:
     explicit LedGridContainerWidget(QWidget* parent);
 
-signals:
-
-public slots:
-
 protected:
     void paintEvent(QPaintEvent *event);
-
-private:
-
 };
+}
 
 #endif // LEDGRID_H

@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDDETAILSWIDGETS_H
 #define LEDDETAILSWIDGETS_H
 
@@ -6,23 +12,40 @@
 
 #include "ledwidgets.h"
 
+class Led;
+
+namespace Ui {
+
 class LedPositionWidget;
 class FrameListWidget;
-class Led;
-class LedWidget;
+
+class LedDetailsListWidget : public LedContainerWidget {
+    Q_OBJECT
+public:
+    explicit LedDetailsListWidget(QWidget *parent, const Animation &animation);
+
+    void addLed(int row, int column);
+
+protected:
+    void resizeEvent(QResizeEvent *);
+    Led& ledAt(int index);
+
+    int count();
+
+private:
+    const Animation&    iAnimation;
+
+    QList<Led*>         iShownLeds;
+    QVBoxLayout*        iLedDetailsList;
+};
 
 class LedDetailsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LedDetailsWidget(QWidget *parent, Animation &animation, Led &led, LedContainerWidget& groupWidget);
-    
-    Led& led();
+    explicit LedDetailsWidget(QWidget *parent, const Animation &animation, Led &led, LedContainerWidget& groupWidget);
 
-signals:
-    
-public slots:
-  //  void numFramesChanged(int numFrames);
+    Led& led();
 
 protected:
     void resizeEvent(QResizeEvent *);
@@ -34,28 +57,6 @@ private:
 
     int iFramesWidgetWidth;
 };
-
-class LedDetailsListWidget : public LedContainerWidget
-{
-    Q_OBJECT
-public:
-    explicit LedDetailsListWidget(QWidget *parent, Animation &animation);
-
-    void addLed(Led& led);
-
-signals:
-
-public slots:
-
-protected:
-    void resizeEvent(QResizeEvent *);
-    Led& ledAt(int index);
-
-    int count();
-
-private:
-    QList<Led*>         iShownLeds;
-    QVBoxLayout*        iLedDetailsList;
-};
+}
 
 #endif // LEDDETAILSWIDGETS_H

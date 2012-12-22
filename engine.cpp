@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "engine.h"
 
 #include "animation.h"
@@ -10,6 +16,8 @@
 #include <QSettings>
 #include <QCoreApplication>
 #include <QMessageBox>
+
+using namespace ImportExport;
 
 Engine::Engine(QObject *parent) :
     QObject(parent),
@@ -35,7 +43,7 @@ void Engine::start() {
     }
 }
 
-Animation& Engine::animation() {
+Animation &Engine::animation() const {
     return *iAnimation;
 }
 
@@ -58,7 +66,7 @@ void Engine::setupUI() {
 }
 
 bool Engine::askSaveAnimation() {
-    if(!iAnimation->saved()) {
+    if(!iAnimation->isSaved()) {
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(iMainWindow, tr("Animation Not Saved"),
                                     tr("Do you want to save the current animation?"),

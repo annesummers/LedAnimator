@@ -1,0 +1,794 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 34;
+	objects = {
+		D7BA7D76DAB5DD13389D6332 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			generatedFileNames = (
+				);
+			isa = PBXShellScriptBuildPhase;
+			name = "Qt Qmake";
+			neededFileNames = (
+				);
+			shellPath = "/bin/sh";
+			shellScript = "make\ -C\ /Users/anne/Documents/Programming/Qt/LedAnimator\ -f\ \'LedAnimator.pbproj/qt_makeqmake.mak\'";
+		};
+		118FCBAABA162BA17933C789 = {
+			isa = PBXFileReference;
+			name = "main.cpp";
+			path = "main.cpp";
+			refType = 4;
+		};
+		2B093CA6F071B023A473CED0 = {
+			fileRef = "118FCBAABA162BA17933C789";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		EA177DE95BF7D3EF58EE43F7 = {
+			isa = PBXFileReference;
+			name = "mainwindow.cpp";
+			path = "mainwindow.cpp";
+			refType = 4;
+		};
+		462C0F34BBEF2375A9469BB5 = {
+			fileRef = "EA177DE95BF7D3EF58EE43F7";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9A89A677DE86B613D336A83D = {
+			isa = PBXFileReference;
+			name = "led.cpp";
+			path = "led.cpp";
+			refType = 4;
+		};
+		68A2EBB4824DBD42F9E4B960 = {
+			fileRef = "9A89A677DE86B613D336A83D";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		C2374CA9E747ED1C59ABF40F = {
+			isa = PBXFileReference;
+			name = "engine.cpp";
+			path = "engine.cpp";
+			refType = 4;
+		};
+		B167049F587B7898E2685A5D = {
+			fileRef = "C2374CA9E747ED1C59ABF40F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		9FEC0C8FDCBCB26D410FEBE3 = {
+			isa = PBXFileReference;
+			name = "animation.cpp";
+			path = "animation.cpp";
+			refType = 4;
+		};
+		CD494F02610A0EFFA8AF8AFC = {
+			fileRef = "9FEC0C8FDCBCB26D410FEBE3";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		7CC299AD5D5BE6E35A8069B6 = {
+			isa = PBXFileReference;
+			name = "frame.cpp";
+			path = "frame.cpp";
+			refType = 4;
+		};
+		F242033B68951F49D9C54CB3 = {
+			fileRef = "7CC299AD5D5BE6E35A8069B6";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		D0F0666DE986BAA659949062 = {
+			isa = PBXFileReference;
+			name = "ledgridwidget.cpp";
+			path = "ledgridwidget.cpp";
+			refType = 4;
+		};
+		9D0A4150B2972513CC7A7869 = {
+			fileRef = "D0F0666DE986BAA659949062";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		E67D9570616457B0C4026AA6 = {
+			isa = PBXFileReference;
+			name = "playinfowidget.cpp";
+			path = "playinfowidget.cpp";
+			refType = 4;
+		};
+		9EE4A7758B52C506CF5A1377 = {
+			fileRef = "E67D9570616457B0C4026AA6";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		CA4124D2E8CC30485DE0B274 = {
+			isa = PBXFileReference;
+			name = "ledanimcodec.cpp";
+			path = "ledanimcodec.cpp";
+			refType = 4;
+		};
+		F0D9D4F55D50357D94EB29E7 = {
+			fileRef = "CA4124D2E8CC30485DE0B274";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		6042AF1DFE3883E344EF3DD5 = {
+			isa = PBXFileReference;
+			name = "framewidgets.cpp";
+			path = "framewidgets.cpp";
+			refType = 4;
+		};
+		41D52595FFAC68B947C1F67F = {
+			fileRef = "6042AF1DFE3883E344EF3DD5";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		26EB341097947C6D292C6B48 = {
+			isa = PBXFileReference;
+			name = "leddetailswidgets.cpp";
+			path = "leddetailswidgets.cpp";
+			refType = 4;
+		};
+		5F965A4764365A9D26F3747D = {
+			fileRef = "26EB341097947C6D292C6B48";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		E98AC70757B32D7209B3B72C = {
+			isa = PBXFileReference;
+			name = "ledwidgets.cpp";
+			path = "ledwidgets.cpp";
+			refType = 4;
+		};
+		45483AB58C7F17460B216FF9 = {
+			fileRef = "E98AC70757B32D7209B3B72C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		19F86D339351F47B9F32EE33 = {
+			isa = PBXFileReference;
+			name = "animationdetailswidgets.cpp";
+			path = "animationdetailswidgets.cpp";
+			refType = 4;
+		};
+		5F15AB9960A1FFBED5CCED11 = {
+			fileRef = "19F86D339351F47B9F32EE33";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		336D3C48DD3B44974395C633 = {
+			isa = PBXFileReference;
+			name = "moc_mainwindow.cpp";
+			path = "moc_mainwindow.cpp";
+			refType = 4;
+		};
+		26C2BED6C570C95F5243C556 = {
+			fileRef = "336D3C48DD3B44974395C633";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		66B69ED9884AB76B8EC3E38B = {
+			isa = PBXFileReference;
+			name = "moc_led.cpp";
+			path = "moc_led.cpp";
+			refType = 4;
+		};
+		86ABC59851676D60616D1DFC = {
+			fileRef = "66B69ED9884AB76B8EC3E38B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		2AAB10CBE505EFDCD3E73A50 = {
+			isa = PBXFileReference;
+			name = "moc_engine.cpp";
+			path = "moc_engine.cpp";
+			refType = 4;
+		};
+		6CF44021E2041105302A7EE3 = {
+			fileRef = "2AAB10CBE505EFDCD3E73A50";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		80F2FD904D91DFD6B7F4A97A = {
+			isa = PBXFileReference;
+			name = "moc_animation.cpp";
+			path = "moc_animation.cpp";
+			refType = 4;
+		};
+		9C00A3C62AEB3C1D11144B9F = {
+			fileRef = "80F2FD904D91DFD6B7F4A97A";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F268B9BDD9E64F5BBCA0B0A3 = {
+			isa = PBXFileReference;
+			name = "moc_frame.cpp";
+			path = "moc_frame.cpp";
+			refType = 4;
+		};
+		FFADA26078EDA7A7146DC517 = {
+			fileRef = "F268B9BDD9E64F5BBCA0B0A3";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		D79D91B7B57FA98B17A57B3B = {
+			isa = PBXFileReference;
+			name = "moc_ledgridwidget.cpp";
+			path = "moc_ledgridwidget.cpp";
+			refType = 4;
+		};
+		E145EC9E9380B8FA8BDE1A9F = {
+			fileRef = "D79D91B7B57FA98B17A57B3B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		D51D36BFB8FE0A717E8AF05F = {
+			isa = PBXFileReference;
+			name = "moc_playinfowidget.cpp";
+			path = "moc_playinfowidget.cpp";
+			refType = 4;
+		};
+		68AB51464F08B75602E11096 = {
+			fileRef = "D51D36BFB8FE0A717E8AF05F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		337E6270C63C9C23CC65080C = {
+			isa = PBXFileReference;
+			name = "moc_ledanimcodec.cpp";
+			path = "moc_ledanimcodec.cpp";
+			refType = 4;
+		};
+		BF9B064DB0C2E0F0DF10755F = {
+			fileRef = "337E6270C63C9C23CC65080C";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		FD18FA451B04CEEC642992DA = {
+			isa = PBXFileReference;
+			name = "moc_framewidgets.cpp";
+			path = "moc_framewidgets.cpp";
+			refType = 4;
+		};
+		22ED8AA8B2F44A7CDAD5D3D1 = {
+			fileRef = "FD18FA451B04CEEC642992DA";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		F9F6E46307585E51D027312B = {
+			isa = PBXFileReference;
+			name = "moc_leddetailswidgets.cpp";
+			path = "moc_leddetailswidgets.cpp";
+			refType = 4;
+		};
+		93B708709F18AE90A0B7BCAE = {
+			fileRef = "F9F6E46307585E51D027312B";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		6DA3F76FD5D78E44B2846A2F = {
+			isa = PBXFileReference;
+			name = "moc_ledwidgets.cpp";
+			path = "moc_ledwidgets.cpp";
+			refType = 4;
+		};
+		C795EC0A22D129997A1D1E8F = {
+			fileRef = "6DA3F76FD5D78E44B2846A2F";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		08B4919877371ECE7011BB6E = {
+			isa = PBXFileReference;
+			name = "moc_animationdetailswidgets.cpp";
+			path = "moc_animationdetailswidgets.cpp";
+			refType = 4;
+		};
+		6B2CA8E531FDE61331307D82 = {
+			fileRef = "08B4919877371ECE7011BB6E";
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					);
+			};
+		};
+		C63FA392C61F27B1B13369C1 = {
+			isa = PBXFileReference;
+			name = "mainwindow.h";
+			path = "mainwindow.h";
+			refType = 4;
+		};
+		FC3C3FD1C17AE592BCDA4EA9 = {
+			isa = PBXFileReference;
+			name = "led.h";
+			path = "led.h";
+			refType = 4;
+		};
+		0FFAFAA4883D23DBB1BF9B27 = {
+			isa = PBXFileReference;
+			name = "engine.h";
+			path = "engine.h";
+			refType = 4;
+		};
+		F8A222C84C3E07761F1B9081 = {
+			isa = PBXFileReference;
+			name = "animation.h";
+			path = "animation.h";
+			refType = 4;
+		};
+		2F94762512EED477770014C4 = {
+			isa = PBXFileReference;
+			name = "frame.h";
+			path = "frame.h";
+			refType = 4;
+		};
+		575BEB8402C783E10D1BBF83 = {
+			isa = PBXFileReference;
+			name = "ledgridwidget.h";
+			path = "ledgridwidget.h";
+			refType = 4;
+		};
+		027B221D40706590A045E3CC = {
+			isa = PBXFileReference;
+			name = "playinfowidget.h";
+			path = "playinfowidget.h";
+			refType = 4;
+		};
+		54674F1AE637B462C07B9561 = {
+			isa = PBXFileReference;
+			name = "defaults.h";
+			path = "defaults.h";
+			refType = 4;
+		};
+		1F0092E4E2BFEF2B5F13CF70 = {
+			isa = PBXFileReference;
+			name = "ledanimcodec.h";
+			path = "ledanimcodec.h";
+			refType = 4;
+		};
+		FFC60A086307BA6DFA297762 = {
+			isa = PBXFileReference;
+			name = "exceptions.h";
+			path = "exceptions.h";
+			refType = 4;
+		};
+		314EE83DA7A3229ED7047A82 = {
+			isa = PBXFileReference;
+			name = "framewidgets.h";
+			path = "framewidgets.h";
+			refType = 4;
+		};
+		0F39CB098F9DEB0DDD5EB65A = {
+			isa = PBXFileReference;
+			name = "leddetailswidgets.h";
+			path = "leddetailswidgets.h";
+			refType = 4;
+		};
+		5F79800C17CA21F620BDBBA9 = {
+			isa = PBXFileReference;
+			name = "ledwidgets.h";
+			path = "ledwidgets.h";
+			refType = 4;
+		};
+		9BE05F588CC3CECEB9E23C51 = {
+			isa = PBXFileReference;
+			name = "animationdetailswidgets.h";
+			path = "animationdetailswidgets.h";
+			refType = 4;
+		};
+		E1C066528E7989BE26555AC5 = {
+			isa = PBXFileReference;
+			name = "LedAnimator.pro";
+			path = "LedAnimator.pro";
+			refType = 4;
+		};
+		883D7615C4D2DE3FA1218F12 = {
+			isa = PBXGroup;
+			children = (
+				"C63FA392C61F27B1B13369C1",
+				"FC3C3FD1C17AE592BCDA4EA9",
+				"0FFAFAA4883D23DBB1BF9B27",
+				"F8A222C84C3E07761F1B9081",
+				"2F94762512EED477770014C4",
+				"575BEB8402C783E10D1BBF83",
+				"027B221D40706590A045E3CC",
+				"54674F1AE637B462C07B9561",
+				"1F0092E4E2BFEF2B5F13CF70",
+				"FFC60A086307BA6DFA297762",
+				"314EE83DA7A3229ED7047A82",
+				"0F39CB098F9DEB0DDD5EB65A",
+				"5F79800C17CA21F620BDBBA9",
+				"9BE05F588CC3CECEB9E23C51");
+			name = "Headers";
+			refType = 4;
+		};
+		FB61758D0F0FDA4BA867C3D5 = {
+			isa = PBXGroup;
+			children = (
+				"118FCBAABA162BA17933C789",
+				"EA177DE95BF7D3EF58EE43F7",
+				"9A89A677DE86B613D336A83D",
+				"C2374CA9E747ED1C59ABF40F",
+				"9FEC0C8FDCBCB26D410FEBE3",
+				"7CC299AD5D5BE6E35A8069B6",
+				"D0F0666DE986BAA659949062",
+				"E67D9570616457B0C4026AA6",
+				"CA4124D2E8CC30485DE0B274",
+				"6042AF1DFE3883E344EF3DD5",
+				"26EB341097947C6D292C6B48",
+				"E98AC70757B32D7209B3B72C",
+				"19F86D339351F47B9F32EE33");
+			name = "Sources";
+			refType = 4;
+		};
+		7CABE3C80E79AD2B307756D2 = {
+			isa = PBXGroup;
+			children = (
+				"E1C066528E7989BE26555AC5");
+			name = "Sources [qmake]";
+			refType = 4;
+		};
+		46E892BBB6BB6952967E0561 = {
+			isa = PBXGroup;
+			children = (
+				"336D3C48DD3B44974395C633",
+				"66B69ED9884AB76B8EC3E38B",
+				"2AAB10CBE505EFDCD3E73A50",
+				"80F2FD904D91DFD6B7F4A97A",
+				"F268B9BDD9E64F5BBCA0B0A3",
+				"D79D91B7B57FA98B17A57B3B",
+				"D51D36BFB8FE0A717E8AF05F",
+				"337E6270C63C9C23CC65080C",
+				"FD18FA451B04CEEC642992DA",
+				"F9F6E46307585E51D027312B",
+				"6DA3F76FD5D78E44B2846A2F",
+				"08B4919877371ECE7011BB6E");
+			name = "Temporary Sources";
+			refType = 4;
+		};
+		A0A52A2ADF7A1E2A99738674 = {
+			buildActionMask = 2147483647;
+			files = (
+				);
+			generatedFileNames = (
+				"2B093CA6F071B023A473CED0",
+				"462C0F34BBEF2375A9469BB5",
+				"68A2EBB4824DBD42F9E4B960",
+				"B167049F587B7898E2685A5D",
+				"CD494F02610A0EFFA8AF8AFC",
+				"F242033B68951F49D9C54CB3",
+				"9D0A4150B2972513CC7A7869",
+				"9EE4A7758B52C506CF5A1377",
+				"F0D9D4F55D50357D94EB29E7",
+				"41D52595FFAC68B947C1F67F",
+				"5F965A4764365A9D26F3747D",
+				"45483AB58C7F17460B216FF9",
+				"5F15AB9960A1FFBED5CCED11",
+				"26C2BED6C570C95F5243C556",
+				"86ABC59851676D60616D1DFC",
+				"6CF44021E2041105302A7EE3",
+				"9C00A3C62AEB3C1D11144B9F",
+				"FFADA26078EDA7A7146DC517",
+				"E145EC9E9380B8FA8BDE1A9F",
+				"68AB51464F08B75602E11096",
+				"BF9B064DB0C2E0F0DF10755F",
+				"22ED8AA8B2F44A7CDAD5D3D1",
+				"93B708709F18AE90A0B7BCAE",
+				"C795EC0A22D129997A1D1E8F",
+				"6B2CA8E531FDE61331307D82");
+			isa = PBXShellScriptBuildPhase;
+			name = "Qt Preprocessors";
+			neededFileNames = (
+				"2B093CA6F071B023A473CED0",
+				"462C0F34BBEF2375A9469BB5",
+				"68A2EBB4824DBD42F9E4B960",
+				"B167049F587B7898E2685A5D",
+				"CD494F02610A0EFFA8AF8AFC",
+				"F242033B68951F49D9C54CB3",
+				"9D0A4150B2972513CC7A7869",
+				"9EE4A7758B52C506CF5A1377",
+				"F0D9D4F55D50357D94EB29E7",
+				"41D52595FFAC68B947C1F67F",
+				"5F965A4764365A9D26F3747D",
+				"45483AB58C7F17460B216FF9",
+				"5F15AB9960A1FFBED5CCED11",
+				"26C2BED6C570C95F5243C556",
+				"86ABC59851676D60616D1DFC",
+				"6CF44021E2041105302A7EE3",
+				"9C00A3C62AEB3C1D11144B9F",
+				"FFADA26078EDA7A7146DC517",
+				"E145EC9E9380B8FA8BDE1A9F",
+				"68AB51464F08B75602E11096",
+				"BF9B064DB0C2E0F0DF10755F",
+				"22ED8AA8B2F44A7CDAD5D3D1",
+				"93B708709F18AE90A0B7BCAE",
+				"C795EC0A22D129997A1D1E8F",
+				"6B2CA8E531FDE61331307D82");
+			shellPath = "/bin/sh";
+			shellScript = "make\ -C\ /Users/anne/Documents/Programming/Qt/LedAnimator\ -f\ \'LedAnimator.pbproj/qt_preprocess.mak\'";
+		};
+		C29B8785722055ED95EF7B57 = {
+			buildActionMask = 2147483647;
+			files = (
+				"2B093CA6F071B023A473CED0",
+				"462C0F34BBEF2375A9469BB5",
+				"68A2EBB4824DBD42F9E4B960",
+				"B167049F587B7898E2685A5D",
+				"CD494F02610A0EFFA8AF8AFC",
+				"F242033B68951F49D9C54CB3",
+				"9D0A4150B2972513CC7A7869",
+				"9EE4A7758B52C506CF5A1377",
+				"F0D9D4F55D50357D94EB29E7",
+				"41D52595FFAC68B947C1F67F",
+				"5F965A4764365A9D26F3747D",
+				"45483AB58C7F17460B216FF9",
+				"5F15AB9960A1FFBED5CCED11",
+				"26C2BED6C570C95F5243C556",
+				"86ABC59851676D60616D1DFC",
+				"6CF44021E2041105302A7EE3",
+				"9C00A3C62AEB3C1D11144B9F",
+				"FFADA26078EDA7A7146DC517",
+				"E145EC9E9380B8FA8BDE1A9F",
+				"68AB51464F08B75602E11096",
+				"BF9B064DB0C2E0F0DF10755F",
+				"22ED8AA8B2F44A7CDAD5D3D1",
+				"93B708709F18AE90A0B7BCAE",
+				"C795EC0A22D129997A1D1E8F",
+				"6B2CA8E531FDE61331307D82");
+			isa = PBXSourcesBuildPhase;
+			name = "Build Sources";
+		};
+		9B36DA7E32F0304E780E7972 = {
+			isa = PBXFrameworkReference;
+			name = "QtGui.framework";
+			path = "/Library/Frameworks/QtGui.framework";
+			refType = 0;
+		};
+		501667F26B3C1FF6767A7C12 = {
+			fileRef = "9B36DA7E32F0304E780E7972";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		7BC2E65A5E699A5E5D834CA2 = {
+			isa = PBXFrameworkReference;
+			name = "QtCore.framework";
+			path = "/Library/Frameworks/QtCore.framework";
+			refType = 0;
+		};
+		069D05B0128AE5DC7EE31738 = {
+			fileRef = "7BC2E65A5E699A5E5D834CA2";
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		ED1E82605DD74B483AF3C982 = {
+			children = (
+				"9B36DA7E32F0304E780E7972",
+				"7BC2E65A5E699A5E5D834CA2");
+			isa = PBXGroup;
+			name = "External Frameworks and Libraries";
+			path = "";
+			refType = 4;
+		};
+		2A1043669E6E5A7426EA502A = {
+			buildActionMask = 2147483647;
+			files = (
+				"501667F26B3C1FF6767A7C12",
+				"069D05B0128AE5DC7EE31738");
+			isa = PBXFrameworksBuildPhase;
+			name = "Frameworks & Libraries";
+		};
+		3787F99312C85FF0073FD7BA = {
+			buildActionMask = 2147483647;
+			files = (
+			);
+			isa = PBXResourcesBuildPhase;
+			name = "Bundle Resources";
+		};
+		05596AB53D8D521C69802C27 = {
+			children = (
+				"FB61758D0F0FDA4BA867C3D5",
+				"46E892BBB6BB6952967E0561",
+				"883D7615C4D2DE3FA1218F12",
+				"7CABE3C80E79AD2B307756D2",
+				"ED1E82605DD74B483AF3C982");
+			isa = PBXGroup;
+			name = "LedAnimator";
+			path = "";
+			refType = 4;
+		};
+		C3F98BBEE9127E78E54C9D13 = {
+			isa = PBXFileReference;
+			explicitFileType = "wrapper.application";
+			path = "LedAnimator.app";
+			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		068F80C7519D0528FB08E821 = {
+			children = (
+				"C3F98BBEE9127E78E54C9D13");
+			isa = PBXGroup;
+			name = "Products";
+			refType = 4;
+		};
+		01BBFA4688F586A09FF7D1B5 = {
+			buildPhases = (
+				"D7BA7D76DAB5DD13389D6332",
+				"A0A52A2ADF7A1E2A99738674",
+				"C29B8785722055ED95EF7B57",
+				"2A1043669E6E5A7426EA502A",
+				"3787F99312C85FF0073FD7BA");
+			buildSettings = {
+				CC = "/usr/bin/gcc";
+				CPLUSPLUS = "/usr/bin/g++";
+				HEADER_SEARCH_PATHS = (
+					"/Library/Frameworks/QtCore.framework/Versions/4/Headers",
+					"/usr/include/QtCore",
+					"/Library/Frameworks/QtGui.framework/Versions/4/Headers",
+					"/usr/include/QtGui",
+					"/usr/include",
+					".",
+					"/usr/local/include",
+					"/System/Library/Frameworks/CarbonCore.framework/Headers",
+					"/usr/local/Qt4.8/mkspecs/macx-xcode");
+				LIBRARY_SEARCH_PATHS = (
+					"/Library/Frameworks");
+				OPTIMIZATION_CFLAGS = (
+					);
+				OTHER_CFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED");
+				OTHER_CPLUSPLUSFLAGS = (
+					"-pipe",
+					"-g",
+					"-Wall",
+					"-W",
+					"-DQT_GUI_LIB",
+					"-DQT_CORE_LIB",
+					"-DQT_SHARED");
+				LEXFLAGS = "";
+				YACCFLAGS = "-d";
+				OTHER_REZFLAGS = "";
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = "";
+				PREBINDING = NO;
+				INFOPLIST_FILE = "Info.plist";
+				BUILD_ROOT = "/Users/anne/Documents/Programming/Qt/LedAnimator";
+				OTHER_LDFLAGS = (
+						"-headerpad_max_install_names",
+						"-L/Library/Frameworks",
+						"-F/Library/Frameworks");
+				DYLIB_CURRENT_VERSION = "1.0.0";
+				DYLIB_COMPATIBILITY_VERSION = "1.0";
+				MACOSX_DEPLOYMENT_TARGET = "10.4";
+				ARCHS = "x86_64";
+				WRAPPER_SUFFIX = "app";
+				PRODUCT_NAME = "LedAnimator";
+			};
+			conditionalBuildSettings = {
+			};
+			dependencies = (
+				);
+			productReference = "C3F98BBEE9127E78E54C9D13";
+			shouldUseHeadermap = 1;
+			isa = PBXApplicationTarget;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist SYSTEM \"file://localhost/System/Library/DTDs/PropertyList.dtd\">
+<plist version=\"0.9\">
+<dict>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+ 	<key>CFBundleGetInfoString</key>
+	<string>Created by Qt/QMake</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleExecutable</key>
+	<string>LedAnimator</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.yourcompany.LedAnimator</string>
+	<key>NOTE</key>
+	<string>This file was generated by Qt/QMake.</string>
+</dict>
+</plist>
+";
+			name = "LedAnimator";
+			productName = "LedAnimator";
+			startupPath = "<<ProjectDirectory>>";
+		};
+		91B15E841AA80083484172DE = {
+			buildStyles = (
+				);
+			hasScannedForEncodings = 1;
+			isa = PBXProject;
+			mainGroup = "05596AB53D8D521C69802C27";
+			projectDirPath = "";
+			targets = (
+				"01BBFA4688F586A09FF7D1B5");
+		};
+	};
+	rootObject = "91B15E841AA80083484172DE";
+}

@@ -1,8 +1,15 @@
-#include "playinfowidget.h"
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
 
+#include "playinfowidget.h"
 #include "animation.h"
 
 #include <QtDebug>
+
+using namespace Ui;
 
 PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
     QWidget(parent),
@@ -23,6 +30,8 @@ PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
     QObject::connect(iPlayButton, SIGNAL(clicked()), this, SLOT(playClicked()));
     QObject::connect(iFirstButton, SIGNAL(clicked()), this, SLOT(firstClicked()));
 
+    QObject::connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
+
     QSizePolicy policy = sizePolicy();
     policy.setHorizontalStretch(0);
     policy.setVerticalStretch(1);
@@ -32,6 +41,7 @@ PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
 // slots ---------------------------------
 
 void PlayInfoWidget::playClicked() {
+    // TODO can we use a state machine here?
     if(!iAnimation.isPlaying()) {
         iAnimation.play();
         iPlayButton->setText("Stop");

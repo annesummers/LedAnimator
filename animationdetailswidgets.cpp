@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "animationdetailswidgets.h"
 
 #include "mainwindow.h"
@@ -5,6 +11,8 @@
 #include "animation.h"
 
 #include "defaults.h"
+
+using namespace Ui;
 
 AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation) :
     QWidget(parent),
@@ -20,7 +28,11 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     iLedDetailsList = new LedDetailsListWidget(this, animation);
     iLedDetailsList->move(iLedDetailsList->pos().x(), iLedDetailsList->pos().y() + 40);
 
-    QObject::connect(iFrameSlider, SIGNAL(valueChanged(int)), &(animation), SLOT(setCurrentFrame(int)));
+    QObject::connect(iFrameSlider, SIGNAL(valueChanged(int)), &animation, SLOT(setCurrentFrame(int)));
+
+    QObject::connect(&animation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+    QObject::connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
+    QObject::connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(newLed(int, int)));
 }
 
 // slots -----------
@@ -33,12 +45,17 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
     iFrameSlider->setMaximum(numFrames);
 }
 
-void AnimationDetailsWidget::newLed(Led& led) {
+void AnimationDetailsWidget::newLed(int row, int column) {
     if(added > 0){
-        iLedDetailsList->addLed(led);
+        iLedDetailsList->addLed(row, column);
         added--;
     }
-   // iFrameSlider->move(iLedDetailsList->frameListStartX()+5, iFrameSlider->pos().y());
+}
+
+// TODO this is bollocks
+void AnimationDetailsWidget::frameListPosition(int x, int width) {
+    iFrameSlider->move(x, iFrameSlider->y());
+    iFrameSlider->resize(width, iFrameSlider->height());
 }
 
 // ----------------

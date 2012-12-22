@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef PLAYINFOWIDGET_H
 #define PLAYINFOWIDGET_H
 
@@ -8,15 +14,15 @@
 
 class Animation;
 
+namespace Ui {
+
 class PlayInfoWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit PlayInfoWidget(QWidget* parent, Animation &animation);
     
-signals:
-    
-public slots:
+private slots:
     void playClicked();
     void firstClicked();
 
@@ -29,5 +35,6 @@ private:
     QPushButton*    iPlayButton;
     QLabel*         iFrameNumberLabel;
 };
+}
 
 #endif // PLAYINFOWIDGET_H

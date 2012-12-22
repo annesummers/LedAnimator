@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDWIDGETS_H
 #define LEDWIDGETS_H
 
@@ -5,38 +11,19 @@
 
 #include "led.h"
 
-class LedContainerWidget : public QWidget
-{
+namespace Ui {
+
+class LedContainerWidget;
+
+class LedWidget : public QWidget {
     Q_OBJECT
+
 public:
-    explicit LedContainerWidget(QWidget *parent, Animation& animation);
+    explicit LedWidget(QWidget* parent, const Animation &animation, LedContainerWidget& ledGroup, Led& led);
 
-signals:
-
-public slots:
-
-protected:
-    virtual void    addLed(Led& led) = 0;
-    virtual Led&    ledAt(int index) = 0;
-
-    virtual int     count() = 0;
-
-    void clearLedSelection();
-
-    Animation&      iAnimation;
-};
-
-class LedWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit LedWidget(QWidget* parent, Animation &animation, LedContainerWidget& ledGroup, Led& led);
-
-    Led& led();
+    Led &led() const;
     
-signals:
-    
-public slots:
+private slots:
     void    ledColourChanged();
     void    ledSelected();
 
@@ -51,5 +38,23 @@ private:
     LedContainerWidget& iLedGroup;
     Led& iLed;
 };
+
+class LedContainerWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    explicit LedContainerWidget(QWidget *parent, const Animation& animation);
+
+protected:
+    virtual void    addLed(int row, int column) = 0;
+    virtual Led&    ledAt(int index) = 0;
+
+    virtual int     count() = 0;
+
+    void clearLedSelection();
+
+    const Animation& iAnimation;
+};
+}
 
 #endif // LEDWIDGETS_H

@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "frame.h"
 
 Frame::Frame(QObject *parent) :
@@ -8,7 +14,7 @@ Frame::Frame(QObject* parent, QColor colour) :
     QObject(parent),
     iColour(colour) {}
 
-QColor Frame::colour() {
+const QColor Frame::colour() const {
     return iColour;
 }
 

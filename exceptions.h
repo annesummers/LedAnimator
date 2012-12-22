@@ -1,28 +1,63 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
-class Exception {
+#include <QString>
+#include <QtCore>
+
+namespace Exception {
+
+class AnimatorException : public QtConcurrent::Exception {
 
 public:
-    inline Exception (QString errorMessage) { iErrorMessage = errorMessage; }
+    inline AnimatorException (QString errorMessage) { iErrorMessage = errorMessage; }
+
+    void raise() const { throw *this; }
+    Exception *clone() const { return new AnimatorException(*this); }
+
+    inline QString errorMessage() { return iErrorMessage; }
+
+    ~AnimatorException() throw() {  }
 
 private:
     QString iErrorMessage;
 };
 
-class InvalidStateException : public Exception {
+class InvalidStateException : public AnimatorException {
 
 public:
-    inline InvalidStateException(QString errorMessage) : Exception (errorMessage) {}
+    inline InvalidStateException(QString errorMessage) : AnimatorException (errorMessage) {}
 };
 
-class InvalidAnimationException  : public Exception {
+class InvalidAnimationException  : public AnimatorException {
 
 public:
-    inline InvalidAnimationException(QString errorMessage) : Exception (errorMessage) {}
-
-private:
-    QString iErrorMessage;
+    inline InvalidAnimationException(QString errorMessage) : AnimatorException (errorMessage) {}
 };
+
+class IllegalArgumentException : public AnimatorException {
+
+public:
+    inline IllegalArgumentException(QString errorMessage) : AnimatorException (errorMessage) {}
+};
+
+class IllegalColourException : public AnimatorException {
+
+public:
+    inline IllegalColourException(QString errorMessage) : AnimatorException (errorMessage) {}
+};
+
+class IllegalFrameNumberException : public AnimatorException {
+
+public:
+    inline IllegalFrameNumberException(QString errorMessage) : AnimatorException (errorMessage) {}
+
+};
+}
 
 #endif // EXCEPTIONS_H

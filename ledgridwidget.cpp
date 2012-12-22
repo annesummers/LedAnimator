@@ -1,6 +1,8 @@
-/*******************************/
-/* Copyright Anne Summers 2012 */
-/*******************************/
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
 
 #include "ledgridwidget.h"
 
@@ -9,7 +11,9 @@
 
 #include "defaults.h"
 
-LedGridWidget::LedGridWidget(QWidget* parent, Animation& animation) :
+using namespace Ui;
+
+LedGridWidget::LedGridWidget(QWidget* parent, const Animation &animation) :
     LedContainerWidget(parent, animation),
     iLedGridLayout(NULL) {
 
@@ -20,6 +24,8 @@ LedGridWidget::LedGridWidget(QWidget* parent, Animation& animation) :
     iDragStartPosition.setY(0);
 
     iDragArea.setRect(0, 0, 0, 0);
+
+    QObject::connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(addLed(int, int)));
 }
 
 int LedGridWidget::gridWidth() {
@@ -54,14 +60,14 @@ Led& LedGridWidget::ledAtPosition(int row, int column) {
 
 // slots --------------------
 
-void LedGridWidget::addLed(Led &led) {
-    LedWidget* widget = new LedWidget(this, iAnimation, *this, led);
+void LedGridWidget::addLed(int row, int column) {
+    LedWidget* widget = new LedWidget(this, iAnimation, *this, iAnimation.ledAt(row, column));
 
-    iLedGridLayout->addWidget(widget, led.row(), led.column());
-    widget->resize(30, 30);
+    iLedGridLayout->addWidget(widget, row, column);
+    widget->resize(LED_RADIUS*2, LED_RADIUS*2);
 
-    iLedGridLayout->setColumnMinimumWidth(led.column(), widget->width() + 2);
-    iLedGridLayout->setRowMinimumHeight(led.row(), widget->height() + 2);
+    iLedGridLayout->setColumnMinimumWidth(column, widget->width() + 2);
+    iLedGridLayout->setRowMinimumHeight(row, widget->height() + 2);
 
     resize(gridWidth(), gridHeight());
 

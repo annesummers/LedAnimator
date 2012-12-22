@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "ledanimcodec.h"
 
 #include "led.h"
@@ -7,38 +13,39 @@
 #include "defaults.h"
 #include "exceptions.h"
 
-AnimChar::AnimChar() {}
+using namespace ImportExport;
+using namespace Exception;
 
-AnimChar::AnimChar(int value) :
+AnimChar::AnimChar(const int value) :
     iValue(value) { }
 
-AnimChar::AnimChar(unsigned char value) :
+AnimChar::AnimChar(const unsigned char value) :
     iValue(value) { }
 
-int AnimChar::intValue() {
+const int AnimChar::intValue() const {
     return static_cast<int>(iValue);
 }
 
-unsigned char AnimChar::charValue() {
+const unsigned char AnimChar::charValue() const {
     return iValue;
 }
 
 LedAnimCodec::LedAnimCodec(Animation& animation) :
-    iAnimation(animation) {
+    AnimatorBase(&animation, animation) {
 }
 
 void LedAnimCodec::writeAnimation() {
     writeCharacter(HEADER_BYTE);
 
-    writeCharacter(iAnimation.numRows());
-    writeCharacter(iAnimation.numColumns());
-    writeCharacter(iAnimation.numFrames());
+    writeCharacter(animation().numRows());
+    writeCharacter(animation().numColumns());
+    writeCharacter(animation().numFrames());
 
     try {
-        for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
-            for(int i = 0; i < iAnimation.numRows(); i ++) {
-                for(int j = 0; j < iAnimation.numColumns(); j++) {
-                    writeColour(iAnimation.ledAt(i, j).colourAt(frame));
+        for (int frame = 0; frame < animation().numFrames(); frame++) {
+            for(int i = 0; i < animation().numRows(); i ++) {
+                for(int j = 0; j < animation().numColumns(); j++) {
+                    writeColour(animation().ledAt(i, j).frameAt(frame + INITIAL_FRAME).colour());
                 }
             }
         }
@@ -48,7 +55,7 @@ void LedAnimCodec::writeAnimation() {
 
     writeCharacter(TERMINATING_BYTE);
 
-    iAnimation.setSaved(true);
+    animation().setSaved(true);
 }
 
 void LedAnimCodec::readAnimation() {
@@ -60,7 +67,7 @@ void LedAnimCodec::readAnimation() {
     int ledColumns = readCharacter().intValue();
     int numFrames = readCharacter().intValue();
 
-    iAnimation.setupNew(ledRows, ledColumns, numFrames);
+    animation().setupNew(ledRows, ledColumns, numFrames);
 
     int ledNum = 0;
 
@@ -69,7 +76,7 @@ void LedAnimCodec::readAnimation() {
 
         for(int row = 0; row < ledRows; row++) {
             for(int column = 0; column < ledColumns; column++) {
-                iAnimation.ledAt(row, column).setColourAt(frame + 1, readColour());
+                animation().ledAt(row, column).frameAt(frame + INITIAL_FRAME).setColour(readColour());
             }
         }
     }
@@ -78,7 +85,7 @@ void LedAnimCodec::readAnimation() {
         throw new InvalidAnimationException("No terminating byte");
     }
 
-    iAnimation.setSaved(true);
+    animation().setSaved(true);
 }
 
 void LedAnimCodec::writeColour(QColor colour) {
@@ -87,7 +94,7 @@ void LedAnimCodec::writeColour(QColor colour) {
     writeCharacter(colour.blue());
 }
 
-QColor LedAnimCodec::readColour() {
+const QColor LedAnimCodec::readColour() const {
     int red = readCharacter().intValue();
     int green = readCharacter().intValue();
     int blue = readCharacter().intValue();
@@ -99,19 +106,19 @@ LedAnimStringCodec::LedAnimStringCodec(Animation &animation) :
     LedAnimCodec(animation) {
 }
 
-AnimChar LedAnimStringCodec::readCharacter() {
-    return AnimChar();
+const AnimChar LedAnimStringCodec::readCharacter() const {
+    //return AnimChar();
 }
 
 void LedAnimStringCodec::writeCharacter(AnimChar character) {
-
+    Q_UNUSED(character);
 }
 
-QString LedAnimStringCodec::asString() {
+const QString LedAnimStringCodec::asString() const {
     return iString;
 }
 
-QByteArray& LedAnimStringCodec::asByteArray() {
+const QByteArray& LedAnimStringCodec::asByteArray() const {
     //return iByteArray;
 }
 
@@ -126,7 +133,7 @@ LedAnimByteArrayCodec::LedAnimByteArrayCodec(Animation& animation, QByteArray by
     iPosition(0) {
 }
 
-AnimChar LedAnimByteArrayCodec::readCharacter() {
+const AnimChar LedAnimByteArrayCodec::readCharacter() const {
     if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
         AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
         iPosition = iPosition + 2;
@@ -150,11 +157,11 @@ void LedAnimByteArrayCodec::writeCharacter(AnimChar character) {
 }
 
 
-QString LedAnimByteArrayCodec::asString() {
+const QString LedAnimByteArrayCodec::asString() const {
     return "";
 }
 
-QByteArray& LedAnimByteArrayCodec::asByteArray() {
+const QByteArray &LedAnimByteArrayCodec::asByteArray() const {
     return iByteArray;
 }
 

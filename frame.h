@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef FRAME_H
 #define FRAME_H
 
@@ -11,7 +17,7 @@ public:
     explicit Frame(QObject *parent);
     Frame(QObject* parent, QColor colour);
     
-    QColor colour();
+    const QColor colour() const;
     void setColour(QColor colour);
 
 signals:
@@ -21,8 +27,6 @@ public slots:
 
 private:
     QColor iColour;
-
-    
 };
 
 #endif // FRAME_H

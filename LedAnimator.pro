@@ -8,25 +8,57 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = LedAnimator
-TEMPLATE = app
+CONFIG(testing) {
+    TARGET = LedAnimatorTests # different app name for testing suite
+    QT += testlib
+    CONFIG += qtestlib
+    TEMPLATE = app
 
+    SOURCES += \
+        test.cpp \
+        animationtests.cpp\
+        ledtests.cpp \
+        enginetests.cpp \
+        ledgridwidgettests.cpp \
+        ledwidgettests.cpp \
+        playinfowidgettests.cpp \
+        frametests.cpp \
+        framewidgettests.cpp \
+        ledanimcodectests.cpp \
+        animationdetailswidgettest.cpp \
+        leddetailswidgetstests.cpp
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    led.cpp \
-    engine.cpp \
-    animation.cpp \
-    frame.cpp \
-    ledgridwidget.cpp \
-    playinfowidget.cpp \
-    ledanimcodec.cpp \
-    framewidgets.cpp \
-    leddetailswidgets.cpp \
-    ledwidgets.cpp \
-    animationdetailswidgets.cpp
+    HEADERS += \
+        test.h \
+        animationtests.h\
+        ledtests.h \
+        enginetests.h \
+        ledgridwidgettests.h \
+        ledwidgettests.h \
+        playinfowidgettests.h \
+        frametests.h \
+        framewidgettests.h \
+        ledanimcodectests.h \
+        animationdetailswidgettest.h \
+        leddetailswidgetstests.h
 
-HEADERS  += mainwindow.h \
+} else {
+    TARGET = LedAnimator
+    TEMPLATE = app
+
+    SOURCES += \
+        main.cpp
+
+    FORMS    +=
+
+    OTHER_FILES += \
+        .gitignore
+}
+
+HEADERS += \
+    animatorbase.h \
+    animatorwidgetbase.h \
+    mainwindow.h \
     led.h \
     engine.h \
     animation.h \
@@ -41,7 +73,20 @@ HEADERS  += mainwindow.h \
     ledwidgets.h \
     animationdetailswidgets.h
 
-FORMS    +=
+SOURCES += \
+    animatorbase.cpp \
+    animatorwidgetbase.cpp\
+    mainwindow.cpp \
+    led.cpp \
+    engine.cpp \
+    animation.cpp \
+    frame.cpp \
+    ledgridwidget.cpp \
+    playinfowidget.cpp \
+    ledanimcodec.cpp \
+    framewidgets.cpp \
+    leddetailswidgets.cpp \
+    ledwidgets.cpp \
+    animationdetailswidgets.cpp
 
-OTHER_FILES += \
-    .gitignore
+

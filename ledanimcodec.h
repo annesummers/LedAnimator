@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDANIMCODEC_H
 #define LEDANIMCODEC_H
 
@@ -7,20 +13,24 @@
 #include <QColor>
 #include <QSize>
 
+#include "animatorbase.h"
+
 class Animation;
 class Led;
 
-class AnimChar {
-public:
-    AnimChar();
-    AnimChar(int value);
-    AnimChar(unsigned char value);
+namespace ImportExport {
 
-    int intValue();
-    unsigned char charValue();
+class AnimChar {
+
+public:
+    AnimChar(const int value);
+    AnimChar(const unsigned char value);
+
+    const int intValue() const;
+    const unsigned char charValue() const;
 
 private:
-    unsigned char iValue;
+    const unsigned char iValue;
 };
 
 class AnimStringChar : public AnimChar {
@@ -31,7 +41,7 @@ class AnimByteChar : public AnimChar {
 
 };
 
-class LedAnimCodec : public QObject
+class LedAnimCodec : public AnimatorBase
 {
     Q_OBJECT
 public:
@@ -40,22 +50,16 @@ public:
     void writeAnimation();
     void readAnimation();
 
-signals:
-    
-public slots:
-
 protected:
-    virtual AnimChar readCharacter() = 0;
+    virtual const AnimChar readCharacter() const = 0;
     virtual void writeCharacter(AnimChar character) = 0;
 
-    virtual QByteArray&  asByteArray() = 0;
-    virtual QString     asString() = 0;
+    virtual const QByteArray&  asByteArray() const = 0;
+    virtual const QString     asString() const = 0;
 
 private:
     void writeColour(QColor colour);
-    QColor readColour();
-
-    Animation& iAnimation;
+    const QColor readColour() const;
 };
 
 class LedAnimStringCodec: public LedAnimCodec {
@@ -64,11 +68,11 @@ public:
     explicit LedAnimStringCodec(Animation &animation);
 
 protected:
-    AnimChar readCharacter();
+    const AnimChar readCharacter() const;
     void writeCharacter(AnimChar character);
 
-    QString asString();
-    QByteArray& asByteArray();
+    const QString asString() const;
+    const QByteArray &asByteArray() const;
 
 private:
     QString iString;
@@ -81,16 +85,17 @@ public:
     LedAnimByteArrayCodec(Animation& animation, QByteArray bytes);
 
 
-    QString asString();
-    QByteArray& asByteArray();
+    const QString asString() const;
+    const QByteArray& asByteArray() const;
 
 protected:
-    AnimChar readCharacter();
+    const AnimChar readCharacter() const;
     void writeCharacter(AnimChar character);
 
 private:
-    QByteArray iByteArray;
-    int         iPosition;
+    QByteArray  iByteArray;
+    mutable int iPosition;
 };
+}
 
 #endif // LEDANIMCODEC_H

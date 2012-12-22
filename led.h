@@ -1,46 +1,58 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LED_H
 #define LED_H
 
 #include <QObject>
 #include <QColor>
 #include <QPoint>
+#include <QSignalMapper>
 
-class LedWidget;
+#include "animation.h"
+
+#include "defaults.h"
+#include "frame.h"
 
 class Frame;
-class Animation;
 
-class Led : public QObject
-{
+class Led : public QObject {
     Q_OBJECT
+
 public:
-    explicit Led(Animation& animation, int row, int column);
+    explicit Led(QObject* parent, const Animation& animation, int row, int column);
 
-    QColor      currentColour();
-    void        setCurrentColour(QColor colour);
+    inline const QColor currentColour() const { return frameAt(iAnimation.currentFrame()).colour(); }
 
-    QColor      colourAt(int frameNum);
-    void        setColourAt(int frameNum, QColor colour);
+    inline const bool isSelected() const { return iIsSelected; }
 
-    int         row();
-    int         column();
+    inline const int row() const { return iRow; }
+    inline const int column() const {return iColumn; }
 
-    bool        isSelected();
-    void        select(bool isSelected);
+    Frame& frameAt(int frameNum) const;
 
-    Frame&      frameAt(int frameNum);
+    void setCurrentColour(QColor colour);
+
+    void select(bool isSelected);
 
 signals:
-    void        selected();
-    void        currentColourChanged();
+    void selected();
+    void currentColourChanged();
+
+public slots:
+    void numFramesChanged(int numFrames);
+    void colourChanged(int frameNum);
 
 private:
-    Animation& iAnimation;
-
-    int iRow;
-    int iColumn;
+    const Animation& iAnimation;
     QList<Frame*> iFrames;
+    QSignalMapper* iSignalMapper;
 
+    int     iRow;
+    int     iColumn;
     bool    iIsSelected;
 };
 

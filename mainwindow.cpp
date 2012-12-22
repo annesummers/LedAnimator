@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "mainwindow.h"
 
 #include "ui_mainwindow.h"
@@ -10,6 +16,8 @@
 #include "animationdetailswidgets.h"
 
 #include "defaults.h"
+
+using namespace Ui;
 
 MainWindow::MainWindow(Engine& engine) :
     iEngine(engine){
@@ -46,34 +54,22 @@ MainWindow::MainWindow(Engine& engine) :
     splitterHorizontal->setOrientation(Qt::Horizontal);
 
     LedGridContainerWidget* gridContainer = new LedGridContainerWidget(splitterHorizontal);
-    LedGridWidget* ledGridWidget = new LedGridWidget(gridContainer, animation());
+    LedGridWidget* ledGridWidget = new LedGridWidget(gridContainer, engine.animation());
     ledGridWidget->move(LED_GRID_BORDER, LED_GRID_BORDER);
 
-    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(splitterHorizontal, animation());
+    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(splitterHorizontal, engine.animation());
 
     splitterHorizontal->addWidget(gridContainer);
     splitterHorizontal->addWidget(playInfoWidget);
 
-     QWidget* animationDetailsContainer = new QWidget(splitterVertical);
-    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(animationDetailsContainer, animation());//animationDetailsContainer->widget();
+    QWidget* animationDetailsContainer = new QWidget(splitterVertical);
+    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(animationDetailsContainer, engine.animation());//animationDetailsContainer->widget();
 
     animationDetailsWidget->move(LED_GRID_BORDER, 0);
     animationDetailsWidget->resize(animationDetailsContainer->width() - LED_GRID_BORDER*2, animationDetailsContainer->height());
 
     splitterVertical->addWidget(splitterHorizontal);
     splitterVertical->addWidget(animationDetailsContainer);
-
-    QObject::connect(&animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
-
-    QObject::connect(&animation(), SIGNAL(currentFrameChanged(int)), playInfoWidget, SLOT(currentFrameChanged(int)));
-    QObject::connect(&animation(), SIGNAL(currentFrameChanged(int)), animationDetailsWidget, SLOT(currentFrameChanged(int)));
-
-    QObject::connect(&animation(), SIGNAL(newLed(Led&)), ledGridWidget, SLOT(addLed(Led&)));
-    QObject::connect(&animation(), SIGNAL(newLed(Led&)), animationDetailsWidget, SLOT(newLed(Led&)));
-}
-
-Animation& MainWindow::animation() {
-    return iEngine.animation();
 }
 
 void MainWindow::writeSettings() {

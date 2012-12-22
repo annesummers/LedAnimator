@@ -6,22 +6,23 @@
 
 #include "ledwidgets.h"
 
-class MainWindow;
 class Led;
+
+namespace Ui {
+
 class LedDetailsListWidget;
 
-class AnimationDetailsWidget : public QWidget
-{
+class AnimationDetailsWidget : public QWidget {
+
     Q_OBJECT
 public:
     explicit AnimationDetailsWidget(QWidget* parent, Animation &animation);
-    
-signals:
-    
-public slots:
-    void newLed(Led& led);
+
+private slots:
+    void newLed(int row, int column);
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
+    void frameListPosition(int x, int width);
 
 protected:
     void resizeEvent(QResizeEvent*);
@@ -30,12 +31,13 @@ protected:
     void dropEvent(QDropEvent* event);
 
 private:
-    Animation&     iAnimation;
+    Animation&              iAnimation;
 
     QSlider*                iFrameSlider;
     LedDetailsListWidget*   iLedDetailsList;
 
     int added;
 };
+}
 
 #endif // FRAMEDETAILSWIDGET_H

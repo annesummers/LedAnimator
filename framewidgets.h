@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef FRAMEWIDGET_H
 #define FRAMEWIDGET_H
 
@@ -8,15 +14,36 @@ class Frame;
 class Led;
 class Animation;
 
-class FrameWidget : public QWidget
-{
+namespace Ui {
+
+class FrameListWidget : public QWidget {
     Q_OBJECT
+
 public:
-    explicit FrameWidget(QWidget *parent, Frame& frame);
-    
+    explicit FrameListWidget(QWidget *parent, const Animation &animation, const Led& led);
+
 signals:
-    
-public slots:
+    void resized(int x, int newWidth);
+
+private slots:
+    void numFramesChanged(int numFrames);
+
+protected:
+    void resizeEvent(QResizeEvent *);
+
+private:
+    QHBoxLayout*  iFramesList;
+
+    const Led& iLed;
+};
+
+class FrameWidget : public QWidget {
+    Q_OBJECT
+
+public:
+    explicit FrameWidget(Frame& frame);
+
+private slots:
     void frameColourChanged();
     void frameSelected();
 
@@ -28,31 +55,6 @@ protected:
 private:
     Frame& iFrame;
 };
-
-class FrameListWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit FrameListWidget(QWidget *parent, Animation &animation, Led& led);
-
-
-
-   // void newWidth(int width);
-
-signals:
-
-public slots:
-    void numFramesChanged(int numFrames);
-
-protected:
-    void resizeEvent(QResizeEvent *);
-
-private:
-    // TODO this has to be a boxlayout
-   // QList<FrameWidget*> iFrames;
-    QHBoxLayout*  iFramesList;
-
-    Led& iLed;
-};
+}
 
 #endif // FRAMEWIDGET_H

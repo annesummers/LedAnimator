@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "animation.h"
 
 #include "led.h"
@@ -9,25 +15,33 @@
 
 #include <QtDebug>
 
+using namespace Exception;
+
 Animation::Animation(Engine& engine) :
     QObject(&engine),
     iEngine(engine),
-    iNumRows(0),
-    iNumColumns(0),
-    iNumFrames(0),
-    iCurrentFrame(1),
+    iPlayTimer(NULL),
+    iNumRows(INVALID),
+    iNumColumns(INVALID),
+    iNumFrames(INVALID),
+    iCurrentFrame(INVALID),
     iFrameFrequency(DEFAULT_FRAME_FREQUENCY),
     iIsPlaying(false),
     iFileName(""),
-    iIsSaved(false),
-    iPlayTimer(NULL) { }
+    iIsSaved(false){ }
 
 void Animation::setupNew(int numRows, int numColumns, int numFrames) {
-    iNumRows = numRows;
-    iNumColumns = numColumns;
-    iNumFrames = numFrames;
-    iCurrentFrame = 1;
-    iIsSaved = false;
+    if(numRows <= 0 || numRows > MAX_ROWS) {
+        throw IllegalArgumentException("Rows argument is invalid");
+    }
+
+    if(numColumns <= 0 || numColumns > MAX_COLUMNS) {
+        throw IllegalArgumentException("Columns argument is invalid");
+    }
+
+    if(numFrames <= 0 || numFrames > MAX_FRAMES) {
+        throw IllegalArgumentException("Frames argument is invalid");
+    }
 
     Led* led = NULL;
     foreach(led, iLeds) {
@@ -36,116 +50,55 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames) {
     }
     iLeds.clear();
 
-    for(int i = 0; i < iNumColumns; i++) {
-        for(int j = 0; j < iNumRows; j++) {
-            led = new Led(*this, j, i);
+    setNumRows(numRows);
+    setNumColumns(numColumns);
+
+    for(int i = 0; i < numRows; i++) {
+        for(int j = 0; j < numColumns; j++) {
+            led = new Led(this, *this, j, i);
             iLeds.append(led);
 
-            emit newLed(*led);
+            emit newLed(i, j);
         }
-    }
+    }  
 
-    emit currentFrameChanged(iCurrentFrame);
-    emit numFramesChanged(iNumFrames);
-}
-
-int Animation::currentFrame() {
-    return iCurrentFrame;
-}
-
-void Animation::setCurrentFrame(int frame) {
-    iCurrentFrame = frame;
-
-    emit currentFrameChanged(iCurrentFrame);
-}
-
-int Animation::numFrames() {
-    return iNumFrames;
-}
-
-void Animation::setNumFrames(int numFrames) {
-    iNumFrames = numFrames;
-
-    emit numFramesChanged(iNumFrames);
-}
-
-int Animation::frameFrequency() {
-    return iFrameFrequency;
-}
-
-void Animation::setFrameFrequency(int frameFrequency) {
-    iFrameFrequency = frameFrequency;
+    setNumFrames(numFrames);
+    setCurrentFrame(INITIAL_FRAME);
+    setSaved(false);
 }
 
 void Animation::play() {
-    if(!iIsPlaying) {
+    if(!isPlaying()) {
         iPlayTimer = new QTimer(this);
         connect(iPlayTimer, SIGNAL(timeout()), this, SLOT(nextFrame()));
-        iPlayTimer->start(iFrameFrequency);
+        iPlayTimer->start(frameFrequency());
 
-        iIsPlaying = true;
+        setPlaying(true);
     }
 }
 
 void Animation::stop() {
-    if(iIsPlaying) {
+    if(isPlaying()) {
         iPlayTimer->stop();
         delete iPlayTimer;
         iPlayTimer = NULL;
 
-        iIsPlaying = false;
+        setPlaying(false);
     }
 }
 
-bool Animation::isPlaying() {
-    return iIsPlaying;
-}
-
-int Animation::numRows() {
-    return iNumRows;
-}
-
-int Animation::numColumns() {
-    return iNumColumns;
-}
-
-int Animation::numLeds() {
-    return iLeds.count();
-}
-
-Led& Animation::ledAt(int row, int column) {
-    if(row >= iNumRows || row < 0 || column >= iNumColumns || column < 0 ) {
-        throw new InvalidStateException("Animation : led does not exist");
+Led &Animation::ledAt(int row, int column) const {
+    if(row >= numRows() || row < 0 || column >= numColumns() || column < 0 ) {
+        throw InvalidStateException("Animation : led does not exist");
     }
 
-    return *(iLeds.at((row*iNumColumns) + column));
-}
-
-QString Animation::fileName() {
-    return iFileName;
-}
-
-void Animation::setFileName(QString fileName) {
-    iFileName = fileName;
-}
-
-bool Animation::saved() {
-    return iIsSaved;
-}
-
-void Animation::setSaved(bool saved) {
-    iIsSaved = saved;
+    return *(iLeds.at((row*numColumns()) + column));
 }
 
 // slots --------
 
 void Animation::nextFrame() {
-    setCurrentFrame(iCurrentFrame);
-
-    iCurrentFrame++;
-    if(iCurrentFrame >= iNumFrames) {
-        iCurrentFrame = 1;  // frames are indexed from 1
-    }
+    setCurrentFrame((currentFrame()%numFrames()) + INITIAL_FRAME);
 }
 
 // -------
