@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDDETAILSWIDGETSTESTS_H
 #define LEDDETAILSWIDGETSTESTS_H
 

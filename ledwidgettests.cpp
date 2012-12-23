@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "ledwidgettests.h"
 
 using namespace Test;

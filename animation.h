@@ -51,14 +51,14 @@ public slots:
     inline void setFileName(QString fileName) { iFileName = fileName; }
     inline void setSaved(bool saved) { iIsSaved = saved; }
 
-    inline void setCurrentFrame(int frame) { iCurrentFrame = frame; emit currentFrameChanged(iCurrentFrame); }
-    inline void setNumFrames(int numFrames) { iNumFrames = numFrames; emit numFramesChanged(iNumFrames); }
-    inline void setFrameFrequency(int frameFrequency) { iFrameFrequency = frameFrequency; }
+    void setCurrentFrame(int frame);
+    void setFrameFrequency(int frameFrequency);
     
 private slots:
     void nextFrame();
 
 private:
+    inline void setNumFrames(int numFrames) { iNumFrames = numFrames; emit numFramesChanged(iNumFrames); }
     inline void setNumRows(int numRows) { iNumRows = numRows; }
     inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
 

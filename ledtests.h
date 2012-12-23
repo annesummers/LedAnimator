@@ -46,9 +46,6 @@ private slots:
 
 private:
     Engine*    iEngine;
-    Animation* iAnimation;
-
-    Led*        iLed;
 };
 }
 

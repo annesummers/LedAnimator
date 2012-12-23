@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDANIMCODECTESTS_H
 #define LEDANIMCODECTESTS_H
 

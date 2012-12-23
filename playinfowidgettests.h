@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef PLAYINFOWIDGETTESTS_H
 #define PLAYINFOWIDGETTESTS_H
 

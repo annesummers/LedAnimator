@@ -23,6 +23,7 @@ Led::Led(QObject* parent, const Animation &animation, int row, int column) :
     iColumn(column),
     iIsSelected(false) {
 
+#ifndef NDEBUG
     if(row < 0) {
         throw IllegalArgumentException("Rows argument is invalid");
     }
@@ -30,6 +31,7 @@ Led::Led(QObject* parent, const Animation &animation, int row, int column) :
     if(column < 0) {
         throw IllegalArgumentException("Columns argument is invalid");
     }
+#endif
 
     iSignalMapper = new QSignalMapper(this);
 
@@ -37,6 +39,7 @@ Led::Led(QObject* parent, const Animation &animation, int row, int column) :
 }
 
 Frame& Led::frameAt(int frameNum) const {
+#ifndef NDEBUG
     if(frameNum < INITIAL_FRAME) {
         throw IllegalFrameNumberException("Frame number is zero or negative");
     }
@@ -48,35 +51,29 @@ Frame& Led::frameAt(int frameNum) const {
     if(frameNum > iFrames.count()) {
         throw IllegalFrameNumberException("Frame number is greater than led number of frames");
     }
+#endif
 
     return *(iFrames.at(frameNum - INITIAL_FRAME));
 }
 
 void Led::numFramesChanged(int numFrames) {
-    int oldNumFrames = iFrames.count();
-
-    if(numFrames > oldNumFrames) {  // we need to add more frames
-        for(int i = oldNumFrames; i < numFrames; i++) {
-            Frame* frame = new Frame(this);
-            iFrames.append(frame);
-
-            iSignalMapper->setMapping(frame, i + INITIAL_FRAME);
-
-            connect(frame, SIGNAL(colourChanged()), iSignalMapper, SLOT(map()));
-        }
-    } else {
-        for(int i = oldNumFrames; i > numFrames; i--) {
-            Frame *frame = iFrames.at(i);
-
-            iSignalMapper->removeMappings(frame);
-            iFrames.removeAt(i);
-
-            delete frame;
-        }
+#ifndef NDEBUG
+    if(numFrames <= 0) {
+        throw IllegalArgumentException("numFrames is zero or negative");
     }
 
-    if(oldNumFrames != 0) {
-        disconnect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
+    if(numFrames > MAX_FRAMES) {
+        throw IllegalArgumentException("numFrames is too big");
+    }
+#endif
+
+    for(int i = 0; i < numFrames; i++) {
+        Frame* frame = new Frame(this);
+        iFrames.append(frame);
+
+        iSignalMapper->setMapping(frame, i + INITIAL_FRAME);
+
+        connect(frame, SIGNAL(colourChanged()), iSignalMapper, SLOT(map()));
     }
 
     connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
@@ -85,7 +82,7 @@ void Led::numFramesChanged(int numFrames) {
 }
 
 void Led::colourChanged(int frameNum) {
-    if(frameNum + INITIAL_FRAME == iAnimation.currentFrame()) {
+    if(frameNum == iAnimation.currentFrame()) {
         emit currentColourChanged();
     }
 }

@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "framewidgettests.h"
 
 using namespace Test;

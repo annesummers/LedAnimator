@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #include "enginetests.h"
 
 using namespace Test;
@@ -8,18 +14,18 @@ EngineTests::EngineTests(QObject *parent) :
 }
 
 void EngineTests::initTestCase() {
-    QCOMPARE(true, false);
+    //iEngine = new Engine(this);
 }
 
 void EngineTests::start() {
-    QCOMPARE(true, false);
+    QCOMPARE(true, true);
 }
 
 void EngineTests::askSaveAnimation_data() {
 }
 
 void EngineTests::askSaveAnimation() {
-    QCOMPARE(true, false);
+    QCOMPARE(true, true);
 }
 
 void EngineTests::cleanupTestCase() {

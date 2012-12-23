@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef FRAMEWIDGETTESTS_H
 #define FRAMEWIDGETTESTS_H
 

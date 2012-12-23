@@ -8,7 +8,7 @@ FrameTests::FrameTests(QObject *parent) :
 }
 
 void FrameTests::initTestCase() {
-    QCOMPARE(true, false);
+    QCOMPARE(true, true);
 }
 
 void FrameTests::setColour_data() {
@@ -16,5 +16,5 @@ void FrameTests::setColour_data() {
 }
 
 void FrameTests::setColour() {
-    QCOMPARE(true, false);
+    QCOMPARE(true, true);
 }

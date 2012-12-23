@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef ANIMATIONDETAILSWIDGETTEST_H
 #define ANIMATIONDETAILSWIDGETTEST_H
 

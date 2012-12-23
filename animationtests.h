@@ -29,6 +29,12 @@ private slots:
      void setupNew();
      void setupNew_data();
 
+     void setCurrentFrame_data();
+     void setCurrentFrame();
+
+     void ledAt_data();
+     void ledAt();
+
      void play();
      void stop();
 

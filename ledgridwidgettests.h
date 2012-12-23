@@ -1,3 +1,9 @@
+/*************************************
+**                                  **
+** Copyright (C) 2012 Anne Summers  **
+**                                  **
+**************************************/
+
 #ifndef LEDGRIDWIDGETTESTS_H
 #define LEDGRIDWIDGETTESTS_H
 

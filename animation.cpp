@@ -31,16 +31,28 @@ Animation::Animation(Engine& engine) :
     iIsSaved(false){ }
 
 void Animation::setupNew(int numRows, int numColumns, int numFrames) {
-    if(numRows <= 0 || numRows > MAX_ROWS) {
-        throw IllegalArgumentException("Rows argument is invalid");
+    if(numRows <= 0) {
+        throw IllegalArgumentException("numRows is zero or negative");
     }
 
-    if(numColumns <= 0 || numColumns > MAX_COLUMNS) {
-        throw IllegalArgumentException("Columns argument is invalid");
+    if(numRows > MAX_ROWS){
+        throw IllegalArgumentException("numRows is too big");
     }
 
-    if(numFrames <= 0 || numFrames > MAX_FRAMES) {
-        throw IllegalArgumentException("Frames argument is invalid");
+    if(numColumns <= 0) {
+        throw IllegalArgumentException("numColumns is zero or negative");
+    }
+
+    if(numColumns > MAX_COLUMNS) {
+        throw IllegalArgumentException("numColumns is too big");
+    }
+
+    if(numFrames <= 0) {
+        throw IllegalArgumentException("numFrames is zero or negative");
+    }
+
+    if(numFrames > MAX_FRAMES) {
+        throw IllegalArgumentException("numFrames is too big");
     }
 
     Led* led = NULL;
@@ -88,12 +100,42 @@ void Animation::stop() {
 }
 
 Led &Animation::ledAt(int row, int column) const {
-    if(row >= numRows() || row < 0 || column >= numColumns() || column < 0 ) {
-        throw InvalidStateException("Animation : led does not exist");
+    if(row >= numRows()) {
+        throw IllegalArgumentException("Row is greater than number of rows");
+    }
+
+    if(row < 0) {
+        throw IllegalArgumentException("Row is negative");
+    }
+
+    if(column >= numColumns()) {
+        throw IllegalArgumentException("Column is greater than number of columns");
+     }
+
+    if(column < 0 ) {
+        throw IllegalArgumentException("Column is negative");
     }
 
     return *(iLeds.at((row*numColumns()) + column));
 }
+
+void Animation::setCurrentFrame(int frame) {
+    if(frame < INITIAL_FRAME) {
+        throw IllegalArgumentException("Frame number is smaller than first frame");
+    }
+
+    if(frame > numFrames()) {
+        throw IllegalArgumentException("Frame number is greater than last frame");
+    }
+
+    iCurrentFrame = frame;
+    emit currentFrameChanged(iCurrentFrame);
+}
+
+void Animation::setFrameFrequency(int frameFrequency) {
+    iFrameFrequency = frameFrequency;
+}
+
 
 // slots --------
 
