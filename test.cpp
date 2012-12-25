@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
 
     EngineTests tc1;
     AnimationTests tc2;
-    LedTests tc3;
-    FrameTests tc4;
+    FrameTests tc3;
+    LedTests tc4;
     LedAnimCodecTests tc5;
     LedDetailsWidgetsTests tc6;
 

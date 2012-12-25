@@ -23,6 +23,14 @@ void LedTests::initTestCase() {
     iEngine = new Engine(this);
 }
 
+void LedTests::init() {
+    iAnimation = new Animation(*iEngine);
+}
+
+void LedTests::cleanup() {
+    delete iAnimation;
+}
+
 void LedTests::constructor_data() {
     QTest::addColumn<int>("row");
     QTest::addColumn<int>("column");
@@ -46,12 +54,12 @@ void LedTests::constructor() {
     QFETCH(int, column);
     QFETCH(QString, error);
 
-    Animation* animation = NULL;
+    //Animation* animation = NULL;
     Led* led = NULL;
 
     try {
-        animation = new Animation(*(iEngine));
-        animation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+        iAnimation = new Animation(*(iEngine));
+        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
 
         led = new Led(animation, *animation, row, column);
 
@@ -61,11 +69,11 @@ void LedTests::constructor() {
     } catch(IllegalArgumentException& e){
         QCOMPARE(e.errorMessage(), error);
 
-        delete animation;
+        //delete animation;
         return;
     }
 
-    delete animation; // deletes the led
+    ///delete animation; // deletes the led
 }
 
 void LedTests::numFramesChanged_data() {
@@ -83,10 +91,10 @@ void LedTests::numFramesChanged() {
     QFETCH(int, numFrames);
     QFETCH(QString, errorString);
 
-    Animation* animation = new Animation(*(iEngine));
+    //Animation* animation = new Animation(*(iEngine));
 
     try {
-        animation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
         Led& led = animation->ledAt(0, 0);
 
         led.numFramesChanged(numFrames); // should always throw an exception
@@ -128,23 +136,29 @@ void LedTests::setCurrentColour() {
     QFETCH(QColor, colour);
     QFETCH(QString, error);
 
-    Animation* animation = new Animation(*(iEngine));
+    //Animation* animation = new Animation(*(iEngine));
     Led* led = NULL;
 
     try {
         if(animationSetup){
-            animation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+            iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
         }
 
-        led = new Led(animation, *animation, 0, 0);
+        led = new Led(iAnimation, *iAnimation, 0, 0);
 
         if(framesSetup) {
             led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
         }
 
+        QSignalSpy colourSpy(&(led->frameAt(animation->currentFrame())), SIGNAL(colourChanged()));
+        QSignalSpy currentColourSpy(led, SIGNAL(currentColourChanged()));
+
         led->setCurrentColour(colour);
 
         QCOMPARE(led->currentColour(), colour);
+
+        QCOMPARE(colourSpy.count(), 1);
+        QCOMPARE(currentColourSpy.count(), 1);
 
     } catch(IllegalFrameNumberException& e) {
         QCOMPARE(e.errorMessage(), error);
@@ -153,15 +167,7 @@ void LedTests::setCurrentColour() {
     }
 
     delete led;
-    delete animation; // deletes the led
-}
-
-void LedTests::colourChanged_data() {
-
-}
-
-void LedTests::colourChanged() {
-    QCOMPARE(true, true);  // TODO
+    //delete iAnimation; // deletes the led
 }
 
 void LedTests::select_data() {
@@ -174,10 +180,10 @@ void LedTests::select_data() {
 void LedTests::select() {
     QFETCH(bool, selection);
 
-    Animation* animation = new Animation(*(iEngine));
-    animation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+    //Animation* animation = new Animation(*(iEngine));
+    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
 
-    Led* led = new Led(animation, *animation, 0, 0);
+    Led* led = new Led(iAnimation, *iAnimation, 0, 0);
     led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
 
     QSignalSpy selectedSpy(led, SIGNAL(selected()));
@@ -185,10 +191,9 @@ void LedTests::select() {
     led->select(selection);
 
     QCOMPARE(selectedSpy.count(), 1);
-   // QCOMPARE(selectedSpy.takeFirst().at(0).toBool(), selection);
-    //TODO why is this not working?
+    QCOMPARE(led->isSelected(), selection);
 
-    delete animation; // deletes the led
+    //delete iAnimation; // deletes the led
 }
 
 void LedTests::cleanupTestCase() {

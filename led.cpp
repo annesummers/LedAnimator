@@ -15,13 +15,12 @@
 
 using namespace Exception;
 
-Led::Led(QObject* parent, const Animation &animation, int row, int column) :
-    QObject(parent),
-    iAnimation(animation),
-    iSignalMapper(NULL),
+Led::Led(QObject* parent, Animation &animation, int row, int column) :
+    Selectable(parent),
     iRow(row),
     iColumn(column),
-    iIsSelected(false) {
+    iAnimation(animation),
+    iSignalMapper(NULL) {
 
 #ifndef NDEBUG
     if(row < 0) {
@@ -82,18 +81,13 @@ void Led::numFramesChanged(int numFrames) {
 }
 
 void Led::colourChanged(int frameNum) {
+    iAnimation.setSaved(false);
+
     if(frameNum == iAnimation.currentFrame()) {
         emit currentColourChanged();
     }
 }
 
 void Led::setCurrentColour(QColor colour) {    
-    frameAt(iAnimation.currentFrame()).setColour(colour);  // frames are indexed from 1!
-    colourChanged(iAnimation.currentFrame());
-}
-
-void Led::select(bool isSelected) {
-    iIsSelected = isSelected;
-
-    emit selected();
+    frameAt(iAnimation.currentFrame()).setColour(colour);
 }

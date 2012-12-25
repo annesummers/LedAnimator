@@ -10,50 +10,32 @@
 #include <QtGui>
 
 #include "led.h"
+#include "selectablewidget.h"
 
 namespace Ui {
 
-class LedContainerWidget;
+class SelectableGroupWidget;
 
-class LedWidget : public QWidget {
+class LedWidget : public SelectableWidget {
     Q_OBJECT
 
 public:
-    explicit LedWidget(QWidget* parent, const Animation &animation, LedContainerWidget& ledGroup, Led& led);
+    explicit LedWidget(QWidget* parent, const Animation &animation, SelectableGroupWidget& ledGroup, Led& led);
 
-    Led &led() const;
+    Led &led() const { return static_cast<Led&>(iItem); }
     
 private slots:
     void    ledColourChanged();
-    void    ledSelected();
 
     void    currentFrameChanged(int currentFrame);
 
 protected:
     void paintEvent(QPaintEvent* event);
     void mouseDoubleClickEvent(QMouseEvent*);
-    void mousePressEvent(QMouseEvent* event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private:
-    LedContainerWidget& iLedGroup;
-    Led& iLed;
-};
-
-class LedContainerWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit LedContainerWidget(QWidget *parent, const Animation& animation);
-
-protected:
-    virtual void    addLed(int row, int column) = 0;
-    virtual Led&    ledAt(int index) = 0;
-
-    virtual int     count() = 0;
-
-    void clearLedSelection();
-
-    const Animation& iAnimation;
+    void setColourToolTip();
 };
 }
 

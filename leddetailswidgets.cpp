@@ -15,7 +15,7 @@
 
 using namespace Ui;
 
-LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, Led& led, LedContainerWidget& ledGroup) :
+LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, Led& led, SelectableGroupWidget& ledGroup) :
     QWidget(parent),
     iPositionLabel(NULL),
     iCurrentFrameWidget(NULL),
@@ -33,7 +33,7 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, 
     iFramesListWidget->move(iCurrentFrameWidget->width() + 50, 0);
     iFramesListWidget->resize(width() - iPositionLabel->width() - iCurrentFrameWidget->width(), 30);
 
-    QObject::connect(iFramesListWidget, SIGNAL(resized(int, int)), static_cast<AnimationDetailsWidget*>(parentWidget()->parentWidget()), SLOT(frameListPosition(int, int)));
+    connect(iFramesListWidget, SIGNAL(resized(int, int)), static_cast<AnimationDetailsWidget*>(parentWidget()->parentWidget()), SLOT(frameListPosition(int, int)));
 }
 
 Led& LedDetailsWidget::led() {
@@ -48,7 +48,7 @@ void LedDetailsWidget::resizeEvent(QResizeEvent *) {
 // ------------------------------------
 
 LedDetailsListWidget::LedDetailsListWidget(QWidget *parent, const Animation &animation) :
-    LedContainerWidget(parent, animation),
+    SelectableGroupWidget(parent),
     iAnimation(animation) {
 
     iLedDetailsList = new QVBoxLayout(this);
@@ -61,26 +61,34 @@ void LedDetailsListWidget::addLed(int row, int column) {
     if(!iShownLeds.contains(&led)) {
         iShownLeds.append(&led);
 
-        LedDetailsWidget* ledDetails = new LedDetailsWidget(this, iAnimation, led, *this);
+        //LedDetailsWidget* ledDetails = new LedDetailsWidget(this, iAnimation, led, *this);
+        QWidget* ledDetails = new QWidget(this);
+
+        QLabel* iPositionLabel = new QLabel(ledDetails);
+        iPositionLabel->setText(QString("(%1, %2)").arg(led.row()).arg(led.column()));
+        iPositionLabel->move(0, 15);
+
+        LedWidget* iCurrentFrameWidget = new LedWidget(ledDetails, iAnimation, *this, led);
+        iCurrentFrameWidget->move(40, 10);
+        iCurrentFrameWidget->resize(20, 20);
+
+        FrameListWidget* iFramesListWidget = new FrameListWidget(ledDetails, iAnimation, led);
+        iFramesListWidget->move(iCurrentFrameWidget->width() + 50, 0);
+        iFramesListWidget->resize(width() - iPositionLabel->width() - iCurrentFrameWidget->width(), 30);
+
+        connect(iFramesListWidget, SIGNAL(resized(int, int)),
+                static_cast<AnimationDetailsWidget*>(parentWidget()), SLOT(frameListPosition(int, int)));
 
         ledDetails->setMaximumHeight(30);
         ledDetails->setMinimumHeight(30);
 
         iLedDetailsList->addWidget(ledDetails, 1);
 
-        setMinimumHeight(iLedDetailsList->count()*32);
-        setMaximumHeight(iLedDetailsList->count()*32);
+        setMinimumHeight(iLedDetailsList->count()*32 + 22);
+        setMaximumHeight(iLedDetailsList->count()*32 + 22);
 
         qDebug("add new led, %d, %d", row, column);
     }
-}
-
-Led& LedDetailsListWidget::ledAt(int index) {
-    return static_cast<LedDetailsWidget*>(iLedDetailsList->itemAt(index)->widget())->led();
-}
-
-int LedDetailsListWidget::count() {
-    return iLedDetailsList->count();
 }
 
 // events -------------------------------------

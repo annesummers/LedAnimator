@@ -23,6 +23,11 @@ private slots:
 
     void listAddLed_data();
     void listAddLed();
+
+private:
+    Engine*     iEngine;
+    Animation*  iAnimation;
+
 };
 }
 

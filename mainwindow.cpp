@@ -53,20 +53,20 @@ MainWindow::MainWindow(Engine& engine) :
     QSplitter* splitterHorizontal = new QSplitter(splitterVertical);
     splitterHorizontal->setOrientation(Qt::Horizontal);
 
-    LedGridContainerWidget* gridContainer = new LedGridContainerWidget(splitterHorizontal);
-    LedGridWidget* ledGridWidget = new LedGridWidget(gridContainer, engine.animation());
-    ledGridWidget->move(LED_GRID_BORDER, LED_GRID_BORDER);
+    //LedGridContainerWidget* gridContainer = new LedGridContainerWidget(splitterHorizontal);
+    LedGridWidget* ledGridWidget = new LedGridWidget(splitterHorizontal, engine.animation());
+    ledGridWidget->move(BORDER, BORDER);
 
     PlayInfoWidget* playInfoWidget = new PlayInfoWidget(splitterHorizontal, engine.animation());
 
-    splitterHorizontal->addWidget(gridContainer);
+    splitterHorizontal->addWidget(ledGridWidget);
     splitterHorizontal->addWidget(playInfoWidget);
 
     QWidget* animationDetailsContainer = new QWidget(splitterVertical);
     AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(animationDetailsContainer, engine.animation());//animationDetailsContainer->widget();
 
-    animationDetailsWidget->move(LED_GRID_BORDER, 0);
-    animationDetailsWidget->resize(animationDetailsContainer->width() - LED_GRID_BORDER*2, animationDetailsContainer->height());
+    animationDetailsWidget->move(BORDER, 0);
+    animationDetailsWidget->resize(animationDetailsContainer->width() - BORDER*2, animationDetailsContainer->height());
 
     splitterVertical->addWidget(splitterHorizontal);
     splitterVertical->addWidget(animationDetailsContainer);

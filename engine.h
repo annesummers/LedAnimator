@@ -26,8 +26,6 @@ public:
 
     bool askSaveAnimation();
     
-signals:
-    
 private slots:
     void saveAnimation();
     void saveAnimationAs();

@@ -13,8 +13,8 @@
 #include <QRect>
 
 #include "ledwidgets.h"
+#include "selectablegroupwidget.h"
 
-//class MainWindow;
 class Led;
 
 namespace Ui {
@@ -22,7 +22,7 @@ namespace Ui {
 class LedWidget;
 class LedGridGroup;
 
-class LedGridWidget : public LedContainerWidget {
+class LedGridWidget : public SelectableGroupWidget {
     Q_OBJECT
 
 public:
@@ -39,30 +39,19 @@ protected:
 
     void paintEvent(QPaintEvent*);
 
-    int count();
-
-    Led& ledAt(int index);
-
 private:
     int gridWidth();
     int gridHeight();
 
     Led& ledAtPosition(int x, int y);
 
+    const Animation&      iAnimation;
+
     QGridLayout*    iLedGridLayout;
+    QWidget*        iContainerWidget;
 
     QPoint          iDragStartPosition;
     QRect           iDragArea;
-};
-
-class LedGridContainerWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit LedGridContainerWidget(QWidget* parent);
-
-protected:
-    void paintEvent(QPaintEvent *event);
 };
 }
 

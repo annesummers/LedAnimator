@@ -6,12 +6,16 @@
 
 #include "frame.h"
 
+#include "exceptions.h"
+
+using namespace Exception;
+
 Frame::Frame(QObject *parent) :
-    QObject(parent) {
+    Selectable(parent) {
 }
 
 Frame::Frame(QObject* parent, QColor colour) :
-    QObject(parent),
+    Selectable(parent),
     iColour(colour) {}
 
 const QColor Frame::colour() const {
@@ -19,6 +23,10 @@ const QColor Frame::colour() const {
 }
 
 void Frame::setColour(QColor colour) {
+    if(!colour.isValid()) {
+        throw IllegalColourException();
+    }
+
     iColour = colour;
 
     emit colourChanged();

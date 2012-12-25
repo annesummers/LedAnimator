@@ -49,7 +49,7 @@ public:
 class IllegalColourException : public AnimatorException {
 
 public:
-    inline IllegalColourException(QString errorMessage) : AnimatorException (errorMessage) {}
+    inline IllegalColourException() : AnimatorException ("Invalid colour") {}
 };
 
 class IllegalFrameNumberException : public AnimatorException {

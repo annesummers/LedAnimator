@@ -7,8 +7,12 @@
 #ifndef FRAMEWIDGET_H
 #define FRAMEWIDGET_H
 
-#include <QWidget>
+#include <QtGui>
 #include <QHBoxLayout>
+
+#include "selectablegroupwidget.h"
+#include "selectablewidget.h"
+#include "frame.h"
 
 class Frame;
 class Led;
@@ -16,7 +20,7 @@ class Animation;
 
 namespace Ui {
 
-class FrameListWidget : public QWidget {
+class FrameListWidget : public SelectableGroupWidget {
     Q_OBJECT
 
 public:
@@ -30,6 +34,10 @@ private slots:
 
 protected:
     void resizeEvent(QResizeEvent *);
+    void paintEvent(QPaintEvent *);
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dragMoveEvent(QDragMoveEvent* event);
+    void dropEvent(QDropEvent* event);
 
 private:
     QHBoxLayout*  iFramesList;
@@ -37,23 +45,21 @@ private:
     const Led& iLed;
 };
 
-class FrameWidget : public QWidget {
+class FrameWidget : public SelectableWidget {
     Q_OBJECT
 
 public:
-    explicit FrameWidget(Frame& frame);
+    explicit FrameWidget(QWidget* parent, SelectableGroupWidget &frameGroup, Frame& frame);
 
 private slots:
+    inline Frame& frame() const { return dynamic_cast<Frame&>(iItem); }
+
     void frameColourChanged();
-    void frameSelected();
 
 protected:
     void paintEvent(QPaintEvent *);
     void mouseDoubleClickEvent(QMouseEvent*);
-    void mousePressEvent(QMouseEvent* event);
-
-private:
-    Frame& iFrame;
+    void mouseMoveEvent(QMouseEvent *event) {}
 };
 }
 

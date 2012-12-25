@@ -19,7 +19,7 @@ public:
     explicit AnimationDetailsWidget(QWidget* parent, Animation &animation);
 
 private slots:
-    void newLed(int row, int column);
+    //void newLed(int row, int column);
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
     void frameListPosition(int x, int width);

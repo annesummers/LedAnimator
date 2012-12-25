@@ -71,7 +71,11 @@ HEADERS += \
     framewidgets.h \
     leddetailswidgets.h \
     ledwidgets.h \
-    animationdetailswidgets.h
+    animationdetailswidgets.h \
+    animatorapplication.h \
+    selectable.h \
+    selectablegroupwidget.h \
+    selectablewidget.h
 
 SOURCES += \
     animatorbase.cpp \
@@ -87,6 +91,10 @@ SOURCES += \
     framewidgets.cpp \
     leddetailswidgets.cpp \
     ledwidgets.cpp \
-    animationdetailswidgets.cpp
+    animationdetailswidgets.cpp \
+    animatorapplication.cpp \
+    selectable.cpp \
+    selectablegroupwidget.cpp \
+    selectablewidget.cpp
 
 

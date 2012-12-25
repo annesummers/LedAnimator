@@ -14,18 +14,27 @@
 using namespace Ui;
 
 LedGridWidget::LedGridWidget(QWidget* parent, const Animation &animation) :
-    LedContainerWidget(parent, animation),
+    SelectableGroupWidget(parent),
+    iAnimation(animation),
     iLedGridLayout(NULL) {
 
-    iLedGridLayout = new QGridLayout(this);
-    setLayout(iLedGridLayout);
+    iContainerWidget = new QWidget(this);
+    iLedGridLayout = new QGridLayout(iContainerWidget);
+
+    iContainerWidget->setLayout(iLedGridLayout);
+    iContainerWidget->move(BORDER, BORDER);
 
     iDragStartPosition.setX(0);
     iDragStartPosition.setY(0);
 
     iDragArea.setRect(0, 0, 0, 0);
 
-    QObject::connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(addLed(int, int)));
+    QSizePolicy policy = sizePolicy();
+    policy.setHorizontalStretch(0);
+    policy.setVerticalStretch(0);
+    setSizePolicy(policy);
+
+    connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(addLed(int, int)));
 }
 
 int LedGridWidget::gridWidth() {
@@ -46,14 +55,6 @@ int LedGridWidget::gridHeight() {
     }
 }
 
-int LedGridWidget::count() {
-    return iLedGridLayout->count();
-}
-
-Led& LedGridWidget::ledAt(int index) {
-    return static_cast<LedWidget*>(iLedGridLayout->itemAt(index)->widget())->led();
-}
-
 Led& LedGridWidget::ledAtPosition(int row, int column) {
     return static_cast<LedWidget*>(iLedGridLayout->itemAtPosition(row, column)->widget())->led();
 }
@@ -71,19 +72,19 @@ void LedGridWidget::addLed(int row, int column) {
 
     resize(gridWidth(), gridHeight());
 
-    setMaximumHeight(gridHeight());
-    setMaximumWidth(gridWidth());
+    iContainerWidget->setMaximumHeight(gridHeight());
+    iContainerWidget->setMaximumWidth(gridWidth());
 
-    setMinimumHeight(gridHeight());
-    setMinimumWidth(gridWidth());
+    iContainerWidget->setMinimumHeight(gridHeight());
+    iContainerWidget->setMinimumWidth(gridWidth());
 
-    parentWidget()->resize(gridWidth() + LED_GRID_BORDER*2, gridHeight() + LED_GRID_BORDER*2);
+    resize(gridWidth() + BORDER*2, gridHeight() + BORDER*2);
 
-    parentWidget()->setMaximumHeight(gridHeight() + LED_GRID_BORDER*2);
-    parentWidget()->setMaximumWidth(gridWidth() + LED_GRID_BORDER*2);
+    setMinimumHeight(gridHeight() + BORDER*2);
+    setMinimumWidth(gridWidth() + BORDER*2);
 
-    parentWidget()->setMinimumHeight(gridHeight() + LED_GRID_BORDER*2);
-    parentWidget()->setMinimumWidth(gridWidth() + LED_GRID_BORDER*2);
+    setMaximumHeight(gridHeight() + BORDER*2);
+    setMaximumWidth(gridWidth() + BORDER*2);
 }
 
 // events --------------
@@ -94,14 +95,10 @@ void LedGridWidget::mouseDoubleClickEvent(QMouseEvent* event) {
 
         QColor colour = QColorDialog::getColor(Qt::green, this, "Select Color", QColorDialog::DontUseNativeDialog);
         if(colour.isValid()) {
-            for(int i = 0; i < iLedGridLayout->count(); i++) {
-                Led& led = ledAt(i);
-                if(led.isSelected()) {
-                    led.setCurrentColour(colour);
-                }
+            Selectable* item = NULL;
+            foreach(item, selectedItems() ){
+                (static_cast<Led*>(item))->setCurrentColour(colour);
             }
-
-            update();
         }
     }
 }
@@ -112,7 +109,7 @@ void LedGridWidget::mousePressEvent(QMouseEvent* event) {
         iDragStartPosition = event->pos();
         iDragArea.setRect(0, 0, 0, 0);
 
-        clearLedSelection();
+        clearSelection();
     }
 }
 
@@ -130,7 +127,7 @@ void LedGridWidget::mouseMoveEvent(QMouseEvent* event) {
             bool selected = iDragArea.contains(iLedGridLayout->cellRect(i, j));
             bool wasSelected = led.isSelected();
             if((selected && !wasSelected) || (!selected && wasSelected)) {
-                led.select(selected);
+                select(led, selected);
             }
         }
 
@@ -149,31 +146,13 @@ void LedGridWidget::paintEvent(QPaintEvent *) {
 
     painter.setPen(Qt::DashLine);
     painter.drawRect(iDragArea);
-}
-
-// -------------------
-
-// TODO get rid
-
-LedGridContainerWidget::LedGridContainerWidget(QWidget* parent) :
-    QWidget(parent){
-
-    QSizePolicy policy = sizePolicy();
-    policy.setHorizontalStretch(0);
-    policy.setVerticalStretch(0);
-    setSizePolicy(policy);
-
-    // TODO sort the stretch out in mainwindo
-}
-
-// events -------------------------------------
-
-void LedGridContainerWidget::paintEvent(QPaintEvent *) {
-    QPainter painter(this);
 
     painter.setPen(Qt::black);
 
-    painter.drawRect(LED_GRID_BORDER, LED_GRID_BORDER, width() - LED_GRID_BORDER*2, height() - LED_GRID_BORDER*2);
+    painter.drawRect(BORDER,
+                     BORDER,
+                     width() - BORDER*2,
+                     height() - BORDER*2);
 }
 
-// ---------------------------------------------
+// -------------------

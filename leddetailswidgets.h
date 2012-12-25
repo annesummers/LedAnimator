@@ -11,6 +11,7 @@
 #include <QLabel>
 
 #include "ledwidgets.h"
+#include "selectablegroupwidget.h"
 
 class Led;
 
@@ -19,7 +20,7 @@ namespace Ui {
 class LedPositionWidget;
 class FrameListWidget;
 
-class LedDetailsListWidget : public LedContainerWidget {
+class LedDetailsListWidget : public SelectableGroupWidget {
     Q_OBJECT
 public:
     explicit LedDetailsListWidget(QWidget *parent, const Animation &animation);
@@ -43,7 +44,7 @@ class LedDetailsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit LedDetailsWidget(QWidget *parent, const Animation &animation, Led &led, LedContainerWidget& groupWidget);
+    explicit LedDetailsWidget(QWidget *parent, const Animation &animation, Led &led, SelectableGroupWidget& groupWidget);
 
     Led& led();
 

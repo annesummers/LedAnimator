@@ -27,6 +27,9 @@ signals:
 private slots:
     void initTestCase();
 
+    void init();
+    void cleanup();
+
     void constructor_data();
     void constructor();
 
@@ -36,9 +39,6 @@ private slots:
     void setCurrentColour_data();
     void setCurrentColour();
 
-    void colourChanged_data();
-    void colourChanged();
-
     void select_data();
     void select();
 
@@ -46,6 +46,7 @@ private slots:
 
 private:
     Engine*    iEngine;
+    Animation* iAnimation;
 };
 }
 

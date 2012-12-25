@@ -10,6 +10,8 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
+class Animation;
+
 namespace Test {
 
 class FrameTests : public QObject
@@ -23,6 +25,9 @@ private slots:
 
     void setColour_data();
     void setColour();
+
+private:
+    Animation* iAnimation;
 };
 }
 

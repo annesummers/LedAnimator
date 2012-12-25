@@ -10,9 +10,11 @@
 #include <QObject>
 #include <QColor>
 
-class Frame : public QObject
-{
+#include "selectable.h"
+
+class Frame : public Selectable {
     Q_OBJECT
+
 public:
     explicit Frame(QObject *parent);
     Frame(QObject* parent, QColor colour);
