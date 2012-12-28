@@ -54,34 +54,47 @@ void LedWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(led().isSelected() ? Qt::DashLine : Qt::NoPen);
+    painter.setPen(led().isSelected() ? Qt::black : Qt::lightGray);
     painter.setBrush(led().currentColour());
 
-    QRect rect(2, 2, width()-2, height()-2);
+    QRect rect(2, 2, width()-4, height()-4);
 
     painter.drawEllipse(rect);
+
+    QPainter painter2(this);
+    painter2.begin(&iPixmap);
+
+    painter2.setRenderHint(QPainter::Antialiasing);
+    painter2.setPen(led().isSelected() ? Qt::black : Qt::white);
+    painter2.setBrush(led().currentColour());
+
+    painter2.drawEllipse(rect);
+    painter2.end();
 }
 
 void LedWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-    if (!(event->buttons() & Qt::LeftButton)) {
+    qDebug("singleWidget mouseDoubleClick");
+    if (event->buttons() != Qt::LeftButton) {
         return;
     }
+
+    iSelectableGroup.select(*this, true);
 
     QColor colour = QColorDialog::getColor(Qt::white,
                                            this,
                                            "Select Color",
                                            QColorDialog::DontUseNativeDialog);
     if(colour.isValid()) {
-        Selectable* item = NULL;
+        SelectableWidget* item = NULL;
 
         foreach(item, iSelectableGroup.selectedItems()){
-            (static_cast<Led*>(item))->setCurrentColour(colour);
+            static_cast<Led&>(item->item()).setCurrentColour(colour);
         }
     }
 }
 
 void LedWidget::mouseMoveEvent(QMouseEvent *event) {
-    if (!(event->buttons() & Qt::LeftButton)) {
+    if (event->buttons() != Qt::LeftButton) {
         return;
     }
 
@@ -102,21 +115,7 @@ void LedWidget::mouseMoveEvent(QMouseEvent *event) {
      drag->setMimeData(mimeData);
      drag->setHotSpot(pos());
 
-     QPixmap pixmap;
-
-     QPainter painter(this);
-     painter.begin(&pixmap);
-
-     painter.setRenderHint(QPainter::Antialiasing);
-     painter.setPen(led().isSelected() ? Qt::DashLine : Qt::NoPen);
-     painter.setBrush(led().currentColour());
-
-     QRect rect(2, 2, width()-2, height()-2);
-
-     painter.drawEllipse(rect);
-     painter.end();
-
-     drag->setPixmap(pixmap);
+     drag->setPixmap(iPixmap);
 
      if (drag->exec(Qt::LinkAction, Qt::LinkAction) == Qt::LinkAction) {
          //qDebug(QString("Successfully dragged and dropped led %1,%2").arg(iLed.row()).arg(iLed.column()));

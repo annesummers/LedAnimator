@@ -17,65 +17,72 @@ using namespace Ui;
 AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation) :
     QWidget(parent),
     iAnimation(animation),
+    iFramesListX(0),
+    iFramesListWidth(0),
     iFrameSlider(NULL),
     added(5){
 
     setAcceptDrops(true);
 
     iFrameSlider = new QSlider(Qt::Horizontal, this);
-    iFrameSlider->setMinimum(1);  // frames are indexed from 1
-    iFrameSlider->resize(width(), SLIDER_HEIGHT);
+    iFrameSlider->setMinimum(INITIAL_FRAME);  // frames are indexed from 1
+    iFrameSlider->resize(width() - BORDER*2, SLIDER_HEIGHT);
 
     iLedDetailsList = new LedDetailsListWidget(this, animation);
     iLedDetailsList->move(iLedDetailsList->pos().x(), iLedDetailsList->pos().y() + SLIDER_HEIGHT);
-    iLedDetailsList->resize(width(), height() - SLIDER_HEIGHT);
+    iLedDetailsList->resize(width() - BORDER*2, height() - SLIDER_HEIGHT);
 
     connect(iFrameSlider, SIGNAL(valueChanged(int)), &animation, SLOT(setCurrentFrame(int)));
 
     connect(&animation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
-    ///connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(newLed(int, int)));
 }
 
 // slots -----------
 
 void AnimationDetailsWidget::currentFrameChanged(int currentFrame) {
     iFrameSlider->setValue(currentFrame);
+    update();
 }
 
 void AnimationDetailsWidget::numFramesChanged(int numFrames) {
     iFrameSlider->setMaximum(numFrames);
 }
-/*
-void AnimationDetailsWidget::newLed(int row, int column) {
-   if(added > 0){
-        iLedDetailsList->addLed(row, column);
-        added--;
-    }
-}*/
 
 // TODO this is bollocks
 void AnimationDetailsWidget::frameListPosition(int x, int width) {
-    iFrameSlider->move(x, iFrameSlider->y());
-    iFrameSlider->resize(width, iFrameSlider->height());
+    iFrameSlider->move(x-2, iFrameSlider->y());
+    iFrameSlider->resize(width+2, iFrameSlider->height());
+    iFramesListX = x;
+    iFramesListWidth = width;
 }
 
 // ----------------
 
 // events ---------
 
+void AnimationDetailsWidget::paintEvent(QPaintEvent *) {
+    if(iFramesListWidth > 0) {
+        int currentFrameIncrements = iFramesListWidth/(iAnimation.numFrames());
+        int currentFramePosition = (iAnimation.currentFrame() - 1)*currentFrameIncrements;
+
+        QPainter painter(this);
+        painter.setPen(Qt::black);
+        painter.drawLine(QPoint(currentFramePosition + (iFramesListX + currentFrameIncrements/2) + 2, iFrameSlider->height() - 8), QPoint(currentFramePosition + iFramesListX + currentFrameIncrements/2 + 2, height() - iFrameSlider->height() - 8));
+    }
+}
+
 void AnimationDetailsWidget::resizeEvent(QResizeEvent*) {
-    resize(parentWidget()->width(), parentWidget()->height());
+    resize(parentWidget()->width() - BORDER*2, parentWidget()->height());
 
     // slider must start from the start of the frames
-    iFrameSlider->resize(width() - BORDER*2, iFrameSlider->height());
-    iLedDetailsList->resize(width() - BORDER*2, height());
+    iFrameSlider->resize(width(), SLIDER_HEIGHT);
+    iLedDetailsList->resize(width(), height() - SLIDER_HEIGHT);
 }
 
 void AnimationDetailsWidget::dragEnterEvent(QDragEnterEvent* event) {
     if (event->mimeData()->hasFormat("application/x-leditemdata")) {
          if (event->source() != 0) {
-            // event->setDropAction(Qt::LinkAction);
              event->accept();
          }
      } else {
@@ -86,7 +93,6 @@ void AnimationDetailsWidget::dragEnterEvent(QDragEnterEvent* event) {
 void AnimationDetailsWidget::dragMoveEvent(QDragMoveEvent* event) {
     if (event->mimeData()->hasFormat("application/x-leditemdata")) {
         if (event->source() != 0) {
-            //event->setDropAction(Qt::LinkAction);
             event->accept();
         }
     } else {
@@ -102,8 +108,6 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
          int row;
          int column;
          dataStream >> row >> column;
-
-         //Led& led = iAnimation.ledAt(row, column);
 
          if (event->source() != 0) {
              event->setDropAction(Qt::LinkAction);

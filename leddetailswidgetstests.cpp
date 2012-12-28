@@ -6,6 +6,11 @@
 
 #include "leddetailswidgetstests.h"
 
+#include "engine.h"
+#include "animation.h"
+
+#include "defaults.h"
+
 using namespace Test;
 
 LedDetailsWidgetsTests::LedDetailsWidgetsTests(QObject *parent) :
@@ -18,7 +23,7 @@ void LedDetailsWidgetsTests::initTestCase() {
     iAnimation = new Animation(*iEngine);
     iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
 
-    QTest::mouseClick()
+   // QTest::mouseClick()
 }
 
 void LedDetailsWidgetsTests::listAddLed_data() {

@@ -18,11 +18,11 @@ class AnimationDetailsWidget : public QWidget {
 public:
     explicit AnimationDetailsWidget(QWidget* parent, Animation &animation);
 
+    void frameListPosition(int x, int width);
 private slots:
     //void newLed(int row, int column);
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
-    void frameListPosition(int x, int width);
 
 protected:
     void resizeEvent(QResizeEvent*);
@@ -30,9 +30,13 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event);
     void dropEvent(QDropEvent* event);
 
+    void paintEvent(QPaintEvent *);
+
 private:
     Animation&              iAnimation;
 
+    int iFramesListX;
+    int iFramesListWidth;
     QSlider*                iFrameSlider;
     LedDetailsListWidget*   iLedDetailsList;
 

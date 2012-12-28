@@ -21,6 +21,8 @@ class SelectableWidget : public QWidget {
 public:
     SelectableWidget(QWidget* parent, SelectableGroupWidget& groupWidget, Selectable& item);
 
+    Selectable& item() {return iItem; }
+
 protected slots:
     void selected() { update(); }
 

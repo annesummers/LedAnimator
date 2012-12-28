@@ -37,7 +37,12 @@ protected:
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent*);
 
+    void keyPressEvent(QKeyEvent *);
+
     void paintEvent(QPaintEvent*);
+
+    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    SelectableWidget& widgetAt(int row, int column);
 
 private:
     int gridWidth();
@@ -52,6 +57,7 @@ private:
 
     QPoint          iDragStartPosition;
     QRect           iDragArea;
+
 };
 }
 

@@ -35,6 +35,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
 
 private:
+    QPixmap iPixmap;
     void setColourToolTip();
 };
 }

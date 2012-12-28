@@ -17,16 +17,30 @@ void LedAnimCodecTests::initTestCase() {
     QCOMPARE(true, true);
 }
 
-void LedAnimCodecTests::readAnimation_data() {
+void LedAnimCodecTests::readByteArrayAnimation_data() {
 }
 
-void LedAnimCodecTests::readAnimation() {
+void LedAnimCodecTests::readByteArrayAnimation() {
     QCOMPARE(true, true);
 }
 
-void LedAnimCodecTests::writeAnimation_data() {
+void LedAnimCodecTests::writeByteArrayAnimation_data() {
 }
 
-void LedAnimCodecTests::writeAnimation() {
+void LedAnimCodecTests::writeByteArrayAnimation() {
+    QCOMPARE(true, true);
+}
+
+void LedAnimCodecTests::readStringAnimation_data() {
+}
+
+void LedAnimCodecTests::readStringAnimation() {
+    QCOMPARE(true, true);
+}
+
+void LedAnimCodecTests::writeStringAnimation_data() {
+}
+
+void LedAnimCodecTests::writeStringAnimation() {
     QCOMPARE(true, true);
 }

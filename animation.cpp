@@ -67,7 +67,7 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames) {
 
     for(int i = 0; i < numRows; i++) {
         for(int j = 0; j < numColumns; j++) {
-            led = new Led(this, *this, j, i);
+            led = new Led(this, *this, i, j);
             iLeds.append(led);
 
             emit newLed(i, j);
@@ -135,7 +135,6 @@ void Animation::setCurrentFrame(int frame) {
 void Animation::setFrameFrequency(int frameFrequency) {
     iFrameFrequency = frameFrequency;
 }
-
 
 // slots --------
 

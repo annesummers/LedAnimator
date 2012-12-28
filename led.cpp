@@ -76,8 +76,6 @@ void Led::numFramesChanged(int numFrames) {
     }
 
     connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
-
-    // TODO hmm, more elegant, probably slower though
 }
 
 void Led::colourChanged(int frameNum) {

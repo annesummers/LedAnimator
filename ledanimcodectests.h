@@ -21,11 +21,17 @@ public:
 private slots:
     void initTestCase();
 
-    void readAnimation_data();
-    void readAnimation();
+    void readByteArrayAnimation_data();
+    void readByteArrayAnimation();
 
-    void writeAnimation_data();
-    void writeAnimation();
+    void writeByteArrayAnimation_data();
+    void writeByteArrayAnimation();
+
+    void readStringAnimation_data();
+    void readStringAnimation();
+
+    void writeStringAnimation_data();
+    void writeStringAnimation();
 };
 }
 

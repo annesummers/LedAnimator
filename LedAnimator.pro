@@ -26,7 +26,8 @@ CONFIG(testing) {
         framewidgettests.cpp \
         ledanimcodectests.cpp \
         animationdetailswidgettest.cpp \
-        leddetailswidgetstests.cpp
+        leddetailswidgetstests.cpp \
+        selectabletests.cpp
 
     HEADERS += \
         test.h \
@@ -40,7 +41,8 @@ CONFIG(testing) {
         framewidgettests.h \
         ledanimcodectests.h \
         animationdetailswidgettest.h \
-        leddetailswidgetstests.h
+        leddetailswidgetstests.h \
+        selectabletests.h
 
 } else {
     TARGET = LedAnimator

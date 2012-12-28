@@ -12,10 +12,18 @@
 
 namespace Test {
 
-class LedGridWidgetTests : public QObject
-{
+class LedGridWidgetTests : public QObject {
+    Q_OBJECT
+
 public:
-    LedGridWidgetTests();
+    LedGridWidgetTests(QObject *parent = 0);
+
+private slots:
+    void selectSingleLed_data();
+    void selectSingleLed();
+
+    void selectMultipleLeds_data();
+    void selectMultipleLeds();
 };
 }
 

@@ -10,6 +10,9 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
+class Engine;
+class Animation;
+
 namespace Test {
 
 class LedDetailsWidgetsTests : public QObject

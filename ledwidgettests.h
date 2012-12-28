@@ -19,8 +19,6 @@ public:
     explicit LedWidgetTests(QObject *parent = 0);
     
 private slots:
-
-    // TODO all event driven
     
 };
 }

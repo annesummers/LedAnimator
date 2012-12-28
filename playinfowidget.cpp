@@ -7,6 +7,8 @@
 #include "playinfowidget.h"
 #include "animation.h"
 
+#include "defaults.h"
+
 #include <QtDebug>
 
 using namespace Ui;
@@ -52,7 +54,7 @@ void PlayInfoWidget::playClicked() {
 }
 
 void PlayInfoWidget::firstClicked() {
-    iAnimation.setCurrentFrame(0);
+    iAnimation.setCurrentFrame(INITIAL_FRAME);
 }
 
 void PlayInfoWidget::currentFrameChanged(int currentFrame) {

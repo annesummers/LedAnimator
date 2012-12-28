@@ -8,6 +8,6 @@
 
 using namespace Test;
 
-LedGridWidgetTests::LedGridWidgetTests()
+LedGridWidgetTests::LedGridWidgetTests(QObject *parent)
 {
 }

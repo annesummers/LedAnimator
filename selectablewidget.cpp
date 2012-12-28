@@ -22,15 +22,21 @@ SelectableWidget::SelectableWidget(QWidget* parent, SelectableGroupWidget &group
 }
 
 void SelectableWidget::mousePressEvent(QMouseEvent* event) {
+    qDebug("singleWidget mousePress");
     if (event->button() == Qt::LeftButton) {
+
         if((QApplication::keyboardModifiers() & Qt::ControlModifier) != 0) {
-
-             iSelectableGroup.select(iItem, !iItem.isSelected());
-
-        } else {
-            iDragStartPosition = event->pos();
-
-            iSelectableGroup.selectOne(iItem);
+             iSelectableGroup.select(*this, !iItem.isSelected());
+             return;
         }
+
+        if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
+            iSelectableGroup.selectArea(*this);
+            return;
+        }
+
+        iDragStartPosition = event->pos();
+
+        iSelectableGroup.selectOne(*this);
     }
 }

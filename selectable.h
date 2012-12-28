@@ -9,9 +9,9 @@
 
 #include <QObject>
 
-class Selectable : public QObject
-{
+class Selectable : public QObject {
     Q_OBJECT
+
 public:
     explicit Selectable(QObject *parent = 0);
 

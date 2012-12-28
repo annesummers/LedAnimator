@@ -58,10 +58,10 @@ void LedTests::constructor() {
     Led* led = NULL;
 
     try {
-        iAnimation = new Animation(*(iEngine));
+        //iAnimation = new Animation(*(iEngine));
         iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
 
-        led = new Led(animation, *animation, row, column);
+        led = new Led(iAnimation, *iAnimation, row, column);
 
         QCOMPARE(led->row(), row);
         QCOMPARE(led->column(), column);
@@ -95,7 +95,7 @@ void LedTests::numFramesChanged() {
 
     try {
         iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
-        Led& led = animation->ledAt(0, 0);
+        Led& led = iAnimation->ledAt(0, 0);
 
         led.numFramesChanged(numFrames); // should always throw an exception
 
@@ -150,7 +150,7 @@ void LedTests::setCurrentColour() {
             led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
         }
 
-        QSignalSpy colourSpy(&(led->frameAt(animation->currentFrame())), SIGNAL(colourChanged()));
+        QSignalSpy colourSpy(&(led->frameAt(iAnimation->currentFrame())), SIGNAL(colourChanged()));
         QSignalSpy currentColourSpy(led, SIGNAL(currentColourChanged()));
 
         led->setCurrentColour(colour);

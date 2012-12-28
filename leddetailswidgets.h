@@ -28,10 +28,15 @@ public:
     void addLed(int row, int column);
 
 protected:
+    SelectableWidget& widgetAt(int row, int column);
+    void getWidgetPosition(SelectableWidget &widget, int *row, int *column);
+
     void resizeEvent(QResizeEvent *);
+    void paintEvent(QPaintEvent *);
     Led& ledAt(int index);
 
     int count();
+
 
 private:
     const Animation&    iAnimation;
@@ -49,7 +54,10 @@ public:
     Led& led();
 
 protected:
+    void paintEvent(QPaintEvent *);
     void resizeEvent(QResizeEvent *);
+private slots:
+    void framesListResized(int x, int frame);
 
 private:
     QLabel*             iPositionLabel;
