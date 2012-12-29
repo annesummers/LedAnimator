@@ -28,8 +28,8 @@ protected slots:
 
 protected:
     void mousePressEvent(QMouseEvent* event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
-    QPoint                  iDragStartPosition;
     SelectableGroupWidget&  iSelectableGroup;
 
     Selectable&             iItem;

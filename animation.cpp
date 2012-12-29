@@ -8,7 +8,7 @@
 
 #include "led.h"
 #include "mainwindow.h"
-#include "ledwidgets.h"
+#include "ledwidget.h"
 
 #include "defaults.h"
 #include "exceptions.h"

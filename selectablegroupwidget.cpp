@@ -11,7 +11,9 @@
 #include "selectable.h"
 
 #include "defaults.h"
+#include "exceptions.h"
 
+using namespace Exception;
 using namespace Ui;
 
 SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int maxRow, int maxColumn) :
@@ -70,6 +72,24 @@ void SelectableGroupWidget::selectOne(SelectableWidget &selectable) {
 }
 
 void SelectableGroupWidget::setFirstSelected(int row, int column) {
+#ifndef NDEBUG
+    if(row < 0) {
+        throw IllegalArgumentException("Row is negative");
+    }
+
+    if(row > iMaxRow) {
+        throw IllegalArgumentException("Row is greater than number of rows");
+    }
+
+    if(column < 0) {
+        throw IllegalArgumentException("Column is negative");
+    }
+
+    if(column >= iMaxColumn) {
+        throw IllegalArgumentException("Column is greater than number of columns");
+    }
+#endif
+
     iFirstSelectedRow = row;
     iFirstSelectedColumn = column;
 
@@ -90,20 +110,47 @@ void SelectableGroupWidget::selectArea(SelectableWidget& widget) {
     }
 }
 
-void SelectableGroupWidget::selectRight(int column) {
+void SelectableGroupWidget::selectDirection(int direction) {
+    switch(direction) {
+    case Qt::Key_Up:
+        selectUp();
+        break;
+    case Qt::Key_Down:
+        selectDown();
+        break;
+    case Qt::Key_Left:
+        selectLeft();
+        break;
+    case Qt::Key_Right:
+        selectRight();
+        break;
+    }
+}
+
+void SelectableGroupWidget::selectRight() {
     if(iFirstSelectedRow == INVALID ||
        iFirstSelectedColumn == INVALID) {
         return;
     }
 
-    if(iFirstSelectedColumn <= column) {
+    bool selecting = false;
+
+    if(iFirstSelectedColumn == iSelectedRightColumn &&
+       iFirstSelectedColumn == iSelectedLeftColumn) {
+            // selecting right
+            selecting = true;
+    }
+
+    if(iFirstSelectedColumn < iSelectedRightColumn) {
         // selecting right
+        selecting = true;
+    }
+
+    if(selecting) {
         iSelectedLeftColumn = iFirstSelectedColumn;
 
-        if(column + 1 < iMaxColumn) {
-            iSelectedRightColumn = column + 1;
-        } else {
-            iSelectedRightColumn = column;
+        if(iSelectedRightColumn + 1 < iMaxColumn) {
+            iSelectedRightColumn++;
         }
 
         selectArea(iSelectedTopRow,
@@ -112,7 +159,7 @@ void SelectableGroupWidget::selectRight(int column) {
                    iSelectedRightColumn);
     } else {
         // unselecting right
-        iSelectedLeftColumn = column + 1;
+        iSelectedLeftColumn++;
         iSelectedRightColumn = iFirstSelectedColumn;
 
         selectArea(iSelectedTopRow,
@@ -122,18 +169,27 @@ void SelectableGroupWidget::selectRight(int column) {
     }
 }
 
-void SelectableGroupWidget::selectLeft(int column) {
+void SelectableGroupWidget::selectLeft() {
     if(iFirstSelectedRow == INVALID ||
        iFirstSelectedColumn == INVALID) {
         return;
     }
 
-    if(iFirstSelectedColumn >= column) {
+    bool selecting = false;
+
+    if(iFirstSelectedColumn == iSelectedLeftColumn &&
+       iFirstSelectedColumn == iSelectedRightColumn) {
+            selecting = true;
+    }
+
+    if(iFirstSelectedColumn > iSelectedLeftColumn) {
+        selecting = true;
+    }
+
+    if(selecting) {
         // selecting left
-        if(column - 1 >= 0) {
-            iSelectedLeftColumn = column - 1;
-        } else {
-            iSelectedLeftColumn = column;
+        if(iSelectedLeftColumn - 1 >= 0) {
+            iSelectedLeftColumn--;
         }
 
         iSelectedRightColumn = iFirstSelectedColumn;
@@ -144,8 +200,8 @@ void SelectableGroupWidget::selectLeft(int column) {
                    iSelectedLeftColumn);
     } else {
         // unselecting left
-        iSelectedLeftColumn = column - 1;
-        iSelectedRightColumn = iFirstSelectedColumn;
+        iSelectedRightColumn--;
+        iSelectedLeftColumn = iFirstSelectedColumn;
 
         selectArea(iSelectedTopRow,
                    iSelectedBottomRow,
@@ -154,18 +210,24 @@ void SelectableGroupWidget::selectLeft(int column) {
     }
 }
 
-void SelectableGroupWidget::selectUp(int row) {
+void SelectableGroupWidget::selectUp() {
     if(iFirstSelectedRow == INVALID ||
        iFirstSelectedColumn == INVALID) {
         return;
     }
 
-    if(iFirstSelectedRow >= row) {
+    bool selecting = false;
+
+    if((iFirstSelectedRow == iSelectedTopRow &&
+        iFirstSelectedRow == iSelectedBottomRow) ||
+        iFirstSelectedRow > iSelectedTopRow) {
+        selecting = true;
+    }
+
+    if(selecting) {
         // selecting up
-        if(row - 1 >= 0) {
-            iSelectedTopRow = row - 1;
-        } else {
-            iSelectedTopRow = 0;
+        if(iSelectedTopRow - 1 >= 0) {
+            iSelectedTopRow --;
         }
 
         iSelectedBottomRow = iFirstSelectedRow;
@@ -176,8 +238,8 @@ void SelectableGroupWidget::selectUp(int row) {
                    iSelectedRightColumn);
     } else {
         // unselecting up
-        iSelectedTopRow = row - 1;
-        iSelectedBottomRow = iFirstSelectedRow;
+        iSelectedBottomRow--;
+        iSelectedTopRow = iFirstSelectedRow;
 
         selectArea(iSelectedBottomRow,
                    iSelectedTopRow,
@@ -186,20 +248,26 @@ void SelectableGroupWidget::selectUp(int row) {
     }
 }
 
-void SelectableGroupWidget::selectDown(int row) {
+void SelectableGroupWidget::selectDown() {
     if(iFirstSelectedRow == INVALID ||
        iFirstSelectedColumn == INVALID) {
         return;
     }
 
-    if(iFirstSelectedRow <= row) {
+    bool selecting = false;
+
+    if((iFirstSelectedRow == iSelectedTopRow &&
+        iFirstSelectedRow == iSelectedBottomRow) ||
+        iFirstSelectedRow < iSelectedBottomRow) {
+        selecting = true;
+    }
+
+    if(selecting) {
         // selecting down
         iSelectedTopRow = iFirstSelectedRow;
 
-        if(row + 1 < iMaxRow) {
-            iSelectedBottomRow = row + 1;
-        } else {
-            iSelectedBottomRow = row;
+        if(iSelectedBottomRow + 1 < iMaxRow) {
+            iSelectedBottomRow++;
         }
 
         selectArea(iSelectedTopRow,
@@ -209,8 +277,8 @@ void SelectableGroupWidget::selectDown(int row) {
 
     } else {     
         // unselecting down
-        iSelectedTopRow = row + 1;
         iSelectedBottomRow = iFirstSelectedRow;
+        iSelectedTopRow++;
 
         selectArea(iSelectedBottomRow,
                    iSelectedTopRow,

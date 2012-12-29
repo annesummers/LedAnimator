@@ -6,7 +6,7 @@
 
 #include "led.h"
 
-#include "ledwidgets.h"
+#include "ledwidget.h"
 #include "frame.h"
 #include "animation.h"
 

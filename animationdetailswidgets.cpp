@@ -81,8 +81,9 @@ void AnimationDetailsWidget::resizeEvent(QResizeEvent*) {
 }
 
 void AnimationDetailsWidget::dragEnterEvent(QDragEnterEvent* event) {
-    if (event->mimeData()->hasFormat("application/x-leditemdata")) {
+    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
          if (event->source() != 0) {
+             event->setDropAction(Qt::LinkAction);
              event->accept();
          }
      } else {
@@ -91,8 +92,9 @@ void AnimationDetailsWidget::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void AnimationDetailsWidget::dragMoveEvent(QDragMoveEvent* event) {
-    if (event->mimeData()->hasFormat("application/x-leditemdata")) {
+    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
         if (event->source() != 0) {
+            event->setDropAction(Qt::LinkAction);
             event->accept();
         }
     } else {
@@ -101,8 +103,8 @@ void AnimationDetailsWidget::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
-     if (event->mimeData()->hasFormat("application/x-leditemdata")) {
-         QByteArray itemData = event->mimeData()->data("application/x-leditemdata");
+     if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
+         QByteArray itemData = event->mimeData()->data(LED_MIME_TYPE);
          QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
          int row;

@@ -10,32 +10,34 @@
 #include <QtGui>
 
 #include "led.h"
-#include "selectablewidget.h"
+#include "draggablewidget.h"
 
 namespace Ui {
 
 class SelectableGroupWidget;
 
-class LedWidget : public SelectableWidget {
+class LedWidget : public DragDropColourWidget {
     Q_OBJECT
 
 public:
     explicit LedWidget(QWidget* parent, const Animation &animation, SelectableGroupWidget& ledGroup, Led& led);
 
-    Led &led() const { return static_cast<Led&>(iItem); }
+    inline Led &led() const { return static_cast<Led&>(iItem); }
     
 private slots:
     void    ledColourChanged();
-
     void    currentFrameChanged(int currentFrame);
 
 protected:
-    void paintEvent(QPaintEvent* event);
-    void mouseDoubleClickEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+
+    inline Qt::DropAction dropAction() const { return Qt::LinkAction; }
+    const QByteArray mimeData() const;
+    inline QString mimeType() const { return LED_MIME_TYPE; }
+    void handleMimeData(QByteArray itemData);
 
 private:
-    QPixmap iPixmap;
     void setColourToolTip();
 };
 }

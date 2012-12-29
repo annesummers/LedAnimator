@@ -12,7 +12,7 @@
 #include <QPoint>
 #include <QRect>
 
-#include "ledwidgets.h"
+#include "ledwidget.h"
 #include "selectablegroupwidget.h"
 
 class Led;

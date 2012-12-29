@@ -4,9 +4,10 @@
 #include <QWidget>
 #include <QSlider>
 
-#include "ledwidgets.h"
+//#include "ledwidget.h"
 
 class Led;
+class Animation;
 
 namespace Ui {
 
@@ -20,7 +21,6 @@ public:
 
     void frameListPosition(int x, int width);
 private slots:
-    //void newLed(int row, int column);
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
 

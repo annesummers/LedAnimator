@@ -10,6 +10,7 @@
 #include "ledanimcodectests.h"
 #include "leddetailswidgetstests.h"
 #include "frametests.h"
+#include "selectabletests.h"
 
 using namespace Test;
 
@@ -21,7 +22,7 @@ int main(int argc, char **argv) {
     FrameTests tc3;
     LedTests tc4;
     LedAnimCodecTests tc5;
-    LedDetailsWidgetsTests tc6;
+    SelectableTests tc6;
 
     return QTest::qExec(&tc1, argc, argv) ||
            QTest::qExec(&tc2, argc, argv) ||

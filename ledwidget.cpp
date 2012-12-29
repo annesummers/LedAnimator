@@ -4,7 +4,7 @@
 **                                  **
 **************************************/
 
-#include "ledwidgets.h"
+#include "ledwidget.h"
 
 #include "led.h"
 #include "ledgridwidget.h"
@@ -17,14 +17,12 @@
 using namespace Ui;
 
 LedWidget::LedWidget(QWidget* parent, const Animation& animation, SelectableGroupWidget& ledGroup, Led& led)  :
-    SelectableWidget(parent, ledGroup, led) {
-
-    setAcceptDrops(false);
+    DragDropWidget(parent, ledGroup, led) {
 
     QObject::connect(&led, SIGNAL(currentColourChanged()), this, SLOT(ledColourChanged()));
     QObject::connect(&led, SIGNAL(selected()), this, SLOT(selected()));
 
-    QObject::connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
+    QObject::connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(ledColurChanged()));
 }
 
 void LedWidget::setColourToolTip() {
@@ -54,23 +52,50 @@ void LedWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
     painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(led().isSelected() ? Qt::black : Qt::lightGray);
+    painter.setPen(led().isSelected() ? Qt::white : Qt::lightGray);
     painter.setBrush(led().currentColour());
 
     QRect rect(2, 2, width()-4, height()-4);
 
     painter.drawEllipse(rect);
 
-    QPainter painter2(this);
-    painter2.begin(&iPixmap);
+    if(led().isSelected()) {
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(Qt::DashLine);
+        painter.drawEllipse(rect);
 
-    painter2.setRenderHint(QPainter::Antialiasing);
-    painter2.setPen(led().isSelected() ? Qt::black : Qt::white);
-    painter2.setBrush(led().currentColour());
-
-    painter2.drawEllipse(rect);
-    painter2.end();
+        QRect rect2(3, 3, width()-5, height()-5);
+        painter.setPen(Qt::white);
+        painter.drawEllipse(rect2);
+        painter.setPen(Qt::DashLine);
+        painter.drawEllipse(rect2);
+    }
 }
+
+// from DraggableWidget -----------------------
+
+const QByteArray LedWidget::dragData() const {
+    QByteArray itemData;
+    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+
+    dataStream << led().row() << led().column() << led().currentColour();
+
+    return itemData;
+}
+
+void LedWidget::handleDragData(QByteArray itemData) {
+    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+
+    int row;
+    int column;
+    QColor colour;
+
+    dataStream >> row >> column >> colour;
+
+    led().setCurrentColour(colour);
+}
+
+// events ------------------------------------
 
 void LedWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     qDebug("singleWidget mouseDoubleClick");
@@ -93,33 +118,4 @@ void LedWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     }
 }
 
-void LedWidget::mouseMoveEvent(QMouseEvent *event) {
-    if (event->buttons() != Qt::LeftButton) {
-        return;
-    }
 
-    if ((event->pos() - iDragStartPosition).manhattanLength()
-             < QApplication::startDragDistance()) {
-       return;
-    }
-
-    QByteArray itemData;
-    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-
-    dataStream << led().row() << led().column();
-
-     QMimeData *mimeData = new QMimeData;
-     mimeData->setData("application/x-leditemdata", itemData);
-
-     QDrag *drag = new QDrag(this);
-     drag->setMimeData(mimeData);
-     drag->setHotSpot(pos());
-
-     drag->setPixmap(iPixmap);
-
-     if (drag->exec(Qt::LinkAction, Qt::LinkAction) == Qt::LinkAction) {
-         //qDebug(QString("Successfully dragged and dropped led %1,%2").arg(iLed.row()).arg(iLed.column()));
-     } else {
-         //qDebug(QString("Wrong! led %1,%2").arg(iLed.row()).arg(iLed.column()));
-     }
-}

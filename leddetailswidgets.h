@@ -10,7 +10,7 @@
 #include <QWidget>
 #include <QLabel>
 
-#include "ledwidgets.h"
+#include "ledwidget.h"
 #include "selectablegroupwidget.h"
 
 class Led;

@@ -8,7 +8,7 @@
 
 #include "ui_mainwindow.h"
 #include "led.h"
-#include "ledwidgets.h"
+#include "ledwidget.h"
 #include "ledgridwidget.h"
 #include "playinfowidget.h"
 #include "engine.h"

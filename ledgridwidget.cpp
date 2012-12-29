@@ -6,7 +6,7 @@
 
 #include "ledgridwidget.h"
 
-#include "ledwidgets.h"
+#include "ledwidget.h"
 #include "mainwindow.h"
 
 #include "defaults.h"
@@ -112,7 +112,7 @@ SelectableWidget& LedGridWidget::widgetAt(int row, int column) {
     }
 
     if(row >= maxRow()) {
-        throw IllegalArgumentException("Row is greater than maximum rows");
+        throw IllegalArgumentException("Row is greater than number of rows");
     }
 
     if(column < 0) {
@@ -120,12 +120,11 @@ SelectableWidget& LedGridWidget::widgetAt(int row, int column) {
     }
 
     if(column >= maxColumn()) {
-        throw IllegalArgumentException("Column is greater than maximum columns");
+        throw IllegalArgumentException("Column is greater than number of columns");
     }
 
     return static_cast<SelectableWidget&>(*(iLedGridLayout->itemAtPosition(row, column)->widget()));
 }
-
 
 // events --------------
 
@@ -162,7 +161,6 @@ void LedGridWidget::mouseMoveEvent(QMouseEvent* event) {
 
     iDragArea.setTopLeft(iDragStartPosition);
     iDragArea.setBottomRight(event->pos());
-
 
     int positionStartColumn = iDragStartPosition.x()/iLedGridLayout->columnMinimumWidth(0);
     int positionStartRow = iDragStartPosition.y()/iLedGridLayout->rowMinimumHeight(0);
@@ -202,8 +200,6 @@ void LedGridWidget::mouseMoveEvent(QMouseEvent* event) {
         positionStartRow = maxRow() - 1;
     }
 
-    //selectArea(positionStartRow, positionEndRow, positionStartColumn, positionEndColumn);*/
-
     selectOne(static_cast<SelectableWidget&>(*iLedGridLayout->itemAtPosition(positionStartRow, positionStartColumn)->widget()));
     selectArea(static_cast<SelectableWidget&>(*iLedGridLayout->itemAtPosition(positionEndRow, positionEndColumn)->widget()));
 }
@@ -232,15 +228,7 @@ void LedGridWidget::keyPressEvent(QKeyEvent *event) {
                                                             &row,
                                                             &column);
 
-                if(event->key() == Qt::Key_Right) {
-                    selectRight(column);
-                } else if(event->key() == Qt::Key_Left) {
-                    selectLeft(column);
-                } else if(event->key() == Qt::Key_Up) {
-                    selectUp(row);
-                } else if(event->key() == Qt::Key_Down) {
-                    selectDown(row);
-                }
+                selectDirection(event->key());
             }
         }
     }
@@ -253,6 +241,7 @@ void LedGridWidget::paintEvent(QPaintEvent *) {
     painter.drawRect(iDragArea);
 
     painter.setPen(Qt::black);
+    //painter.setBrush(Qt::darkGray);
 
     painter.drawRect(BORDER,
                      BORDER,

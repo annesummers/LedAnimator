@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QtTest/QtTest>
+#include <QVector>
+#include <QList>
 
 #include "selectable.h"
 #include "selectablewidget.h"
@@ -10,9 +12,33 @@
 
 using namespace Ui;
 
+typedef QList<QPoint> PointList;
+Q_DECLARE_METATYPE ( PointList )
+
+typedef QList<int> IntList;
+Q_DECLARE_METATYPE ( IntList )
+
 namespace Test {
 
 const int MAX_TEST_WIDGETS = 4;
+
+template <class type>
+class Q2DVector : public QVector< QVector<type> > {
+    public:
+        Q2DVector() : QVector< QVector<type> >(){}
+        Q2DVector(int rows, int columns) : QVector< QVector<type> >(rows) {
+            for(int r=0; r<rows; r++) {
+                this[r].resize(columns);
+            }
+        }
+        virtual ~Q2DVector() {}
+};
+
+//typedef Q2DVector<SelectableWidget*> WidgetVector;
+
+typedef QVector<SelectableWidget*> WidgetVector;
+
+//typedef QVector<WidgetVector> 2DWidgetVector;
 
 class SelectableTestObject : public Selectable {
     Q_OBJECT
@@ -28,14 +54,14 @@ class SelectableGroupTestWidget : public SelectableGroupWidget {
     Q_OBJECT
 
 public:
-    SelectableGroupTestWidget(QWidget *parent, int minRow, int maxRow, int minColumn, int maxColumn);
+    SelectableGroupTestWidget(QWidget *parent, int maxRow, int maxColumn);
 
     SelectableWidget& widgetAt(int row, int column);
     virtual void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
 
-    QList<QList*>  iWidgetArray;
+    QVector<WidgetVector*>*  iWidgetArray;
 
-private:
+    inline void selectDirection(int direction) { selectDirection(direction); }
 };
 
 class SelectableTests : public QObject {
@@ -56,6 +82,8 @@ private slots:
 
     void selectArea_data();
     void selectArea();
+
+    void compareSelected(SelectableGroupTestWidget* groupWidget, QList<SelectableWidget*> selected, QList<QPoint> selectedPoints);
 };
 }
 

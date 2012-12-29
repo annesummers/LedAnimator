@@ -33,10 +33,7 @@ protected:
 
     void clearSelection();
 
-    void selectRight(int column);
-    void selectLeft(int column);
-    void selectUp(int row);
-    void selectDown(int row);
+    void selectDirection(int direction);
 
     inline int maxRow() const { return iMaxRow; }
     inline int maxColumn () const { return iMaxColumn; }
@@ -47,6 +44,11 @@ protected:
 private:
     void setFirstSelected(int row, int column);
     void selectArea(int rowStart, int rowEnd, int columnStart, int columnEnd);
+
+    void selectRight();
+    void selectLeft();
+    void selectUp();
+    void selectDown();
 
     int iMaxRow;
     int iMaxColumn;

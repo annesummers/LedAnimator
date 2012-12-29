@@ -1,20 +1,10 @@
-/*************************************
-**                                  **
-** Copyright (C) 2012 Anne Summers  **
-**                                  **
-**************************************/
-
-#ifndef FRAMEWIDGET_H
-#define FRAMEWIDGET_H
+#ifndef FRAMELISTWIDGET_H
+#define FRAMELISTWIDGET_H
 
 #include <QtGui>
-#include <QHBoxLayout>
 
 #include "selectablegroupwidget.h"
-#include "selectablewidget.h"
-#include "frame.h"
 
-class Frame;
 class Led;
 class Animation;
 
@@ -48,28 +38,10 @@ protected:
     void dropEvent(QDropEvent* event);
 
 private:
-    //QHBoxLayout*  iFramesList;
     QList<FrameWidget*> iFramesList;
 
     const Led& iLed;
 };
-
-class FrameWidget : public SelectableWidget {
-    Q_OBJECT
-
-public:
-    explicit FrameWidget(QWidget* parent, SelectableGroupWidget &frameGroup, Frame& frame);
-
-private slots:
-    inline Frame& frame() const { return dynamic_cast<Frame&>(iItem); }
-
-    void frameColourChanged();
-
-protected:
-    void paintEvent(QPaintEvent *);
-    void mouseDoubleClickEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent *event) {}
-};
 }
 
-#endif // FRAMEWIDGET_H
+#endif // FRAMELISTWIDGET_H

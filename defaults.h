@@ -41,4 +41,7 @@ const QString COMPANY_DOMAIN = "com.onebadmouse";
 const QString SETTINGS_USER_CURRENT_ANIM = "user/currentAnim";
 const QString SETTINGS_MAIN_WINDOW = "MainWindow";
 
+const QString LED_MIME_TYPE = "ledanimator/x-leditemdata";
+const QString FRAME_MIME_TYPE = "ledanimator/x-frameitemdata";
+
 #endif // DEFAULTS_H
