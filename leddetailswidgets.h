@@ -11,51 +11,55 @@
 #include <QLabel>
 
 #include "ledwidget.h"
-#include "selectablegroupwidget.h"
+#include "colourgroupwidget.h"
+#include "colourgroupgroupwidget.h"
 
-class Led;
+//class Led;
 
 namespace Ui {
 
 class LedPositionWidget;
 class FrameListWidget;
+class LedDetailsSelectorGroupWidget;
 
-class LedDetailsListWidget : public SelectableGroupWidget {
+class LedDetailsListWidget : public ColourGroupGroupWidget {
     Q_OBJECT
+
 public:
     explicit LedDetailsListWidget(QWidget *parent, const Animation &animation);
 
     void addLed(int row, int column);
-
-protected:
-    SelectableWidget& widgetAt(int row, int column);
-    void getWidgetPosition(SelectableWidget &widget, int *row, int *column);
-
-    void resizeEvent(QResizeEvent *);
-    void paintEvent(QPaintEvent *);
-    Led& ledAt(int index);
+    LedWidget& selectorWidgetAt(int index);
 
     int count();
 
+protected:
+    void resizeEvent(QResizeEvent *);
+    void paintEvent(QPaintEvent *);
 
 private:
     const Animation&    iAnimation;
 
-    QList<Led*>         iShownLeds;
-    QVBoxLayout*        iLedDetailsList;
+    QList<Led*>                     iShownLeds;
+    QVBoxLayout*                    iLedDetailsList;
+    LedDetailsSelectorGroupWidget*   iSelectorGroupWidget;
 };
 
-class LedDetailsWidget : public QWidget
-{
+class LedDetailsWidget : public QWidget {
     Q_OBJECT
+
 public:
-    explicit LedDetailsWidget(QWidget *parent, const Animation &animation, Led &led, SelectableGroupWidget& groupWidget);
+    explicit LedDetailsWidget(QWidget *parent, const Animation &animation, Led &led, ColourGroupWidget& groupWidget);
 
     Led& led();
+
+    LedWidget& selectorWidget() { return *iCurrentFrameWidget; }
+    FrameListWidget& framesListWidget() { return *iFramesListWidget; }
 
 protected:
     void paintEvent(QPaintEvent *);
     void resizeEvent(QResizeEvent *);
+
 private slots:
     void framesListResized(int x, int frame);
 
@@ -65,6 +69,20 @@ private:
     FrameListWidget*    iFramesListWidget;
 
     int iFramesWidgetWidth;
+};
+
+class LedDetailsSelectorGroupWidget : public ColourGroupWidget {
+    Q_OBJECT
+
+public:
+    explicit LedDetailsSelectorGroupWidget(LedDetailsListWidget &parent);
+
+protected:
+    ColourWidget& widgetAt(int row, int column);
+    void getWidgetPosition(ColourWidget &widget, int *row, int *column);
+
+private:
+    LedDetailsListWidget& iDetailsList;
 };
 }
 

@@ -27,7 +27,7 @@ CONFIG(testing) {
         ledanimcodectests.cpp \
         animationdetailswidgettest.cpp \
         leddetailswidgetstests.cpp \
-        selectabletests.cpp
+        colourwidgettests.cpp
 
     HEADERS += \
         test.h \
@@ -42,7 +42,7 @@ CONFIG(testing) {
         ledanimcodectests.h \
         animationdetailswidgettest.h \
         leddetailswidgetstests.h \
-        selectabletests.h
+        colourwidgettests.h
 
 } else {
     TARGET = LedAnimator
@@ -74,12 +74,14 @@ HEADERS += \
     animationdetailswidgets.h \
     animatorapplication.h \
     selectable.h \
-    selectablegroupwidget.h \
-    selectablewidget.h \
-    draggablewidget.h \
     ledwidget.h \
     framewidget.h \
-    framelistwidget.h
+    framelistwidget.h \
+    fadecalculator.h \
+    gammacorrect.h \
+    colourgroupwidget.h \
+    colourgroupgroupwidget.h \
+    colourwidget.h
 
 SOURCES += \
     animatorbase.cpp \
@@ -96,11 +98,12 @@ SOURCES += \
     animationdetailswidgets.cpp \
     animatorapplication.cpp \
     selectable.cpp \
-    selectablegroupwidget.cpp \
-    selectablewidget.cpp \
-    draggablewidget.cpp \
     ledwidget.cpp \
     framewidget.cpp \
-    framelistwidget.cpp
+    framelistwidget.cpp \
+    fadecalculator.cpp \
+    colourgroupwidget.cpp \
+    colourwidget.cpp \
+    colourgroupgroupwidget.cpp
 
 

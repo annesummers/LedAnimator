@@ -7,8 +7,8 @@
 #include <QList>
 
 #include "selectable.h"
-#include "selectablewidget.h"
-#include "selectablegroupwidget.h"
+#include "colourwidget.h"
+#include "colourgroupwidget.h"
 
 using namespace Ui;
 
@@ -34,41 +34,37 @@ class Q2DVector : public QVector< QVector<type> > {
         virtual ~Q2DVector() {}
 };
 
-//typedef Q2DVector<SelectableWidget*> WidgetVector;
-
-typedef QVector<SelectableWidget*> WidgetVector;
-
-//typedef QVector<WidgetVector> 2DWidgetVector;
+typedef QVector<ColourWidget*> WidgetVector;
 
 class SelectableTestObject : public Selectable {
     Q_OBJECT
 
 };
 
-class SelectableTestWidget: public SelectableWidget {
+class ColourTestWidget: public ColourWidget {
     Q_OBJECT
 
 };
 
-class SelectableGroupTestWidget : public SelectableGroupWidget {
+class ColourGroupTestWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    SelectableGroupTestWidget(QWidget *parent, int maxRow, int maxColumn);
+    ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns);
 
-    SelectableWidget& widgetAt(int row, int column);
-    virtual void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    ColourWidget& widgetAt(int row, int column);
+    virtual void getWidgetPosition(ColourWidget& widget, int* row, int* column);
 
     QVector<WidgetVector*>*  iWidgetArray;
 
     inline void selectDirection(int direction) { selectDirection(direction); }
 };
 
-class SelectableTests : public QObject {
+class ColourWidgetTests : public QObject {
     Q_OBJECT
 
 public:
-    explicit SelectableTests(QObject *parent = 0);
+    explicit ColourWidgetTests(QObject *parent = 0);
     
 private slots:
     void select_data();
@@ -83,7 +79,28 @@ private slots:
     void selectArea_data();
     void selectArea();
 
-    void compareSelected(SelectableGroupTestWidget* groupWidget, QList<SelectableWidget*> selected, QList<QPoint> selectedPoints);
+    void selectColour_data();
+    void selectColour();
+
+    void adjustSize_data();
+    void adjustSize();
+
+    void fade_data();
+    void fade();
+
+    void copyOne_data();
+    void copyOne();
+
+    void copyMany_data();
+    void copyMany();
+
+    void pasteOne_data();
+    void pasteOne();
+
+    void pasteMany_data();
+    void pasteMany();
+
+    void compareSelected(ColourGroupTestWidget* groupWidget, QList<ColourWidget*> selected, QList<QPoint> selectedPoints);
 };
 }
 

@@ -9,41 +9,33 @@
 
 #include <QtGui>
 
-#include "draggablewidget.h"
+#include "colourwidget.h"
 #include "frame.h"
 
 #include "defaults.h"
 
 namespace Ui {
 
-class FrameWidget : public DragDropWidget {
+class FrameWidget : public ColourWidget {
     Q_OBJECT
 
 public:
-    explicit FrameWidget(QWidget* parent, SelectableGroupWidget &frameGroup, Frame& frame);
-
-private:
-    inline Frame& frame() const { return dynamic_cast<Frame&>(iItem); }
-
-private slots:
-    void frameColourChanged();
-
-    void copy();
-    void paste();
+    explicit FrameWidget(QWidget* parent, ColourGroupWidget &frameGroup, Frame& frame);
 
 protected:
     void paintEvent(QPaintEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
-    void contextMenuEvent(QContextMenuEvent *event);
+
+    void addExtraData(QDataStream& dataStream) {}
+    void handleExtraData(QDataStream &dataStream) {}
+
+    void setColour(QColor colour) { frame().setColour(colour); }
+    const QColor colour() const { return frame().colour(); }
 
     inline Qt::DropAction dropAction() const { return Qt::CopyAction; }
-    const QByteArray dragData() const;
     inline QString mimeType() const { return FRAME_MIME_TYPE; }
-    void handleDragData(QByteArray itemData);
 
 private:
-    QAction* copyAct;
-    QAction* pasteAct;
+    inline Frame& frame() const { return static_cast<Frame&>(iItem); }
 };
 }
 

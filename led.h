@@ -18,8 +18,6 @@
 
 #include "defaults.h"
 
-class Animation;
-
 class Led : public Selectable {
     Q_OBJECT
 

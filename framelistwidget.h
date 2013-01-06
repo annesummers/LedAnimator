@@ -3,7 +3,7 @@
 
 #include <QtGui>
 
-#include "selectablegroupwidget.h"
+#include "colourgroupwidget.h"
 
 class Led;
 class Animation;
@@ -12,7 +12,7 @@ namespace Ui {
 
 class FrameWidget;
 
-class FrameListWidget : public SelectableGroupWidget {
+class FrameListWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
@@ -25,17 +25,13 @@ private slots:
     void numFramesChanged(int numFrames);
 
 protected:
-    SelectableWidget& widgetAt(int row, int column);
-    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    ColourWidget& widgetAt(int row, int column);
+    void getWidgetPosition(ColourWidget& widget, int* row, int* column);
 
     void keyPressEvent(QKeyEvent *);
 
     void resizeEvent(QResizeEvent *);
     void paintEvent(QPaintEvent *);
-
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dragMoveEvent(QDragMoveEvent* event);
-    void dropEvent(QDropEvent* event);
 
 private:
     QList<FrameWidget*> iFramesList;

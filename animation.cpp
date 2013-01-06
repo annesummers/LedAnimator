@@ -32,27 +32,27 @@ Animation::Animation(Engine& engine) :
 
 void Animation::setupNew(int numRows, int numColumns, int numFrames) {
     if(numRows <= 0) {
-        throw IllegalArgumentException("numRows is zero or negative");
+        throw IllegalArgumentException("Animation::setupNew : numRows is zero or negative");
     }
 
     if(numRows > MAX_ROWS){
-        throw IllegalArgumentException("numRows is too big");
+        throw IllegalArgumentException("Animation::setupNew : numRows is too big");
     }
 
     if(numColumns <= 0) {
-        throw IllegalArgumentException("numColumns is zero or negative");
+        throw IllegalArgumentException("Animation::setupNew : numColumns is zero or negative");
     }
 
     if(numColumns > MAX_COLUMNS) {
-        throw IllegalArgumentException("numColumns is too big");
+        throw IllegalArgumentException("Animation::setupNew : numColumns is too big");
     }
 
     if(numFrames <= 0) {
-        throw IllegalArgumentException("numFrames is zero or negative");
+        throw IllegalArgumentException("Animation::setupNew : numFrames is zero or negative");
     }
 
     if(numFrames > MAX_FRAMES) {
-        throw IllegalArgumentException("numFrames is too big");
+        throw IllegalArgumentException("Animation::setupNew : numFrames is too big");
     }
 
     Led* led = NULL;
@@ -101,19 +101,19 @@ void Animation::stop() {
 
 Led &Animation::ledAt(int row, int column) const {
     if(row >= numRows()) {
-        throw IllegalArgumentException("Row is greater than number of rows");
+        throw IllegalArgumentException("Animation::ledAt : Row is greater than number of rows");
     }
 
     if(row < 0) {
-        throw IllegalArgumentException("Row is negative");
+        throw IllegalArgumentException("Animation::ledAt : Row is negative");
     }
 
     if(column >= numColumns()) {
-        throw IllegalArgumentException("Column is greater than number of columns");
+        throw IllegalArgumentException("Animation::ledAt : Column is greater than number of columns");
      }
 
     if(column < 0 ) {
-        throw IllegalArgumentException("Column is negative");
+        throw IllegalArgumentException("Animation::ledAt : Column is negative");
     }
 
     return *(iLeds.at((row*numColumns()) + column));
@@ -121,11 +121,11 @@ Led &Animation::ledAt(int row, int column) const {
 
 void Animation::setCurrentFrame(int frame) {
     if(frame < INITIAL_FRAME) {
-        throw IllegalArgumentException("Frame number is smaller than first frame");
+        throw IllegalArgumentException("Animation::setCurrentFrame : Frame number is smaller than first frame");
     }
 
     if(frame > numFrames()) {
-        throw IllegalArgumentException("Frame number is greater than last frame");
+        throw IllegalArgumentException("Animation::setCurrentFrame : Frame number is greater than last frame");
     }
 
     iCurrentFrame = frame;

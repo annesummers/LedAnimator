@@ -13,7 +13,7 @@
 #include <QRect>
 
 #include "ledwidget.h"
-#include "selectablegroupwidget.h"
+#include "colourgroupwidget.h"
 
 class Led;
 
@@ -22,7 +22,7 @@ namespace Ui {
 class LedWidget;
 class LedGridGroup;
 
-class LedGridWidget : public SelectableGroupWidget {
+class LedGridWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
@@ -33,7 +33,6 @@ private slots:
 
 protected:
     void mousePressEvent(QMouseEvent* event);
-    void mouseDoubleClickEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent*);
 
@@ -41,14 +40,12 @@ protected:
 
     void paintEvent(QPaintEvent*);
 
-    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
-    SelectableWidget& widgetAt(int row, int column);
+    void getWidgetPosition(ColourWidget& widget, int* row, int* column);
+    ColourWidget& widgetAt(int row, int column);
 
 private:
     int gridWidth();
     int gridHeight();
-
-    Led& ledAtPosition(int x, int y);
 
     const Animation&      iAnimation;
 

@@ -6,11 +6,13 @@
 
 #include "exceptions.h"
 
+#include "fadecalculator.h"
+
 using namespace Exception;
 using namespace Ui;
 
 FrameListWidget::FrameListWidget(QWidget *parent, const Animation& animation, const Led &led) :
-    SelectableGroupWidget(parent, 0, animation.numFrames()),
+    ColourGroupWidget(parent, 0, animation.numFrames()),
     iLed(led) {
 
     numFramesChanged(animation.numFrames());
@@ -19,6 +21,8 @@ FrameListWidget::FrameListWidget(QWidget *parent, const Animation& animation, co
 
     connect(&(animation), SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
 }
+
+// slots --------------------
 
 void FrameListWidget::numFramesChanged(int numFrames) {
     // TODO what if threre are fewer frames?
@@ -36,9 +40,11 @@ void FrameListWidget::numFramesChanged(int numFrames) {
     emit resized(pos().x(), width());
 }
 
-// from SelectableGroupWidget ------------------------
+// from ColourGroupWidget -----------------------------
 
-SelectableWidget& FrameListWidget::widgetAt(int row, int column) {
+ColourWidget& FrameListWidget::widgetAt(int row, int column) {
+    ColourGroupWidget::widgetAt(row, column);
+
     if(row != 0) {
         throw IllegalArgumentException("Row should be zero");
     }
@@ -46,9 +52,11 @@ SelectableWidget& FrameListWidget::widgetAt(int row, int column) {
     return *iFramesList.at(column);
 }
 
-void FrameListWidget::getWidgetPosition(SelectableWidget& widget, int* row, int* column) {
+void FrameListWidget::getWidgetPosition(ColourWidget& widget, int* row, int* column) {
     *column = iFramesList.indexOf(&static_cast<FrameWidget&>(widget));
     *row = 0;
+
+    ColourGroupWidget::getWidgetPosition(widget, row, column);
 }
 
 // events ------------------------------------
@@ -56,9 +64,7 @@ void FrameListWidget::getWidgetPosition(SelectableWidget& widget, int* row, int*
 void FrameListWidget::keyPressEvent(QKeyEvent *event) {
     if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
 
-        QList<SelectableWidget*> selectedWidgets = selectedItems();
-
-        if(selectedWidgets.count() > 0) {
+        if(selectedCount() > 0) {
             if((event->key() & Qt::RightArrow) != 0 ||
                (event->key() & Qt::LeftArrow) != 0) {
 
@@ -91,37 +97,3 @@ void FrameListWidget::paintEvent(QPaintEvent *){
     //painter.setBrush(Qt::black);
     //painter.drawRect(0, 0, width(), height());
 }
-
-void FrameListWidget::dragEnterEvent(QDragEnterEvent* event) {
-    if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
-         if (event->source() != 0) {
-             event->accept();
-         }
-     } else {
-         event->ignore();
-     }
-}
-
-void FrameListWidget::dragMoveEvent(QDragMoveEvent* event) {
-    if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
-        if (event->source() != 0) {
-            event->accept();
-        }
-    } else {
-        event->ignore();
-    }
-}
-
-void FrameListWidget::dropEvent(QDropEvent *event) {
-     if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
-         QByteArray itemData = event->mimeData()->data("application/x-leditemdata");
-         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-
-        if (event->source() != 0) {
-             event->setDropAction(Qt::CopyAction);
-             event->accept();
-         }
-     } else {
-         event->ignore();
-     }
- }

@@ -16,7 +16,7 @@ using namespace Exception;
 using namespace Ui;
 
 LedGridWidget::LedGridWidget(QWidget* parent, const Animation &animation) :
-    SelectableGroupWidget(parent, 0, 0),
+    ColourGroupWidget(parent, 0, 0),
     iAnimation(animation),
     iLedGridLayout(NULL){
 
@@ -59,10 +59,6 @@ int LedGridWidget::gridHeight() {
     }
 }
 
-Led& LedGridWidget::ledAtPosition(int row, int column) {
-    return static_cast<LedWidget*>(iLedGridLayout->itemAtPosition(row, column)->widget())->led();
-}
-
 // slots --------------------
 
 void LedGridWidget::addLed(int row, int column) {
@@ -90,63 +86,39 @@ void LedGridWidget::addLed(int row, int column) {
     setMaximumHeight(gridHeight() + BORDER*2);
     setMaximumWidth(gridWidth() + BORDER*2);
 
-    if(maxRow() < row + 1) {
+    if(numRows() < row + 1) {
         setMaxRow(row + 1);
     }
 
-    if(maxColumn() < column + 1) {
+    if(numColumns() < column + 1) {
         setMaxColumn(column + 1);
     }
 }
 
-void LedGridWidget::getWidgetPosition(SelectableWidget& widget, int* row, int* column) {
+// from ColourGroupWidget ----------------------
+
+void LedGridWidget::getWidgetPosition(ColourWidget& widget, int* row, int* column) {
     int rowSpan;
     int columnSpan;
 
     iLedGridLayout->getItemPosition(iLedGridLayout->indexOf(&widget), row, column, &rowSpan, &columnSpan);
+
+    ColourGroupWidget::getWidgetPosition(widget, row, column);
 }
 
-SelectableWidget& LedGridWidget::widgetAt(int row, int column) {
-    if(row < 0) {
-        throw IllegalArgumentException("Row is negative");
-    }
+ColourWidget& LedGridWidget::widgetAt(int row, int column) {
+    ColourGroupWidget::widgetAt(row, column);
 
-    if(row >= maxRow()) {
-        throw IllegalArgumentException("Row is greater than number of rows");
-    }
-
-    if(column < 0) {
-        throw IllegalArgumentException("Column is negative");
-    }
-
-    if(column >= maxColumn()) {
-        throw IllegalArgumentException("Column is greater than number of columns");
-    }
-
-    return static_cast<SelectableWidget&>(*(iLedGridLayout->itemAtPosition(row, column)->widget()));
+    return static_cast<ColourWidget&>(*(iLedGridLayout->itemAtPosition(row, column)->widget()));
 }
 
-// events --------------
-
-void LedGridWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-    qDebug("gridWidget mouseDoubleClick");
-    if (event->button() == Qt::LeftButton &&
-       (QApplication::keyboardModifiers() & Qt::ControlModifier) != 0) {
-
-        QColor colour = QColorDialog::getColor(Qt::green, this, "Select Color", QColorDialog::DontUseNativeDialog);
-        if(colour.isValid()) {
-            SelectableWidget* item = NULL;
-            foreach(item, selectedItems() ){
-                (static_cast<Led&>(item->item())).setCurrentColour(colour);
-            }
-        }
-    }
-}
+// events ---------------------------
 
 void LedGridWidget::mousePressEvent(QMouseEvent* event) {
     qDebug("gridWidget mousePress");
     if (event->button() == Qt::LeftButton &&
        (QApplication::keyboardModifiers() & Qt::ControlModifier) == 0) {
+
         iDragStartPosition = event->pos();
         iDragArea.setRect(0, 0, 0, 0);
 
@@ -176,12 +148,12 @@ void LedGridWidget::mouseMoveEvent(QMouseEvent* event) {
         positionEndRow = 0;
     }
 
-    if(positionEndColumn > maxColumn() - 1) {
-        positionEndColumn = maxColumn() - 1;
+    if(positionEndColumn > numColumns() - 1) {
+        positionEndColumn = numColumns() - 1;
     }
 
-    if(positionEndRow > maxRow() - 1) {
-        positionEndRow = maxRow() - 1;
+    if(positionEndRow > numRows() - 1) {
+        positionEndRow = numRows() - 1;
     }
 
     if(positionStartColumn < 0) {
@@ -192,16 +164,16 @@ void LedGridWidget::mouseMoveEvent(QMouseEvent* event) {
         positionStartRow = 0;
     }
 
-    if(positionStartColumn > maxColumn() - 1) {
-        positionStartColumn = maxColumn() - 1;
+    if(positionStartColumn > numColumns() - 1) {
+        positionStartColumn = numColumns() - 1;
     }
 
-    if(positionStartRow > maxRow() - 1) {
-        positionStartRow = maxRow() - 1;
+    if(positionStartRow > numRows() - 1) {
+        positionStartRow = numRows() - 1;
     }
 
-    selectOne(static_cast<SelectableWidget&>(*iLedGridLayout->itemAtPosition(positionStartRow, positionStartColumn)->widget()));
-    selectArea(static_cast<SelectableWidget&>(*iLedGridLayout->itemAtPosition(positionEndRow, positionEndColumn)->widget()));
+    selectOne(static_cast<ColourWidget&>(*iLedGridLayout->itemAtPosition(positionStartRow, positionStartColumn)->widget()));
+    selectArea(static_cast<ColourWidget&>(*iLedGridLayout->itemAtPosition(positionEndRow, positionEndColumn)->widget()));
 }
 
 void LedGridWidget::mouseReleaseEvent(QMouseEvent *) {
@@ -213,20 +185,11 @@ void LedGridWidget::mouseReleaseEvent(QMouseEvent *) {
 void LedGridWidget::keyPressEvent(QKeyEvent *event) {
     if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
 
-        QList<SelectableWidget*> selectedWidgets = selectedItems();
-
-        if(selectedWidgets.count() > 0) {
-            int row;
-            int column;
-
+        if(selectedCount() > 0) {
             if((event->key() & Qt::RightArrow) != 0 ||
                (event->key() & Qt::LeftArrow) != 0 ||
                (event->key() & Qt::UpArrow) != 0 ||
                (event->key() & Qt::DownArrow) != 0 ) {
-
-                getWidgetPosition(static_cast<LedWidget&>(*selectedWidgets.at(selectedWidgets.count() - 1)),
-                                                            &row,
-                                                            &column);
 
                 selectDirection(event->key());
             }
@@ -241,12 +204,9 @@ void LedGridWidget::paintEvent(QPaintEvent *) {
     painter.drawRect(iDragArea);
 
     painter.setPen(Qt::black);
-    //painter.setBrush(Qt::darkGray);
 
     painter.drawRect(BORDER,
                      BORDER,
                      width() - BORDER*2,
                      height() - BORDER*2);
 }
-
-// -------------------

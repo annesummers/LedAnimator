@@ -6,19 +6,19 @@
 
 #include "leddetailswidgets.h"
 
-#include "led.h"
+//#include "led.h"
 #include "ledwidget.h"
 #include "framelistwidget.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"
 #include "animationdetailswidgets.h"
-#include "animation.h"
+//#include "animation.h"
 
 #include "exceptions.h"
 
 using namespace Ui;
 using namespace Exception;
 
-LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, Led& led, SelectableGroupWidget& ledGroup) :
+LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, Led& led, ColourGroupWidget& ledGroup) :
     QWidget(parent),
     iPositionLabel(NULL),
     iCurrentFrameWidget(NULL),
@@ -36,10 +36,6 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, 
     iFramesListWidget->move(iCurrentFrameWidget->width() + 60, 5);
 
     connect(iFramesListWidget, SIGNAL(resized(int,int)), this, SLOT(framesListResized(int, int)));
-}
-
-Led& LedDetailsWidget::led() {
-    return iCurrentFrameWidget->led();
 }
 
 void LedDetailsWidget::framesListResized(int x, int width) {
@@ -60,12 +56,41 @@ void LedDetailsWidget::resizeEvent(QResizeEvent *) {
 
 // ------------------------------------
 
+LedDetailsSelectorGroupWidget::LedDetailsSelectorGroupWidget(LedDetailsListWidget& parent) :
+    ColourGroupWidget(&parent, 0, 0),
+    iDetailsList(parent){
+}
+
+ColourWidget& LedDetailsSelectorGroupWidget::widgetAt(int row, int column) {
+    if(column != 0) {
+        throw new IllegalArgumentException("Column should be zero");
+    }
+
+    return iDetailsList.selectorWidgetAt(row);
+    //return static_cast<SelectableWidget&>(*iDetailsList.itemAt(row)->widget()->childAt(1, 0));
+}
+
+void LedDetailsSelectorGroupWidget::getWidgetPosition(ColourWidget &widget, int *row, int *column) {
+    column = 0;
+
+   /* for(int i = 0; i < iDetailsList.count(); i++) {
+        if(widgetAt(i, 0). == widget) {
+            *row = i;
+            return;
+        }
+    }*/
+}
+
+// ------------------------------------
+
 LedDetailsListWidget::LedDetailsListWidget(QWidget *parent, const Animation &animation) :
-    SelectableGroupWidget(parent, 0, 0),
+    ColourGroupGroupWidget(parent, 0),
     iAnimation(animation) {
 
     iLedDetailsList = new QVBoxLayout(this);
     setLayout(iLedDetailsList);
+
+    iSelectorGroupWidget = new LedDetailsSelectorGroupWidget(*this);
 }
 
 void LedDetailsListWidget::addLed(int row, int column) {
@@ -74,34 +99,27 @@ void LedDetailsListWidget::addLed(int row, int column) {
     if(!iShownLeds.contains(&led)) {
         iShownLeds.append(&led);
 
-        LedDetailsWidget* ledDetails = new LedDetailsWidget(this, iAnimation, led, *this);
+        LedDetailsWidget* ledDetails = new LedDetailsWidget(this, iAnimation, led, *iSelectorGroupWidget);
         iLedDetailsList->addWidget(ledDetails, 1);
 
         ledDetails->setMaximumHeight(40);
         ledDetails->setMinimumHeight(40);
 
-        setMinimumHeight(iLedDetailsList->count() * 50);
-        setMaximumHeight(iLedDetailsList->count() * 50);
+        int count = iLedDetailsList->count();
 
-        setMaxColumn(iLedDetailsList->count());
+        setMinimumHeight(count * 50);
+        setMaximumHeight(count * 50);
+
+        iSelectorGroupWidget->setMaxColumn(count);
+
+        addGroup(ledDetails->framesListWidget());
 
         qDebug("add new led, %d, %d", row, column);
     }
 }
 
-SelectableWidget& LedDetailsListWidget::widgetAt(int row, int column) {
-    if(column != 0) {
-        throw new IllegalArgumentException("Column should be zero");
-    }
-
-    return static_cast<SelectableWidget&>(*iLedDetailsList->itemAt(row)->widget()->childAt(1, 0));
-}
-
-void LedDetailsListWidget::getWidgetPosition(SelectableWidget &widget, int *row, int *column) {
-    row = 0;
-    column= 0;
-
-    //TODO
+LedWidget& LedDetailsListWidget::selectorWidgetAt(int position) {
+    return static_cast<LedWidget&>(*iLedDetailsList->itemAt(position)->widget());
 }
 
 // events -------------------------------------

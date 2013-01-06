@@ -57,8 +57,6 @@ void AnimationDetailsWidget::frameListPosition(int x, int width) {
     iFramesListWidth = width;
 }
 
-// ----------------
-
 // events ---------
 
 void AnimationDetailsWidget::paintEvent(QPaintEvent *) {
@@ -107,16 +105,22 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
          QByteArray itemData = event->mimeData()->data(LED_MIME_TYPE);
          QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
-         int row;
-         int column;
-         dataStream >> row >> column;
-
          if (event->source() != 0) {
              event->setDropAction(Qt::LinkAction);
              event->accept();
          }
 
-         iLedDetailsList->addLed(row, column);
+         QColor colour;
+         int row;
+         int column;
+
+         int num;
+         dataStream >> num;
+
+         for(int i = 0; i < num; i++) {
+            dataStream >> colour >> row >> column;
+            iLedDetailsList->addLed(row, column);
+         }
 
          update();
      } else {

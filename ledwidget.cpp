@@ -16,37 +16,29 @@
 
 using namespace Ui;
 
-LedWidget::LedWidget(QWidget* parent, const Animation& animation, SelectableGroupWidget& ledGroup, Led& led)  :
-    DragDropWidget(parent, ledGroup, led) {
+LedWidget::LedWidget(QWidget* parent, const Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
+    ColourWidget(parent, ledGroup, led) {
 
-    QObject::connect(&led, SIGNAL(currentColourChanged()), this, SLOT(ledColourChanged()));
-    QObject::connect(&led, SIGNAL(selected()), this, SLOT(selected()));
+    QObject::connect(&led, SIGNAL(currentColourChanged()), this, SLOT(colourChanged()));
+   // QObject::connect(&led, SIGNAL(selected()), this, SLOT(selected()));
 
-    QObject::connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(ledColurChanged()));
+    QObject::connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(colourChanged()));
 }
 
-void LedWidget::setColourToolTip() {
-    setToolTip(QString("h: %1\ns: %2\nv: %3")
-       .arg(led().currentColour().hue())
-       .arg(led().currentColour().saturation())
-       .arg(led().currentColour().value()));
+// from DraggableWidget -----------------------
+
+void LedWidget::addExtraData(QDataStream& dataStream) {
+    dataStream << led().row() << led().column();
 }
 
-void LedWidget::ledColourChanged() {
-    setColourToolTip();
+void LedWidget::handleExtraData(QDataStream &dataStream) {
+    int row;
+    int column;
 
-    update();
+    dataStream >> row >> column;
 }
 
-void LedWidget::currentFrameChanged(int currentFrame) {
-    Q_UNUSED(currentFrame);
-
-    setColourToolTip();
-
-    update();
-}
-
-// events --------------------
+// events ------------------------------------
 
 void LedWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
@@ -69,52 +61,6 @@ void LedWidget::paintEvent(QPaintEvent *) {
         painter.drawEllipse(rect2);
         painter.setPen(Qt::DashLine);
         painter.drawEllipse(rect2);
-    }
-}
-
-// from DraggableWidget -----------------------
-
-const QByteArray LedWidget::dragData() const {
-    QByteArray itemData;
-    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-
-    dataStream << led().row() << led().column() << led().currentColour();
-
-    return itemData;
-}
-
-void LedWidget::handleDragData(QByteArray itemData) {
-    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-
-    int row;
-    int column;
-    QColor colour;
-
-    dataStream >> row >> column >> colour;
-
-    led().setCurrentColour(colour);
-}
-
-// events ------------------------------------
-
-void LedWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-    qDebug("singleWidget mouseDoubleClick");
-    if (event->buttons() != Qt::LeftButton) {
-        return;
-    }
-
-    iSelectableGroup.select(*this, true);
-
-    QColor colour = QColorDialog::getColor(Qt::white,
-                                           this,
-                                           "Select Color",
-                                           QColorDialog::DontUseNativeDialog);
-    if(colour.isValid()) {
-        SelectableWidget* item = NULL;
-
-        foreach(item, iSelectableGroup.selectedItems()){
-            static_cast<Led&>(item->item()).setCurrentColour(colour);
-        }
     }
 }
 
