@@ -41,21 +41,26 @@ class AnimByteChar : public AnimChar {
 
 };
 
-class LedAnimCodec : public AnimatorBase
-{
+class LedAnimCodec : public QObject {
     Q_OBJECT
+
 public:
     explicit LedAnimCodec(Animation &animation);
 
-    void writeAnimation();
-    void readAnimation();
+    virtual void writeAnimation();
+    virtual void readAnimation();
 
 protected:
     virtual const AnimChar readCharacter() const = 0;
     virtual void writeCharacter(AnimChar character) = 0;
 
+    virtual void writeControlCharacter(AnimChar character) = 0;
+    virtual const AnimChar readControlCharacter() const = 0;
+
     virtual const QByteArray&  asByteArray() const = 0;
     virtual const QString     asString() const = 0;
+
+    Animation& iAnimation;
 
 private:
     void writeColour(QColor colour);
@@ -67,15 +72,20 @@ class LedAnimStringCodec: public LedAnimCodec {
 public:
     explicit LedAnimStringCodec(Animation &animation);
 
+    const QString asString() const;
+
 protected:
     const AnimChar readCharacter() const;
     void writeCharacter(AnimChar character);
 
-    const QString asString() const;
+    void writeControlCharacter(AnimChar character);
+    const AnimChar readControlCharacter() const {}
+
     const QByteArray &asByteArray() const;
 
 private:
     QString iString;
+    int iLastReturn;
 };
 
 class LedAnimByteArrayCodec: public LedAnimCodec {
@@ -84,6 +94,8 @@ public:
     explicit LedAnimByteArrayCodec(Animation& animation);
     LedAnimByteArrayCodec(Animation& animation, QByteArray bytes);
 
+    void writeAnimation();
+    void readAnimation();
 
     const QString asString() const;
     const QByteArray& asByteArray() const;
@@ -91,6 +103,9 @@ public:
 protected:
     const AnimChar readCharacter() const;
     void writeCharacter(AnimChar character);
+
+    void writeControlCharacter(AnimChar character);
+    const AnimChar readControlCharacter() const;
 
 private:
     QByteArray  iByteArray;

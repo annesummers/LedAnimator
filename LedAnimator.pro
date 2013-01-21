@@ -81,7 +81,9 @@ HEADERS += \
     gammacorrect.h \
     colourgroupwidget.h \
     colourgroupgroupwidget.h \
-    colourwidget.h
+    colourwidget.h \
+    dialog.h \
+    newanimationdialog.h
 
 SOURCES += \
     animatorbase.cpp \
@@ -104,6 +106,12 @@ SOURCES += \
     fadecalculator.cpp \
     colourgroupwidget.cpp \
     colourwidget.cpp \
-    colourgroupgroupwidget.cpp
+    colourgroupgroupwidget.cpp \
+    dialog.cpp \
+    newanimationdialog.cpp
+
+FORMS += \
+    dialog.ui \
+    newanimation.ui
 
 

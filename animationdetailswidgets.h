@@ -20,6 +20,7 @@ public:
     explicit AnimationDetailsWidget(QWidget* parent, Animation &animation);
 
     void frameListPosition(int x, int width);
+
 private slots:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
@@ -37,6 +38,7 @@ private:
 
     int iFramesListX;
     int iFramesListWidth;
+
     QSlider*                iFrameSlider;
     LedDetailsListWidget*   iLedDetailsList;
 

@@ -46,6 +46,17 @@ MainWindow::MainWindow(Engine& engine) :
 
     menuBar()->addMenu(fileMenu);
 
+    QMenu* animationMenu = new QMenu("&Animation", this);
+    QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");
+    QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
+    QAction* setFrameFrequencyAction = animationMenu->addAction("Set &frame frequency");
+
+    connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
+    connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
+    connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
+
+    menuBar()->addMenu(animationMenu);
+
     QSplitter* splitterVertical = new QSplitter(this);
     splitterVertical->setOrientation(Qt::Vertical);
     setCentralWidget(splitterVertical);
@@ -53,7 +64,6 @@ MainWindow::MainWindow(Engine& engine) :
     QSplitter* splitterHorizontal = new QSplitter(splitterVertical);
     splitterHorizontal->setOrientation(Qt::Horizontal);
 
-    //LedGridContainerWidget* gridContainer = new LedGridContainerWidget(splitterHorizontal);
     LedGridWidget* ledGridWidget = new LedGridWidget(splitterHorizontal, engine.animation());
     ledGridWidget->move(BORDER, BORDER);
 
@@ -70,6 +80,10 @@ MainWindow::MainWindow(Engine& engine) :
 
     splitterVertical->addWidget(splitterHorizontal);
     splitterVertical->addWidget(animationDetailsContainer);
+}
+
+MainWindow::~MainWindow() {
+    writeSettings();
 }
 
 void MainWindow::writeSettings() {
@@ -94,12 +108,10 @@ void MainWindow::readSettings() {
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (iEngine.askSaveAnimation()) {
-        writeSettings();
+        //writeSettings(); // this is done in the destructor now
         event->accept();
     } else {
         event->ignore();
     }
 }
-
-// -------------------------------------------
 

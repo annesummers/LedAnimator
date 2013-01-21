@@ -23,6 +23,7 @@ class Led : public Selectable {
 
 public:
     explicit Led(QObject* parent, Animation& animation, int row, int column);
+    virtual ~Led();
 
     inline const QColor currentColour() const { return frameAt(iAnimation.currentFrame()).colour(); }
 

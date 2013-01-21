@@ -48,7 +48,7 @@ void FadeCalculator::nextColour() {
 
     emit colourCalculated(currentColour());
 
-    if(iCurrentIteration++ >= iIterations) {
+    if(++iCurrentIteration == iIterations) {
         if(currentColour() != iEndColour) {
         //    throw new IllegalColourException();
         }

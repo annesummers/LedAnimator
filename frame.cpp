@@ -11,7 +11,8 @@
 using namespace Exception;
 
 Frame::Frame(QObject *parent) :
-    Selectable(parent) {
+    Selectable(parent),
+    iColour(Qt::black){
 }
 
 Frame::Frame(QObject* parent, QColor colour) :

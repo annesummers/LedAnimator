@@ -21,7 +21,7 @@ class ColourWidget : public QWidget {
 public:
     ColourWidget(QWidget* parent, ColourGroupWidget& groupWidget, Selectable& item);
 
-    void select(bool selected) { iItem.select(selected); }
+    inline void select(bool selected) { iItem.select(selected); }
 
     virtual const QColor colour() const = 0;
     virtual void setColour(QColor colour) = 0;
@@ -33,7 +33,7 @@ protected slots:
     void colourChanged();
 
 private slots:
-    void selected() { update(); }
+    inline void selected() { update(); }
 
     void fade();
     void copy();
@@ -51,21 +51,19 @@ protected:
 
     void contextMenuEvent(QContextMenuEvent *);
 
-    const QByteArray mimeData();
-    void handleMimeData(QByteArray mimeData);
-
     virtual QString mimeType() const = 0;
     virtual Qt::DropAction dropAction() const = 0;
 
-    QPoint    iDragStartPosition;
+    QPoint   iDragStartPosition;
 
     QAction* iFadeAction;
     QAction* iCopyAction;
     QAction* iPasteAction;
 
     ColourGroupWidget&  iColourGroup;
-
     Selectable&         iItem;
+
+    bool iDoubleClick;
 };
 }
 

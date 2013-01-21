@@ -19,10 +19,10 @@ using namespace Ui;
 LedWidget::LedWidget(QWidget* parent, const Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
     ColourWidget(parent, ledGroup, led) {
 
-    QObject::connect(&led, SIGNAL(currentColourChanged()), this, SLOT(colourChanged()));
+    connect(&led, SIGNAL(currentColourChanged()), this, SLOT(colourChanged()));
    // QObject::connect(&led, SIGNAL(selected()), this, SLOT(selected()));
 
-    QObject::connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(colourChanged()));
+    connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(colourChanged()));
 }
 
 // from DraggableWidget -----------------------

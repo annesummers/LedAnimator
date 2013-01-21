@@ -16,6 +16,7 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(Engine& engine);
+    virtual ~MainWindow();
 
     void readSettings();
     void writeSettings();

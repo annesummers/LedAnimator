@@ -21,7 +21,7 @@ class Animation : public QObject {
 public:
     explicit Animation(Engine& engine);
 
-    void setupNew(int numRows, int numColumns, int numFrames);
+    void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency);
 
     void play();
     void stop();
@@ -51,14 +51,16 @@ public slots:
     inline void setFileName(QString fileName) { iFileName = fileName; }
     inline void setSaved(bool saved) { iIsSaved = saved; }
 
+    void copyToClipboard();
+
     void setCurrentFrame(int frame);
     void setFrameFrequency(int frameFrequency);
+    inline void setNumFrames(int numFrames) { iNumFrames = numFrames; emit numFramesChanged(iNumFrames); }
     
 private slots:
     void nextFrame();
 
 private:
-    inline void setNumFrames(int numFrames) { iNumFrames = numFrames; emit numFramesChanged(iNumFrames); }
     inline void setNumRows(int numRows) { iNumRows = numRows; }
     inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
 

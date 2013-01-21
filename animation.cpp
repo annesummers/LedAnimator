@@ -9,6 +9,7 @@
 #include "led.h"
 #include "mainwindow.h"
 #include "ledwidget.h"
+#include "ledanimcodec.h"
 
 #include "defaults.h"
 #include "exceptions.h"
@@ -16,6 +17,7 @@
 #include <QtDebug>
 
 using namespace Exception;
+using namespace ImportExport;
 
 Animation::Animation(Engine& engine) :
     QObject(&engine),
@@ -30,7 +32,7 @@ Animation::Animation(Engine& engine) :
     iFileName(""),
     iIsSaved(false){ }
 
-void Animation::setupNew(int numRows, int numColumns, int numFrames) {
+void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFrequency) {
     if(numRows <= 0) {
         throw IllegalArgumentException("Animation::setupNew : numRows is zero or negative");
     }
@@ -76,7 +78,10 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames) {
 
     setNumFrames(numFrames);
     setCurrentFrame(INITIAL_FRAME);
+    setFrameFrequency(frameFrequency);
+
     setSaved(false);
+    setFileName("");
 }
 
 void Animation::play() {
@@ -119,6 +124,8 @@ Led &Animation::ledAt(int row, int column) const {
     return *(iLeds.at((row*numColumns()) + column));
 }
 
+// slots -------------------------
+
 void Animation::setCurrentFrame(int frame) {
     if(frame < INITIAL_FRAME) {
         throw IllegalArgumentException("Animation::setCurrentFrame : Frame number is smaller than first frame");
@@ -136,10 +143,17 @@ void Animation::setFrameFrequency(int frameFrequency) {
     iFrameFrequency = frameFrequency;
 }
 
-// slots --------
-
 void Animation::nextFrame() {
     setCurrentFrame((currentFrame()%numFrames()) + INITIAL_FRAME);
 }
 
-// -------
+void Animation::copyToClipboard() {
+    LedAnimStringCodec codec(*this);
+    codec.writeAnimation();
+
+    QClipboard *clipboard = QApplication::clipboard();
+    QMimeData *data = new QMimeData;
+
+    data->setData("text/plain", codec.asString().toAscii());
+    clipboard->setMimeData(data);
+}

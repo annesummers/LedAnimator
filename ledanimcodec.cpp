@@ -31,21 +31,23 @@ const unsigned char AnimChar::charValue() const {
 }
 
 LedAnimCodec::LedAnimCodec(Animation& animation) :
-    AnimatorBase(&animation, animation) {
+    QObject(&animation),
+    iAnimation(animation){
 }
 
 void LedAnimCodec::writeAnimation() {
-    writeCharacter(HEADER_BYTE);
+    //add frame frequency TODO
+    writeControlCharacter(HEADER_BYTE);
 
-    writeCharacter(animation().numRows());
-    writeCharacter(animation().numColumns());
-    writeCharacter(animation().numFrames());
+    writeCharacter(iAnimation.numRows());
+    writeCharacter(iAnimation.numColumns());
+    writeCharacter(iAnimation.numFrames());
 
     try {
-        for (int frame = 0; frame < animation().numFrames(); frame++) {
-            for(int i = 0; i < animation().numRows(); i ++) {
-                for(int j = 0; j < animation().numColumns(); j++) {
-                    writeColour(animation().ledAt(i, j).frameAt(frame + INITIAL_FRAME).colour());
+        for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
+            for(int i = 0; i < iAnimation.numRows(); i ++) {
+                for(int j = 0; j < iAnimation.numColumns(); j++) {
+                    writeColour(iAnimation.ledAt(i, j).frameAt(frame + INITIAL_FRAME).colour());
                 }
             }
         }
@@ -53,12 +55,11 @@ void LedAnimCodec::writeAnimation() {
         // WTF?
     }
 
-    writeCharacter(TERMINATING_BYTE);
-
-    animation().setSaved(true);
+    writeControlCharacter(TERMINATING_BYTE);
 }
 
 void LedAnimCodec::readAnimation() {
+    //add frame frequency TODO
     if (readCharacter().charValue() != HEADER_BYTE) {
         throw new InvalidAnimationException("No header byte");
     }
@@ -67,7 +68,7 @@ void LedAnimCodec::readAnimation() {
     int ledColumns = readCharacter().intValue();
     int numFrames = readCharacter().intValue();
 
-    animation().setupNew(ledRows, ledColumns, numFrames);
+    iAnimation.setupNew(ledRows, ledColumns, numFrames, DEFAULT_FRAME_FREQUENCY);
 
     int ledNum = 0;
 
@@ -76,7 +77,7 @@ void LedAnimCodec::readAnimation() {
 
         for(int row = 0; row < ledRows; row++) {
             for(int column = 0; column < ledColumns; column++) {
-                animation().ledAt(row, column).frameAt(frame + INITIAL_FRAME).setColour(readColour());
+                iAnimation.ledAt(row, column).frameAt(frame + INITIAL_FRAME).setColour(readColour());
             }
         }
     }
@@ -84,8 +85,6 @@ void LedAnimCodec::readAnimation() {
     if (readCharacter().charValue() != TERMINATING_BYTE) {
         throw new InvalidAnimationException("No terminating byte");
     }
-
-    animation().setSaved(true);
 }
 
 void LedAnimCodec::writeColour(QColor colour) {
@@ -102,8 +101,11 @@ const QColor LedAnimCodec::readColour() const {
     return QColor::fromRgb(red, green, blue);
 }
 
+// -----------------------------------------
+
 LedAnimStringCodec::LedAnimStringCodec(Animation &animation) :
-    LedAnimCodec(animation) {
+    LedAnimCodec(animation),
+    iLastReturn(0) {
 }
 
 const AnimChar LedAnimStringCodec::readCharacter() const {
@@ -111,7 +113,40 @@ const AnimChar LedAnimStringCodec::readCharacter() const {
 }
 
 void LedAnimStringCodec::writeCharacter(AnimChar character) {
-    Q_UNUSED(character);
+    int value = character.intValue();
+
+   /* if(value == TERMINATING_BYTE ||
+       value == ESCAPE_BYTE ||
+       value == HEADER_BYTE ) {
+        iString.append(QString::number(ESCAPE_BYTE));
+        iString.append(",");
+        iString.append(QString::number((value ^ XOR_BYTE)));
+    } else {*/
+        iString.append(QString::number(value));
+   // }
+
+    iString.append(",");
+
+    int extra = iString.length() - iLastReturn;
+    if(extra > 100) {
+        iString.append("\n");
+        iLastReturn = iString.length();
+    }
+}
+
+void LedAnimStringCodec::writeControlCharacter(AnimChar character) {
+    int value = character.charValue();
+
+    if(value != TERMINATING_BYTE &&
+       value != HEADER_BYTE ) {
+        throw IllegalArgumentException("LedAnimStringCodec::writeControlCharacter : not a control character");
+    }
+
+    iString.append(QString::number(character.intValue()));
+
+    if(value == HEADER_BYTE) {
+        iString.append(",");
+    }
 }
 
 const QString LedAnimStringCodec::asString() const {
@@ -121,6 +156,8 @@ const QString LedAnimStringCodec::asString() const {
 const QByteArray& LedAnimStringCodec::asByteArray() const {
     //return iByteArray;
 }
+
+// -----------------------------------------
 
 LedAnimByteArrayCodec::LedAnimByteArrayCodec(Animation &animation) :
     LedAnimCodec(animation),
@@ -133,29 +170,61 @@ LedAnimByteArrayCodec::LedAnimByteArrayCodec(Animation& animation, QByteArray by
     iPosition(0) {
 }
 
+void LedAnimByteArrayCodec::writeAnimation() {
+    LedAnimCodec::writeAnimation();
+
+    iAnimation.setSaved(true);
+}
+
+void LedAnimByteArrayCodec::readAnimation() {
+    LedAnimCodec::readAnimation();
+
+    iAnimation.setSaved(true);
+}
+
+const AnimChar LedAnimByteArrayCodec::readControlCharacter() const {
+    char value = iByteArray.at(iPosition++);
+
+    if(value != TERMINATING_BYTE &&
+       value != HEADER_BYTE ) {
+        throw IllegalArgumentException("LedAnimByteArrayCodec::readControlCharacter : not a control character");
+    }
+
+    return AnimChar(value);
+}
+
 const AnimChar LedAnimByteArrayCodec::readCharacter() const {
-    if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
+   /* if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
         AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
         iPosition = iPosition + 2;
         return character;
-    } else {
+    } else {*/
         return AnimChar(iByteArray.at(iPosition++));
-    }
+    //}
 }
 
 void LedAnimByteArrayCodec::writeCharacter(AnimChar character) {
     char value = character.charValue();
 
-    if(value == TERMINATING_BYTE ||
+    /*if(value == TERMINATING_BYTE ||
        value == ESCAPE_BYTE ||
        value == HEADER_BYTE ) {
         iByteArray.append(ESCAPE_BYTE);
         iByteArray.append(value ^ XOR_BYTE);
-    } else {
+    } else {*/
         iByteArray.append(value);
-    }
+   // }
 }
 
+void LedAnimByteArrayCodec::writeControlCharacter(AnimChar character) {
+    char value = character.charValue();
+    if(value != TERMINATING_BYTE &&
+       value != HEADER_BYTE ) {
+        throw IllegalArgumentException("LedAnimByteArrayCodec::writeControlCharacter : not a control character");
+    }
+
+    iByteArray.append(value);
+}
 
 const QString LedAnimByteArrayCodec::asString() const {
     return "";

@@ -14,7 +14,7 @@ ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int ma
         (*iWidgetArray)[i] = new WidgetVector(maxColumn);
         for(int j = 0; j < maxColumn; j++) {
             WidgetVector& row = *((*iWidgetArray)[i]);
-            row[j] =  new ColourWidget(this, *this, *(new Selectable(this)));
+            row[j] =  new ColourTestWidget(this, *this, *(new SelectableTestObject(this)));
         }
     }
 }
@@ -71,7 +71,7 @@ void ColourWidgetTests::select() {
     QFETCH(int, numSelected);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
 
     for(int i = 0; i < selectedPoints.count(); i++) {
         groupWidget->select(groupWidget->widgetAt(selectedPoints.at(i).y(), selectedPoints.at(i).x()), true);
@@ -108,7 +108,7 @@ void ColourWidgetTests::selectOne() {
     QFETCH(int, maxColumn);
     QFETCH(QPoint, selectedPoint);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
 
     groupWidget->selectOne(groupWidget->widgetAt(selectedPoint.y(), selectedPoint.x()));
 
@@ -156,7 +156,7 @@ void ColourWidgetTests::selectArea() {
     QFETCH(QPoint, firstSelected);
     QFETCH(QPoint, secondSelected);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
 
     groupWidget->selectOne(groupWidget->widgetAt(firstSelected.y(), firstSelected.x()));
     groupWidget->selectArea(groupWidget->widgetAt(secondSelected.y(), secondSelected.x()));
@@ -641,7 +641,7 @@ void ColourWidgetTests::selectDirection() {
     QFETCH(IntList, selectedDirections);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
 
     groupWidget->selectOne(groupWidget->widgetAt(firstSelected.y(), firstSelected.x()));
 
@@ -677,7 +677,7 @@ void ColourWidgetTests::copyPasteOne() {
     QFETCH(QPoint, copyPoint);
     QFETCH(QPoint, pastePoint);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
 
     ColourWidget& copyWidget = groupWidget->widgetAt(copyPoint.y(), copyPoint.x());
     copyWidget.setColour(Qt::black);
@@ -702,7 +702,7 @@ void ColourWidgetTests::copyPasteMany() {
     QFETCH(QPoint, pastePoint);
     QFETCH(QList<QPoint>, pastedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
 
     groupWidget->selectOne(groupWidget->widgetAt(0,0));
     groupWidget->selectArea(widgetAt(maxRow - 1, maxColumn -1);
@@ -724,12 +724,12 @@ void ColourWidgetTests::copyPasteMany() {
     foreach(pastedPoint, pastedPoints) {
         ColourWidget& pastedWidget = groupWidget->widgetAt(pastedPoint.y(), pastedPoint.x());
 
-        QCOMPARE(pastedWidget.colour() == Qt::black);
-        QCOMPARE(pastedWidget.selected() == true);
+        QCOMPARE(pastedWidget.colour(), Qt::black);
+        QCOMPARE(pastedWidget.selected(), true);
     }
 }
 
-void ColourWidgetTests::compareSelected(SelectableGroupTestWidget* groupWidget, QList<ColourWidget*> selectedList, QList<QPoint> selectedPoints) {
+void ColourWidgetTests::compareSelected(ColourGroupTestWidget* groupWidget, QList<ColourWidget*> selectedList, QList<QPoint> selectedPoints) {
     int row;
     int column;
 

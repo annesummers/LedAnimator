@@ -10,6 +10,7 @@
 #include "mainwindow.h"
 #include "defaults.h"
 #include "ledanimcodec.h"
+#include "newanimationdialog.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -43,28 +44,6 @@ void Engine::start() {
     }
 }
 
-Animation &Engine::animation() const {
-    return *iAnimation;
-}
-
-void Engine::newAnimation() {
-    setupUI();
-
-    // TODO sort out new animation dialog
-
-    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
-    iMainWindow->show();
-}
-
-void Engine::setupUI() {
-    if(iMainWindow != NULL) {
-        delete iMainWindow;
-        iMainWindow = NULL;
-    }
-
-    iMainWindow = new MainWindow(*this);
-}
-
 bool Engine::askSaveAnimation() {
     if(!iAnimation->isSaved()) {
         QMessageBox::StandardButton reply;
@@ -84,12 +63,18 @@ bool Engine::askSaveAnimation() {
     return true;
 }
 
-void Engine::loadAnimation() {
-    if(askSaveAnimation()) {
-        QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Open Animation", "~", "Led Animation Files (*.anim)");
-
-        doLoad(fileName);
+void Engine::setupUI() {
+    if(iMainWindow != NULL) {
+        delete iMainWindow;
+        iMainWindow = NULL;
     }
+
+    iMainWindow = new MainWindow(*this);
+}
+
+void Engine::setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency) {
+    iAnimation->setupNew(numRows, numColumns, numFrames, frameFrequency);
+    iMainWindow->show();
 }
 
 void Engine::doLoad(QString fileName) {
@@ -111,6 +96,43 @@ void Engine::doLoad(QString fileName) {
     iMainWindow->show();
 }
 
+void Engine::doSave(QString fileName) {
+    LedAnimByteArrayCodec codec(*iAnimation);
+    codec.writeAnimation();
+
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    file.write(codec.asByteArray());
+    file.close();
+
+    QSettings settings;
+    settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+}
+
+// slots -------------------
+
+void Engine::newAnimation() {
+    NewAnimationDialog newAnimationDialog(NULL, *this);
+    if(newAnimationDialog.exec() == QDialog::Accepted) {
+        setupUI();
+
+        iAnimation->setupNew(newAnimationDialog.iNumRows,
+                             newAnimationDialog.iNumColumns,
+                             newAnimationDialog.iNumFrames,
+                             newAnimationDialog.iFrameFrequency);
+
+        iMainWindow->show();
+    }
+}
+
+void Engine::loadAnimation() {
+    if(askSaveAnimation()) {
+        QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Open Animation", "~", "Led Animation Files (*.anim)");
+
+        doLoad(fileName);
+    }
+}
+
 void Engine::saveAnimation() {
     if(iAnimation->fileName() == "") {
         saveAnimationAs();
@@ -125,15 +147,10 @@ void Engine::saveAnimationAs() {
     doSave(fileName);
 }
 
-void Engine::doSave(QString fileName) {
-    LedAnimByteArrayCodec codec(*iAnimation);
-    codec.writeAnimation();
+void Engine::setNumFrames() {
 
-    QFile file(fileName);
-    file.open(QIODevice::WriteOnly);
-    file.write(codec.asByteArray());
-    file.close();
+}
 
-    QSettings settings;
-    settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+void Engine::setFrameFrequency() {
+
 }

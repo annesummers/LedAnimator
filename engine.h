@@ -13,6 +13,7 @@
 
 class Animation;
 class Led;
+class NewAnimationDialog;
 
 class Engine : public QObject {
     Q_OBJECT
@@ -22,9 +23,14 @@ public:
 
     void start();
 
-    Animation& animation() const;
+    inline Animation& animation() const { return *iAnimation; }
 
-    bool askSaveAnimation();
+    bool askSaveAnimation();  
+    void setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency);
+
+public slots:
+    void setNumFrames();
+    void setFrameFrequency();
     
 private slots:
     void saveAnimation();
@@ -41,6 +47,8 @@ private:
 
     MainWindow* iMainWindow;
     Animation* iAnimation;
+
+    NewAnimationDialog* iNewAnimationDialog;
 };
 
 #endif // ENGINE_H

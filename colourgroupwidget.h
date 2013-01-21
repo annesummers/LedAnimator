@@ -27,15 +27,13 @@ public:
 
     void setColour(QColor colour);
 
-    void setMaxRow(int max) { iNumRows = max; }
-    void setMaxColumn(int max) { iNumColumns = max; }
+    inline void setMaxRow(int max) { iNumRows = max; }
+    inline void setMaxColumn(int max) { iNumColumns = max; }
 
-    void copy();
-    void paste();
     void fade();
 
     const QByteArray mimeData();
-    void handleMimeData(QByteArray &mimeData, ColourWidget &dropWidget);
+    void handleMimeData(QByteArray mimeData, ColourWidget &dropWidget);
 
     bool isGroupSelected();
     bool isMultipleSelected();
@@ -52,13 +50,15 @@ protected:
     virtual ColourWidget& widgetAt(int row, int column);
     virtual void getWidgetPosition(ColourWidget& widget, int* row, int* column);
 
-    int selectedCount() { return iSelected.count(); }
+    inline int selectedCount() { return iSelected.count(); }
 
     void clearSelection();
     void selectDirection(int direction);
 
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }
+
+    QList<ColourWidget*> iSelected;
 
 private:
     void setSingleSelected(ColourWidget &widget);
@@ -75,14 +75,11 @@ private:
 
     int iFirstSelectedRow;
     int iLastSelectedRow;
-
     int iFirstSelectedColumn;
     int iLastSelectedColumn;
 
-    int iNextFrame;
-    bool iFrameIncrement;
-
-    QList<ColourWidget*> iSelected;
+    int     iNextFrame;
+    bool    iFrameIncrement;
 };
 }
 

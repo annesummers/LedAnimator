@@ -34,7 +34,18 @@ Led::Led(QObject* parent, Animation &animation, int row, int column) :
 
     iSignalMapper = new QSignalMapper(this);
 
-    QObject::connect(&animation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+    connect(&animation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+}
+
+Led::~Led() {
+    Frame* frame = NULL;
+    foreach(frame, iFrames) {
+        disconnect(frame, 0, this, 0);
+    }
+
+    disconnect(iSignalMapper, 0, this, 0);
+
+    disconnect(&iAnimation, 0, this, 0);
 }
 
 Frame& Led::frameAt(int frameNum) const {
@@ -66,16 +77,30 @@ void Led::numFramesChanged(int numFrames) {
     }
 #endif
 
-    for(int i = 0; i < numFrames; i++) {
-        Frame* frame = new Frame(this);
-        iFrames.append(frame);
+    int oldNumFrames = iFrames.count();
 
-        iSignalMapper->setMapping(frame, i + INITIAL_FRAME);
+    if(numFrames > oldNumFrames) {  // we need to add some frames
+        for(int i = oldNumFrames; i < numFrames; i++) {
+            Frame* frame = new Frame(this);
+            iFrames.append(frame);
 
-        connect(frame, SIGNAL(colourChanged()), iSignalMapper, SLOT(map()));
+            iSignalMapper->setMapping(frame, i + INITIAL_FRAME);
+
+            connect(frame, SIGNAL(colourChanged()), iSignalMapper, SLOT(map()));
+        }
+    } else if(numFrames <= iFrames.count()) { // we need to remove some frames; take them from the end
+        for(int i = oldNumFrames; i <= numFrames; i--) {
+            Frame* frame = iFrames.at(i);
+
+            iFrames.removeAt(i);
+            delete frame;
+        }
     }
 
-    connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
+    if(oldNumFrames != numFrames) {
+        // do I have to reconnect?
+        connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
+    }
 }
 
 void Led::colourChanged(int frameNum) {

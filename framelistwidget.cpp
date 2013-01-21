@@ -25,19 +25,28 @@ FrameListWidget::FrameListWidget(QWidget *parent, const Animation& animation, co
 // slots --------------------
 
 void FrameListWidget::numFramesChanged(int numFrames) {
-    // TODO what if threre are fewer frames?
 
     int oldNumFrames = iFramesList.count();
+
     if(numFrames > oldNumFrames) {  // we need to add more frames
         for(int i = oldNumFrames; i < numFrames; i++) {
             FrameWidget* frame = new FrameWidget(this, *this, iLed.frameAt(i + INITIAL_FRAME));
             iFramesList.append(frame);
         }
+    } else if (numFrames < oldNumFrames ) {  // we need to remove some frames; take them from the end
+        for(int i = oldNumFrames; i >= numFrames; i--) {
+            FrameWidget* frame = iFramesList.at(i);
+
+            iFramesList.removeAt(i);
+            delete frame;
+        }
     }
 
-    resize(parentWidget()->width(), height());
+    if(oldNumFrames != numFrames) {
+        resize(parentWidget()->width(), height());
 
-    emit resized(pos().x(), width());
+        emit resized(pos().x(), width());
+    }
 }
 
 // from ColourGroupWidget -----------------------------
