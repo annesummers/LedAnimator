@@ -80,6 +80,7 @@ public:
 protected:
     ColourWidget& widgetAt(int row, int column);
     void getWidgetPosition(ColourWidget &widget, int *row, int *column);
+    bool validKeyPress(Qt::Key key);
 
 private:
     LedDetailsListWidget& iDetailsList;

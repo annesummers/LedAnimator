@@ -68,20 +68,12 @@ void FrameListWidget::getWidgetPosition(ColourWidget& widget, int* row, int* col
     ColourGroupWidget::getWidgetPosition(widget, row, column);
 }
 
-// events ------------------------------------
-
-void FrameListWidget::keyPressEvent(QKeyEvent *event) {
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
-
-        if(selectedCount() > 0) {
-            if((event->key() & Qt::RightArrow) != 0 ||
-               (event->key() & Qt::LeftArrow) != 0) {
-
-                selectDirection(event->key());
-            }
-        }
-    }
+bool FrameListWidget::validKeyPress(Qt::Key key) {
+    return key & Qt::Key_Right != 0 ||
+           key & Qt::Key_Left != 0;
 }
+
+// events ------------------------------------
 
 void FrameListWidget::resizeEvent(QResizeEvent *) {
     int numFrames = iFramesList.count();

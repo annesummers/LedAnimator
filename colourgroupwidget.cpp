@@ -73,10 +73,12 @@ void ColourGroupWidget::getWidgetPosition(ColourWidget &widget, int *row, int *c
 
 void ColourGroupWidget::setColour(QColor colour) {
     qDebug("setColour, %d", iSelected.count());
-    ColourWidget* item = NULL;
+    if(colour.isValid()) {
+        ColourWidget* item = NULL;
 
-    foreach(item, iSelected){
-        item->setColour(colour);
+        foreach(item, iSelected){
+            item->setColour(colour);
+        }
     }
 }
 
@@ -149,28 +151,33 @@ void ColourGroupWidget::selectArea(ColourWidget& widget) {
     doGroupSelection();
 }
 
-void ColourGroupWidget::selectDirection(int direction) {
-    if(!isGroupSelected()) {
+void ColourGroupWidget::selectDirection(Qt::Key direction) {
+    qDebug("selectDirection");
+    if(!isGroupSelected() && !isSingleSelected()) {
         return;
     }
 
     switch(direction) {
         case Qt::Key_Up:
+        qDebug("Direction Up");
             if(iLastSelectedRow - 1 >=0 ) {
                 iLastSelectedRow--;
             }
             break;
         case Qt::Key_Down:
+        qDebug("Direction Down");
             if(iLastSelectedRow + 1 < iNumRows ) {
                 iLastSelectedRow++;
             }
             break;
         case Qt::Key_Left:
+        qDebug("Direction Left");
             if(iLastSelectedColumn - 1 >=0) {
                 iLastSelectedColumn--;
             }
             break;
         case Qt::Key_Right:
+        qDebug("Direction Right");
             if(iLastSelectedColumn + 1 < iNumColumns) {
                 iLastSelectedColumn++;
             }
@@ -382,7 +389,38 @@ void ColourGroupWidget::getLeftRightTopBottomSelection(int* topRow, int* bottomR
 
 // events ---------------------------------
 
+void ColourGroupWidget::keyPressEvent(QKeyEvent *event) {
+    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
+        Qt::Key key = (Qt::Key)event->key();
+        qDebug("key press is ");
+        switch(key) {
+        case Qt::Key_Shift:
+            qDebug("Shift");
+            break;
+        case Qt::Key_Up:
+            qDebug("Up");
+            break;
+        case Qt::Key_Down:
+            qDebug("Down");
+            break;
+        case Qt::Key_Left:
+            qDebug("Left");
+            break;
+        case Qt::Key_Right:
+            qDebug("Right");
+            break;
+        }
+
+        if(selectedCount() > 0 && key != Qt::Key_Shift) {
+            if(validKeyPress(key)) {
+                selectDirection(key);
+            }
+        }
+    }
+}
+/*
 void ColourGroupWidget::dragEnterEvent(QDragEnterEvent* event) {
+    qDebug("ColourGroupWidget::dragEnter");
     // TODO mimetype from revelevant widget
     if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
          if (event->source() != 0) {
@@ -417,4 +455,4 @@ void ColourGroupWidget::dropEvent(QDropEvent *event) {
     } else {
         event->ignore();
     }
-}
+}*/

@@ -60,8 +60,10 @@ public:
     inline void handleExtraData(QDataStream& dataStream) { Q_UNUSED(dataStream); }
     inline void addExtraData(QDataStream& dataStream) { Q_UNUSED(dataStream); }
 
-    QString mimeType() const { return QString("test"); }
-    Qt::DropAction dropAction() const { Qt::LinkAction; }
+    inline QString mimeType() const { return QString("test"); }
+    inline Qt::DropAction dropAction() const { return Qt::LinkAction; }
+
+    inline QColorDialog& colourDialog() { return *iColourDialog; }
 };
 
 class ColourGroupTestWidget : public ColourGroupWidget {
@@ -72,10 +74,11 @@ public:
 
     ColourWidget& widgetAt(int row, int column);
     virtual void getWidgetPosition(ColourWidget& widget, int* row, int* column);
+    bool validKeyPress(Qt::Key key);
 
     QVector<WidgetVector*>*  iWidgetArray;
 
-    inline void selectDirection(int direction) { selectDirection(direction); }
+    inline void selectDirection(Qt::Key direction) { ColourGroupWidget::selectDirection(direction); }
     inline QList<ColourWidget*> selectedItems() { return iSelected; }
 };
 
@@ -101,13 +104,77 @@ private slots:
     void fade_data();
     void fade();
 
-    void copyPasteOne_data();
-    void copyPasteOne();
+    void clickOne_data();
+    void clickOne();
 
-    void copyPasteMany_data();
-    void copyPasteMany();
+    void clickOneClickOne_data();
+    void clickOneClickOne();
 
-    void compareSelected(ColourGroupTestWidget* groupWidget, QList<ColourWidget*> selected, QList<QPoint> selectedPoints);
+    void doubleClickOne_data();
+    void doubleClickOne();
+
+    void doubleClickOneClickOne_data();
+    void doubleClickOneClickOne();
+
+    void clickOneDoubleClickOne_data();
+    void clickOneDoubleClickOne();
+
+    void doubleClickOneDoubleClickOne_data();
+    void doubleClickOneDoubleClickOne();
+
+    void ctrlClickMany_data();
+    void ctrlClickMany();
+
+    void clickOneCtrlClickMany_data();
+    void clickOneCtrlClickMany();
+
+    void ctrlClickManyClickOne_data();
+    void ctrlClickManyClickOne();
+
+    void clickShiftClick_data();
+    void clickShiftClick();
+
+    void clickShiftDirection_data();
+    void clickShiftDirection();
+
+    void clickShiftDirectionClick_data();
+    void clickShiftDirectionClick();
+
+    void dragDropOneInternal_data();
+    void dragDropOneInternal();
+
+    void dragDropManyInternal_data();
+    void dragDropManyInternal();
+
+    void dragDropOneExternal_data();
+    void dragDropOneExternal();
+
+    void dragDropManyExternal_data();
+    void dragDropManyExternal();
+
+    void copyPasteOneInternal_data();
+    void copyPasteOneInternal();
+
+    void copyPasteManyInternal_data();
+    void copyPasteManyInternal();
+
+    void copyPasteOneExternal_data();
+    void copyPasteOneExternal();
+
+    void copyPasteManyExternal_data();
+    void copyPasteManyExternal();
+
+    void dismissDialog();
+
+private:
+    void compareSelected(ColourGroupTestWidget* groupWidget/*, QList<ColourWidget*> selected*/, QList<QPoint> selectedPoints);
+    void doubleClickWidgetAndDismissDialog(ColourGroupTestWidget &groupWidget, QPoint widgetPoint);
+    void calculateSelectedPoints(QList<QPoint>& selectedPoints, QPoint firstSelected, QPoint secondSelected);
+
+    void areaData();
+    void directionData();
+
+    QColorDialog* iColourDialog;
 };
 }
 

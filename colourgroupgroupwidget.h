@@ -11,7 +11,7 @@ class ColourGroupGroupWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit ColourGroupGroupWidget(QWidget *parent, int numGroups);
+    explicit ColourGroupGroupWidget(QWidget *parent);
     
 protected:
     void addGroup(ColourGroupWidget& newGroup) { iColourGroups.append(&newGroup); }

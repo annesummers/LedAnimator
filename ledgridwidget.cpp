@@ -112,6 +112,14 @@ ColourWidget& LedGridWidget::widgetAt(int row, int column) {
     return static_cast<ColourWidget&>(*(iLedGridLayout->itemAtPosition(row, column)->widget()));
 }
 
+
+bool LedGridWidget::validKeyPress(Qt::Key key) {
+    return key & Qt::Key_Right != 0 ||
+           key & Qt::Key_Left != 0 ||
+           key & Qt::Key_Up != 0 ||
+           key & Qt::Key_Down != 0;
+}
+
 // events ---------------------------
 
 void LedGridWidget::mousePressEvent(QMouseEvent* event) {
@@ -182,7 +190,7 @@ void LedGridWidget::mouseReleaseEvent(QMouseEvent *) {
     update();
 }
 
-void LedGridWidget::keyPressEvent(QKeyEvent *event) {
+/*void LedGridWidget::keyPressEvent(QKeyEvent *event) {
     if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
 
         if(selectedCount() > 0) {
@@ -195,7 +203,7 @@ void LedGridWidget::keyPressEvent(QKeyEvent *event) {
             }
         }
     }
-}
+}*/
 
 void LedGridWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);

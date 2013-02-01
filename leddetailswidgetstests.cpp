@@ -21,7 +21,7 @@ LedDetailsWidgetsTests::LedDetailsWidgetsTests(QObject *parent) :
 void LedDetailsWidgetsTests::initTestCase() {
     iEngine = new Engine(this);
     iAnimation = new Animation(*iEngine);
-    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
 
    // QTest::mouseClick()
 }

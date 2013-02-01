@@ -36,12 +36,14 @@ protected:
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent*);
 
-    void keyPressEvent(QKeyEvent *);
+    //void keyPressEvent(QKeyEvent *);
 
     void paintEvent(QPaintEvent*);
 
     void getWidgetPosition(ColourWidget& widget, int* row, int* column);
     ColourWidget& widgetAt(int row, int column);
+
+    bool validKeyPress(Qt::Key key);
 
 private:
     int gridWidth();

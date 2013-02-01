@@ -42,6 +42,7 @@ void LedAnimCodec::writeAnimation() {
     writeCharacter(iAnimation.numRows());
     writeCharacter(iAnimation.numColumns());
     writeCharacter(iAnimation.numFrames());
+    writeCharacter(iAnimation.frameFrequency());
 
     try {
         for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
@@ -67,8 +68,9 @@ void LedAnimCodec::readAnimation() {
     int ledRows = readCharacter().intValue();
     int ledColumns = readCharacter().intValue();
     int numFrames = readCharacter().intValue();
+    int frameFrequency = readCharacter().intValue();
 
-    iAnimation.setupNew(ledRows, ledColumns, numFrames, DEFAULT_FRAME_FREQUENCY);
+    iAnimation.setupNew(ledRows, ledColumns, numFrames, frameFrequency);
 
     int ledNum = 0;
 

@@ -81,10 +81,14 @@ void LedDetailsSelectorGroupWidget::getWidgetPosition(ColourWidget &widget, int 
     }*/
 }
 
+bool LedDetailsSelectorGroupWidget::validKeyPress(Qt::Key key) {
+    return false;
+}
+
 // ------------------------------------
 
 LedDetailsListWidget::LedDetailsListWidget(QWidget *parent, const Animation &animation) :
-    ColourGroupGroupWidget(parent, 0),
+    ColourGroupGroupWidget(parent),
     iAnimation(animation) {
 
     iLedDetailsList = new QVBoxLayout(this);

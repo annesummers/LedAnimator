@@ -17,6 +17,7 @@
 #include <QSettings>
 #include <QCoreApplication>
 #include <QMessageBox>
+#include <QInputDialog>
 
 using namespace ImportExport;
 
@@ -112,16 +113,18 @@ void Engine::doSave(QString fileName) {
 // slots -------------------
 
 void Engine::newAnimation() {
-    NewAnimationDialog newAnimationDialog(NULL, *this);
-    if(newAnimationDialog.exec() == QDialog::Accepted) {
-        setupUI();
+    if(askSaveAnimation()) {
+        NewAnimationDialog newAnimationDialog(NULL, *this);
+        if(newAnimationDialog.exec() == QDialog::Accepted) {
+            setupUI();
 
-        iAnimation->setupNew(newAnimationDialog.iNumRows,
-                             newAnimationDialog.iNumColumns,
-                             newAnimationDialog.iNumFrames,
-                             newAnimationDialog.iFrameFrequency);
+            iAnimation->setupNew(newAnimationDialog.iNumRows,
+                                 newAnimationDialog.iNumColumns,
+                                 newAnimationDialog.iNumFrames,
+                                 newAnimationDialog.iFrameFrequency);
 
-        iMainWindow->show();
+            iMainWindow->show();
+        }
     }
 }
 
@@ -148,9 +151,19 @@ void Engine::saveAnimationAs() {
 }
 
 void Engine::setNumFrames() {
-
+    bool ok;
+    int i = QInputDialog::getInt(iMainWindow, tr("Choose animation number of frames"),
+                                  tr("Number of frames:"), 1, 1, 1000, 1, &ok);
+    if (ok) {
+        iAnimation->setNumFrames(i);
+    }
 }
 
 void Engine::setFrameFrequency() {
-
+    bool ok;
+    int i = QInputDialog::getInt(iMainWindow, tr("Choose animation frame frequency"),
+                                  tr("Frame frequency (ms):"), 1000, 1, 10000, 1, &ok);
+    if (ok) {
+        iAnimation->setFrameFrequency(i);
+    }
 }

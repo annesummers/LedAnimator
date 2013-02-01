@@ -138,7 +138,7 @@ void AnimationTests::setupNew() {
     QSignalSpy numFramesSpy(iAnimation, SIGNAL(numFramesChanged(int)));
 
     try {
-        iAnimation->setupNew(numRows, numColumns, numFrames);
+        iAnimation->setupNew(numRows, numColumns, numFrames, DEFAULT_FRAME_FREQUENCY);
 
         QCOMPARE(newLedSpy.count(), ledCount);
         QCOMPARE(currentFrameSpy.count(), 1);

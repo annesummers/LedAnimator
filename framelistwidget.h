@@ -28,7 +28,9 @@ protected:
     ColourWidget& widgetAt(int row, int column);
     void getWidgetPosition(ColourWidget& widget, int* row, int* column);
 
-    void keyPressEvent(QKeyEvent *);
+    bool validKeyPress(Qt::Key key);
+
+    //void keyPressEvent(QKeyEvent *);
 
     void resizeEvent(QResizeEvent *);
     void paintEvent(QPaintEvent *);

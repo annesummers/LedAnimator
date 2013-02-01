@@ -8,6 +8,7 @@
 #define SELECTABLEWIDGET_H
 
 #include <QWidget>
+#include <QColorDialog>
 
 #include "selectable.h"
 
@@ -35,6 +36,7 @@ protected slots:
 private slots:
     inline void selected() { update(); }
 
+    void chooseColour();
     void fade();
     void copy();
     void paste();
@@ -56,6 +58,7 @@ protected:
 
     QPoint   iDragStartPosition;
 
+    QAction* iSetColourAction;
     QAction* iFadeAction;
     QAction* iCopyAction;
     QAction* iPasteAction;
@@ -64,6 +67,8 @@ protected:
     Selectable&         iItem;
 
     bool iDoubleClick;
+
+    QColorDialog* iColourDialog;
 };
 }
 

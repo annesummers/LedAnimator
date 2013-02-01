@@ -2,7 +2,7 @@
 
 using namespace Ui;
 
-ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent, int numGroups) :
+ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent) :
     QWidget(parent)
 {
 }

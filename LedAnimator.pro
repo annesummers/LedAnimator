@@ -82,7 +82,6 @@ HEADERS += \
     colourgroupwidget.h \
     colourgroupgroupwidget.h \
     colourwidget.h \
-    dialog.h \
     newanimationdialog.h
 
 SOURCES += \
@@ -107,11 +106,9 @@ SOURCES += \
     colourgroupwidget.cpp \
     colourwidget.cpp \
     colourgroupgroupwidget.cpp \
-    dialog.cpp \
     newanimationdialog.cpp
 
 FORMS += \
-    dialog.ui \
     newanimation.ui
 
 

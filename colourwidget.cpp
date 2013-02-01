@@ -17,9 +17,15 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     QWidget(parent),
     iColourGroup(groupWidget),
     iItem(item),
-    iDoubleClick(false){
+    iDoubleClick(false),
+    iColourDialog(NULL){
 
     setAcceptDrops(true);
+
+    iSetColourAction = new QAction(tr("&Set colour"), this);
+    iSetColourAction->setStatusTip(tr("Choose a colour"));
+
+    connect(iSetColourAction, SIGNAL(triggered()), this, SLOT(chooseColour()));
 
     iCopyAction = new QAction(tr("&Copy"), this);
     iCopyAction->setShortcuts(QKeySequence::Copy);
@@ -39,6 +45,13 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     connect(iFadeAction, SIGNAL(triggered()), this, SLOT(fade()));
 
     connect(&item, SIGNAL(selected()), this, SLOT(selected()));
+
+    iColourDialog = new QColorDialog(this);
+    connect(iColourDialog, SIGNAL(currentColorChanged(QColor)), &iColourGroup, SLOT(setColour(QColor)));
+}
+
+void ColourWidget::chooseColour() {
+    iColourDialog->exec();
 }
 
 void ColourWidget::colourChanged() {
@@ -126,12 +139,16 @@ void ColourWidget::mouseReleaseEvent(QMouseEvent* event){
 }
 
 void ColourWidget::mouseMoveEvent(QMouseEvent *event) {
+    qDebug("mouse move event");
     if (event->buttons() != Qt::LeftButton) {
+        qDebug("mouse move event NOT LEFT");
         return;
     }
 
     if ((event->pos() - iDragStartPosition).manhattanLength()
              < QApplication::startDragDistance()) {
+
+        qDebug("mouse move event TOO SHORT");
        return;
     }
 
@@ -148,9 +165,9 @@ void ColourWidget::mouseMoveEvent(QMouseEvent *event) {
     drag->setHotSpot(pos());
 
     if (drag->exec(Qt::CopyAction | dropAction()) == Qt::CopyAction | dropAction()) {
-     //qDebug(QString("Successfully dragged and dropped led %1,%2").arg(iLed.row()).arg(iLed.column()));
+     qDebug("Successfully dragged and dropped item");
     } else {
-     //qDebug(QString("Wrong! led %1,%2").arg(iLed.row()).arg(iLed.column()));
+     qDebug("Wrong!");
     }
 }
 
@@ -161,23 +178,21 @@ void ColourWidget::mouseDoubleClickEvent(QMouseEvent* event) {
         return;
     }
 
-    //iColourGroup.select(*this, false);
-    //iColourGroup.selectOne(*this);
-
-    QColor newColour = QColorDialog::getColor(colour(),
-                                           this,
-                                           "Select Color",
-                                           QColorDialog::DontUseNativeDialog);
-    if(newColour.isValid()) {
-        iColourGroup.setColour(newColour);
+    if(!iItem.isSelected()) {
+        iColourGroup.selectOne(*this);
     }
+
+    chooseColour();
 }
 
 void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
-    //iColourGroup.selectOne(*this);
+    if(!iColourGroup.isGroupSelected() && !iItem.isSelected()) {
+        iColourGroup.selectOne(*this);
+    }
 
     QMenu menu(this);
 
+    menu.addAction(iSetColourAction);
     menu.addAction(iFadeAction);
     menu.addAction(iCopyAction);
 

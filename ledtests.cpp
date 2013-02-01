@@ -59,7 +59,7 @@ void LedTests::constructor() {
 
     try {
         //iAnimation = new Animation(*(iEngine));
-        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
 
         led = new Led(iAnimation, *iAnimation, row, column);
 
@@ -94,7 +94,7 @@ void LedTests::numFramesChanged() {
     //Animation* animation = new Animation(*(iEngine));
 
     try {
-        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
         Led& led = iAnimation->ledAt(0, 0);
 
         led.numFramesChanged(numFrames); // should always throw an exception
@@ -141,7 +141,7 @@ void LedTests::setCurrentColour() {
 
     try {
         if(animationSetup){
-            iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+            iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
         }
 
         led = new Led(iAnimation, *iAnimation, 0, 0);
@@ -181,7 +181,7 @@ void LedTests::select() {
     QFETCH(bool, selection);
 
     //Animation* animation = new Animation(*(iEngine));
-    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES);
+    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
 
     Led* led = new Led(iAnimation, *iAnimation, 0, 0);
     led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects

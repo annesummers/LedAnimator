@@ -25,8 +25,6 @@ public:
     void select(ColourWidget &widget, bool select);
     void selectArea(ColourWidget& widget);
 
-    void setColour(QColor colour);
-
     inline void setMaxRow(int max) { iNumRows = max; }
     inline void setMaxColumn(int max) { iNumColumns = max; }
 
@@ -39,21 +37,27 @@ public:
     bool isMultipleSelected();
     bool isSingleSelected();
 
+public slots:
+    void setColour(QColor colour);
+
 private slots:
     void nextColour(QColor colour);
 
 protected:
-    void dragEnterEvent(QDragEnterEvent* event);
-    void dragMoveEvent(QDragMoveEvent* event);
-    void dropEvent(QDropEvent* event);
+   // void dragEnterEvent(QDragEnterEvent* event);
+   // void dragMoveEvent(QDragMoveEvent* event);
+  //  void dropEvent(QDropEvent* event);
+    void keyPressEvent(QKeyEvent *event);
 
     virtual ColourWidget& widgetAt(int row, int column);
     virtual void getWidgetPosition(ColourWidget& widget, int* row, int* column);
 
+    virtual bool validKeyPress(Qt::Key key) = 0;
+
     inline int selectedCount() { return iSelected.count(); }
 
     void clearSelection();
-    void selectDirection(int direction);
+    void selectDirection(Qt::Key direction);
 
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }
