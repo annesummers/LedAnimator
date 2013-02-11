@@ -18,7 +18,11 @@
 using namespace Ui;
 using namespace Exception;
 
-LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, Led& led, ColourGroupWidget& ledGroup) :
+LedDetailsWidget::LedDetailsWidget(QWidget *parent,
+                                   const Animation &animation,
+                                   Led& led,
+                                   ColourGroupWidget& ledGroup,
+                                   ColourGroupGroupWidget &framesListGroup) :
     QWidget(parent),
     iPositionLabel(NULL),
     iCurrentFrameWidget(NULL),
@@ -32,7 +36,7 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent, const Animation &animation, 
     iCurrentFrameWidget->move(50, 10);
     iCurrentFrameWidget->resize(20, 20);
 
-    iFramesListWidget = new FrameListWidget(this, animation, led);
+    iFramesListWidget = new FrameListWidget(this, animation, led, framesListGroup);
     iFramesListWidget->move(iCurrentFrameWidget->width() + 60, 5);
 
     connect(iFramesListWidget, SIGNAL(resized(int,int)), this, SLOT(framesListResized(int, int)));
@@ -71,7 +75,9 @@ ColourWidget& LedDetailsSelectorGroupWidget::widgetAt(int row, int column) {
 }
 
 void LedDetailsSelectorGroupWidget::getWidgetPosition(ColourWidget &widget, int *row, int *column) {
+    Q_UNUSED(widget)
     column = 0;
+    row = 0;
 
    /* for(int i = 0; i < iDetailsList.count(); i++) {
         if(widgetAt(i, 0). == widget) {
@@ -82,6 +88,7 @@ void LedDetailsSelectorGroupWidget::getWidgetPosition(ColourWidget &widget, int 
 }
 
 bool LedDetailsSelectorGroupWidget::validKeyPress(Qt::Key key) {
+    Q_UNUSED(key);
     return false;
 }
 
@@ -94,7 +101,8 @@ LedDetailsListWidget::LedDetailsListWidget(QWidget *parent, const Animation &ani
     iLedDetailsList = new QVBoxLayout(this);
     setLayout(iLedDetailsList);
 
-    iSelectorGroupWidget = new LedDetailsSelectorGroupWidget(*this);
+    iSelectorGroup = new LedDetailsSelectorGroupWidget(*this);
+    iFramesListGroup = new ColourGroupGroupWidget(this);
 }
 
 void LedDetailsListWidget::addLed(int row, int column) {
@@ -103,7 +111,7 @@ void LedDetailsListWidget::addLed(int row, int column) {
     if(!iShownLeds.contains(&led)) {
         iShownLeds.append(&led);
 
-        LedDetailsWidget* ledDetails = new LedDetailsWidget(this, iAnimation, led, *iSelectorGroupWidget);
+        LedDetailsWidget* ledDetails = new LedDetailsWidget(this, iAnimation, led, *iSelectorGroup, *iFramesListGroup);
         iLedDetailsList->addWidget(ledDetails, 1);
 
         ledDetails->setMaximumHeight(40);
@@ -114,7 +122,7 @@ void LedDetailsListWidget::addLed(int row, int column) {
         setMinimumHeight(count * 50);
         setMaximumHeight(count * 50);
 
-        iSelectorGroupWidget->setMaxColumn(count);
+        iSelectorGroup->setMaxColumn(count);
 
         addGroup(ledDetails->framesListWidget());
 

@@ -132,7 +132,9 @@ void Engine::loadAnimation() {
     if(askSaveAnimation()) {
         QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Open Animation", "~", "Led Animation Files (*.anim)");
 
-        doLoad(fileName);
+        if(fileName != "") {
+            doLoad(fileName);
+        }
     }
 }
 
@@ -147,7 +149,9 @@ void Engine::saveAnimation() {
 void Engine::saveAnimationAs() {
     QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Save Animation", "~", "Led Animation Files (*.anim)");
 
-    doSave(fileName);
+    if(fileName != "") {
+        doSave(fileName);
+    }
 }
 
 void Engine::setNumFrames() {

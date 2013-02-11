@@ -14,8 +14,6 @@
 #include "colourgroupwidget.h"
 #include "colourgroupgroupwidget.h"
 
-//class Led;
-
 namespace Ui {
 
 class LedPositionWidget;
@@ -42,14 +40,20 @@ private:
 
     QList<Led*>                     iShownLeds;
     QVBoxLayout*                    iLedDetailsList;
-    LedDetailsSelectorGroupWidget*   iSelectorGroupWidget;
+    LedDetailsSelectorGroupWidget*  iSelectorGroup;
+
+    ColourGroupGroupWidget*         iFramesListGroup;
 };
 
 class LedDetailsWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit LedDetailsWidget(QWidget *parent, const Animation &animation, Led &led, ColourGroupWidget& groupWidget);
+    explicit LedDetailsWidget(QWidget *parent,
+                              const Animation &animation,
+                              Led &led,
+                              ColourGroupWidget& groupWidget,
+                              ColourGroupGroupWidget& framesListGroup);
 
     Led& led();
 
@@ -69,6 +73,7 @@ private:
     FrameListWidget*    iFramesListWidget;
 
     int iFramesWidgetWidth;
+
 };
 
 class LedDetailsSelectorGroupWidget : public ColourGroupWidget {

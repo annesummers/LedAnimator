@@ -25,6 +25,9 @@ public:
 private slots:
     void playClicked();
     void firstClicked();
+    void previousClicked();
+    void nextClicked();
+    void lastClicked();
 
     void currentFrameChanged(int currentFrame);
 
@@ -32,7 +35,10 @@ private:
     Animation&      iAnimation;
 
     QPushButton*    iFirstButton;
+    QPushButton*    iPreviousButton;
     QPushButton*    iPlayButton;
+    QPushButton*    iNextButton;
+    QPushButton*    iLastButton;
     QLabel*         iFrameNumberLabel;
 };
 }

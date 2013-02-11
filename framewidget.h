@@ -25,8 +25,8 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
-    void addExtraData(QDataStream& dataStream) {}
-    void handleExtraData(QDataStream &dataStream) {}
+    void addExtraData(QDataStream& dataStream) { Q_UNUSED(dataStream); }
+    void handleExtraData(QDataStream &dataStream) { Q_UNUSED(dataStream); }
 
     void setColour(QColor colour) { frame().setColour(colour); }
     const QColor colour() const { return frame().colour(); }

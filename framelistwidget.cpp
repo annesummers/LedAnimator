@@ -3,6 +3,7 @@
 #include "animation.h"
 #include "led.h"
 #include "framewidget.h"
+#include "colourgroupgroupwidget.h"
 
 #include "exceptions.h"
 
@@ -11,8 +12,11 @@
 using namespace Exception;
 using namespace Ui;
 
-FrameListWidget::FrameListWidget(QWidget *parent, const Animation& animation, const Led &led) :
-    ColourGroupWidget(parent, 0, animation.numFrames()),
+FrameListWidget::FrameListWidget(QWidget *parent,
+                                 const Animation& animation,
+                                 const Led &led,
+                                 ColourGroupGroupWidget &framesListGroup) :
+    ColourGroupWidget(parent, 0, animation.numFrames(), &framesListGroup),
     iLed(led) {
 
     numFramesChanged(animation.numFrames());

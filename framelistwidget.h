@@ -16,7 +16,10 @@ class FrameListWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    explicit FrameListWidget(QWidget *parent, const Animation &animation, const Led& led);
+    explicit FrameListWidget(QWidget *parent,
+                             const Animation &animation,
+                             const Led& led,
+                             ColourGroupGroupWidget &framesListGroup);
 
 signals:
     void resized(int x, int newWidth);

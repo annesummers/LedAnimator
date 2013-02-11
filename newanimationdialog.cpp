@@ -29,9 +29,3 @@ void NewAnimationDialog::on_iNumRowsSpin_valueChanged(int newValue) {
 void NewAnimationDialog::on_iNumColumnsSpin_valueChanged(int newValue) {
     iNumColumns = newValue;
 }
-
-/*void NewAnimationDialog::accept() {
-    iEngine.setupNewAnimation(iNumRows, iNumColumns, iNumFrames, iFrameFrequency);
-
-    QDialog::accept();
-}*/

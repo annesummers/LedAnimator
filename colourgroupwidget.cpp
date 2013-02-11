@@ -10,6 +10,7 @@
 #include "colourwidget.h"
 #include "selectable.h"
 #include "fadecalculator.h"
+#include "colourgroupgroupwidget.h"
 
 #include "defaults.h"
 #include "exceptions.h"
@@ -18,17 +19,23 @@ using namespace Exception;
 using namespace Ui;
 
 ColourGroupWidget::ColourGroupWidget(QWidget *parent,
-                                             int maxRow,
-                                             int maxColumn) :
+                                     int maxRow,
+                                     int maxColumn,
+                                     ColourGroupGroupWidget *groupGroup) :
     QWidget(parent),
+    iFadeCalculator(NULL),
     iNumRows(maxRow),
     iNumColumns(maxColumn),
     iFirstSelectedRow(0),
     iLastSelectedRow(0),
     iFirstSelectedColumn(0),
     iLastSelectedColumn(0),
-    iNextFrame(0),
-    iFrameIncrement(true) {
+    iFadeParameters(NULL),
+    iGroupGroup(groupGroup) {
+
+    if(iGroupGroup != NULL) {
+        iGroupGroup->addGroup(*this);
+    }
 }
 
 ColourWidget& ColourGroupWidget::widgetAt(int row, int column) {
@@ -52,6 +59,7 @@ ColourWidget& ColourGroupWidget::widgetAt(int row, int column) {
 }
 
 void ColourGroupWidget::getWidgetPosition(ColourWidget &widget, int *row, int *column) {
+     Q_UNUSED(widget);
 #ifndef NDEBUG
     if(*row < 0) {
         throw IllegalArgumentException("ColourGroupWidget::getWidgetPosition : Row is negative");
@@ -72,7 +80,7 @@ void ColourGroupWidget::getWidgetPosition(ColourWidget &widget, int *row, int *c
 }
 
 void ColourGroupWidget::setColour(QColor colour) {
-    qDebug("setColour, %d", iSelected.count());
+   // qDebug("setColour, %d", iSelected.count());
     if(colour.isValid()) {
         ColourWidget* item = NULL;
 
@@ -90,8 +98,8 @@ bool ColourGroupWidget::isMultipleSelected() {
 }
 
 bool ColourGroupWidget::isGroupSelected() {
-    return  !isMultipleSelected() &&
-            !isSingleSelected();
+    return  !isSingleSelected() &&
+            !isMultipleSelected();
 }
 
 bool ColourGroupWidget::isSingleSelected() {
@@ -102,9 +110,9 @@ bool ColourGroupWidget::isSingleSelected() {
 
 // selecting ----------------------------
 
-void ColourGroupWidget::select(ColourWidget &widget, bool selected) {
-    qDebug("select %d", selected);
-    doSelect(widget, selected);
+void ColourGroupWidget::toggle(ColourWidget &widget) {
+    //qDebug("select %d", selected);
+    doSelect(widget, !widget.isSelected());
 
     if(selectedCount() == 1) {
         setSingleSelected(widget);
@@ -113,35 +121,36 @@ void ColourGroupWidget::select(ColourWidget &widget, bool selected) {
     }
 }
 
-void ColourGroupWidget::selectOne(ColourWidget &widget) {
-    qDebug("selectOne");
+void ColourGroupWidget::toggleOne(ColourWidget &widget) {
     bool selected = false;
 
-    if(iSelected.count() > 1) {
+    if(iSelected.count() > 1 ||
+       (iSelected.count() == 1 &&
+        iSelected.at(0) != &widget) ||
+       iSelected.isEmpty()) {
         selected = true;
     }
-
-    if(iSelected.count() == 1 && iSelected.at(0) != &widget) {
-        selected = true;
-    }
-
-    if(iSelected.isEmpty()) {
-        selected = true;
-    }
-
-    clearSelection();
 
     if(selected){
-        doSelect(widget, selected);
-
-        setSingleSelected(widget);
+        selectOne(widget);
     } else {
+        clearSelection();
+
         clearGroupSelection();
     }
 }
 
+void ColourGroupWidget::selectOne(ColourWidget &widget) {
+    //qDebug("selectOne");
+    clearSelection();
+
+    doSelect(widget, true);
+
+    setSingleSelected(widget);
+}
+
 void ColourGroupWidget::selectArea(ColourWidget& widget) {
-    qDebug("selectArea");
+    //qDebug("selectArea");
     if(!isSingleSelected()) {
         return;
     }
@@ -152,36 +161,34 @@ void ColourGroupWidget::selectArea(ColourWidget& widget) {
 }
 
 void ColourGroupWidget::selectDirection(Qt::Key direction) {
-    qDebug("selectDirection");
-    if(!isGroupSelected() && !isSingleSelected()) {
+    if(!isSingleSelected() &&
+       !isGroupSelected()) {
         return;
     }
 
     switch(direction) {
         case Qt::Key_Up:
-        qDebug("Direction Up");
             if(iLastSelectedRow - 1 >=0 ) {
                 iLastSelectedRow--;
             }
             break;
         case Qt::Key_Down:
-        qDebug("Direction Down");
             if(iLastSelectedRow + 1 < iNumRows ) {
                 iLastSelectedRow++;
             }
             break;
         case Qt::Key_Left:
-        qDebug("Direction Left");
             if(iLastSelectedColumn - 1 >=0) {
                 iLastSelectedColumn--;
             }
             break;
         case Qt::Key_Right:
-        qDebug("Direction Right");
             if(iLastSelectedColumn + 1 < iNumColumns) {
                 iLastSelectedColumn++;
             }
             break;
+    default:
+        break;
     }
 
     doGroupSelection();
@@ -213,6 +220,10 @@ void ColourGroupWidget::clearSelection() {
 void ColourGroupWidget::doSelect(ColourWidget &widget, bool selected) {
     if(selected) {
         iSelected.append(&widget);
+
+        if(iGroupGroup != NULL) {
+            iGroupGroup->selected(*this);
+        }
     } else {
         iSelected.removeOne(&widget);
     }
@@ -256,43 +267,182 @@ void ColourGroupWidget::doGroupSelection() {
 
 // fading ----------------------------
 
-void ColourGroupWidget::fade() {
-    if(!isGroupSelected()) {
-        return;
+void ColourGroupWidget::setupFade(QColor fadeToColour) {
+    if(iFadeCalculator != NULL || iFadeParameters != NULL) {
+        throw IllegalStateException("ColourGroupWidget::fade : Fade data is not NULL");
     }
 
-    QColor colour = QColorDialog::getColor(Qt::white,
-                                           this,
-                                           "Select Color",
-                                           QColorDialog::DontUseNativeDialog);
-    if(colour.isValid()) {
-        FadeCalculator* fadeCalculator = new FadeCalculator(this,
-                                            widgetAt(0, iFirstSelectedColumn).colour(),
-                                            colour,
-                                            iSelected.count() - 1);
+    iFadeParameters = new FadeParameters;
 
-        connect(fadeCalculator, SIGNAL(colourCalculated(QColor)), this, SLOT(nextColour(QColor)));
+    int rowSpan;
+    int columnSpan;
 
-        iNextFrame = iFirstSelectedColumn;
+    if(iFirstSelectedRow > iLastSelectedRow) {
+        rowSpan = iFirstSelectedRow - iLastSelectedRow + 1;
+        iFadeParameters->rowIncrement = false;
+    } else {
+        rowSpan = iLastSelectedRow - iFirstSelectedRow + 1;
+        iFadeParameters->rowIncrement = true;
+    }
 
-        if(iFirstSelectedColumn < iLastSelectedColumn) {
-            iFrameIncrement = true;
+    if(iFirstSelectedColumn > iLastSelectedColumn) {
+        columnSpan =  iFirstSelectedColumn - iLastSelectedColumn + 1;
+        iFadeParameters->columnIncrement = false;
+    } else {
+        columnSpan = iLastSelectedColumn - iFirstSelectedColumn + 1;
+        iFadeParameters->columnIncrement = true;
+    }
+
+    iFadeParameters->maxWidgets = qMin(rowSpan, columnSpan);
+    iFadeParameters->increments = rowSpan + columnSpan - 2;
+
+    if(iFadeParameters->columnIncrement) {
+        iFadeParameters->nextColumn = 0;
+    } else {
+        iFadeParameters->nextColumn = iFadeParameters->increments;
+    }
+
+    if(iFadeParameters->rowIncrement) {
+        iFadeParameters->nextRow = 0;
+    } else {
+        iFadeParameters->nextRow = iFadeParameters->increments;
+    }
+
+    iFadeCalculator = new FadeCalculator(static_cast<QObject*>(this),
+                                widgetAt(iFirstSelectedRow, iFirstSelectedColumn).colour(),
+                                fadeToColour,
+                                iFadeParameters->increments);
+
+    connect(iFadeCalculator, SIGNAL(colourCalculated(QColor)), this, SLOT(colourCalculated(QColor)));
+    connect(iFadeCalculator, SIGNAL(fadeComplete()), this, SLOT(fadeComplete()));
+
+    iFadeParameters->rowSpan = rowSpan;
+    iFadeParameters->columnSpan = columnSpan;
+
+    iFadeParameters->maxWidgetsLineCount = 0;
+
+    if(columnSpan > rowSpan) {
+        iFadeParameters->numLinesMaxWidgets = columnSpan - rowSpan + 1;
+    } else if(columnSpan < rowSpan) {
+        iFadeParameters->numLinesMaxWidgets = rowSpan - columnSpan + 1;
+    } else {
+        iFadeParameters->numLinesMaxWidgets = 1;
+    }
+
+    iFadeParameters->numWidgets = 0;
+}
+
+void ColourGroupWidget::startFade() {
+    iFadeCalculator->start();
+}
+
+void ColourGroupWidget::colourCalculated(QColor colour) {
+    qDebug("\nNext row is %d, next column is %d, maxWidgets is %d", iFadeParameters->nextRow, iFadeParameters->nextColumn, iFadeParameters->maxWidgets);
+
+    if(iFadeParameters->numWidgets < iFadeParameters->maxWidgets) {
+        if(iFadeParameters->maxWidgetsLineCount == iFadeParameters->numLinesMaxWidgets) {
+            iFadeParameters->numWidgets--;
+        } else {
+            iFadeParameters->numWidgets++;
         }
+    }
 
-        // TODO make it work with areas
+    if(iFadeParameters->numWidgets == iFadeParameters->maxWidgets) {
+        if(iFadeParameters->maxWidgetsLineCount < iFadeParameters->numLinesMaxWidgets) {
+            iFadeParameters->maxWidgetsLineCount++;
+        } else if(iFadeParameters->maxWidgetsLineCount == iFadeParameters->numLinesMaxWidgets) {
+            iFadeParameters->numWidgets--;
+        }
+    }
 
-        fadeCalculator->start();
+    qDebug("numWidgets is %d", iFadeParameters->numWidgets);
+
+    int rowStart, rowEnd;
+
+    if(iFadeParameters->rowIncrement) {
+        rowStart = iFadeParameters->nextRow;
+        if(rowStart > iFadeParameters->rowSpan - 1) {
+            rowStart = iFadeParameters->rowSpan - 1;
+        }
+        qDebug("rowStart is %d", rowStart);
+
+        rowEnd = rowStart - iFadeParameters->numWidgets + 1;
+        qDebug("rowEnd is %d", rowEnd);
+    } else {
+        rowEnd = iFadeParameters->nextRow;
+        if(rowEnd > iFadeParameters->rowSpan - 1) {
+            rowEnd = iFadeParameters->rowSpan - 1;
+        }
+        qDebug("rowEnd is %d", rowEnd);
+
+        rowStart = rowEnd - iFadeParameters->numWidgets + 1;
+        qDebug("rowStart is %d", rowStart);
+    }
+
+    int columnStart, columnEnd;
+
+    if(iFadeParameters->columnIncrement) {
+        columnEnd = iFadeParameters->nextColumn;
+        if(columnEnd > iFadeParameters->columnSpan - 1) {
+            columnEnd = iFadeParameters->columnSpan - 1;
+        }
+        qDebug("columnEnd is %d", columnEnd);
+
+        columnStart = columnEnd - iFadeParameters->numWidgets + 1;
+        qDebug("columnStart is %d", columnStart);
+    } else {
+        columnStart = iFadeParameters->nextColumn;
+        if(columnStart > iFadeParameters->columnSpan - 1) {
+            columnStart = iFadeParameters->columnSpan - 1;
+        }
+        qDebug("columnStart is %d", columnStart);
+
+        columnEnd = columnStart - iFadeParameters->numWidgets + 1;
+        qDebug("columnEnd is %d", columnEnd);
+    }
+
+    int row, column;
+
+    for(row = rowStart, column = columnStart;
+        iFadeParameters->rowIncrement?row >= rowEnd:row<=rowEnd,
+        iFadeParameters->columnIncrement?column <= columnEnd:column >= columnEnd;
+        iFadeParameters->rowIncrement?row--:row++,
+        iFadeParameters->columnIncrement?column++:column--) {
+        qDebug("widget at %d,%d", row, column);
+        widgetAt(row, column).setColour(colour);
+    }
+
+    if(iFadeParameters->columnIncrement) {
+        iFadeParameters->nextColumn++;
+    } else {
+        iFadeParameters->nextColumn--;
+    }
+
+    if(iFadeParameters->rowIncrement) {
+        iFadeParameters->nextRow++;
+    } else {
+        iFadeParameters->nextRow--;
     }
 }
 
-void ColourGroupWidget::nextColour(QColor colour) {
-    widgetAt(0, iNextFrame).setColour(colour);
-
-    if(iFrameIncrement) {
-        iNextFrame++;
-    } else {
-        iNextFrame--;
+void ColourGroupWidget::fadeComplete() {
+    if(iFadeCalculator == NULL || iFadeParameters == NULL) {
+        throw IllegalStateException("ColourGroupWIdget::fadeComplete fade data is NULL");
     }
+
+    QTimer::singleShot(5, this, SLOT(deleteFader()));
+
+    delete iFadeParameters;
+    iFadeParameters = NULL;
+}
+
+void ColourGroupWidget::deleteFader() {
+    if(iFadeCalculator == NULL) {
+        throw IllegalStateException("ColourGroupWIdget::fadeComplete fade calculator is NULL");
+    }
+
+    delete iFadeCalculator;
+    iFadeCalculator = NULL;
 }
 
 const QByteArray ColourGroupWidget::mimeData() {
@@ -306,8 +456,8 @@ const QByteArray ColourGroupWidget::mimeData() {
 
     getLeftRightTopBottomSelection(&topRow, &bottomRow, &leftColumn, &rightColumn);
 
-    int num = (bottomRow + 1 - topRow) * (rightColumn + 1 - leftColumn);
-    dataStream << num;
+    dataStream << bottomRow + 1 - topRow
+               << rightColumn + 1 - leftColumn;
 
     for(int i = topRow; i < bottomRow + 1; i++) {
         for(int j = leftColumn; j < rightColumn + 1; j++) {
@@ -324,38 +474,24 @@ const QByteArray ColourGroupWidget::mimeData() {
 void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWidget) {
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
-    int topRow;
-    int bottomRow;
-    int leftColumn;
-    int rightColumn;
-
-    getLeftRightTopBottomSelection(&topRow, &bottomRow, &leftColumn, &rightColumn);
-
-    int rowSpan = bottomRow - topRow;
-    int columnSpan = rightColumn - leftColumn;
-
     int row;
     int column;
 
     getWidgetPosition(dropWidget, &row, &column);
 
-    if(rowSpan + row > iNumRows - 1) {
-        rowSpan = iNumRows - 1 - row;
-    }
-
-    if(columnSpan + column > iNumColumns - 1) {
-        columnSpan = iNumColumns - 1 - column;
-    }
-
     selectOne(dropWidget);
 
-    int num;
+    int rowSpan;
+    int columnSpan;
 
-    dataStream >> num;
+    dataStream >> rowSpan >> columnSpan;
 
-    for(int i = 0; i < rowSpan + 1; i++) {
-        for(int j = 0; j < columnSpan + 1; j++) {
-            ColourWidget& widget = widgetAt(i + row, j + column);
+    int rowEnd = row + rowSpan;
+    int columnEnd = column + columnSpan;
+
+    for(int i = row; i < rowEnd; i++) {
+        for(int j = column; j < columnEnd; j++) {
+            ColourWidget& widget = widgetAt(i, j);
 
             QColor colour;
             dataStream >> colour;
@@ -363,7 +499,7 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
             widget.setColour(colour);
             widget.handleExtraData(dataStream);
 
-            if(i == rowSpan && j == columnSpan) {
+            if(i == rowEnd - 1 && j == columnEnd - 1) {
                 selectArea(widget);
             }
         }
@@ -390,69 +526,21 @@ void ColourGroupWidget::getLeftRightTopBottomSelection(int* topRow, int* bottomR
 // events ---------------------------------
 
 void ColourGroupWidget::keyPressEvent(QKeyEvent *event) {
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
-        Qt::Key key = (Qt::Key)event->key();
-        qDebug("key press is ");
-        switch(key) {
-        case Qt::Key_Shift:
-            qDebug("Shift");
-            break;
-        case Qt::Key_Up:
-            qDebug("Up");
-            break;
-        case Qt::Key_Down:
-            qDebug("Down");
-            break;
-        case Qt::Key_Left:
-            qDebug("Left");
-            break;
-        case Qt::Key_Right:
-            qDebug("Right");
-            break;
-        }
+    Qt::Key key = (Qt::Key)event->key();
 
+    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
         if(selectedCount() > 0 && key != Qt::Key_Shift) {
             if(validKeyPress(key)) {
                 selectDirection(key);
+                return;
             }
         }
     }
-}
-/*
-void ColourGroupWidget::dragEnterEvent(QDragEnterEvent* event) {
-    qDebug("ColourGroupWidget::dragEnter");
-    // TODO mimetype from revelevant widget
-    if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
-         if (event->source() != 0) {
-             event->accept();
-         }
-     } else {
-         event->ignore();
-     }
-}
 
-void ColourGroupWidget::dragMoveEvent(QDragMoveEvent* event) {
-    // TODO mimetype from revelevant widget
-    if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
-        if (event->source() != 0) {
-            event->accept();
+    if(isGroupSelected() || isSingleSelected()) {
+        if(((key == Qt::Key_V) || (key == Qt::Key_C)) &&
+            (QApplication::keyboardModifiers() & Qt::ControlModifier) != 0) {
+            QCoreApplication::sendEvent(&widgetAt(iFirstSelectedRow, iFirstSelectedColumn), event);
         }
-    } else {
-        event->ignore();
     }
 }
-
-void ColourGroupWidget::dropEvent(QDropEvent *event) {
-    // TODO mimetype from revelevant widget
-     if (event->mimeData()->hasFormat("application/x-frameitemdata")) {
-         QByteArray itemData = event->mimeData()->data("application/x-leditemdata");
-         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-
-    if (event->source() != 0) {
-         event->setDropAction(Qt::CopyAction);
-         event->accept();
-        }
-    } else {
-        event->ignore();
-    }
-}*/

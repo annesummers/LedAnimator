@@ -114,10 +114,10 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
          int row;
          int column;
 
-         int num;
-         dataStream >> num;
+         int numRows, numColumns;
+         dataStream >> numRows >> numColumns;
 
-         for(int i = 0; i < num; i++) {
+         for(int i = 0; i < numRows * numColumns; i++) {
             dataStream >> colour >> row >> column;
             iLedDetailsList->addLed(row, column);
          }

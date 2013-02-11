@@ -79,7 +79,7 @@ protected:
     void writeCharacter(AnimChar character);
 
     void writeControlCharacter(AnimChar character);
-    const AnimChar readControlCharacter() const {}
+    const AnimChar readControlCharacter() const { }
 
     const QByteArray &asByteArray() const;
 

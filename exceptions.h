@@ -58,6 +58,13 @@ public:
     inline IllegalFrameNumberException(QString errorMessage) : AnimatorException (errorMessage) {}
 
 };
+
+class IllegalStateException : public AnimatorException {
+
+public:
+    inline IllegalStateException(QString errorMessage) : AnimatorException (errorMessage) {}
+
+};
 }
 
 #endif // EXCEPTIONS_H

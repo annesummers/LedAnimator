@@ -10,25 +10,52 @@
 #include <QtGui>
 
 class Animation;
+class FadeCalculator;
 
 namespace Ui {
 
 class ColourWidget;
+class ColourGroupGroupWidget;
+
+struct FadeParameters {
+    int nextColumn;
+    int nextRow;
+
+    bool rowIncrement;
+    bool columnIncrement;
+
+    int rowSpan;
+    int columnSpan;
+
+    int maxWidgetsLineCount;
+    int numLinesMaxWidgets;
+
+    int numWidgets;
+    int maxWidgets;
+
+    int increments;
+};
 
 class ColourGroupWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit ColourGroupWidget(QWidget *parent, int numRows, int numColumns);
+    explicit ColourGroupWidget(QWidget *parent,
+                               int numRows,
+                               int numColumns,
+                               ColourGroupGroupWidget* groupGroupWidget = NULL);
 
     void selectOne(ColourWidget &selectable);
-    void select(ColourWidget &widget, bool select);
+    void toggleOne(ColourWidget &widget);
+    void toggle(ColourWidget &widget);
     void selectArea(ColourWidget& widget);
+
+    void clearSelection();
 
     inline void setMaxRow(int max) { iNumRows = max; }
     inline void setMaxColumn(int max) { iNumColumns = max; }
 
-    void fade();
+    void startFade();
 
     const QByteArray mimeData();
     void handleMimeData(QByteArray mimeData, ColourWidget &dropWidget);
@@ -36,17 +63,21 @@ public:
     bool isGroupSelected();
     bool isMultipleSelected();
     bool isSingleSelected();
+    inline bool isAnySelected() { return selectedCount() > 0; }
+
+signals:
+    void fadeSetup();
 
 public slots:
     void setColour(QColor colour);
+    void setupFade(QColor fadeToColour);
 
 private slots:
-    void nextColour(QColor colour);
+    void colourCalculated(QColor colour);
+    void fadeComplete();
+    void deleteFader();
 
 protected:
-   // void dragEnterEvent(QDragEnterEvent* event);
-   // void dragMoveEvent(QDragMoveEvent* event);
-  //  void dropEvent(QDropEvent* event);
     void keyPressEvent(QKeyEvent *event);
 
     virtual ColourWidget& widgetAt(int row, int column);
@@ -56,13 +87,14 @@ protected:
 
     inline int selectedCount() { return iSelected.count(); }
 
-    void clearSelection();
     void selectDirection(Qt::Key direction);
 
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }
 
     QList<ColourWidget*> iSelected;
+
+    FadeCalculator* iFadeCalculator;
 
 private:
     void setSingleSelected(ColourWidget &widget);
@@ -82,8 +114,9 @@ private:
     int iFirstSelectedColumn;
     int iLastSelectedColumn;
 
-    int     iNextFrame;
-    bool    iFrameIncrement;
+    FadeParameters* iFadeParameters;
+
+    ColourGroupGroupWidget* iGroupGroup;
 };
 }
 

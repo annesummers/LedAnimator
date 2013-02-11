@@ -6,7 +6,10 @@ using namespace Exception;
 
 // TODO not a very accurate fade
 
-FadeCalculator::FadeCalculator(QObject *parent, QColor startColour, QColor endColour, int iterations, bool backwards) :
+FadeCalculator::FadeCalculator(QObject *parent,
+                               const QColor startColour,
+                               const QColor endColour,
+                               const int iterations) :
     QObject(parent),
     iStartColour(startColour),
     iEndColour(endColour),
@@ -14,7 +17,6 @@ FadeCalculator::FadeCalculator(QObject *parent, QColor startColour, QColor endCo
     iRedIncrement((startColour.red() - endColour.red()) / iterations),
     iGreenIncrement((startColour.green() - endColour.green()) / iterations),
     iBlueIncrement((startColour.blue() - endColour.blue()) / iterations),
-    iBackwards(backwards),
     iTimer(NULL){
 
     resetColour();
@@ -36,15 +38,9 @@ void FadeCalculator::start() {
 }
 
 void FadeCalculator::nextColour() {
-    if(!iBackwards) {
-        iCurrentRedValue -= iRedIncrement;
-        iCurrentGreenValue -= iGreenIncrement;
-        iCurrentBlueValue -= iBlueIncrement;
-    } else {
-        iCurrentRedValue += iRedIncrement;
-        iCurrentGreenValue += iGreenIncrement;
-        iCurrentBlueValue += iBlueIncrement;
-    }
+    iCurrentRedValue -= iRedIncrement;
+    iCurrentGreenValue -= iGreenIncrement;
+    iCurrentBlueValue -= iBlueIncrement;
 
     emit colourCalculated(currentColour());
 
@@ -53,9 +49,13 @@ void FadeCalculator::nextColour() {
         //    throw new IllegalColourException();
         }
 
-        iTimer->stop();
-        delete iTimer;
-        iTimer = NULL;
+        if(iTimer != NULL) {
+            iTimer->stop();
+            delete iTimer;
+            iTimer = NULL;
+        }
+
+        emit fadeComplete();
     }
 }
 

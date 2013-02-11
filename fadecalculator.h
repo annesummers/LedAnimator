@@ -5,17 +5,21 @@
 #include <QColor>
 #include <QTimer>
 
-class FadeCalculator : public QObject
-{
+class FadeCalculator : public QObject {
     Q_OBJECT
+
 public:
-    explicit FadeCalculator(QObject *parent, QColor startColor, QColor endColor, int iterations, bool backwards = false);
-    
+    explicit FadeCalculator(QObject *parent,
+                            const QColor startColour,
+                            const QColor endColour,
+                            const int iterations);
+
     void start();
 
 signals:
     void colourCalculated(QColor colour);
-    
+    void fadeComplete();
+
 public slots:
     void nextColour();
 
@@ -31,8 +35,6 @@ private:
     const int iRedIncrement;
     const int iGreenIncrement;
     const int iBlueIncrement;
-
-    bool iBackwards;
 
     int iCurrentRedValue;
     int iCurrentGreenValue;

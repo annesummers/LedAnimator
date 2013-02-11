@@ -3,18 +3,18 @@
 
 #include <QWidget>
 
-class ColourGroupWidget;
-
 namespace Ui {
+
+class ColourGroupWidget;
 
 class ColourGroupGroupWidget : public QWidget {
     Q_OBJECT
 
 public:
     explicit ColourGroupGroupWidget(QWidget *parent);
-    
-protected:
-    void addGroup(ColourGroupWidget& newGroup) { iColourGroups.append(&newGroup); }
+
+    void selected(ColourGroupWidget& selectedWidget);
+    inline void addGroup(ColourGroupWidget& newGroup) { iColourGroups.append(&newGroup); }
 
 private:
     QList<ColourGroupWidget*>   iColourGroups;
