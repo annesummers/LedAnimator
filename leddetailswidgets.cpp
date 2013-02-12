@@ -6,12 +6,9 @@
 
 #include "leddetailswidgets.h"
 
-//#include "led.h"
 #include "ledwidget.h"
 #include "framelistwidget.h"
-//#include "mainwindow.h"
 #include "animationdetailswidgets.h"
-//#include "animation.h"
 
 #include "exceptions.h"
 
@@ -28,22 +25,33 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent,
     iCurrentFrameWidget(NULL),
     iFramesListWidget(NULL) {
 
+    iLayout = new QHBoxLayout(this);
+
     iPositionLabel = new QLabel(this);
     iPositionLabel->setText(QString("(%1, %2)").arg(led.row()).arg(led.column()));
-    iPositionLabel->move(5, 10);
+    iLayout->addWidget(iPositionLabel, 0, Qt::AlignLeft);
+    //iPositionLabel->move(5, 10);
 
-    iCurrentFrameWidget = new LedWidget(this, animation, ledGroup, led);
-    iCurrentFrameWidget->move(50, 10);
-    iCurrentFrameWidget->resize(20, 20);
+   // iCurrentFrameWidget = new LedWidget(this, animation, ledGroup, led);
+   // iCurrentFrameWidget->move(50, 10);
+   // iCurrentFrameWidget->resize(40, 40);
+  //  iLayout->addWidget(iCurrentFrameWidget, 0);
 
     iFramesListWidget = new FrameListWidget(this, animation, led, framesListGroup);
-    iFramesListWidget->move(iCurrentFrameWidget->width() + 60, 5);
+    iFramesListWidget->resize(40, iFramesListWidget->height());
+    iLayout->addWidget(iFramesListWidget, 1);
+   // iFramesListWidget->move(iCurrentFrameWidget->width() + 60, 5);
 
+    iDetailsCloseWidget = new QPushButton("X", this);
+    iLayout->addWidget(iDetailsCloseWidget, 0, Qt::AlignRight);
+  //  iDetailsCloseWidget->move(iFramesListWidget->rect().bottomRight().x() + 10, iDetailsCloseWidget->pos().y());
+
+    setLayout(iLayout);
     connect(iFramesListWidget, SIGNAL(resized(int,int)), this, SLOT(framesListResized(int, int)));
 }
 
 void LedDetailsWidget::framesListResized(int x, int width) {
-    static_cast<AnimationDetailsWidget*>(parentWidget()->parentWidget())->frameListPosition(x, width);
+   // static_cast<AnimationDetailsWidget*>(parentWidget()->parentWidget())->frameListPosition(x, width);
 
 }
 
@@ -55,7 +63,7 @@ void LedDetailsWidget::paintEvent(QPaintEvent*) {
 }
 
 void LedDetailsWidget::resizeEvent(QResizeEvent *) {
-    iFramesListWidget->resize(width() - iPositionLabel->width() - iCurrentFrameWidget->width(), iFramesListWidget->height());
+    //iFramesListWidget->resize(width() - iPositionLabel->width() - iCurrentFrameWidget->width(), iFramesListWidget->height());
 }
 
 // ------------------------------------

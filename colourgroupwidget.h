@@ -24,6 +24,12 @@ struct FadeParameters {
     bool rowIncrement;
     bool columnIncrement;
 
+    int firstRow;
+    int firstColumn;
+
+    int lastRow;
+    int lastColumn;
+
     int rowSpan;
     int columnSpan;
 
@@ -105,6 +111,10 @@ private:
     void clearGroupSelection();
 
     void getLeftRightTopBottomSelection(int* topRow, int* bottomRow, int* leftColumn, int* rightColumn);
+
+    void calculateNumWidgetsInLine();
+    void calculateRowStartAndEnd(int* rowStart, int* rowEnd);
+    void calculateColumnStartAndEnd(int* columnStart, int* columnEnd);
 
     int iNumRows;
     int iNumColumns;

@@ -147,21 +147,24 @@ void ColourWidget::mouseReleaseEvent(QMouseEvent* event){
 void ColourWidget::mouseMoveEvent(QMouseEvent *event) {
     //qDebug("singelWidge mouse move");
     if(event->buttons() != Qt::LeftButton ||
-       iColourGroup.isMultipleSelected() ||
+       //iColourGroup.isMultipleSelected() ||
        (event->pos() - iDragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
         return;
     }
 
-    iColourGroup.selectOne(*this);
+    if(!iColourGroup.isGroupSelected() &&
+       !iColourGroup.isMultipleSelected()) {
+        iColourGroup.selectOne(*this);
+    }
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData());
     drag->setHotSpot(pos());
 
-    if (drag->exec(Qt::CopyAction | dropAction()) == Qt::CopyAction | dropAction()) {
-     ///qDebug("Successfully dragged and dropped item");
+    if(iColourGroup.isMultipleSelected()) {
+        drag->exec(dropAction());
     } else {
-    // qDebug("Wrong!");
+        drag->exec(Qt::CopyAction | dropAction());
     }
 }
 
@@ -208,41 +211,46 @@ void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
 
 void ColourWidget::dragEnterEvent(QDragEnterEvent* event) {
    // qDebug("singleWidget drag enter");
+    handleDragMoves(event);
+}
+
+bool ColourWidget::handleDragMoves(QDropEvent* event) {
     if (event->mimeData()->hasFormat(mimeType())) {
-        if (event->source() != 0 && event->source() != this) {
-            event->setDropAction(Qt::CopyAction);
+        if (event->source() != 0 &&
+            event->source() != this &&
+            event->proposedAction() == Qt::CopyAction) {
             event->accept();
+
+            return true;
          }
      } else {
          event->ignore();
+
+         return false;
      }
 }
 
 void ColourWidget::dragMoveEvent(QDragMoveEvent* event) {
    // qDebug("singleWidget drag move");
-    if (event->mimeData()->hasFormat(mimeType())) {
-        if (event->source() != 0 && event->source() != this) {
-            event->setDropAction(Qt::CopyAction);
-            event->accept();
-        }
-    } else {
-        event->ignore();
-    }
+    handleDragMoves(event);
 }
 
 void ColourWidget::dropEvent(QDropEvent *event) {
    // qDebug("singleWidget drop");
-     if (event->mimeData()->hasFormat(mimeType())) {
 
-         iColourGroup.handleMimeData(event->mimeData()->data(mimeType()), *this);
+    if(handleDragMoves(event)) {
+        iColourGroup.handleMimeData(event->mimeData()->data(mimeType()), *this);
+
+        update();
+    }
+
+   /*  if (event->mimeData()->hasFormat(mimeType())) {
+
 
          if (event->source() != 0 && event->source() != this) {
-             event->setDropAction(Qt::CopyAction);
              event->accept();
          }
-
-         update();
      } else {
          event->ignore();
-     }
+     }*/
 }

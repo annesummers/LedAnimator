@@ -79,6 +79,9 @@ protected:
     bool iFading;
 
     QColorDialog* iColourDialog;
+
+private:
+    bool handleDragMoves(QDropEvent *event);
 };
 }
 

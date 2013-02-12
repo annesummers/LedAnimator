@@ -57,29 +57,44 @@ MainWindow::MainWindow(Engine& engine) :
 
     menuBar()->addMenu(animationMenu);
 
-    QSplitter* splitterVertical = new QSplitter(this);
-    splitterVertical->setOrientation(Qt::Vertical);
-    setCentralWidget(splitterVertical);
+  //  QSplitter* splitterVertical = new QSplitter(this);
+   // splitterVertical->setOrientation(Qt::Vertical);
+   // setCentralWidget(splitterVertical);
 
-    QSplitter* splitterHorizontal = new QSplitter(splitterVertical);
-    splitterHorizontal->setOrientation(Qt::Horizontal);
+  //  QSplitter* splitterHorizontal = new QSplitter(splitterVertical);
+   // splitterHorizontal->setOrientation(Qt::Horizontal);
 
-    LedGridWidget* ledGridWidget = new LedGridWidget(splitterHorizontal, engine.animation());
+
+    QWidget* centralWidget = new QWidget(this);
+
+    QGridLayout* layout = new QGridLayout(centralWidget);
+
+setCentralWidget(centralWidget);
+
+    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation());
     ledGridWidget->move(BORDER, BORDER);
+    layout->addWidget(ledGridWidget, 0, 0, 1, 1);
 
-    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(splitterHorizontal, engine.animation());
+    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
+    layout->addWidget(playInfoWidget, 0, 1, 1, 1);
+ //   splitterHorizontal->addWidget(ledGridWidget);
+  //  splitterHorizontal->addWidget(playInfoWidget);
+    layout->setRowStretch(0, 0);
 
-    splitterHorizontal->addWidget(ledGridWidget);
-    splitterHorizontal->addWidget(playInfoWidget);
-
-    QWidget* animationDetailsContainer = new QWidget(splitterVertical);
+    QWidget* animationDetailsContainer = new QWidget(centralWidget);
     AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(animationDetailsContainer, engine.animation());//animationDetailsContainer->widget();
 
-    animationDetailsWidget->move(BORDER, 0);
-    animationDetailsWidget->resize(animationDetailsContainer->width() - BORDER*2, animationDetailsContainer->height());
+   // animationDetailsWidget->move(BORDER, 0);
+   // animationDetailsWidget->resize(animationDetailsContainer->width() - BORDER*2, animationDetailsContainer->height());
 
-    splitterVertical->addWidget(splitterHorizontal);
-    splitterVertical->addWidget(animationDetailsContainer);
+  //  splitterVertical->addWidget(splitterHorizontal);
+   // splitterVertical->addWidget(animationDetailsContainer);
+
+
+    layout->addWidget(animationDetailsContainer, 1, 0, 2, 2);
+    layout->setRowStretch(1, 1);
+
+    centralWidget->setLayout(layout);
 }
 
 MainWindow::~MainWindow() {

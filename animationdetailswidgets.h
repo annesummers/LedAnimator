@@ -3,8 +3,7 @@
 
 #include <QWidget>
 #include <QSlider>
-
-//#include "ledwidget.h"
+#include <QVBoxLayout>
 
 class Led;
 class Animation;
@@ -38,6 +37,8 @@ private:
 
     int iFramesListX;
     int iFramesListWidth;
+
+    QVBoxLayout*            iLayout;
 
     QSlider*                iFrameSlider;
     LedDetailsListWidget*   iLedDetailsList;

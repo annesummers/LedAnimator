@@ -19,29 +19,16 @@ CONFIG(testing) {
         animationtests.cpp\
         ledtests.cpp \
         enginetests.cpp \
-        ledgridwidgettests.cpp \
-        ledwidgettests.cpp \
-        playinfowidgettests.cpp \
         frametests.cpp \
-        framewidgettests.cpp \
         ledanimcodectests.cpp \
-        animationdetailswidgettest.cpp \
-        leddetailswidgetstests.cpp \
         colourwidgettests.cpp
 
     HEADERS += \
-        test.h \
         animationtests.h\
         ledtests.h \
         enginetests.h \
-        ledgridwidgettests.h \
-        ledwidgettests.h \
-        playinfowidgettests.h \
         frametests.h \
-        framewidgettests.h \
         ledanimcodectests.h \
-        animationdetailswidgettest.h \
-        leddetailswidgetstests.h \
         colourwidgettests.h
 
 } else {
@@ -59,7 +46,6 @@ CONFIG(testing) {
 
 HEADERS += \
     animatorbase.h \
-    animatorwidgetbase.h \
     mainwindow.h \
     led.h \
     engine.h \
@@ -86,7 +72,6 @@ HEADERS += \
 
 SOURCES += \
     animatorbase.cpp \
-    animatorwidgetbase.cpp\
     mainwindow.cpp \
     led.cpp \
     engine.cpp \

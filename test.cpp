@@ -24,10 +24,10 @@ int main(int argc, char **argv) {
     LedAnimCodecTests tc5;
     ColourWidgetTests tc6;
 
-    return //QTest::qExec(&tc1, argc, argv) ||
-           //QTest::qExec(&tc2, argc, argv) ||
-            //QTest::qExec(&tc3, argc, argv) ||
-            //QTest::qExec(&tc4, argc, argv) ||
-            //QTest::qExec(&tc5, argc, argv) ||
+    return QTest::qExec(&tc1, argc, argv) ||
+           QTest::qExec(&tc2, argc, argv) ||
+            QTest::qExec(&tc3, argc, argv) ||
+            QTest::qExec(&tc4, argc, argv) ||
+            QTest::qExec(&tc5, argc, argv) ||
             QTest::qExec(&tc6, argc, argv);
 }

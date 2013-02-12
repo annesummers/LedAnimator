@@ -47,9 +47,9 @@ void FrameListWidget::numFramesChanged(int numFrames) {
     }
 
     if(oldNumFrames != numFrames) {
-        resize(parentWidget()->width(), height());
+       // resize(parentWidget()->width(), height());
 
-        emit resized(pos().x(), width());
+       // emit resized(pos().x(), width());
     }
 }
 

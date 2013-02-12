@@ -12,8 +12,6 @@
 #include "exceptions.h"
 #include "defaults.h"
 
-#include "test.h"
-
 using namespace Test;
 using namespace Exception;
 
@@ -41,7 +39,7 @@ void AnimationTests::setupNew_data() {
                                       << 0
                                       << INVALID
                                       << 0
-                                      << "numRows is zero or negative";
+                                      << "Animation::setupNew : numRows is zero or negative";
 
     QTest::newRow("negative numColumns") << DEFAULT_NUM_ROWS
                                          << INVALID
@@ -49,7 +47,7 @@ void AnimationTests::setupNew_data() {
                                          << 0
                                          << INVALID
                                          << 0
-                                         << "numColumns is zero or negative";
+                                         << "Animation::setupNew : numColumns is zero or negative";
 
     QTest::newRow("negative numFrames") << DEFAULT_NUM_ROWS
                                         << DEFAULT_NUM_COLUMNS
@@ -57,7 +55,7 @@ void AnimationTests::setupNew_data() {
                                         << 0
                                         << INVALID
                                         << 0
-                                        << "numFrames is zero or negative";
+                                        << "Animation::setupNew : numFrames is zero or negative";
 
     QTest::newRow("zero numRows") << 0
                                   << DEFAULT_NUM_COLUMNS
@@ -65,7 +63,7 @@ void AnimationTests::setupNew_data() {
                                   << 0
                                   << INVALID
                                   << 0
-                                  << "numRows is zero or negative";
+                                  << "Animation::setupNew : numRows is zero or negative";
 
     QTest::newRow("zero numColumns") << DEFAULT_NUM_ROWS
                                      << 0
@@ -73,7 +71,7 @@ void AnimationTests::setupNew_data() {
                                      << 0
                                      << INVALID
                                      << 0
-                                     << "numColumns is zero or negative";
+                                     << "Animation::setupNew : numColumns is zero or negative";
 
     QTest::newRow("zero numFrames") << DEFAULT_NUM_ROWS
                                     << DEFAULT_NUM_COLUMNS
@@ -81,7 +79,7 @@ void AnimationTests::setupNew_data() {
                                     << 0
                                     << INVALID
                                     << 0
-                                    << "numFrames is zero or negative";
+                                    << "Animation::setupNew : numFrames is zero or negative";
 
     QTest::newRow("too big numRows") << MAX_ROWS + 1
                                      << DEFAULT_NUM_COLUMNS
@@ -89,7 +87,7 @@ void AnimationTests::setupNew_data() {
                                      << 0
                                      << INVALID
                                      << 0
-                                     << "numRows is too big";
+                                     << "Animation::setupNew : numRows is too big";
 
     QTest::newRow("too big numColumns") << DEFAULT_NUM_ROWS
                                         << MAX_COLUMNS + 1
@@ -97,7 +95,7 @@ void AnimationTests::setupNew_data() {
                                         << 0
                                         << INVALID
                                         << 0
-                                        << "numColumns is too big";
+                                        << "Animation::setupNew : numColumns is too big";
 
     QTest::newRow("too big numFrames") << DEFAULT_NUM_ROWS
                                        << DEFAULT_NUM_COLUMNS
@@ -105,7 +103,7 @@ void AnimationTests::setupNew_data() {
                                        << 0
                                        << INVALID
                                        << 0
-                                       << "numFrames is too big";
+                                       << "Animation::setupNew : numFrames is too big";
 
     QTest::newRow("default") << DEFAULT_NUM_ROWS
                              << DEFAULT_NUM_COLUMNS
@@ -171,9 +169,9 @@ void AnimationTests::setCurrentFrame_data() {
     QTest::addColumn<QString>("errorString");
 
     QTest::newRow("frame number too small") << 0
-                                       << "Frame number is smaller than first frame";
+                                       << "Animation::setCurrentFrame : Frame number is smaller than first frame";
     QTest::newRow("frame number too big") << iAnimation->numFrames() + 1
-                                          << "Frame number is greater than last frame";
+                                          << "Animation::setCurrentFrame : Frame number is greater than last frame";
     QTest::newRow("valid") << INITIAL_FRAME
                            << "";
 }
@@ -196,19 +194,19 @@ void AnimationTests::ledAt_data() {
 
     QTest::newRow("zero row") << 0
                               << iAnimation->numColumns() - 1
-                              << "Row is negative";
+                              << "Animation::ledAt : Row is negative";
 
     QTest::newRow("zero column") << iAnimation->numRows() - 1
                                  << 0
-                                 << "Column is negative";
+                                 << "Animation::ledAt : Column is negative";
 
     QTest::newRow("row too big") << iAnimation->numRows()
                                  << iAnimation->numColumns() - 1
-                                 << "Row is greater than number of rows";
+                                 << "Animation::ledAt : Row is greater than number of rows";
 
     QTest::newRow("column too big") << iAnimation->numRows() - 1
                                     << iAnimation->numColumns()
-                                    << "Column is greater than number of columns";
+                                    << "Animation::ledAt : Column is greater than number of columns";
 
     QTest::newRow("valid") << iAnimation->numRows() - 1
                            << iAnimation->numColumns() - 1

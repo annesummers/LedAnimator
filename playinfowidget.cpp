@@ -19,30 +19,31 @@ PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
     iPlayButton(NULL),
     iFrameNumberLabel(NULL) {
 
+    iFrameNumberLabel = new QLabel(this);
+    iFrameNumberLabel->move(20, 0);
+    iFrameNumberLabel->resize(40, 20);
+
     iFirstButton = new QPushButton("First", this);
-    iFirstButton->move(10, 40);
+    iFirstButton->move(10, 80);
 
     iPreviousButton = new QPushButton("Previous", this);
-    iPreviousButton->move(iFirstButton->width() + 1, 40);
+    iPreviousButton->move(iFirstButton->width() + 1, 80);
 
     iPlayButton = new QPushButton("Play", this);
     iPlayButton->move(iFirstButton->width() +
-                      iPreviousButton->width() + 1, 40);
+                      iPreviousButton->width() + 1, 80);
 
     iNextButton = new QPushButton("Next", this);
     iNextButton->move(iFirstButton->width() +
                       iPreviousButton->width() +
-                      iPlayButton->width() + 1, 40);
+                      iPlayButton->width() + 1, 80);
 
     iLastButton = new QPushButton("Last", this);
     iLastButton->move(iFirstButton->width() +
                       iPreviousButton->width() +
                       iPlayButton->width() +
-                      iNextButton->width() + 1, 40);
+                      iNextButton->width() + 1, 80);
 
-    iFrameNumberLabel = new QLabel(this);
-    iFrameNumberLabel->move(20, 80);
-    iFrameNumberLabel->resize(40, 20);
 
     QObject::connect(iFirstButton, SIGNAL(clicked()), this, SLOT(firstClicked()));
     QObject::connect(iPreviousButton, SIGNAL(clicked()), this, SLOT(previousClicked()));

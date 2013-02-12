@@ -22,15 +22,31 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     iFrameSlider(NULL),
     added(5){
 
+
+  //  QScrollArea* scrollArea = new QScrollArea;
+   // scrollArea->setBackgroundRole(QPalette::Dark);
+   // scrollArea->setWidget(this);
+
+   // scrollArea->setAcceptDrops(true);
     setAcceptDrops(true);
+
+  //  scrollArea->setMaximumSize(parent->parentWidget()->width(), parent->parentWidget()->height());
+    //setMinimumSize(parent->parentWidget()->width(), parent->parentWidget()->height());
+    //iLayout = new QVBoxLayout(this);
 
     iFrameSlider = new QSlider(Qt::Horizontal, this);
     iFrameSlider->setMinimum(INITIAL_FRAME);  // frames are indexed from 1
-    iFrameSlider->resize(width() - BORDER*2, SLIDER_HEIGHT);
+    iFrameSlider->resize(parent->width() - BORDER*2, SLIDER_HEIGHT);
+   // iLayout->addWidget(iFrameSlider, 0, Qt::AlignTop);
 
     iLedDetailsList = new LedDetailsListWidget(this, animation);
     iLedDetailsList->move(iLedDetailsList->pos().x(), iLedDetailsList->pos().y() + SLIDER_HEIGHT);
-    iLedDetailsList->resize(width() - BORDER*2, height() - SLIDER_HEIGHT);
+    iLedDetailsList->resize(parent->width() - BORDER*2, height() - SLIDER_HEIGHT);
+
+    //iLayout->addWidget(iLedDetailsList);
+
+   // setLayout(iLayout);
+
 
     connect(iFrameSlider, SIGNAL(valueChanged(int)), &animation, SLOT(setCurrentFrame(int)));
 
@@ -51,10 +67,10 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
 
 // TODO this is bollocks
 void AnimationDetailsWidget::frameListPosition(int x, int width) {
-    iFrameSlider->move(x-2, iFrameSlider->y());
+   /* iFrameSlider->move(x-2, iFrameSlider->y());
     iFrameSlider->resize(width+2, iFrameSlider->height());
     iFramesListX = x;
-    iFramesListWidth = width;
+    iFramesListWidth = width;*/
 }
 
 // events ---------

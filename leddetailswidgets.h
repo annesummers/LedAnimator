@@ -9,6 +9,8 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QPushButton>
+#include <QBoxLayout>
 
 #include "ledwidget.h"
 #include "colourgroupwidget.h"
@@ -68,9 +70,12 @@ private slots:
     void framesListResized(int x, int frame);
 
 private:
+    QHBoxLayout*        iLayout;
+
     QLabel*             iPositionLabel;
     LedWidget*          iCurrentFrameWidget;
     FrameListWidget*    iFramesListWidget;
+    QPushButton*        iDetailsCloseWidget;
 
     int iFramesWidgetWidth;
 
