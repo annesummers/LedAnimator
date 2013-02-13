@@ -8,6 +8,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMenuBar>
 
 class Engine;
 

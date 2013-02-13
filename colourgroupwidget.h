@@ -8,6 +8,7 @@
 #define SELECTABLEGROUPWIDGET_H
 
 #include <QtGui>
+#include <qwidget>
 
 class Animation;
 class FadeCalculator;

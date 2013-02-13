@@ -326,7 +326,7 @@ void ColourGroupWidget::setupFade(QColor fadeToColour) {
 
     iFadeParameters->numWidgets = 0;
 
-    iFadeCalculator = new FadeCalculator(static_cast<QObject*>(this),
+    iFadeCalculator = new FadeCalculator(reinterpret_cast<QObject*>(this),
                                 widgetAt(iFirstSelectedRow, iFirstSelectedColumn).colour(),
                                 fadeToColour,
                                 iFadeParameters->increments);

@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QPoint>
+#include <QApplication>
 
 #include "engine.h"
 

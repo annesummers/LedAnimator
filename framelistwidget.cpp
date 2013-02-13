@@ -50,6 +50,9 @@ void FrameListWidget::numFramesChanged(int numFrames) {
        // resize(parentWidget()->width(), height());
 
        // emit resized(pos().x(), width());
+        update();
+
+        // TODO why doesn't this work?
     }
 }
 

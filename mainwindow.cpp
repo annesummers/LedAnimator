@@ -6,7 +6,7 @@
 
 #include "mainwindow.h"
 
-#include "ui_mainwindow.h"
+//#include "ui_mainwindow.h"
 #include "led.h"
 #include "ledwidget.h"
 #include "ledgridwidget.h"
@@ -93,6 +93,8 @@ setCentralWidget(centralWidget);
 
     layout->addWidget(animationDetailsContainer, 1, 0, 2, 2);
     layout->setRowStretch(1, 1);
+    //layout->setColumnStretch(0, 1);
+    //layout->setColumnStretch(1, 1);
 
     centralWidget->setLayout(layout);
 }

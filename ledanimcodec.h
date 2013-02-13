@@ -25,6 +25,7 @@ class AnimChar {
 public:
     AnimChar(const int value);
     AnimChar(const unsigned char value);
+    AnimChar();
 
     const int intValue() const;
     const unsigned char charValue() const;
@@ -79,7 +80,7 @@ protected:
     void writeCharacter(AnimChar character);
 
     void writeControlCharacter(AnimChar character);
-    const AnimChar readControlCharacter() const { }
+    const AnimChar readControlCharacter() const { return AnimChar(); }
 
     const QByteArray &asByteArray() const;
 

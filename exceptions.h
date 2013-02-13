@@ -18,7 +18,7 @@ public:
     inline AnimatorException (QString errorMessage) { iErrorMessage = errorMessage; }
 
     void raise() const { throw *this; }
-    Exception *clone() const { return new AnimatorException(*this); }
+    QtConcurrent::Exception *clone() const { return new AnimatorException(*this); }
 
     inline QString errorMessage() { return iErrorMessage; }
 

@@ -21,6 +21,7 @@ public:
                              const Led& led,
                              ColourGroupGroupWidget &framesListGroup);
 
+    const Led& led() { return iLed; }
 signals:
     void resized(int x, int newWidth);
 
@@ -32,8 +33,6 @@ protected:
     void getWidgetPosition(ColourWidget& widget, int* row, int* column);
 
     bool validKeyPress(Qt::Key key);
-
-    //void keyPressEvent(QKeyEvent *);
 
     void resizeEvent(QResizeEvent *);
     void paintEvent(QPaintEvent *);

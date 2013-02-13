@@ -22,6 +22,11 @@ AnimChar::AnimChar(const int value) :
 AnimChar::AnimChar(const unsigned char value) :
     iValue(value) { }
 
+AnimChar::AnimChar() :
+    iValue(INVALID){
+
+}
+
 const int AnimChar::intValue() const {
     return static_cast<int>(iValue);
 }
@@ -111,7 +116,7 @@ LedAnimStringCodec::LedAnimStringCodec(Animation &animation) :
 }
 
 const AnimChar LedAnimStringCodec::readCharacter() const {
-    //return AnimChar();
+    return AnimChar();
 }
 
 void LedAnimStringCodec::writeCharacter(AnimChar character) {
@@ -156,7 +161,7 @@ const QString LedAnimStringCodec::asString() const {
 }
 
 const QByteArray& LedAnimStringCodec::asByteArray() const {
-    //return iByteArray;
+    return QByteArray();
 }
 
 // -----------------------------------------

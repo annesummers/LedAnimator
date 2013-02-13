@@ -23,7 +23,8 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent,
     QWidget(parent),
     iPositionLabel(NULL),
     iCurrentFrameWidget(NULL),
-    iFramesListWidget(NULL) {
+    iFramesListWidget(NULL),
+    iLed(led){
 
     iLayout = new QHBoxLayout(this);
 
@@ -48,11 +49,21 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent,
 
     setLayout(iLayout);
     connect(iFramesListWidget, SIGNAL(resized(int,int)), this, SLOT(framesListResized(int, int)));
+    connect(iDetailsCloseWidget, SIGNAL(clicked()), this, SLOT(closeClicked()));
+}
+
+Led& LedDetailsWidget::led(){
+    return iLed;
 }
 
 void LedDetailsWidget::framesListResized(int x, int width) {
-   // static_cast<AnimationDetailsWidget*>(parentWidget()->parentWidget())->frameListPosition(x, width);
+    static_cast<AnimationDetailsWidget*>(parentWidget()->parentWidget())->frameListPosition(x, width);
 
+}
+
+void LedDetailsWidget::closeClicked() {
+    static_cast<LedDetailsListWidget*>(parentWidget())->closeDetails(*this);
+    close();
 }
 
 void LedDetailsWidget::paintEvent(QPaintEvent*) {
@@ -140,6 +151,10 @@ void LedDetailsListWidget::addLed(int row, int column) {
 
 LedWidget& LedDetailsListWidget::selectorWidgetAt(int position) {
     return static_cast<LedWidget&>(*iLedDetailsList->itemAt(position)->widget());
+}
+
+void LedDetailsListWidget::closeDetails(LedDetailsWidget& widget) {
+    iShownLeds.removeOne(&widget.led());
 }
 
 // events -------------------------------------

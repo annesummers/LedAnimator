@@ -22,6 +22,8 @@ class LedPositionWidget;
 class FrameListWidget;
 class LedDetailsSelectorGroupWidget;
 
+class LedDetailsWidget;
+
 class LedDetailsListWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
@@ -32,6 +34,8 @@ public:
     LedWidget& selectorWidgetAt(int index);
 
     int count();
+
+    void closeDetails(LedDetailsWidget& widget);
 
 protected:
     void resizeEvent(QResizeEvent *);
@@ -57,7 +61,7 @@ public:
                               ColourGroupWidget& groupWidget,
                               ColourGroupGroupWidget& framesListGroup);
 
-    Led& led();
+    Led &led();
 
     LedWidget& selectorWidget() { return *iCurrentFrameWidget; }
     FrameListWidget& framesListWidget() { return *iFramesListWidget; }
@@ -68,6 +72,7 @@ protected:
 
 private slots:
     void framesListResized(int x, int frame);
+    void closeClicked();
 
 private:
     QHBoxLayout*        iLayout;
@@ -78,6 +83,8 @@ private:
     QPushButton*        iDetailsCloseWidget;
 
     int iFramesWidgetWidth;
+
+    Led& iLed;
 
 };
 

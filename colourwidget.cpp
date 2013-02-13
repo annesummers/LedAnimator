@@ -7,6 +7,7 @@
 #include "colourwidget.h"
 
 #include <QtGui>
+#include <QApplication>
 
 #include "selectable.h"
 #include "colourgroupwidget.h"

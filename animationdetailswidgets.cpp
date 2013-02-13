@@ -37,11 +37,12 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     iFrameSlider = new QSlider(Qt::Horizontal, this);
     iFrameSlider->setMinimum(INITIAL_FRAME);  // frames are indexed from 1
     iFrameSlider->resize(parent->width() - BORDER*2, SLIDER_HEIGHT);
+    iFrameSlider->setTickPosition(QSlider::TicksBelow);
    // iLayout->addWidget(iFrameSlider, 0, Qt::AlignTop);
 
     iLedDetailsList = new LedDetailsListWidget(this, animation);
     iLedDetailsList->move(iLedDetailsList->pos().x(), iLedDetailsList->pos().y() + SLIDER_HEIGHT);
-    iLedDetailsList->resize(parent->width() - BORDER*2, height() - SLIDER_HEIGHT);
+    iLedDetailsList->resize(parent->width() - BORDER*2, height() - SLIDER_HEIGHT - 5);
 
     //iLayout->addWidget(iLedDetailsList);
 
@@ -63,14 +64,17 @@ void AnimationDetailsWidget::currentFrameChanged(int currentFrame) {
 
 void AnimationDetailsWidget::numFramesChanged(int numFrames) {
     iFrameSlider->setMaximum(numFrames);
+    iFrameSlider->setTickInterval(numFrames);
 }
 
 // TODO this is bollocks
 void AnimationDetailsWidget::frameListPosition(int x, int width) {
-   /* iFrameSlider->move(x-2, iFrameSlider->y());
-    iFrameSlider->resize(width+2, iFrameSlider->height());
     iFramesListX = x;
-    iFramesListWidth = width;*/
+    iFramesListWidth = width;
+    int frameIncrements = iFramesListWidth/(iAnimation.numFrames());
+
+    iFrameSlider->move(x + frameIncrements/2, iFrameSlider->y());
+    iFrameSlider->resize(width-frameIncrements+frameIncrements/4, iFrameSlider->height());
 }
 
 // events ---------
@@ -82,7 +86,7 @@ void AnimationDetailsWidget::paintEvent(QPaintEvent *) {
 
         QPainter painter(this);
         painter.setPen(Qt::black);
-        painter.drawLine(QPoint(currentFramePosition + (iFramesListX + currentFrameIncrements/2) + 2, iFrameSlider->height() - 8), QPoint(currentFramePosition + iFramesListX + currentFrameIncrements/2 + 2, height() - iFrameSlider->height() - 8));
+        painter.drawLine(QPoint(currentFramePosition + (iFramesListX + currentFrameIncrements/2), iFrameSlider->height() - 8), QPoint(currentFramePosition + iFramesListX + currentFrameIncrements/2 + 2, height() - iFrameSlider->height() - 8));
     }
 }
 

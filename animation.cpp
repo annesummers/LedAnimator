@@ -154,6 +154,6 @@ void Animation::copyToClipboard() {
     QClipboard *clipboard = QApplication::clipboard();
     QMimeData *data = new QMimeData;
 
-    data->setData("text/plain", codec.asString().toAscii());
+    data->setData("text/plain", codec.asString().toUtf8());
     clipboard->setMimeData(data);
 }

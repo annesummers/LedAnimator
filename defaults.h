@@ -26,6 +26,7 @@ const int LED_OFFSET_X = LED_RADIUS*2 + 40;
 const int LED_OFFSET_Y = LED_OFFSET_X;
 
 const int SLIDER_HEIGHT = 40;
+const int SLIDER_OFFSET = 2;
 
 const int BORDER = 20;
 
