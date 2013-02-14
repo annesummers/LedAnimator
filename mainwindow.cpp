@@ -17,14 +17,49 @@
 
 #include "defaults.h"
 
-using namespace Ui;
+using namespace AnimatorUi;
 
 MainWindow::MainWindow(Engine& engine) :
-    iEngine(engine){
+    iEngine(engine) {
 
     setWindowTitle(APP_NAME);
 
     readSettings();
+
+    QWidget* centralWidget = new QWidget(this);
+    centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
+
+    QGridLayout* gridLayout = new QGridLayout(centralWidget);
+    gridLayout->setSpacing(6);
+    gridLayout->setContentsMargins(11, 11, 11, 11);
+    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+
+    LedGridWidget* iLedGridWidget = new LedGridWidget(centralWidget, engine.animation());
+    iLedGridWidget->setObjectName(QString::fromUtf8("iLedGridWidget"));
+
+    gridLayout->addWidget(iLedGridWidget, 0, 0, 2, 1);
+
+    PlayInfoWidget* iPlayInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
+    iPlayInfoWidget->setObjectName(QString::fromUtf8("iPlayInfoWidget"));
+
+    gridLayout->addWidget(iPlayInfoWidget, 0, 1, 1, 1);
+
+    QWidget* widget_4 = new QWidget(centralWidget);
+    widget_4->setObjectName(QString::fromUtf8("widget_4"));
+
+    gridLayout->addWidget(widget_4, 0, 2, 1, 1);
+
+    QWidget* widget_3 = new QWidget(centralWidget);
+    widget_3->setObjectName(QString::fromUtf8("widget_3"));
+
+    gridLayout->addWidget(widget_3, 1, 1, 1, 2);
+
+    AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
+    iAnimationDetailsWidget->setObjectName(QString::fromUtf8("iAnimationDetailsWidget"));
+
+    gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 3);
+
+    setCentralWidget(centralWidget);
 
     QMenu* fileMenu = new QMenu("&File", this);
     QAction* newAction = fileMenu->addAction("&New animation...");
@@ -56,47 +91,6 @@ MainWindow::MainWindow(Engine& engine) :
     connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
 
     menuBar()->addMenu(animationMenu);
-
-  //  QSplitter* splitterVertical = new QSplitter(this);
-   // splitterVertical->setOrientation(Qt::Vertical);
-   // setCentralWidget(splitterVertical);
-
-  //  QSplitter* splitterHorizontal = new QSplitter(splitterVertical);
-   // splitterHorizontal->setOrientation(Qt::Horizontal);
-
-
-    QWidget* centralWidget = new QWidget(this);
-
-    QGridLayout* layout = new QGridLayout(centralWidget);
-
-setCentralWidget(centralWidget);
-
-    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation());
-    ledGridWidget->move(BORDER, BORDER);
-    layout->addWidget(ledGridWidget, 0, 0, 1, 1);
-
-    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
-    layout->addWidget(playInfoWidget, 0, 1, 1, 1);
- //   splitterHorizontal->addWidget(ledGridWidget);
-  //  splitterHorizontal->addWidget(playInfoWidget);
-    layout->setRowStretch(0, 0);
-
-    QWidget* animationDetailsContainer = new QWidget(centralWidget);
-    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(animationDetailsContainer, engine.animation());//animationDetailsContainer->widget();
-
-   // animationDetailsWidget->move(BORDER, 0);
-   // animationDetailsWidget->resize(animationDetailsContainer->width() - BORDER*2, animationDetailsContainer->height());
-
-  //  splitterVertical->addWidget(splitterHorizontal);
-   // splitterVertical->addWidget(animationDetailsContainer);
-
-
-    layout->addWidget(animationDetailsContainer, 1, 0, 2, 2);
-    layout->setRowStretch(1, 1);
-    //layout->setColumnStretch(0, 1);
-    //layout->setColumnStretch(1, 1);
-
-    centralWidget->setLayout(layout);
 }
 
 MainWindow::~MainWindow() {

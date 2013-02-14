@@ -12,7 +12,7 @@
 #include "selectable.h"
 #include "colourgroupwidget.h"
 
-using namespace Ui;
+using namespace AnimatorUi;
 
 ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Selectable& item) :
     QWidget(parent),
@@ -40,9 +40,14 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     connect(iPasteAction, SIGNAL(triggered()), this, SLOT(paste()));
 
     iFadeAction = new QAction(tr("&Fade"), this);
-    iFadeAction->setStatusTip("Fade to colour");
+    iFadeAction->setStatusTip("Fade to last selected colour");
 
     connect(iFadeAction, SIGNAL(triggered()), this, SLOT(fade()));
+
+    iFadeToAction = new QAction(tr("&Fade to..."), this);
+    iFadeToAction->setStatusTip("Fade to chosen colour");
+
+    connect(iFadeToAction, SIGNAL(triggered()), this, SLOT(fadeTo()));
 
     connect(&item, SIGNAL(selected()), this, SLOT(selected()));
 
@@ -59,18 +64,16 @@ void ColourWidget::colourDialogAccepted() {
     QColor newColour = iColourDialog->currentColor();
     if(iFading) {
         if(newColour.isValid()) {
-            iColourGroup.setupFade(newColour);
+            iColourGroup.fadeTo(newColour);
 
             iFading = false;
-
-            iColourGroup.startFade();
         }
     } else {
         iColourGroup.setColour(newColour);
     }
 }
 
-void ColourWidget::colourChanged() {
+void ColourWidget::updated() {
     setToolTip(QString("h: %1\ns: %2\nv: %3")
                .arg(colour().hue())
                .arg(colour().saturation())
@@ -79,6 +82,14 @@ void ColourWidget::colourChanged() {
 }
 
 void ColourWidget::fade() {
+    if(!iColourGroup.isGroupSelected()) {
+        return;
+    }
+
+    iColourGroup.fade();
+}
+
+void ColourWidget::fadeTo() {
     if(!iColourGroup.isGroupSelected()) {
         return;
     }

@@ -10,7 +10,7 @@
 #include "fadecalculator.h"
 
 using namespace Exception;
-using namespace Ui;
+using namespace AnimatorUi;
 
 FrameListWidget::FrameListWidget(QWidget *parent,
                                  const Animation& animation,

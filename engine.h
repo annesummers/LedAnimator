@@ -41,7 +41,7 @@ private slots:
 
 private:
     void doSave(QString fileName);
-    void doLoad(QString fileName);
+    bool doLoad(QString fileName);
 
     void setupUI();
 

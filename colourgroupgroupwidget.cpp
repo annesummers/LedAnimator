@@ -2,7 +2,7 @@
 
 #include "colourgroupwidget.h"
 
-using namespace Ui;
+using namespace AnimatorUi;
 
 ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent) :
     QWidget(parent)

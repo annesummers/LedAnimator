@@ -14,7 +14,7 @@
 
 #include "defaults.h"
 
-namespace Ui {
+namespace AnimatorUi {
 
 class FrameWidget : public ColourWidget {
     Q_OBJECT

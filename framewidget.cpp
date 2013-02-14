@@ -17,15 +17,15 @@
 
 #include <QPainter>
 
-using namespace Ui;
+using namespace AnimatorUi;
 using namespace Exception;
 
 FrameWidget::FrameWidget(QWidget* parent, ColourGroupWidget& frameGroup, Frame& frame) :
     ColourWidget(parent, frameGroup, frame) {
 
-    connect(&frame, SIGNAL(colourChanged()), this, SLOT(colourChanged()));
+    connect(&frame, SIGNAL(colourChanged()), this, SLOT(updated()));
 
-    colourChanged();
+    updated();
 }
 
 // events -----------------------------

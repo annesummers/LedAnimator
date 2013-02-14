@@ -14,7 +14,7 @@
 
 #include "selectable.h"
 
-namespace Ui {
+namespace AnimatorUi {
 
 class ColourGroupWidget;
 
@@ -34,7 +34,7 @@ public:
     virtual void addExtraData(QDataStream& dataStream) = 0;
 
 protected slots:
-    void colourChanged();
+    void updated();
 
 private slots:
     inline void selected() { update(); }
@@ -43,6 +43,7 @@ private slots:
     void colourDialogAccepted();
 
     void fade();
+    void fadeTo();
     void copy();
     void paste();
 

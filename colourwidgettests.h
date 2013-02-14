@@ -10,7 +10,7 @@
 #include "colourwidget.h"
 #include "colourgroupwidget.h"
 
-using namespace Ui;
+using namespace AnimatorUi;
 
 typedef QList<QPoint> PointList;
 Q_DECLARE_METATYPE ( PointList )
@@ -84,6 +84,8 @@ public:
     inline QList<ColourWidget*> selectedItems() const { return iSelected; }
 
     inline FadeCalculator* fadeCalculator() const { return iFadeCalculator; }
+    inline void setupFade(QColor fadeToColor) { ColourGroupWidget::setupFade(fadeToColour); }
+    inline void startFade() { ColourGroupWidget::startFade(); }
 };
 
 class Sleeper : public QThread {

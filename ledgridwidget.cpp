@@ -13,7 +13,7 @@
 #include "exceptions.h"
 
 using namespace Exception;
-using namespace Ui;
+using namespace AnimatorUi;
 
 LedGridWidget::LedGridWidget(QWidget* parent, const Animation &animation) :
     ColourGroupWidget(parent, 0, 0),

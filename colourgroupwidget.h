@@ -13,7 +13,7 @@
 class Animation;
 class FadeCalculator;
 
-namespace Ui {
+namespace AnimatorUi {
 
 class ColourWidget;
 class ColourGroupGroupWidget;
@@ -57,12 +57,13 @@ public:
     void toggle(ColourWidget &widget);
     void selectArea(ColourWidget& widget);
 
+    void fade();
+    void fadeTo(QColor fadeToColour);
+
     void clearSelection();
 
     inline void setMaxRow(int max) { iNumRows = max; }
     inline void setMaxColumn(int max) { iNumColumns = max; }
-
-    void startFade();
 
     const QByteArray mimeData();
     void handleMimeData(QByteArray mimeData, ColourWidget &dropWidget);
@@ -73,11 +74,10 @@ public:
     inline bool isAnySelected() { return selectedCount() > 0; }
 
 signals:
-    void fadeSetup();
+   // void fadeSetup();
 
 public slots:
     void setColour(QColor colour);
-    void setupFade(QColor fadeToColour);
 
 private slots:
     void colourCalculated(QColor colour);
@@ -95,6 +95,9 @@ protected:
     inline int selectedCount() { return iSelected.count(); }
 
     void selectDirection(Qt::Key direction);
+
+    void setupFade(QColor fadeToColor);
+    void startFade();
 
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }

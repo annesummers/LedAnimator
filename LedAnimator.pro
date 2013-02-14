@@ -56,7 +56,7 @@ HEADERS += \
     defaults.h \
     ledanimcodec.h \
     exceptions.h \
-    leddetailswidgets.h \
+   # leddetailswidgets.h \
     animationdetailswidgets.h \
     animatorapplication.h \
     selectable.h \
@@ -80,7 +80,7 @@ SOURCES += \
     ledgridwidget.cpp \
     playinfowidget.cpp \
     ledanimcodec.cpp \
-    leddetailswidgets.cpp \
+   # leddetailswidgets.cpp \
     animationdetailswidgets.cpp \
     animatorapplication.cpp \
     selectable.cpp \
@@ -94,6 +94,9 @@ SOURCES += \
     newanimationdialog.cpp
 
 FORMS += \
-    newanimation.ui
+    newanimation.ui \
+    mainwindow.ui \
+    animationdetailswidget.ui \
+    playinfowidget.ui
 
 

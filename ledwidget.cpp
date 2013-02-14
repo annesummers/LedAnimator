@@ -14,15 +14,15 @@
 
 #include "defaults.h"
 
-using namespace Ui;
+using namespace AnimatorUi;
 
 LedWidget::LedWidget(QWidget* parent, const Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
     ColourWidget(parent, ledGroup, led) {
 
-    connect(&led, SIGNAL(currentColourChanged()), this, SLOT(colourChanged()));
+    connect(&led, SIGNAL(ledUpdated()), this, SLOT(updated()));
    // QObject::connect(&led, SIGNAL(selected()), this, SLOT(selected()));
 
-    connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(colourChanged()));
+    connect(&(animation), SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
 }
 
 // from DraggableWidget -----------------------
@@ -61,6 +61,13 @@ void LedWidget::paintEvent(QPaintEvent *) {
         painter.drawEllipse(rect2);
         painter.setPen(Qt::DashLine);
         painter.drawEllipse(rect2);
+    }
+
+    int number = led().detailsNumber();
+    if(number != INVALID) {
+        painter.setPen(led().currentColour().value() > 100 ? Qt::black : Qt::white);
+        QRect rect3(4, 4, width()-8, height()-8);
+        painter.drawText(rect3, QString("%1").arg(number));
     }
 }
 

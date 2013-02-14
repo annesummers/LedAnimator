@@ -34,8 +34,11 @@ public:
 
     void setCurrentColour(QColor colour);
 
+    inline void setDetailsShown(int detailsNumber) { iDetailsNumber = detailsNumber; emit ledUpdated(); }
+    inline int detailsNumber() { return iDetailsNumber; }
+
 signals:
-    void currentColourChanged();
+    void ledUpdated();
 
 public slots:
     void numFramesChanged(int numFrames);
@@ -49,6 +52,8 @@ private:
 
     QList<Frame*> iFrames;
     QSignalMapper* iSignalMapper;
+
+    int iDetailsNumber;
 };
 
 #endif // LED_H

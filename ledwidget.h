@@ -12,7 +12,7 @@
 #include "led.h"
 #include "colourwidget.h"
 
-namespace Ui {
+namespace AnimatorUi {
 
 class ColourGroupWidget;
 

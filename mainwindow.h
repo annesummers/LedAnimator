@@ -12,6 +12,10 @@
 
 class Engine;
 
+namespace Ui {
+class MainWindow;
+}
+
 class MainWindow : public QMainWindow {
     Q_OBJECT    
 
@@ -29,6 +33,8 @@ protected:
     
 private:
     Engine&         iEngine;
+
+    Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H

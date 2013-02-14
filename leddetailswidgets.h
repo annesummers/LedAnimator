@@ -16,42 +16,73 @@
 #include "colourgroupwidget.h"
 #include "colourgroupgroupwidget.h"
 
-namespace Ui {
+namespace AnimatorUi {
 
 class LedPositionWidget;
 class FrameListWidget;
 class LedDetailsSelectorGroupWidget;
 
-class LedDetailsWidget;
+//class LedDetailsWidget;
+
+
+
+class LedDetails :  public QObject {
+    Q_OBJECT
+
+public:
+    explicit LedDetails(QObject* parent,
+                        Led& led,
+                        QLabel* positionLabel,
+                        FrameListWidget* frameList,
+                        QPushButton* closeButton) :
+        QObject(parent),
+        iLed(led),
+        iPositionLabel(positionLabel),
+        iFrameList(frameList),
+        iCloseButton(closeButton) {}
+
+private:
+    Led& iLed;
+    QLabel* iPositionLabel;
+    FrameListWidget* iFrameList;
+    QPushButton* iCloseButton;
+
+};
 
 class LedDetailsListWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedDetailsListWidget(QWidget *parent, const Animation &animation);
-
+    explicit LedDetailsListWidget(QWidget *parent);//, const Animation &animation);
+    void setAnimation(Animation* animation);
     void addLed(int row, int column);
-    LedWidget& selectorWidgetAt(int index);
+   // LedWidget& selectorWidgetAt(int index);
 
     int count();
 
-    void closeDetails(LedDetailsWidget& widget);
+    void closeClicked(int whichLed);
 
 protected:
     void resizeEvent(QResizeEvent *);
     void paintEvent(QPaintEvent *);
 
 private:
-    const Animation&    iAnimation;
+    const Animation*    iAnimation;
 
     QList<Led*>                     iShownLeds;
-    QVBoxLayout*                    iLedDetailsList;
-    LedDetailsSelectorGroupWidget*  iSelectorGroup;
+    QGridLayout*                    iGridLayout;
+   // LedDetailsSelectorGroupWidget*  iSelectorGroup;
+
+    QList<LedDetails*> iLedDetailsList;
+
+    QSlider* iFrameSlider;
+
+    QSignalMapper* iSignalMapper;
 
     ColourGroupGroupWidget*         iFramesListGroup;
 };
 
-class LedDetailsWidget : public QWidget {
+/*class LedDetailsWidget : public QWidget {
     Q_OBJECT
 
 public:
@@ -75,7 +106,7 @@ private slots:
     void closeClicked();
 
 private:
-    QHBoxLayout*        iLayout;
+    QGridLayout*        iLayout;
 
     QLabel*             iPositionLabel;
     LedWidget*          iCurrentFrameWidget;
@@ -101,7 +132,7 @@ protected:
 
 private:
     LedDetailsListWidget& iDetailsList;
-};
+};*/
 }
 
 #endif // LEDDETAILSWIDGETS_H

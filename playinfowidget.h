@@ -14,14 +14,14 @@
 
 class Animation;
 
-namespace Ui {
+namespace AnimatorUi {
 
 class PlayInfoWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit PlayInfoWidget(QWidget* parent, Animation &animation);
-    
+
 private slots:
     void playClicked();
     void firstClicked();

@@ -8,7 +8,7 @@
 class Led;
 class Animation;
 
-namespace Ui {
+namespace AnimatorUi {
 
 class FrameWidget;
 

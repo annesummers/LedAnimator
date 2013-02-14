@@ -20,7 +20,8 @@ Led::Led(QObject* parent, Animation &animation, int row, int column) :
     iRow(row),
     iColumn(column),
     iAnimation(animation),
-    iSignalMapper(NULL) {
+    iSignalMapper(NULL),
+    iDetailsNumber(INVALID){
 
 #ifndef NDEBUG
     if(row < 0) {
@@ -107,7 +108,7 @@ void Led::colourChanged(int frameNum) {
     iAnimation.setSaved(false);
 
     if(frameNum == iAnimation.currentFrame()) {
-        emit currentColourChanged();
+        emit ledUpdated();
     }
 }
 

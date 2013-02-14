@@ -16,7 +16,7 @@
 #include "exceptions.h"
 
 using namespace Exception;
-using namespace Ui;
+using namespace AnimatorUi;
 
 ColourGroupWidget::ColourGroupWidget(QWidget *parent,
                                      int maxRow,
@@ -266,6 +266,15 @@ void ColourGroupWidget::doGroupSelection() {
 }
 
 // fading ----------------------------
+
+void ColourGroupWidget::fade() {
+    fade(widgetAt(iLastSelectedRow, iLastSelectedColumn).colour());
+}
+
+void ColourGroupWidget::fadeTo(QColor fadeToColour) {
+    setupFade(fadeToColour);
+    startFade();
+}
 
 void ColourGroupWidget::setupFade(QColor fadeToColour) {
     if(iFadeCalculator != NULL || iFadeParameters != NULL) {

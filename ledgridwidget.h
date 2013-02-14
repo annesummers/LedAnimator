@@ -17,7 +17,7 @@
 
 class Led;
 
-namespace Ui {
+namespace AnimatorUi {
 
 class LedWidget;
 class LedGridGroup;
@@ -56,7 +56,6 @@ private:
 
     QPoint          iDragStartPosition;
     QRect           iDragArea;
-
 };
 }
 

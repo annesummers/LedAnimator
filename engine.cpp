@@ -41,7 +41,9 @@ void Engine::start() {
     if(animFileName == "") {
         newAnimation();
     } else {
-        doLoad(animFileName);
+        if(!doLoad(animFileName)) {
+            newAnimation();
+        }
     }
 }
 
@@ -78,23 +80,29 @@ void Engine::setupNewAnimation(int numRows, int numColumns, int numFrames, int f
     iMainWindow->show();
 }
 
-void Engine::doLoad(QString fileName) {
+bool Engine::doLoad(QString fileName) {
     QFile file(fileName);
-    file.open(QIODevice::ReadOnly);
-    QByteArray anim = file.readAll();
-    file.close();
 
-    setupUI();
+    if(file.open(QIODevice::ReadOnly)) {
+        QByteArray anim = file.readAll();
+        file.close();
 
-    LedAnimByteArrayCodec codec(*iAnimation, anim);
-    codec.readAnimation();
+        setupUI();
 
-    iAnimation->setFileName(fileName);
+        LedAnimByteArrayCodec codec(*iAnimation, anim);
+        codec.readAnimation();
 
-    QSettings settings;
-    settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+        iAnimation->setFileName(fileName);
 
-    iMainWindow->show();
+        QSettings settings;
+        settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+
+        iMainWindow->show();
+
+        return true;
+    }
+
+    return false;
 }
 
 void Engine::doSave(QString fileName) {
@@ -133,7 +141,9 @@ void Engine::loadAnimation() {
         QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Open Animation", "~", "Led Animation Files (*.anim)");
 
         if(fileName != "") {
-            doLoad(fileName);
+            if(!doLoad(fileName)) {
+                // TODO what if we don't find the file?
+            }
         }
     }
 }
