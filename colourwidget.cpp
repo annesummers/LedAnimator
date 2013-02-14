@@ -112,11 +112,11 @@ void ColourWidget::copy() {
     QApplication::clipboard()->setMimeData(mimeData());
 }
 
-void ColourWidget::paste() {
+void ColourWidget::paste(bool wrap) {
     const QClipboard *clipboard = QApplication::clipboard();
 
     if(clipboard->mimeData()->hasFormat(mimeType())) {
-        iColourGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this);
+        iColourGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, wrap);
     }
 }
 

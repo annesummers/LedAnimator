@@ -44,8 +44,11 @@ private slots:
 
     void fade();
     void fadeTo();
+
     void copy();
-    void paste();
+
+    inline void pasteWrap() { paste(false); }
+    inline void pasteTruncate() { paste(true); }
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -70,6 +73,7 @@ protected:
 
     QAction* iSetColourAction;
     QAction* iFadeAction;
+    QAction* iFadeToAction;
     QAction* iCopyAction;
     QAction* iPasteAction;
 
@@ -83,6 +87,8 @@ protected:
 
 private:
     bool handleDragMoves(QDropEvent *event);
+
+    void paste(bool wrap);
 };
 }
 
