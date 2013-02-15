@@ -538,14 +538,28 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
     int rowEnd = row + rowSpan;
     int columnEnd = column + columnSpan;
 
+    bool secondLoop = false;
+    int newRowStart = 0;
+    int newRowEnd = 1;
+    int newColumnStart = 0;
+    int newColumnEnd = 1;
     if(wrap) {
-        // TODO this doesn't work
         if(iNumRows != 0 && rowEnd >= iNumRows) {
+            int oldRowEnd = rowEnd;
             rowEnd = iNumRows;
+            secondLoop = true;
+
+            newRowStart = 0;
+            newRowEnd = oldRowEnd - rowEnd;
         }
 
         if(iNumColumns != 0 && columnEnd >= iNumColumns) {
+            int oldColumnEnd = columnEnd;
             columnEnd = iNumColumns;
+            secondLoop = true;
+
+            newColumnStart = 0;
+            newColumnEnd = oldColumnEnd - columnEnd;
         }
     } else {
         if(iNumRows != 0 && rowEnd >= iNumRows) {
@@ -569,6 +583,24 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
 
             if(i == rowEnd - 1 && j == columnEnd - 1) {
                 selectArea(widget);
+            }
+        }
+    }
+
+    if(secondLoop) {
+        for(int i = newRowStart; i < newRowEnd; i++) {
+            for(int j = newColumnStart; j < newColumnEnd; j++) {
+                ColourWidget& widget = widgetAt(i, j);
+
+                QColor colour;
+                dataStream >> colour;
+
+                widget.setColour(colour);
+                widget.handleExtraData(dataStream);
+
+                if(i == newRowEnd - 1 && j == newColumnEnd - 1) {
+                    selectArea(widget);
+                }
             }
         }
     }

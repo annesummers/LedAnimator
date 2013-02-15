@@ -76,6 +76,8 @@ protected:
     QAction* iFadeToAction;
     QAction* iCopyAction;
     QAction* iPasteAction;
+    QAction* iPasteWrapAction;
+    QAction* iPasteTruncateAction;
 
     ColourGroupWidget&  iColourGroup;
     Selectable&         iItem;

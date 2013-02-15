@@ -62,7 +62,7 @@ ColourWidget& FrameListWidget::widgetAt(int row, int column) {
     ColourGroupWidget::widgetAt(row, column);
 
     if(row != 0) {
-        throw IllegalArgumentException("Row should be zero");
+        throw IllegalArgumentException("FrameListWidget::widgetAt : Row should be zero");
     }
 
     return *iFramesList.at(column);

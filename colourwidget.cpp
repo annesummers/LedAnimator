@@ -34,10 +34,15 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 
     connect(iCopyAction, SIGNAL(triggered()), this, SLOT(copy()));
 
-    iPasteAction = new QAction(tr("&Paste"), this);
-    iPasteAction->setStatusTip(tr("Paste the copied colour"));
+    iPasteWrapAction = new QAction(tr("&Paste wrap"), this);
+    iPasteWrapAction->setStatusTip(tr("Paste the copied items with wrapping"));
 
-    connect(iPasteAction, SIGNAL(triggered()), this, SLOT(paste()));
+    connect(iPasteWrapAction, SIGNAL(triggered()), this, SLOT(pasteWrap()));
+
+    iPasteTruncateAction = new QAction(tr("&Paste"), this);
+    iPasteTruncateAction->setStatusTip(tr("Paste the copied items without wrapping"));
+
+    connect(iPasteTruncateAction, SIGNAL(triggered()), this, SLOT(pasteTruncate()));
 
     iFadeAction = new QAction(tr("&Fade"), this);
     iFadeAction->setStatusTip("Fade to last selected colour");
@@ -211,11 +216,13 @@ void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
 
     menu.addAction(iSetColourAction);
     menu.addAction(iFadeAction);
+    menu.addAction(iFadeToAction);
     menu.addAction(iCopyAction);
 
     const QClipboard *clipboard = QApplication::clipboard();
     if(clipboard->mimeData()->hasFormat(mimeType())) {
-        menu.addAction(iPasteAction);
+        menu.addAction(iPasteWrapAction);
+        menu.addAction(iPasteTruncateAction);
     }
 
     menu.exec(event->globalPos());
