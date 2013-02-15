@@ -539,17 +539,15 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
     int columnEnd = column + columnSpan;
 
     bool secondLoop = false;
-    int newRowStart = 0;
     int newRowEnd = 1;
-    int newColumnStart = 0;
     int newColumnEnd = 1;
+
     if(wrap) {
         if(iNumRows != 0 && rowEnd >= iNumRows) {
             int oldRowEnd = rowEnd;
             rowEnd = iNumRows;
             secondLoop = true;
 
-            newRowStart = 0;
             newRowEnd = oldRowEnd - rowEnd;
         }
 
@@ -558,7 +556,6 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
             columnEnd = iNumColumns;
             secondLoop = true;
 
-            newColumnStart = 0;
             newColumnEnd = oldColumnEnd - columnEnd;
         }
     } else {
@@ -588,8 +585,8 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
     }
 
     if(secondLoop) {
-        for(int i = newRowStart; i < newRowEnd; i++) {
-            for(int j = newColumnStart; j < newColumnEnd; j++) {
+        for(int i = 0; i < newRowEnd; i++) {
+            for(int j = 0; j < newColumnEnd; j++) {
                 ColourWidget& widget = widgetAt(i, j);
 
                 QColor colour;
