@@ -268,7 +268,7 @@ void ColourGroupWidget::doGroupSelection() {
 // fading ----------------------------
 
 void ColourGroupWidget::fade() {
-    fade(widgetAt(iLastSelectedRow, iLastSelectedColumn).colour());
+    fadeTo(widgetAt(iLastSelectedRow, iLastSelectedColumn).colour());
 }
 
 void ColourGroupWidget::fadeTo(QColor fadeToColour) {
@@ -520,7 +520,7 @@ const QByteArray ColourGroupWidget::mimeData() {
     return itemData;
 }
 
-void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWidget) {
+void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWidget, bool wrap) {
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
     int row;
@@ -537,6 +537,25 @@ void ColourGroupWidget::handleMimeData(QByteArray itemData, ColourWidget& dropWi
 
     int rowEnd = row + rowSpan;
     int columnEnd = column + columnSpan;
+
+    if(wrap) {
+        // TODO this doesn't work
+        if(iNumRows != 0 && rowEnd >= iNumRows) {
+            rowEnd = iNumRows;
+        }
+
+        if(iNumColumns != 0 && columnEnd >= iNumColumns) {
+            columnEnd = iNumColumns;
+        }
+    } else {
+        if(iNumRows != 0 && rowEnd >= iNumRows) {
+            rowEnd = iNumRows;
+        }
+
+        if(iNumColumns != 0 && columnEnd >= iNumColumns) {
+            columnEnd = iNumColumns;
+        }
+    }
 
     for(int i = row; i < rowEnd; i++) {
         for(int j = column; j < columnEnd; j++) {

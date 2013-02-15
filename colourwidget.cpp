@@ -198,7 +198,7 @@ void ColourWidget::keyPressEvent(QKeyEvent *event) {
     if(key == Qt::Key_C && event->modifiers() == Qt::ControlModifier) {
         copy();
     } else if (key == Qt::Key_V && event->modifiers() == Qt::ControlModifier) {
-        paste();
+        paste(false);
     }
 }
 
@@ -251,7 +251,7 @@ void ColourWidget::dropEvent(QDropEvent *event) {
    // qDebug("singleWidget drop");
 
     if(handleDragMoves(event)) {
-        iColourGroup.handleMimeData(event->mimeData()->data(mimeType()), *this);
+        iColourGroup.handleMimeData(event->mimeData()->data(mimeType()), *this, false);
 
         update();
     }

@@ -66,7 +66,7 @@ public:
     inline void setMaxColumn(int max) { iNumColumns = max; }
 
     const QByteArray mimeData();
-    void handleMimeData(QByteArray mimeData, ColourWidget &dropWidget);
+    void handleMimeData(QByteArray mimeData, ColourWidget &dropWidget, bool wrap);
 
     bool isGroupSelected();
     bool isMultipleSelected();
