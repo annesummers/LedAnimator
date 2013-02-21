@@ -12,7 +12,7 @@
 #include "colourwidget.h"
 #include "frame.h"
 
-#include "defaults.h"
+#include "constants.h"
 
 namespace AnimatorUi {
 
@@ -25,14 +25,15 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
-    void addExtraData(QDataStream& dataStream) { Q_UNUSED(dataStream); }
-    void handleExtraData(QDataStream &dataStream) { Q_UNUSED(dataStream); }
-
     void setColour(QColor colour) { frame().setColour(colour); }
     const QColor colour() const { return frame().colour(); }
 
-    inline Qt::DropAction dropAction() const { return Qt::CopyAction; }
     inline QString mimeType() const { return FRAME_MIME_TYPE; }
+
+    inline Qt::DropActions dropActions() const { return Qt::CopyAction; }
+    inline Qt::DropActions dragActions() const { return Qt::CopyAction; }
+    inline Qt::DropAction  defaultDropAction() const { return Qt::CopyAction; }
+    inline Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
 private:
     inline Frame& frame() const { return static_cast<Frame&>(iItem); }

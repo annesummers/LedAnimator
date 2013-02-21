@@ -9,24 +9,23 @@
 
 #include <QObject>
 
+namespace AnimatorModel {
+
 class Selectable : public QObject {
     Q_OBJECT
 
 public:
-    explicit Selectable(QObject *parent = 0);
+    explicit Selectable(QObject *parent);
 
     inline const bool isSelected() const { return iIsSelected; }
-
     void select(bool isSelected);
 
 signals:
     void selected();
-    
-public slots:
 
 private:
-    bool    iIsSelected;
-    
+    bool    iIsSelected;   
 };
+}
 
 #endif // SELECTABLE_H

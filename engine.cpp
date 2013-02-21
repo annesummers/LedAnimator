@@ -8,7 +8,7 @@
 
 #include "animation.h"
 #include "mainwindow.h"
-#include "defaults.h"
+#include "constants.h"
 #include "ledanimcodec.h"
 #include "newanimationdialog.h"
 
@@ -126,12 +126,10 @@ void Engine::newAnimation() {
         if(newAnimationDialog.exec() == QDialog::Accepted) {
             setupUI();
 
-            iAnimation->setupNew(newAnimationDialog.iNumRows,
+            setupNewAnimation(newAnimationDialog.iNumRows,
                                  newAnimationDialog.iNumColumns,
                                  newAnimationDialog.iNumFrames,
                                  newAnimationDialog.iFrameFrequency);
-
-            iMainWindow->show();
         }
     }
 }

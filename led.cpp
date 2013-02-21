@@ -10,18 +10,17 @@
 #include "frame.h"
 #include "animation.h"
 
-#include "defaults.h"
+#include "constants.h"
 #include "exceptions.h"
 
 using namespace Exception;
 
-Led::Led(QObject* parent, Animation &animation, int row, int column) :
-    Selectable(parent),
-    iRow(row),
-    iColumn(column),
+Led::Led(QObject* parent, Animation &animation, int number, int row, int column) :
+    GridItem(parent, row, column),
     iAnimation(animation),
     iSignalMapper(NULL),
-    iDetailsNumber(INVALID){
+    iNumber(number),
+    iHidden(false) {
 
 #ifndef NDEBUG
     if(row < 0) {
@@ -52,29 +51,35 @@ Led::~Led() {
 Frame& Led::frameAt(int frameNum) const {
 #ifndef NDEBUG
     if(frameNum < INITIAL_FRAME) {
-        throw IllegalFrameNumberException("Frame number is zero or negative");
+        throw IllegalFrameNumberException("Led::frameAt : Frame number is zero or negative");
     }
 
     if(frameNum > iAnimation.numFrames()) {
-        throw IllegalFrameNumberException("Frame number is greater than numFrames");
+        throw IllegalFrameNumberException("Led::frameAt : Frame number is greater than numFrames");
     }
 
     if(frameNum > iFrames.count()) {
-        throw IllegalFrameNumberException("Frame number is greater than led number of frames");
+        throw IllegalFrameNumberException("Led::frameAt : Frame number is greater than led number of frames");
     }
 #endif
 
     return *(iFrames.at(frameNum - INITIAL_FRAME));
 }
 
+void Led::copyFrames(Led& copyLed) {
+    for(int i = INITIAL_FRAME; i < iAnimation.numFrames() + INITIAL_FRAME; i++) {
+        frameAt(i).setColour(copyLed.frameAt(i).colour());
+    }
+}
+
 void Led::numFramesChanged(int numFrames) {
 #ifndef NDEBUG
     if(numFrames <= 0) {
-        throw IllegalArgumentException("numFrames is zero or negative");
+        throw IllegalArgumentException("Led::numFramesChanged : numFrames is zero or negative");
     }
 
     if(numFrames > MAX_FRAMES) {
-        throw IllegalArgumentException("numFrames is too big");
+        throw IllegalArgumentException("Led::numFramesChanged : numFrames is too big");
     }
 #endif
 
@@ -89,7 +94,7 @@ void Led::numFramesChanged(int numFrames) {
 
             connect(frame, SIGNAL(colourChanged()), iSignalMapper, SLOT(map()));
         }
-    } else if(numFrames <= iFrames.count()) { // we need to remove some frames; take them from the end
+    } else if(numFrames < iFrames.count()) { // we need to remove some frames; take them from the end
         for(int i = oldNumFrames; i <= numFrames; i--) {
             Frame* frame = iFrames.at(i);
 
@@ -114,4 +119,9 @@ void Led::colourChanged(int frameNum) {
 
 void Led::setCurrentColour(QColor colour) {    
     frameAt(iAnimation.currentFrame()).setColour(colour);
+}
+
+void Led::move(int newRow, int newColumn) {
+    setRow(newRow);
+    setColumn(newColumn);
 }

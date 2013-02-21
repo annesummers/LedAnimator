@@ -8,8 +8,9 @@
 
 #include "animation.h"
 #include "engine.h"
+#include "mainwindow.h"
 
-using namespace Test;
+using namespace AnimatorTest;
 
 EngineTests::EngineTests(QObject *parent) :
     QObject(parent)

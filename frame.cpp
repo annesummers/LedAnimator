@@ -9,6 +9,7 @@
 #include "exceptions.h"
 
 using namespace Exception;
+using namespace AnimatorModel;
 
 Frame::Frame(QObject *parent) :
     Selectable(parent),

@@ -6,6 +6,8 @@
 
 #include "selectable.h"
 
+using namespace AnimatorModel;
+
 Selectable::Selectable(QObject *parent) :
     QObject(parent),
     iIsSelected(false) {

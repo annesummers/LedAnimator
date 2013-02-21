@@ -10,7 +10,7 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
-namespace Test {
+namespace AnimatorTest {
 
 class LedAnimCodecTests : public QObject
 {

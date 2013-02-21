@@ -10,9 +10,13 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
+namespace AnimatorModel {
 class Animation;
+}
 
-namespace Test {
+using namespace AnimatorModel;
+
+namespace AnimatorTest {
 
 class FrameTests : public QObject
 {

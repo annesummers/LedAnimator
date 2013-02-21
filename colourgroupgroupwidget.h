@@ -5,7 +5,7 @@
 
 namespace AnimatorUi {
 
-class ColourGroupWidget;
+class SelectableGroupWidget;
 
 class ColourGroupGroupWidget : public QWidget {
     Q_OBJECT
@@ -13,11 +13,11 @@ class ColourGroupGroupWidget : public QWidget {
 public:
     explicit ColourGroupGroupWidget(QWidget *parent);
 
-    void selected(ColourGroupWidget& selectedWidget);
-    inline void addGroup(ColourGroupWidget& newGroup) { iColourGroups.append(&newGroup); }
+    void selected(SelectableGroupWidget& selectedWidget);
+    inline void addGroup(SelectableGroupWidget& newGroup) { iColourGroups.append(&newGroup); }
 
 private:
-    QList<ColourGroupWidget*>   iColourGroups;
+    QList<SelectableGroupWidget*>   iColourGroups;
     
 };
 }

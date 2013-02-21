@@ -13,10 +13,12 @@
 #include <QColor>
 #include <QSize>
 
-#include "animatorbase.h"
-
+namespace AnimatorModel {
 class Animation;
 class Led;
+}
+
+using namespace AnimatorModel;
 
 namespace ImportExport {
 
@@ -48,8 +50,8 @@ class LedAnimCodec : public QObject {
 public:
     explicit LedAnimCodec(Animation &animation);
 
-    virtual void writeAnimation();
-    virtual void readAnimation();
+    void writeAnimation();
+    void readAnimation();
 
 protected:
     virtual const AnimChar readCharacter() const = 0;
@@ -61,11 +63,16 @@ protected:
     virtual const QByteArray&  asByteArray() const = 0;
     virtual const QString     asString() const = 0;
 
-    Animation& iAnimation;
+    virtual void writePositionData() { }
+    virtual QList<int> readPositionData(int numRows, int numColumns, int numLeds) { }
 
-private:
+    virtual void writeColourData() = 0;
+    virtual void readColourData() = 0;
+
     void writeColour(QColor colour);
     const QColor readColour() const;
+
+    Animation& iAnimation;
 };
 
 class LedAnimStringCodec: public LedAnimCodec {
@@ -83,6 +90,9 @@ protected:
     const AnimChar readControlCharacter() const { return AnimChar(); }
 
     const QByteArray &asByteArray() const;
+
+    void writeColourData();
+    void readColourData();
 
 private:
     QString iString;
@@ -107,6 +117,12 @@ protected:
 
     void writeControlCharacter(AnimChar character);
     const AnimChar readControlCharacter() const;
+
+    void writePositionData();
+    QList<int> readPositionData(int numRows, int numColumns, int numLeds);
+
+    void writeColourData();
+    void readColourData();
 
 private:
     QByteArray  iByteArray;

@@ -8,16 +8,14 @@
 
 #include "colourgroupgroupwidget.h"
 
+namespace AnimatorModel {
 class Led;
 class Animation;
+}
 
-//namespace Ui {
-//class AnimationDetailsWidget;
-//}
+using namespace AnimatorModel;
 
 namespace AnimatorUi {
-
-class LedDetailsListWidget;
 
 class AnimationDetailsWidget : public ColourGroupGroupWidget {
 
@@ -43,6 +41,8 @@ protected:
 
 private:
     void addLed(int row, int column);
+    bool handleDragDropEvent(QDropEvent* event);
+
     Animation&              iAnimation;
 
     int iFramesListX;
@@ -53,8 +53,6 @@ private:
 
     QSignalMapper*          iSignalMapper;
     QList<Led*>             iShownLeds;
-
- //   ColourGroupGroupWidget* iFramesListGroup;
 
     bool iClosed;
 };

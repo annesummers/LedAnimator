@@ -1,0 +1,169 @@
+    QList<int> reds;
+    QList<int> greens;
+    QList<int> blues;
+    QList<int> redDiffs;
+    QList<int> greenDiffs;
+    QList<int> blueDiffs;
+
+
+    int maxRedCounter = 0;
+    int maxGreenCounter = 0;
+    int maxBlueCounter = 0;
+
+
+            for(int i = 0; i < iAnimation.numLeds(); i++) {
+                reds.append(iAnimation.ledAt(i).frameAt(frame + INITIAL_FRAME).colour().red());
+            }
+
+            for(int i = 0; i < iAnimation.numLeds(); i++) {
+                greens.append(iAnimation.ledAt(i).frameAt(frame + INITIAL_FRAME).colour().green());
+            }
+
+            for(int i = 0; i < iAnimation.numLeds(); i++) {
+                blues.append(iAnimation.ledAt(i).frameAt(frame + INITIAL_FRAME).colour().blue());
+            }
+
+                 /*   int redCounter = 0;
+                    for(int i = 0; i < reds.count() - 1; i++) {
+                        int freq = reds.count(i);
+                        if(freq != 0) {
+                            redCounter++;
+                           // qDebug("%d : %d", i, freq);
+                        }
+                    }*/
+
+                    for(int i = 0; i < reds.count() - 1; i++) {
+                        redDiffs.append(reds.at(i) - reds.at(i + 1));
+                        //qDebug("%d", reds.at(i) - reds.at(i + 1));
+                    }
+/*
+                    int redCounter = 0;
+                    for(int i = -255; i < 256; i++) {
+                        int freq = redDiffs.count(i);
+                        if(freq != 0) {
+                            redCounter++;
+                           // qDebug("%d : %d", i, freq);
+                        }
+                    }
+*/
+                  //  qDebug("%d", redCounter);*/
+
+               /*     if(redCounter > maxRedCounter) {
+                        maxRedCounter = redCounter;
+                    }
+
+                    int greenCounter = 0;
+                    for(int i = 0; i < greens.count() - 1; i++) {
+                        int freq = greens.count(i);
+                        if(freq != 0) {
+                            greenCounter++;
+                           // qDebug("%d : %d", i, freq);
+                        }
+                    }
+
+        */
+                    for(int i = 0; i < greens.count() - 1; i++) {
+                        greenDiffs.append(greens.at(i) - greens.at(i + 1));
+                     //   qDebug("%d", greens.at(i) - greens.at(i + 1));
+                    }
+
+                    int greenCounter = 0;
+                    for(int i = -255; i < 256; i++) {
+                        int freq = greenDiffs.count(i);
+                        if(freq != 0) {
+                            greenCounter++;
+                           // qDebug("%d : %d", i, freq);
+                        }
+                    }
+
+                  //  qDebug("%d", redCounter);
+        /*
+                    if(greenCounter > maxGreenCounter) {
+                        maxGreenCounter = greenCounter;
+                    }
+                    int blueCounter = 0;
+                    for(int i = 0; i < blues.count() - 1; i++) {
+                        int freq = blues.count(i);
+                        if(freq != 0) {
+                            blueCounter++;
+                           // qDebug("%d : %d", i, freq);
+                        }
+                    }
+        */
+                    for(int i = 0; i < blues.count() - 1; i++) {
+                        blueDiffs.append(blues.at(i) - blues.at(i + 1));
+                      //  qDebug("%d", blues.at(i) - blues.at(i + 1));
+                    }
+
+                    int blueCounter = 0;
+                    for(int i = -255; i < 256; i++) {
+                        int freq = blueDiffs.count(i);
+                        if(freq != 0) {
+                            blueCounter++;
+                           // qDebug("%d : %d", i, freq);
+                        }
+                    }
+
+                  //  qDebug("%d", redCounter);
+        /*
+                    if(blueCounter > maxBlueCounter) {
+                        maxBlueCounter = blueCounter;
+                    }*/
+
+        // Build frequency table
+        int frequencies[256];
+
+        for(int i = 0; i < 3; i++) {
+        QList<int> counts;
+
+        if(i == 0) {
+            counts = redDiffs;
+        } else if (i == 1) {
+            counts = greenDiffs;
+        } else if (i == 2) {
+            counts = blueDiffs;
+        }
+
+            for(int i = 0; i < 256; i++) {
+
+                frequencies[i] = counts.count(i);
+        }
+
+        HuffmanCode* encoder = new HuffmanCode();
+
+        INode* root = encoder->BuildTree(frequencies);
+
+        HuffCodeMap codes;
+        encoder->GenerateCodes(root, HuffCode(), codes);
+        delete root;
+
+        int codesCounter = 0;
+        for (HuffCodeMap::const_iterator it = codes.begin(); it != codes.end(); ++it)
+        {
+            qDebug("%d", it->first);
+
+            QString bitCode;
+
+            //bitCode.append(QString("%1 ").arg(it->first));
+
+            int bitCount = 0;
+            for (HuffCode::const_iterator it2 = it->second.begin();
+                 it2 != it->second.end();
+                 ++it2) {
+                bitCode.append(QString("%1").arg(*it2));
+                bitCount++;
+             }
+
+            bitCode.append(QString(" %1").arg(bitCount));
+            qDebug(bitCode.toAscii());
+            codesCounter++;
+        }
+
+        qDebug("%d\n\n\n\n", codesCounter);
+
+/*
+
+            std::copy(it->second.begin(), it->second.end(),
+                      std::ostream_iterator<bool>(std::cout));
+            std::cout << std::endl;*/
+        }

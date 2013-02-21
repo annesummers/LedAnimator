@@ -13,9 +13,9 @@
 #include "playinfowidget.h"
 #include "engine.h"
 #include "animation.h"
-#include "animationdetailswidgets.h"
+#include "animationdetailswidget.h"
 
-#include "defaults.h"
+#include "constants.h"
 
 using namespace AnimatorUi;
 
@@ -34,10 +34,10 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
-    LedGridWidget* iLedGridWidget = new LedGridWidget(centralWidget, engine.animation());
-    iLedGridWidget->setObjectName(QString::fromUtf8("iLedGridWidget"));
+    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation());
+    ledGridWidget->setObjectName(QString::fromUtf8("iLedGridWidget"));
 
-    gridLayout->addWidget(iLedGridWidget, 0, 0, 2, 1);
+    gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
 
     PlayInfoWidget* iPlayInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
     iPlayInfoWidget->setObjectName(QString::fromUtf8("iPlayInfoWidget"));
@@ -91,6 +91,13 @@ MainWindow::MainWindow(Engine& engine) :
     connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
 
     menuBar()->addMenu(animationMenu);
+
+    QMenu* viewMenu = new QMenu("&View", this);
+    QAction* toggleLedNumbersAction = viewMenu->addAction("&Toggle led numbers");
+
+    connect(toggleLedNumbersAction, SIGNAL(triggered()), ledGridWidget, SLOT(toggleLedNumbers()));
+
+    menuBar()->addMenu(viewMenu);
 }
 
 MainWindow::~MainWindow() {

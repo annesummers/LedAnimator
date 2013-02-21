@@ -4,8 +4,8 @@
 **                                  **
 **************************************/
 
-#ifndef DEFAULTS_H
-#define DEFAULTS_H
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
 
 #include <QString>
 
@@ -20,6 +20,7 @@ const int MAX_FRAMES = 999;
 
 const int INVALID = -1;
 const int INITIAL_FRAME = 1;
+const int INITIAL_LED = 1;
 
 const int LED_RADIUS = 15;
 const int LED_OFFSET_X = LED_RADIUS*2 + 40;
@@ -45,4 +46,4 @@ const QString SETTINGS_MAIN_WINDOW = "MainWindow";
 const QString LED_MIME_TYPE = "ledanimator/x-leditemdata";
 const QString FRAME_MIME_TYPE = "ledanimator/x-frameitemdata";
 
-#endif // DEFAULTS_H
+#endif // CONSTANTS_H

@@ -11,9 +11,14 @@
 #include <QtTest/QtTest>
 
 class Engine;
-class Animation;
 
-namespace Test {
+namespace AnimatorModel {
+class Animation;
+}
+
+using namespace AnimatorModel;
+
+namespace AnimatorTest {
 
 class LedDetailsWidgetsTests : public QObject
 {

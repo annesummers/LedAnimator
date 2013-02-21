@@ -15,34 +15,28 @@
 using namespace AnimatorUi;
 
 ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Selectable& item) :
-    QWidget(parent),
-    iColourGroup(groupWidget),
-    iItem(item),
-    iDoubleClick(false),
+    SelectableWidget(parent, groupWidget, item),
     iFading(false),
     iColourDialog(NULL){
 
     setAcceptDrops(true);
 
-    iSetColourAction = new QAction(tr("&Set colour"), this);
+    iSetColourAction = new QAction(tr("&Set colour..."), this);
     iSetColourAction->setStatusTip(tr("Choose a colour"));
 
     connect(iSetColourAction, SIGNAL(triggered()), this, SLOT(chooseColour()));
 
+  /*  iSetAllFramesColourAction = new QAction(tr("&Set colour for all frames..."), this);
+    iSetAllFramesColourAction->setStatusTip(tr("Choose a colour"));
+
+    connect(iSetAllFramesColourAction, SIGNAL(triggered()), this, SLOT(setAllFramesColour()));
+*/
+
+    // TODO set all frames colour
     iCopyAction = new QAction(tr("&Copy"), this);
     iCopyAction->setStatusTip(tr("Copy this colour"));
 
     connect(iCopyAction, SIGNAL(triggered()), this, SLOT(copy()));
-
-    iPasteWrapAction = new QAction(tr("&Paste wrap"), this);
-    iPasteWrapAction->setStatusTip(tr("Paste the copied items with wrapping"));
-
-    connect(iPasteWrapAction, SIGNAL(triggered()), this, SLOT(pasteWrap()));
-
-    iPasteTruncateAction = new QAction(tr("&Paste"), this);
-    iPasteTruncateAction->setStatusTip(tr("Paste the copied items without wrapping"));
-
-    connect(iPasteTruncateAction, SIGNAL(triggered()), this, SLOT(pasteTruncate()));
 
     iFadeAction = new QAction(tr("&Fade"), this);
     iFadeAction->setStatusTip("Fade to last selected colour");
@@ -58,23 +52,43 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 
     iColourDialog = new QColorDialog(Qt::white, this);
     iColourDialog->setOptions(QColorDialog::DontUseNativeDialog);
+
     connect(iColourDialog, SIGNAL(accepted()), this, SLOT(colourDialogAccepted()));
+}
+
+void ColourWidget::writeMimeData(QDataStream& dataStream) {
+    dataStream << colour();
+}
+
+void ColourWidget::handleMimeData(QDataStream& dataStream, bool move) {
+    QColor colour;
+    dataStream >> colour;
+
+    setColour(colour);
 }
 
 void ColourWidget::chooseColour() {
     iColourDialog->exec();
 }
 
+/*void ColourWidget::setAllFramesColour() {
+    iSetAllFrames = true;
+    iColourDialog->exec();
+}*/
+
 void ColourWidget::colourDialogAccepted() {
     QColor newColour = iColourDialog->currentColor();
     if(iFading) {
         if(newColour.isValid()) {
-            iColourGroup.fadeTo(newColour);
+            colourGroup().fadeTo(newColour);
 
             iFading = false;
         }
-    } else {
-        iColourGroup.setColour(newColour);
+    } /*else if(iSetAllFrames) {
+
+        iSetAllFrames = false;
+    }*/ else {
+        colourGroup().setColour(newColour);
     }
 }
 
@@ -87,15 +101,15 @@ void ColourWidget::updated() {
 }
 
 void ColourWidget::fade() {
-    if(!iColourGroup.isGroupSelected()) {
+    if(!colourGroup().isGroupSelected()) {
         return;
     }
 
-    iColourGroup.fade();
+    colourGroup().fade();
 }
 
 void ColourWidget::fadeTo() {
-    if(!iColourGroup.isGroupSelected()) {
+    if(!colourGroup().isGroupSelected()) {
         return;
     }
 
@@ -104,95 +118,40 @@ void ColourWidget::fadeTo() {
     chooseColour();
 }
 
-QMimeData* ColourWidget::mimeData() {
-    QMimeData *data = new QMimeData;
-    data->setData(mimeType(), iColourGroup.mimeData());
-
-    return data;
-}
-
 // copy and paste ------------------------
 
 void ColourWidget::copy() {
-    QApplication::clipboard()->setMimeData(mimeData());
-}
-
-void ColourWidget::paste(bool wrap) {
     const QClipboard *clipboard = QApplication::clipboard();
 
     if(clipboard->mimeData()->hasFormat(mimeType())) {
-        iColourGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, wrap);
+        colourGroup().handleOldMimeData(clipboard->mimeData()->data(mimeType()));
     }
+
+    QApplication::clipboard()->setMimeData(mimeData());
 }
 
-// events ----------------------------------------
+// events -----------------------------------
 
-void ColourWidget::mousePressEvent(QMouseEvent* event) {
-    //qDebug("singleWidget mousePress");
-    if (event->button() != Qt::LeftButton) {
-        return;
-    }
+void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
+    SelectableWidget::contextMenuEvent(event);
 
-    iDragStartPosition = event->pos();
+    QMenu menu(this);
 
-    if((QApplication::keyboardModifiers() & Qt::ControlModifier) != 0 &&
-         !iColourGroup.isGroupSelected()) {
-         iColourGroup.toggle(*this);
-         return;
-    }
-}
+    menu.addAction(iSetColourAction);
+    //menu.addAction(iSetAllFramesColourAction);
+    menu.addAction(iFadeAction);
+    menu.addAction(iFadeToAction);
+    menu.addSeparator();
+    addCutAction(&menu);
+    menu.addAction(iCopyAction);
 
-void ColourWidget::mouseReleaseEvent(QMouseEvent* event){
-    //qDebug("singleWidget mouseRelease");
-    if (event->button() != Qt::LeftButton ||
-       (QApplication::keyboardModifiers() & Qt::ControlModifier) != 0) {
-        return;
-    }
+    addPasteActions(&menu);
 
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
-        iColourGroup.selectArea(*this);
-        return;
-    }
-
-    if(!iDoubleClick) {
-        iColourGroup.toggleOne(*this);
-    } else {
-        iDoubleClick = false;
-    }
-}
-
-void ColourWidget::mouseMoveEvent(QMouseEvent *event) {
-    //qDebug("singelWidge mouse move");
-    if(event->buttons() != Qt::LeftButton ||
-       //iColourGroup.isMultipleSelected() ||
-       (event->pos() - iDragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
-        return;
-    }
-
-    if(!iColourGroup.isGroupSelected() &&
-       !iColourGroup.isMultipleSelected()) {
-        iColourGroup.selectOne(*this);
-    }
-
-    QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData());
-    drag->setHotSpot(pos());
-
-    if(iColourGroup.isMultipleSelected()) {
-        drag->exec(dropAction());
-    } else {
-        drag->exec(Qt::CopyAction | dropAction());
-    }
+    menu.exec(event->globalPos());
 }
 
 void ColourWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-   // qDebug("singleWidget mouseDoubleClick");
-    if (event->buttons() != Qt::LeftButton) {
-        return;
-    }
-
-    iDoubleClick = true;
-    iColourGroup.selectOne(*this);
+    SelectableWidget::mouseDoubleClickEvent(event);
 
     chooseColour();
 }
@@ -202,74 +161,9 @@ void ColourWidget::keyPressEvent(QKeyEvent *event) {
 
     if(key == Qt::Key_C && event->modifiers() == Qt::ControlModifier) {
         copy();
+    } else if(key == Qt::Key_X && event->modifiers() == Qt::ControlModifier) {
+        cut();
     } else if (key == Qt::Key_V && event->modifiers() == Qt::ControlModifier) {
         paste(false);
     }
-}
-
-void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
-    if(!iColourGroup.isAnySelected()) {
-        iColourGroup.selectOne(*this);
-    }
-
-    QMenu menu(this);
-
-    menu.addAction(iSetColourAction);
-    menu.addAction(iFadeAction);
-    menu.addAction(iFadeToAction);
-    menu.addAction(iCopyAction);
-
-    const QClipboard *clipboard = QApplication::clipboard();
-    if(clipboard->mimeData()->hasFormat(mimeType())) {
-        menu.addAction(iPasteWrapAction);
-        menu.addAction(iPasteTruncateAction);
-    }
-
-    menu.exec(event->globalPos());
-}
-
-void ColourWidget::dragEnterEvent(QDragEnterEvent* event) {
-   // qDebug("singleWidget drag enter");
-    handleDragMoves(event);
-}
-
-bool ColourWidget::handleDragMoves(QDropEvent* event) {
-    if (event->mimeData()->hasFormat(mimeType())) {
-        if (event->source() != 0 &&
-            event->source() != this &&
-            event->proposedAction() == Qt::CopyAction) {
-            event->accept();
-
-            return true;
-         }
-     } else {
-         event->ignore();
-
-         return false;
-     }
-}
-
-void ColourWidget::dragMoveEvent(QDragMoveEvent* event) {
-   // qDebug("singleWidget drag move");
-    handleDragMoves(event);
-}
-
-void ColourWidget::dropEvent(QDropEvent *event) {
-   // qDebug("singleWidget drop");
-
-    if(handleDragMoves(event)) {
-        iColourGroup.handleMimeData(event->mimeData()->data(mimeType()), *this, false);
-
-        update();
-    }
-
-   /*  if (event->mimeData()->hasFormat(mimeType())) {
-
-
-         if (event->source() != 0 && event->source() != this) {
-             event->accept();
-         }
-     } else {
-         event->ignore();
-     }*/
 }

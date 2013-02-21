@@ -12,50 +12,79 @@
 #include <QPoint>
 #include <QRect>
 
-#include "ledwidget.h"
+//#include "ledwidget.h"
 #include "colourgroupwidget.h"
 
+namespace AnimatorModel {
 class Led;
+class Animation;
+}
+
+using namespace AnimatorModel;
 
 namespace AnimatorUi {
-
-class LedWidget;
-class LedGridGroup;
 
 class LedGridWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedGridWidget(QWidget* parent, const Animation &animation);
+    explicit LedGridWidget(QWidget* parent, Animation &animation);
+
+    inline bool ledNumbersShown() const { return iLedNumbersShown; }
+
+    void copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn);
+    void moveLed(int fromRow, int fromColumn, int toRow, int toColumn);
+    void deleteLed(int row, int column);
+
+    void addSelectedLeds();
+    void hideSelectedLeds();
+
+public slots:
+    Led& addLed(int row, int column, Led *led = NULL);
 
 private slots:
-    void addLed(int row, int column);
+    void addSocket(int row, int column);
+
+    void toggleLedNumbers();
 
 protected:
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent*);
 
-    //void keyPressEvent(QKeyEvent *);
-
     void paintEvent(QPaintEvent*);
 
-    void getWidgetPosition(ColourWidget& widget, int* row, int* column);
-    ColourWidget& widgetAt(int row, int column);
+    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    SelectableWidget& widgetAt(int row, int column);
 
     bool validKeyPress(Qt::Key key);
 
 private:
+    void copyLed(Led &led, int toRow, int toColumn);
+    void moveLed(Led& led, int toRow, int toColumn);
+
+    void hideLed(int row, int column);
+
     int gridWidth();
     int gridHeight();
 
-    const Animation&      iAnimation;
+    void deleteIfNeeded(int row, int column);
+
+    void addWidget(SelectableWidget *widget, int row, int column);
+
+    Led& getLed(int row, int column);
+
+    Animation&      iAnimation;
 
     QGridLayout*    iLedGridLayout;
     QWidget*        iContainerWidget;
 
     QPoint          iDragStartPosition;
     QRect           iDragArea;
+
+    bool            iLedNumbersShown;
+
+    Led*            iCopyLed;
 };
 }
 

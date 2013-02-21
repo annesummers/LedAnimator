@@ -10,11 +10,20 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
+namespace AnimatorModel {
 class Animation;
-class Engine;
-class MainWindow;
+}
 
-namespace Test {
+class Engine;
+
+namespace AnimatorUi {
+class MainWindow;
+}
+
+using namespace AnimatorUi;
+using namespace AnimatorModel;
+
+namespace AnimatorTest {
 
 class EngineTests : public QObject
 {

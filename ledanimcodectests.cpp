@@ -6,7 +6,7 @@
 
 #include "ledanimcodectests.h"
 
-using namespace Test;
+using namespace AnimatorTest;
 
 LedAnimCodecTests::LedAnimCodecTests(QObject *parent) :
     QObject(parent)

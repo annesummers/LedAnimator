@@ -10,10 +10,11 @@
 #include "led.h"
 
 #include "exceptions.h"
-#include "defaults.h"
+#include "constants.h"
 
-using namespace Test;
+using namespace AnimatorTest;
 using namespace Exception;
+using namespace AnimatorModel;
 
 LedTests::LedTests(QObject *parent) :
     QObject(parent){
@@ -61,7 +62,7 @@ void LedTests::constructor() {
         //iAnimation = new Animation(*(iEngine));
         iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
 
-        led = new Led(iAnimation, *iAnimation, row, column);
+        led = new Led(iAnimation, *iAnimation, 0, row, column);
 
         QCOMPARE(led->row(), row);
         QCOMPARE(led->column(), column);
@@ -81,10 +82,10 @@ void LedTests::numFramesChanged_data() {
     QTest::addColumn<QString>("errorString");
 
     QTest::newRow("zero frames") << 0
-                                 << "numFrames is zero or negative";
+                                 << "Led::numFramesChanged : numFrames is zero or negative";
 
     QTest::newRow("negative frames") << INVALID
-                                     << "numFrames is zero or negative";
+                                     << "Led::numFramesChanged : numFrames is zero or negative";
 }
 
 void LedTests::numFramesChanged() {
@@ -94,8 +95,8 @@ void LedTests::numFramesChanged() {
     //Animation* animation = new Animation(*(iEngine));
 
     try {
-        iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
-        Led& led = iAnimation->ledAt(0, 0);
+        setupAnimation();
+        Led& led = iAnimation->ledAt(INITIAL_LED);
 
         led.numFramesChanged(numFrames); // should always throw an exception
 
@@ -115,11 +116,11 @@ void LedTests::setCurrentColour_data() {
     QTest::newRow("invalid current frame") << false
                                            << true
                                            << QColor(Qt::black)
-                                           << "Frame number is zero or negative";
+                                           << "Led::frameAt : Frame number is zero or negative";
     QTest::newRow("invalid frame") << true
                                    << false
                                    << QColor(Qt::black)
-                                   << "Frame number is greater than led number of frames";
+                                   << "Led::frameAt : Frame number is greater than led number of frames";
     QTest::newRow("invalid colour") << true
                                     << true
                                     << QColor()
@@ -136,7 +137,6 @@ void LedTests::setCurrentColour() {
     QFETCH(QColor, colour);
     QFETCH(QString, error);
 
-    //Animation* animation = new Animation(*(iEngine));
     Led* led = NULL;
 
     try {
@@ -144,14 +144,14 @@ void LedTests::setCurrentColour() {
             iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
         }
 
-        led = new Led(iAnimation, *iAnimation, 0, 0);
+        led = new Led(iAnimation, *iAnimation, 0, 0, 0);
 
         if(framesSetup) {
             led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
         }
 
         QSignalSpy colourSpy(&(led->frameAt(iAnimation->currentFrame())), SIGNAL(colourChanged()));
-        QSignalSpy currentColourSpy(led, SIGNAL(currentColourChanged()));
+        QSignalSpy currentColourSpy(led, SIGNAL(ledUpdated()));
 
         led->setCurrentColour(colour);
 
@@ -180,10 +180,9 @@ void LedTests::select_data() {
 void LedTests::select() {
     QFETCH(bool, selection);
 
-    //Animation* animation = new Animation(*(iEngine));
-    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
+    setupAnimation();
 
-    Led* led = new Led(iAnimation, *iAnimation, 0, 0);
+    Led* led = new Led(iAnimation, *iAnimation, 0, 0, 0);
     led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
 
     QSignalSpy selectedSpy(led, SIGNAL(selected()));
@@ -192,10 +191,38 @@ void LedTests::select() {
 
     QCOMPARE(selectedSpy.count(), 1);
     QCOMPARE(led->isSelected(), selection);
-
-    //delete iAnimation; // deletes the led
 }
 
-void LedTests::cleanupTestCase() {
+void LedTests::copyFrames_data() {
 
+}
+
+void LedTests::copyFrames() {
+
+}
+
+void LedTests::setupAnimation() {
+    QList<QPoint> gridPositions;
+    QList<int> positions;
+
+    int numRows = DEFAULT_NUM_ROWS;
+    int numColumns = DEFAULT_NUM_COLUMNS;
+
+    for(int i = 0; i < numColumns; i++) {
+        for(int j = 0; j < numRows; j++) {
+            gridPositions.append(QPoint(i, j));
+        }
+    }
+
+    for(int i = 0; i < numRows * numColumns; i++) {
+        positions.append(INVALID);
+    }
+
+    int numLeds = gridPositions.count();
+
+    for(int i = 0; i < numLeds; i++) {
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+    }
+
+    iAnimation->setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
 }

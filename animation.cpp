@@ -11,13 +11,14 @@
 #include "ledwidget.h"
 #include "ledanimcodec.h"
 
-#include "defaults.h"
+#include "constants.h"
 #include "exceptions.h"
 
 #include <QtDebug>
 
 using namespace Exception;
 using namespace ImportExport;
+using namespace AnimatorModel;
 
 Animation::Animation(Engine& engine) :
     QObject(&engine),
@@ -25,6 +26,7 @@ Animation::Animation(Engine& engine) :
     iPlayTimer(NULL),
     iNumRows(INVALID),
     iNumColumns(INVALID),
+    iNumLeds(INVALID),
     iNumFrames(INVALID),
     iCurrentFrame(INVALID),
     iFrameFrequency(DEFAULT_FRAME_FREQUENCY),
@@ -32,7 +34,7 @@ Animation::Animation(Engine& engine) :
     iFileName(""),
     iIsSaved(false){ }
 
-void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFrequency) {
+void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFrequency, int numLeds, QList<int> ledPositions) {
     if(numRows <= 0) {
         throw IllegalArgumentException("Animation::setupNew : numRows is zero or negative");
     }
@@ -62,19 +64,13 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
         delete led;
         led = NULL;
     }
+
     iLeds.clear();
 
     setNumRows(numRows);
     setNumColumns(numColumns);
 
-    for(int i = 0; i < numRows; i++) {
-        for(int j = 0; j < numColumns; j++) {
-            led = new Led(this, *this, i, j);
-            iLeds.append(led);
-
-            emit newLed(i, j);
-        }
-    }  
+    setNumLeds(numLeds);
 
     setNumFrames(numFrames);
     setCurrentFrame(INITIAL_FRAME);
@@ -82,6 +78,49 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
 
     setSaved(false);
     setFileName("");
+
+    for(int i = 0; i < numRows; i++) {
+        for(int j = 0; j < numColumns; j++) {
+            emit newSocket(i, j);
+        }
+    }
+
+    iPositions = ledPositions;
+
+    int row;
+    int column;
+
+    for(int i = 0; i < numLeds; i++) {
+        getLedPosition(i, &row, &column);
+        addLed(row, column);
+    }
+}
+
+Led& Animation::addLed(int row, int column) {
+    Led* led = new Led(this, *this, iLeds.count() + 1, row, column);
+
+    iLeds.append(led);
+    iPositions[gridPositionNumber(row, column)] = iLeds.count();
+
+    led->numFramesChanged(iNumFrames);
+
+    emit newLed(row, column);
+
+    return *led;
+}
+
+void Animation::moveLed(Led& led, int toRow, int toColumn) {
+    iPositions[gridPositionNumber(led.row(), led.column())] = INVALID;
+    iPositions[gridPositionNumber(toRow, toColumn)] = led.number();
+}
+
+void Animation::deleteLed(Led& led) {
+    iLeds.removeOne(&led);
+    iPositions[gridPositionNumber(led.row(), led.column())] = INVALID;
+}
+
+void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFrequency) {
+    setupNew(numRows, numColumns, numFrames, frameFrequency, 0, QList<int>());
 }
 
 void Animation::play() {
@@ -104,7 +143,7 @@ void Animation::stop() {
     }
 }
 
-Led &Animation::ledAt(int row, int column) const {
+Led *Animation::ledAt(int row, int column) const {
     if(row >= numRows()) {
         throw IllegalArgumentException("Animation::ledAt : Row is greater than number of rows");
     }
@@ -121,7 +160,35 @@ Led &Animation::ledAt(int row, int column) const {
         throw IllegalArgumentException("Animation::ledAt : Column is negative");
     }
 
-    return *(iLeds.at((row*numColumns()) + column));
+    int ledNumber = getLedNumber(row, column);
+    if(ledNumber != INVALID) {
+        return &ledAt(ledNumber);
+    }
+
+    return NULL;
+}
+
+Led& Animation::ledAt(int number) const {
+    //int index = iPositions.indexOf(number);
+    return *iLeds.at(number - 1);
+}
+
+int Animation::gridPositionNumber(int row, int column) const {
+    return (row*numColumns()) + column;
+}
+
+void Animation::getGridPosition(int index, int* row, int* column) const {
+    *row = index/numRows();
+    *column = index%numRows();
+}
+
+void Animation::getLedPosition(int number, int *const row, int *const column)  const {
+    getGridPosition(iPositions.indexOf(number), row, column);
+}
+
+const int Animation::getLedNumber(int row, int column) const {
+    int gridPositionNum = gridPositionNumber(row, column);
+    return iPositions.at(gridPositionNum);
 }
 
 // slots -------------------------

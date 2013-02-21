@@ -12,13 +12,17 @@
 #include <QPushButton>
 #include <QLabel>
 
+namespace AnimatorModel {
 class Animation;
+}
+
+using namespace AnimatorModel;
 
 namespace AnimatorUi {
 
-class PlayInfoWidget : public QWidget
-{
+class PlayInfoWidget : public QWidget {
     Q_OBJECT
+
 public:
     explicit PlayInfoWidget(QWidget* parent, Animation &animation);
 

@@ -9,11 +9,19 @@
 
 #include <QObject>
 
-#include "mainwindow.h"
+//#include "mainwindow.h"
 
+namespace AnimatorModel {
 class Animation;
-class Led;
+}
+
+namespace AnimatorUi {
 class NewAnimationDialog;
+class MainWindow;
+}
+
+using namespace AnimatorUi;
+using namespace AnimatorModel;
 
 class Engine : public QObject {
     Q_OBJECT
@@ -23,14 +31,12 @@ public:
 
     void start();
 
-    inline Animation& animation() const { return *iAnimation; }
+    inline AnimatorModel::Animation& animation() const { return *iAnimation; }
 
     bool askSaveAnimation();  
     void setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency);
 
 public slots:
-    void setNumFrames();
-    void setFrameFrequency();
     
 private slots:
     void saveAnimation();
@@ -38,6 +44,9 @@ private slots:
 
     void loadAnimation();
     void newAnimation();
+
+    void setNumFrames();
+    void setFrameFrequency();
 
 private:
     void doSave(QString fileName);

@@ -13,84 +13,59 @@
 #include <QMenu>
 
 #include "selectable.h"
+#include "selectablewidget.h"
+#include "selectablegroupwidget.h"
+#include "colourgroupwidget.h"
 
 namespace AnimatorUi {
 
 class ColourGroupWidget;
 
-class ColourWidget : public QWidget {
+class ColourWidget : public SelectableWidget {
     Q_OBJECT
 
 public:
     ColourWidget(QWidget* parent, ColourGroupWidget& groupWidget, Selectable& item);
 
-    inline void select(bool selected) { iItem.select(selected); }
-    inline bool isSelected() { return iItem.isSelected(); }
-
     virtual const QColor colour() const = 0;
     virtual void setColour(QColor colour) = 0;
 
-    virtual void handleExtraData(QDataStream& dataStream) = 0;
-    virtual void addExtraData(QDataStream& dataStream) = 0;
+    virtual void handleMimeData(QDataStream& dataStream, bool move);
+    virtual void writeMimeData(QDataStream& dataStream);
 
 protected slots:
     void updated();
+    void copy();
 
 private slots:
-    inline void selected() { update(); }
-
     void chooseColour();
+  //  void setAllFramesColour();
     void colourDialogAccepted();
 
     void fade();
     void fadeTo();
 
-    void copy();
-
-    inline void pasteWrap() { paste(false); }
-    inline void pasteTruncate() { paste(true); }
-
 protected:
-    void mousePressEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent* event);
 
     void keyPressEvent(QKeyEvent *event);
 
-    void dragEnterEvent(QDragEnterEvent *);
-    void dragMoveEvent(QDragMoveEvent *);
-    void dropEvent(QDropEvent *);
+    virtual void cut() {}
 
-    void contextMenuEvent(QContextMenuEvent *);
-
-    virtual QString mimeType() const = 0;
-    virtual Qt::DropAction dropAction() const = 0;
-
-    QMimeData* mimeData();
-
-    QPoint   iDragStartPosition;
-
-    QAction* iSetColourAction;
-    QAction* iFadeAction;
-    QAction* iFadeToAction;
-    QAction* iCopyAction;
-    QAction* iPasteAction;
-    QAction* iPasteWrapAction;
-    QAction* iPasteTruncateAction;
-
-    ColourGroupWidget&  iColourGroup;
-    Selectable&         iItem;
-
-    bool iDoubleClick;
     bool iFading;
+  //  bool iSetAllFrames;
 
     QColorDialog* iColourDialog;
 
 private:
-    bool handleDragMoves(QDropEvent *event);
+    ColourGroupWidget& colourGroup() { return static_cast<ColourGroupWidget&>(iSelectableGroup); }
 
-    void paste(bool wrap);
+    QAction* iSetColourAction;
+ //   QAction* iSetAllFramesColourAction;
+    QAction* iFadeAction;
+    QAction* iFadeToAction;
+    QAction* iCopyAction;
 };
 }
 

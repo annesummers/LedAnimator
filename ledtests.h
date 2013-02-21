@@ -11,13 +11,17 @@
 #include <QtTest/QtTest>
 
 class Engine;
+
+namespace AnimatorModel {
 class Animation;
-class Led;
+}
 
-namespace Test {
+using namespace AnimatorModel;
 
-class LedTests : public QObject
-{
+namespace AnimatorTest {
+
+class LedTests : public QObject {
+
     Q_OBJECT
 public:
     explicit LedTests(QObject *parent = 0);
@@ -42,11 +46,14 @@ private slots:
     void select_data();
     void select();
 
-    void cleanupTestCase();
+    void copyFrames_data();
+    void copyFrames();
 
 private:
     Engine*    iEngine;
     Animation* iAnimation;
+
+    void setupAnimation();
 };
 }
 

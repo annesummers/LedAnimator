@@ -14,28 +14,33 @@
 
 #include "animation.h"
 #include "frame.h"
-#include "selectable.h"
+#include "griditem.h"
 
-#include "defaults.h"
+#include "constants.h"
 
-class Led : public Selectable {
+namespace AnimatorModel {
+
+class Led : public GridItem {
     Q_OBJECT
 
 public:
-    explicit Led(QObject* parent, Animation& animation, int row, int column);
+    explicit Led(QObject* parent, Animation& animation, int number, int row, int column);
     virtual ~Led();
 
     inline const QColor currentColour() const { return frameAt(iAnimation.currentFrame()).colour(); }
-
-    inline const int row() const { return iRow; }
-    inline const int column() const {return iColumn; }
 
     Frame& frameAt(int frameNum) const;
 
     void setCurrentColour(QColor colour);
 
-    inline void setDetailsShown(int detailsNumber) { iDetailsNumber = detailsNumber; emit ledUpdated(); }
-    inline int detailsNumber() { return iDetailsNumber; }
+    inline int number() { return iNumber; }
+
+    inline void setHidden(bool isHidden) { iHidden = isHidden; }
+    inline bool isHidden() { return iHidden; }
+
+    void move(int newRow, int newColumn);
+
+    void copyFrames(Led& copyLed);
 
 signals:
     void ledUpdated();
@@ -45,15 +50,14 @@ public slots:
     void colourChanged(int frameNum);
 
 private:
-    int     iRow;
-    int     iColumn;
-
     Animation& iAnimation;
 
     QList<Frame*> iFrames;
     QSignalMapper* iSignalMapper;
 
-    int iDetailsNumber;
-};
+    int iNumber;
 
+    bool iHidden;
+};
+}
 #endif // LED_H

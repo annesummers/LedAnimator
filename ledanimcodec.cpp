@@ -10,7 +10,7 @@
 #include "frame.h"
 #include "animation.h"
 
-#include "defaults.h"
+#include "constants.h"
 #include "exceptions.h"
 
 using namespace ImportExport;
@@ -41,53 +41,39 @@ LedAnimCodec::LedAnimCodec(Animation& animation) :
 }
 
 void LedAnimCodec::writeAnimation() {
-    //add frame frequency TODO
     writeControlCharacter(HEADER_BYTE);
 
     writeCharacter(iAnimation.numRows());
     writeCharacter(iAnimation.numColumns());
+    writeCharacter(iAnimation.numLeds());
     writeCharacter(iAnimation.numFrames());
     writeCharacter(iAnimation.frameFrequency());
 
-    try {
-        for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
-            for(int i = 0; i < iAnimation.numRows(); i ++) {
-                for(int j = 0; j < iAnimation.numColumns(); j++) {
-                    writeColour(iAnimation.ledAt(i, j).frameAt(frame + INITIAL_FRAME).colour());
-                }
-            }
-        }
-    } catch (InvalidStateException* e) {
-        // WTF?
-    }
+    writePositionData();
+    writeColourData();
 
     writeControlCharacter(TERMINATING_BYTE);
 }
 
 void LedAnimCodec::readAnimation() {
-    //add frame frequency TODO
     if (readCharacter().charValue() != HEADER_BYTE) {
         throw new InvalidAnimationException("No header byte");
     }
 
-    int ledRows = readCharacter().intValue();
-    int ledColumns = readCharacter().intValue();
+    int numRows = readCharacter().intValue();
+    int numColumns = readCharacter().intValue();
+    int numLeds = readCharacter().intValue();
     int numFrames = readCharacter().intValue();
     int frameFrequency = readCharacter().intValue();
 
-    iAnimation.setupNew(ledRows, ledColumns, numFrames, frameFrequency);
+    iAnimation.setupNew(numRows,
+                        numColumns,
+                        numFrames,
+                        frameFrequency,
+                        numLeds,
+                        readPositionData(numRows, numColumns, numLeds));
 
-    int ledNum = 0;
-
-    for(int frame = 0; frame < numFrames; frame++) {
-        ledNum = 0;
-
-        for(int row = 0; row < ledRows; row++) {
-            for(int column = 0; column < ledColumns; column++) {
-                iAnimation.ledAt(row, column).frameAt(frame + INITIAL_FRAME).setColour(readColour());
-            }
-        }
-    }
+    readColourData();
 
     if (readCharacter().charValue() != TERMINATING_BYTE) {
         throw new InvalidAnimationException("No terminating byte");
@@ -154,6 +140,19 @@ void LedAnimStringCodec::writeControlCharacter(AnimChar character) {
     if(value == HEADER_BYTE) {
         iString.append(",");
     }
+}
+
+void LedAnimStringCodec::writeColourData() {
+    for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
+        for(int i = 0; i < iAnimation.numLeds(); i++) {
+            writeColour(iAnimation.ledAt(i).frameAt(frame + INITIAL_FRAME).colour());
+        }
+
+    }
+}
+
+void LedAnimStringCodec::readColourData() {
+
 }
 
 const QString LedAnimStringCodec::asString() const {
@@ -231,6 +230,58 @@ void LedAnimByteArrayCodec::writeControlCharacter(AnimChar character) {
     }
 
     iByteArray.append(value);
+}
+
+void LedAnimByteArrayCodec::writePositionData() {
+    int row;
+    int column;
+
+    for(int i = 0; i < iAnimation.numLeds(); i++) {
+        iAnimation.getLedPosition(i, &row, &column);
+
+        writeCharacter(AnimChar(row));
+        writeCharacter(AnimChar(column));
+    }
+}
+
+QList<int> LedAnimByteArrayCodec::readPositionData(int numRows, int numColumns, int numLeds) {
+    QList<int> positions;
+
+    for(int i = 0; i < numRows * numColumns; i++) {
+        positions.append(INVALID);
+    }
+
+    int row;
+    int column;
+
+    for(int i = 0; i < numLeds; i++) {
+        row = readCharacter().intValue();
+        column = readCharacter().intValue();
+
+        positions.replace((row*numColumns) + column, i);
+    }
+
+    return positions;
+}
+
+void LedAnimByteArrayCodec::writeColourData() {
+    try {
+        for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
+            for(int i = 0; i < iAnimation.numLeds(); i++) {
+                writeColour(iAnimation.ledAt(i + INITIAL_LED).frameAt(frame + INITIAL_FRAME).colour());
+            }
+        }
+    } catch (InvalidStateException* e) {
+        // WTF?
+    }
+}
+
+void LedAnimByteArrayCodec::readColourData() {
+    for(int frame = 0; frame < iAnimation.numFrames(); frame++) {
+        for(int i = 0; i < iAnimation.numLeds(); i++) {
+            iAnimation.ledAt(i + INITIAL_LED).frameAt(frame + INITIAL_FRAME).setColour(readColour());
+        }
+    }
 }
 
 const QString LedAnimByteArrayCodec::asString() const {

@@ -11,9 +11,9 @@
 #include "frame.h"
 
 #include "exceptions.h"
-#include "defaults.h"
+#include "constants.h"
 
-using namespace Test;
+using namespace AnimatorTest;
 using namespace Exception;
 
 FrameTests::FrameTests(QObject *parent) :
@@ -23,7 +23,31 @@ FrameTests::FrameTests(QObject *parent) :
 
 void FrameTests::initTestCase() {
     iAnimation = new Animation(*(new Engine(this)));
-    iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
+
+    QList<QPoint> gridPositions;
+    QList<int> positions;
+
+    int numRows = DEFAULT_NUM_ROWS;
+    int numColumns = DEFAULT_NUM_COLUMNS;
+
+    for(int i = 0; i < numColumns; i++) {
+        for(int j = 0; j < numRows; j++) {
+            gridPositions.append(QPoint(i, j));
+        }
+    }
+
+    for(int i = 0; i < numRows * numColumns; i++) {
+        positions.append(INVALID);
+    }
+
+
+    int numLeds = gridPositions.count();
+
+    for(int i = 0; i < numLeds; i++) {
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+    }
+
+    iAnimation->setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
 }
 
 void FrameTests::setColour_data() {
@@ -41,10 +65,10 @@ void FrameTests::setColour() {
     QFETCH(QColor, colour);
     QFETCH(QString, errorString);
 
-    Led& led = iAnimation->ledAt(0, 0);
+    Led* led = iAnimation->ledAt(0, 0);
 
     try {
-        Frame& frame = led.frameAt(INITIAL_FRAME);
+        Frame& frame = led->frameAt(INITIAL_FRAME);
         QSignalSpy colourSpy(&frame, SIGNAL(colourChanged()));
 
         frame.setColour(colour);

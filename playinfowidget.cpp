@@ -9,7 +9,7 @@
 
 #include "animation.h"
 
-#include "defaults.h"
+#include "constants.h"
 
 #include <QtDebug>
 

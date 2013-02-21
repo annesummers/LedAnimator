@@ -5,8 +5,8 @@
 
 NewAnimationDialog::NewAnimationDialog(QWidget *parent, Engine &engine) :
     QDialog(parent),
-    iEngine(engine),
-    ui(new Ui::NewAnimation) {
+    ui(new Ui::NewAnimation),
+    iEngine(engine) {
     ui->setupUi(this);
 }
 

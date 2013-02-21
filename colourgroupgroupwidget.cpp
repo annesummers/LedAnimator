@@ -1,6 +1,6 @@
 #include "colourgroupgroupwidget.h"
 
-#include "colourgroupwidget.h"
+#include "selectablegroupwidget.h"
 
 using namespace AnimatorUi;
 
@@ -9,8 +9,8 @@ ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent) :
 {
 }
 
-void ColourGroupGroupWidget::selected(ColourGroupWidget& selectedWidget) {
-    ColourGroupWidget* widget = NULL;
+void ColourGroupGroupWidget::selected(SelectableGroupWidget& selectedWidget) {
+    SelectableGroupWidget* widget = NULL;
 
     foreach(widget, iColourGroups) {
         if(widget != &selectedWidget) {

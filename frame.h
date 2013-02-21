@@ -12,6 +12,8 @@
 
 #include "selectable.h"
 
+namespace AnimatorModel {
+
 class Frame : public Selectable {
     Q_OBJECT
 
@@ -24,11 +26,10 @@ public:
 
 signals:
     void colourChanged();
-    
-public slots:
 
 private:
     QColor iColour;
 };
+}
 
 #endif // FRAME_H

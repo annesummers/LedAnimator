@@ -4,17 +4,18 @@
 **                                  **
 **************************************/
 
-#include "animationdetailswidgets.h"
-#include "ui_animationdetailswidget.h"
+#include "animationdetailswidget.h"
 
 #include "mainwindow.h"
 #include "leddetailswidgets.h"
 #include "animation.h"
 #include "framelistwidget.h"
 
-#include "defaults.h"
+#include "constants.h"
+#include "exceptions.h"
 
 using namespace AnimatorUi;
+using namespace Exception;
 
 AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation) :
     ColourGroupGroupWidget(parent),
@@ -29,16 +30,16 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     QHBoxLayout* horizontalLayout = new QHBoxLayout(this);
     horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
 
-    QScrollArea* iScrollArea = new QScrollArea(this);
-    iScrollArea->setObjectName(QString::fromUtf8("iScrollArea"));
-    iScrollArea->setWidgetResizable(true);
-    iScrollArea->setFrameStyle(QFrame::NoFrame);
+    QScrollArea* scrollArea = new QScrollArea(this);
+    scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setFrameStyle(QFrame::NoFrame);
 
-    QWidget* iScrollAreaWidgetContents = new QWidget();
-    iScrollAreaWidgetContents->setObjectName(QString::fromUtf8("iScrollAreaWidgetContents"));
-    iScrollAreaWidgetContents->setGeometry(QRect(0, 0, 531, 305));
+    QWidget* scrollAreaWidgetContents = new QWidget();
+    scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
+    scrollAreaWidgetContents->setGeometry(QRect(0, 0, 531, 305));
 
-    QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(iScrollAreaWidgetContents);
+    QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(scrollAreaWidgetContents);
     horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
 
     QVBoxLayout* verticalLayout = new QVBoxLayout();
@@ -47,12 +48,12 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     iGridLayout = new QGridLayout();
     iGridLayout->setObjectName(QString::fromUtf8("iGridLayout"));
 
-    QWidget* widget = new QWidget(iScrollAreaWidgetContents);
+    QWidget* widget = new QWidget(scrollAreaWidgetContents);
     widget->setObjectName(QString::fromUtf8("widget"));
 
     iGridLayout->addWidget(widget, 0, 0, 1, 1);
 
-    iFrameSlider = new QSlider(iScrollAreaWidgetContents);
+    iFrameSlider = new QSlider(scrollAreaWidgetContents);
     iFrameSlider->setObjectName(QString::fromUtf8("horizontalSlider"));
     iFrameSlider->setOrientation(Qt::Horizontal);
     iFrameSlider->setMinimum(INITIAL_FRAME);  // frames are indexed from 1
@@ -60,14 +61,14 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 
     iGridLayout->addWidget(iFrameSlider, 0, 1, 1, 1);
 
-    QWidget* widget_2 = new QWidget(iScrollAreaWidgetContents);
+    QWidget* widget_2 = new QWidget(scrollAreaWidgetContents);
     widget_2->setObjectName(QString::fromUtf8("widget_2"));
 
     iGridLayout->addWidget(widget_2, 0, 2, 1, 1);
 
     verticalLayout->addLayout(iGridLayout);
 
-    QWidget* widget_6 = new QWidget(iScrollAreaWidgetContents);
+    QWidget* widget_6 = new QWidget(scrollAreaWidgetContents);
     widget_6->setObjectName(QString::fromUtf8("widget_6"));
 
     QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
@@ -80,9 +81,9 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 
     horizontalLayout_2->addLayout(verticalLayout);
 
-    iScrollArea->setWidget(iScrollAreaWidgetContents);
+    scrollArea->setWidget(scrollAreaWidgetContents);
 
-    horizontalLayout->addWidget(iScrollArea);
+    horizontalLayout->addWidget(scrollArea);
 
     iSignalMapper = new QSignalMapper(this);
 
@@ -108,15 +109,100 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
 
 // TODO this is bollocks
 void AnimationDetailsWidget::frameListPosition(int x, int width) {
-    iFramesListX = x;
-    iFramesListWidth = width;
-    int frameIncrements = iFramesListWidth/(iAnimation.numFrames());
+  //  iFramesListX = x;
+   // iFramesListWidth = width;
+    //int frameIncrements = iFramesListWidth/(iAnimation.numFrames());
 
    // iFrameSlider->move(x + frameIncrements/2, iFrameSlider->y());
   //  iFrameSlider->resize(width-frameIncrements+frameIncrements/4, iFrameSlider->height());
 }
 
-// events ---------
+void AnimationDetailsWidget::addLed(int row, int column) {
+    Led* led = iAnimation.ledAt(row, column);
+
+    if(led == NULL) {
+        throw IllegalArgumentException("AnimationDetailsWidget::addLed : NULL led");
+    }
+
+    if(!iShownLeds.contains(led)) {
+        iShownLeds.append(led);
+
+        int count = iShownLeds.count();
+
+        QLabel* positionLabel = new QLabel(this);
+        positionLabel->setText(QString("%1").arg(count));
+
+        FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this);
+        framesListWidget->resize(40, framesListWidget->height());
+
+        QPushButton* detailsCloseWidget = new QPushButton("X", this);
+
+        iGridLayout->addWidget(positionLabel, count, 0);
+        iGridLayout->addWidget(framesListWidget, count, 1);
+        iGridLayout->addWidget(detailsCloseWidget, count, 2);
+
+        iSignalMapper->setMapping(detailsCloseWidget, count);
+        connect(detailsCloseWidget, SIGNAL(clicked()), iSignalMapper, SLOT(map()));
+        connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(closeClicked(int)));
+
+        connect(detailsCloseWidget, SIGNAL(clicked()), this, SLOT(closeClicked()));
+
+        addGroup(*framesListWidget);
+
+        qDebug("add new led, %d, %d", row, column);
+    }
+}
+
+void AnimationDetailsWidget::closeClicked() {
+    qDebug("closeClicked");
+    iClosed = false;
+}
+
+void AnimationDetailsWidget::closeClicked(int whichLed) {
+    if(!iClosed) {
+        qDebug("closeClicked %d", whichLed);
+
+        Led* led = iShownLeds.at(whichLed - 1);
+        //led->setDetailsShown(INVALID);
+
+        int numRows = iGridLayout->rowCount();
+        int numColumns = iGridLayout->columnCount();
+
+        qDebug("rows %d, columns %d", numRows, numColumns);
+
+        for(int i = 0; i < 3; i++) {
+            QWidget* widget =  iGridLayout->itemAtPosition(whichLed, i)->widget();
+            widget->close();
+            iGridLayout->removeWidget(widget);
+        }
+
+        iShownLeds.removeOne(led);
+
+        update();
+
+        iClosed = true;
+    }
+
+    //TODO this doesn't work
+}
+
+bool AnimationDetailsWidget::handleDragDropEvent(QDropEvent* event) {
+    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
+        if (event->source() != 0 &&
+            (event->possibleActions() & Qt::LinkAction) == Qt::LinkAction) {
+            event->setDropAction(Qt::LinkAction);
+            event->accept();
+
+            return true;
+         }
+     } else {
+         event->ignore();
+
+         return false;
+     }
+}
+
+// events -------------------------------------
 
 void AnimationDetailsWidget::paintEvent(QPaintEvent *) {
     if(iFramesListWidth > 0) {
@@ -138,120 +224,36 @@ void AnimationDetailsWidget::resizeEvent(QResizeEvent*) {
 }
 
 void AnimationDetailsWidget::dragEnterEvent(QDragEnterEvent* event) {
-    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
-         if (event->source() != 0) {
-             event->setDropAction(Qt::LinkAction);
-             event->accept();
-         }
-     } else {
-         event->ignore();
-     }
+    handleDragDropEvent(event);
 }
 
 void AnimationDetailsWidget::dragMoveEvent(QDragMoveEvent* event) {
-    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
-        if (event->source() != 0) {
-            event->setDropAction(Qt::LinkAction);
-            event->accept();
-        }
-    } else {
-        event->ignore();
-    }
+    handleDragDropEvent(event);
 }
 
 void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
-     if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
-         QByteArray itemData = event->mimeData()->data(LED_MIME_TYPE);
-         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+    if(handleDragDropEvent(event)) {
+        QByteArray itemData = event->mimeData()->data(LED_MIME_TYPE);
+        QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
-         if (event->source() != 0) {
-             event->setDropAction(Qt::LinkAction);
-             event->accept();
-         }
+        QColor colour;
+        int row;
+        int column;
 
-         QColor colour;
-         int row;
-         int column;
+        int numLeds;
+        dataStream >> numLeds;
 
-         int numRows, numColumns;
-         dataStream >> numRows >> numColumns;
+        int numRows;
+        int numColumns;
+        dataStream >> numRows >> numColumns;
 
-         for(int i = 0; i < numRows * numColumns; i++) {
-            dataStream >> colour >> row >> column;
-            addLed(row, column);
-         }
-
-         update();
-     } else {
-         event->ignore();
-     }
- }
-
-void AnimationDetailsWidget::addLed(int row, int column) {
-    Led& led = iAnimation.ledAt(row, column);
-
-    if(!iShownLeds.contains(&led)) {
-        iShownLeds.append(&led);
-
-        int count = iShownLeds.count();
-
-        QLabel* positionLabel = new QLabel(this);
-        positionLabel->setText(QString("%1").arg(count));
-
-        FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, led, *this);
-        framesListWidget->resize(40, framesListWidget->height());
-
-        QPushButton* detailsCloseWidget = new QPushButton("X", this);
-
-        iGridLayout->addWidget(positionLabel, count, 0);
-        iGridLayout->addWidget(framesListWidget, count, 1);
-        iGridLayout->addWidget(detailsCloseWidget, count, 2);
-
-        iSignalMapper->setMapping(detailsCloseWidget, count);
-        connect(detailsCloseWidget, SIGNAL(clicked()), iSignalMapper, SLOT(map()));
-        connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(closeClicked(int)));
-
-        connect(detailsCloseWidget, SIGNAL(clicked()), this, SLOT(closeClicked()));
-
-        addGroup(*framesListWidget);
-
-        led.setDetailsShown(count);
-
-        qDebug("add new led, %d, %d", row, column);
-    }
-}
-
-void AnimationDetailsWidget::closeClicked() {
-    qDebug("closeClicked");
-    iClosed = false;
-}
-
-void AnimationDetailsWidget::closeClicked(int whichLed) {
-    if(!iClosed) {
-        qDebug("closeClicked %d", whichLed);
-
-        Led* led = iShownLeds.at(whichLed - 1);
-        led->setDetailsShown(INVALID);
-
-        int numRows = iGridLayout->rowCount();
-        int numColumns = iGridLayout->columnCount();
-
-        qDebug("rows %d, columns %d", numRows, numColumns);
-
-        for(int i = 0; i < 3; i++) {
-            QWidget* widget =  iGridLayout->itemAtPosition(whichLed, i)->widget();
-            widget->close();
-            iGridLayout->removeWidget(widget);
+        for(int i = 0; i < numRows * numColumns; i++) {
+           dataStream >> colour >> row >> column;
+           addLed(row, column);
         }
 
-        iShownLeds.removeOne(led);
-
         update();
-
-        iClosed = true;
     }
-
-    //TODO this doesn't work
 }
 
 

@@ -12,9 +12,11 @@
 
 class Engine;
 
-namespace Ui {
-class MainWindow;
-}
+//namespace Ui {
+//class MainWindow;
+//}
+
+namespace AnimatorUi {
 
 class MainWindow : public QMainWindow {
     Q_OBJECT    
@@ -34,7 +36,7 @@ protected:
 private:
     Engine&         iEngine;
 
-    Ui::MainWindow *ui;
+   // Ui::MainWindow *ui;
 };
-
+}
 #endif // MAINWINDOW_H

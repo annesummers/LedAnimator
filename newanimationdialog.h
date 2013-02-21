@@ -9,6 +9,8 @@ namespace Ui {
 class NewAnimation;
 }
 
+namespace AnimatorUi {
+
 class NewAnimationDialog : public QDialog {
     Q_OBJECT
     
@@ -33,5 +35,5 @@ private:
 
     Engine& iEngine;
 };
-
+}
 #endif // NEWANIMATION_H

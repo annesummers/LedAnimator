@@ -8,17 +8,19 @@
 
 #include "ledwidget.h"
 #include "mainwindow.h"
+#include "socketwidget.h"
 
-#include "defaults.h"
+#include "constants.h"
 #include "exceptions.h"
 
 using namespace Exception;
 using namespace AnimatorUi;
 
-LedGridWidget::LedGridWidget(QWidget* parent, const Animation &animation) :
+LedGridWidget::LedGridWidget(QWidget* parent,  Animation &animation) :
     ColourGroupWidget(parent, 0, 0),
     iAnimation(animation),
-    iLedGridLayout(NULL){
+    iLedGridLayout(NULL),
+    iCopyLed(NULL) {
 
     iContainerWidget = new QWidget(this);
     iLedGridLayout = new QGridLayout(iContainerWidget);
@@ -39,6 +41,7 @@ LedGridWidget::LedGridWidget(QWidget* parent, const Animation &animation) :
     setFocusPolicy(Qt::ClickFocus);
 
     connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(addLed(int, int)));
+    connect(&animation, SIGNAL(newSocket(int, int)), this, SLOT(addSocket(int, int)));
 }
 
 int LedGridWidget::gridWidth() {
@@ -59,12 +62,18 @@ int LedGridWidget::gridHeight() {
     }
 }
 
-// slots --------------------
+void LedGridWidget::addWidget(SelectableWidget *widget, int row, int column) {
+    QLayoutItem* oldItem = iLedGridLayout->itemAtPosition(row, column);
 
-void LedGridWidget::addLed(int row, int column) {
-    LedWidget* widget = new LedWidget(this, iAnimation, *this, iAnimation.ledAt(row, column));
+    QWidget* oldWidget = NULL;
+    if(oldItem == NULL) {
+        iLedGridLayout->addWidget(widget, row, column);
+    } else {
+        oldWidget = oldItem->widget();
+        iLedGridLayout->removeWidget(oldItem->widget());
+        iLedGridLayout->addWidget(widget, row, column);
+    }
 
-    iLedGridLayout->addWidget(widget, row, column);
     widget->resize(LED_RADIUS*2, LED_RADIUS*2);
 
     iLedGridLayout->setColumnMinimumWidth(column, widget->width() + 4);
@@ -93,31 +102,154 @@ void LedGridWidget::addLed(int row, int column) {
     if(numColumns() < column + 1) {
         setMaxColumn(column + 1);
     }
+
+    widget->update();
+
+    if(oldWidget != NULL) {
+        oldWidget->update();
+    }
+}
+
+void LedGridWidget::copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn) {
+    Led& led = getLed(fromRow, fromColumn);
+
+    if(led.isHidden()) {
+        moveLed(led, toRow, toColumn);
+    } else {
+        copyLed(led, toRow, toColumn);
+    }
+}
+
+void LedGridWidget::moveLed(int fromRow, int fromColumn, int toRow, int toColumn) {
+    hideLed(fromRow, fromColumn);
+
+    Led& led = getLed(fromRow, fromColumn);
+
+    moveLed(led, toRow, toColumn);
+}
+
+void LedGridWidget::copyLed(Led& led, int toRow, int toColumn) {
+    Led& newLed = iAnimation.addLed(toRow, toColumn);
+
+    newLed.copyFrames(led);
+    newLed.move(toRow, toColumn);
+}
+
+void LedGridWidget::moveLed(Led &led, int toRow, int toColumn) {
+    iAnimation.moveLed(led, toRow, toColumn);
+
+    addLed(toRow, toColumn, &led);
+
+    led.move(toRow, toColumn);
+    led.setHidden(false);
+}
+
+void LedGridWidget::hideLed(int row, int column) {
+    Led& led = getLed(row, column);
+    led.setHidden(true);
+
+    addSocket(row, column);
+}
+
+void LedGridWidget::deleteLed(int row, int column) {
+    Led& led = getLed(row, column);
+    led.setHidden(true);
+
+    addSocket(row, column);
+
+    iAnimation.deleteLed(led);
+}
+
+void LedGridWidget::addSelectedLeds() {
+    SelectableWidget* widget;
+    int row;
+    int column;
+
+    foreach(widget, selectedItems()) {
+        getWidgetPosition(*widget, &row, &column);
+        Led& led = iAnimation.addLed(row, column);
+
+        toggle(*widget);
+    }
+}
+
+void LedGridWidget::hideSelectedLeds() {
+    SelectableWidget* widget;
+    int row;
+    int column;
+
+    foreach(widget, selectedItems()) {
+        getWidgetPosition(*widget, &row, &column);
+        hideLed(row, column);
+    }
+}
+
+Led& LedGridWidget::getLed(int row, int column) {
+    Led* led = iAnimation.ledAt(row, column);
+    if(led == NULL) {
+        throw IllegalArgumentException("LedGridWidget::getLed : led is NULL");
+    }
+
+    return *led;
+}
+
+// slots --------------------
+
+Led& LedGridWidget::addLed(int row, int column, Led* led) {
+    if(led == NULL) {
+        led = iAnimation.ledAt(row, column);
+    }
+
+    addWidget(new LedWidget(this, iAnimation, *this, *led), row, column);
+
+    return *led;
+}
+
+void LedGridWidget::addSocket(int row, int column) {
+    GridItem* item = new GridItem(this, row, column);
+    addWidget(new SocketWidget(this, *this, *item), row, column);
+}
+
+void LedGridWidget::toggleLedNumbers() {
+    if(iLedNumbersShown) {
+        iLedNumbersShown = false;
+    } else {
+        iLedNumbersShown = true;
+    }
 }
 
 // from ColourGroupWidget ----------------------
 
-void LedGridWidget::getWidgetPosition(ColourWidget& widget, int* row, int* column) {
+void LedGridWidget::getWidgetPosition(SelectableWidget &widget, int* row, int* column) {
     int rowSpan;
     int columnSpan;
 
-    iLedGridLayout->getItemPosition(iLedGridLayout->indexOf(&widget), row, column, &rowSpan, &columnSpan);
+    int index = iLedGridLayout->indexOf(&widget);
 
-    ColourGroupWidget::getWidgetPosition(widget, row, column);
+    iLedGridLayout->getItemPosition(index, row, column, &rowSpan, &columnSpan);
+
+    SelectableGroupWidget::getWidgetPosition(widget, row, column);
 }
 
-ColourWidget& LedGridWidget::widgetAt(int row, int column) {
-    ColourGroupWidget::widgetAt(row, column);
+SelectableWidget &LedGridWidget::widgetAt(int row, int column) {
+    SelectableGroupWidget::widgetAt(row, column);
 
-    return static_cast<ColourWidget&>(*(iLedGridLayout->itemAtPosition(row, column)->widget()));
+    return static_cast<SelectableWidget&>(*(iLedGridLayout->itemAtPosition(row, column)->widget()));
 }
-
 
 bool LedGridWidget::validKeyPress(Qt::Key key) {
-    return key & Qt::Key_Right != 0 ||
-           key & Qt::Key_Left != 0 ||
-           key & Qt::Key_Up != 0 ||
-           key & Qt::Key_Down != 0;
+    return (key & Qt::Key_Right) == Qt::Key_Right ||
+            (key & Qt::Key_Left) == Qt::Key_Left ||
+            (key & Qt::Key_Up) == Qt::Key_Up ||
+            (key & Qt::Key_Down) == Qt::Key_Down;
+}
+
+void LedGridWidget::deleteIfNeeded(int row, int column) {
+    Led& led = getLed(row, column);
+
+    if(led.isHidden()) {
+        iAnimation.deleteLed(led);
+    }
 }
 
 // events ---------------------------
@@ -189,21 +321,6 @@ void LedGridWidget::mouseReleaseEvent(QMouseEvent *) {
 
     update();
 }
-
-/*void LedGridWidget::keyPressEvent(QKeyEvent *event) {
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) != 0) {
-
-        if(selectedCount() > 0) {
-            if((event->key() & Qt::RightArrow) != 0 ||
-               (event->key() & Qt::LeftArrow) != 0 ||
-               (event->key() & Qt::UpArrow) != 0 ||
-               (event->key() & Qt::DownArrow) != 0 ) {
-
-                selectDirection(event->key());
-            }
-        }
-    }
-}*/
 
 void LedGridWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);

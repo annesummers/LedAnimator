@@ -58,7 +58,7 @@ void FrameListWidget::numFramesChanged(int numFrames) {
 
 // from ColourGroupWidget -----------------------------
 
-ColourWidget& FrameListWidget::widgetAt(int row, int column) {
+SelectableWidget &FrameListWidget::widgetAt(int row, int column) {
     ColourGroupWidget::widgetAt(row, column);
 
     if(row != 0) {
@@ -68,7 +68,7 @@ ColourWidget& FrameListWidget::widgetAt(int row, int column) {
     return *iFramesList.at(column);
 }
 
-void FrameListWidget::getWidgetPosition(ColourWidget& widget, int* row, int* column) {
+void FrameListWidget::getWidgetPosition(SelectableWidget& widget, int* row, int* column) {
     *column = iFramesList.indexOf(&static_cast<FrameWidget&>(widget));
     *row = 0;
 
@@ -76,8 +76,8 @@ void FrameListWidget::getWidgetPosition(ColourWidget& widget, int* row, int* col
 }
 
 bool FrameListWidget::validKeyPress(Qt::Key key) {
-    return key & Qt::Key_Right != 0 ||
-           key & Qt::Key_Left != 0;
+    return (key & Qt::Key_Right) == Qt::Key_Right ||
+           (key & Qt::Key_Left) == Qt::Key_Left;
 }
 
 // events ------------------------------------

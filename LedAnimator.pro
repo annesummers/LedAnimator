@@ -21,7 +21,10 @@ CONFIG(testing) {
         enginetests.cpp \
         frametests.cpp \
         ledanimcodectests.cpp \
-        colourwidgettests.cpp
+        colourwidgettests.cpp \
+        selectablewidgettests.cpp \
+        selectablewidgettestbase.cpp \
+        ledsocketinteractiontests.cpp
 
     HEADERS += \
         animationtests.h\
@@ -29,7 +32,11 @@ CONFIG(testing) {
         enginetests.h \
         frametests.h \
         ledanimcodectests.h \
-        colourwidgettests.h
+        colourwidgettests.h \
+        selectablewidgettests.h \
+        selectablewidgettestbase.h \
+        ledsocketinteractiontests.h \
+        testconstants.h
 
 } else {
     TARGET = LedAnimator
@@ -45,7 +52,6 @@ CONFIG(testing) {
 }
 
 HEADERS += \
-    animatorbase.h \
     mainwindow.h \
     led.h \
     engine.h \
@@ -53,11 +59,10 @@ HEADERS += \
     frame.h \
     ledgridwidget.h \
     playinfowidget.h \
-    defaults.h \
+    constants.h \
     ledanimcodec.h \
     exceptions.h \
-   # leddetailswidgets.h \
-    animationdetailswidgets.h \
+    animationdetailswidget.h \
     animatorapplication.h \
     selectable.h \
     ledwidget.h \
@@ -68,10 +73,14 @@ HEADERS += \
     colourgroupwidget.h \
     colourgroupgroupwidget.h \
     colourwidget.h \
-    newanimationdialog.h
+    newanimationdialog.h \
+    socketwidget.h \
+    selectablegroupwidget.h \
+    selectablewidget.h \
+    griditem.h \
+    animationdetailswidget.h
 
 SOURCES += \
-    animatorbase.cpp \
     mainwindow.cpp \
     led.cpp \
     engine.cpp \
@@ -80,8 +89,6 @@ SOURCES += \
     ledgridwidget.cpp \
     playinfowidget.cpp \
     ledanimcodec.cpp \
-   # leddetailswidgets.cpp \
-    animationdetailswidgets.cpp \
     animatorapplication.cpp \
     selectable.cpp \
     ledwidget.cpp \
@@ -91,12 +98,18 @@ SOURCES += \
     colourgroupwidget.cpp \
     colourwidget.cpp \
     colourgroupgroupwidget.cpp \
-    newanimationdialog.cpp
+    newanimationdialog.cpp \
+    socketwidget.cpp \
+    selectablegroupwidget.cpp \
+    selectablewidget.cpp \
+    griditem.cpp \
+    animationdetailswidget.cpp
 
 FORMS += \
-    newanimation.ui \
-    mainwindow.ui \
-    animationdetailswidget.ui \
-    playinfowidget.ui
+    newanimation.ui
+# \
+ #   mainwindow.ui \
+  #  animationdetailswidget.ui \
+   # playinfowidget.ui
 
 

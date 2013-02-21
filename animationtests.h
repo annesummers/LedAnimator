@@ -11,9 +11,14 @@
 #include <QtTest/QtTest>
 
 class Engine;
-class Animation;
 
-namespace Test {
+namespace AnimatorModel {
+class Animation;
+}
+
+using namespace AnimatorModel;
+
+namespace AnimatorTest {
 
 class AnimationTests : public QObject {
     Q_OBJECT
@@ -26,8 +31,11 @@ signals:
 private slots:
      void initTestCase();
 
-     void setupNew();
-     void setupNew_data();
+     void setupNewEmpty();
+     void setupNewEmpty_data();
+
+     void setupNewPopulated();
+     void setupNewPopulated_data();
 
      void setCurrentFrame_data();
      void setCurrentFrame();
