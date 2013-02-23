@@ -32,8 +32,8 @@ public:
 
     inline bool ledNumbersShown() const { return iLedNumbersShown; }
 
-    void copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn);
-    void moveLed(int fromRow, int fromColumn, int toRow, int toColumn);
+   // void copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn);
+   // void moveLed(int fromRow, int fromColumn, int toRow, int toColumn);
     void deleteLed(int row, int column);
 
     void addSelectedLeds();
@@ -60,6 +60,9 @@ protected:
     bool validKeyPress(Qt::Key key);
 
 private:
+    void moveItem(int fromRow, int fromColumn, int toRow, int toColumn);
+    void copyItem(int fromRow, int fromColumn, int toRow, int toColumn);
+
     void copyLed(Led &led, int toRow, int toColumn);
     void moveLed(Led& led, int toRow, int toColumn);
 

@@ -16,8 +16,11 @@ class SocketWidget : public SelectableWidget {
 public:
     SocketWidget(QWidget* parent, LedGridWidget &group, GridItem &item);
 
-    void handleMimeData(QDataStream& dataStream, bool move);
-    void writeMimeData(QDataStream& dataStream);
+ //   void handleMimeData(QDataStream& dataStream, bool move);
+ //   void writeMimeData(QDataStream& dataStream);
+
+    void setCutLed(Led* led) { iCutLed = led; }
+    const Led& cutLed() { return *iCutLed; }
 
 private slots:
     void addLed();
@@ -37,6 +40,8 @@ protected:
 private:
    LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }
    GridItem& gridItem() { return static_cast<GridItem&>(iItem); }
+
+   Led* iCutLed;
 
    QAction* iAddLedAction;
 };

@@ -56,7 +56,7 @@ void FrameListWidget::numFramesChanged(int numFrames) {
     }
 }
 
-// from ColourGroupWidget -----------------------------
+// from SelectableWidget -----------------------------
 
 SelectableWidget &FrameListWidget::widgetAt(int row, int column) {
     ColourGroupWidget::widgetAt(row, column);
@@ -78,6 +78,13 @@ void FrameListWidget::getWidgetPosition(SelectableWidget& widget, int* row, int*
 bool FrameListWidget::validKeyPress(Qt::Key key) {
     return (key & Qt::Key_Right) == Qt::Key_Right ||
            (key & Qt::Key_Left) == Qt::Key_Left;
+}
+
+void FrameListWidget::copyItem(int fromRow, int fromColumn, int toRow, int toColumn) {
+    FrameWidget& fromWidget = static_cast<FrameWidget&>(widgetAt(fromRow, fromColumn));
+    FrameWidget& toWidget = static_cast<FrameWidget&>(widgetAt(toRow, toColumn));
+
+    toWidget.frame().setColour(fromWidget.frame().colour());
 }
 
 // events ------------------------------------

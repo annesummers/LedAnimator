@@ -5,7 +5,8 @@
 using namespace AnimatorUi;
 
 SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item) :
-    SelectableWidget(parent, group, item) {
+    SelectableWidget(parent, group, item),
+    iCutLed(NULL) {
 
     setObjectName("SocketWidget");
 
@@ -29,7 +30,7 @@ void SocketWidget::selected() {
 
 // from SelectableWidget ---------------------
 
-void SocketWidget::handleMimeData(QDataStream& dataStream, bool move) {
+/*void SocketWidget::handleMimeData(QDataStream& dataStream, bool move) {
     QColor colour;
 
     dataStream >> colour;
@@ -50,7 +51,7 @@ void SocketWidget::writeMimeData(QDataStream& dataStream) {
     dataStream << QColor();
     dataStream << gridItem().row() << gridItem().column();
 }
-
+*/
 // events -----------------------------------
 
 void SocketWidget::contextMenuEvent(QContextMenuEvent *event) {

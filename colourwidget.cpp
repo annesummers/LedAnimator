@@ -56,17 +56,6 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     connect(iColourDialog, SIGNAL(accepted()), this, SLOT(colourDialogAccepted()));
 }
 
-void ColourWidget::writeMimeData(QDataStream& dataStream) {
-    dataStream << colour();
-}
-
-void ColourWidget::handleMimeData(QDataStream& dataStream, bool move) {
-    QColor colour;
-    dataStream >> colour;
-
-    setColour(colour);
-}
-
 void ColourWidget::chooseColour() {
     iColourDialog->exec();
 }
@@ -139,6 +128,8 @@ void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
 
     menu.addAction(iSetColourAction);
     //menu.addAction(iSetAllFramesColourAction);
+    addExtraActions(&menu);
+    menu.addSeparator();
     menu.addAction(iFadeAction);
     menu.addAction(iFadeToAction);
     menu.addSeparator();

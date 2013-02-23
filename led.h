@@ -34,11 +34,13 @@ public:
     void setCurrentColour(QColor colour);
 
     inline int number() { return iNumber; }
+    inline void setNumber(int newNumber) { iNumber = newNumber; emit ledUpdated(); }
 
     inline void setHidden(bool isHidden) { iHidden = isHidden; }
     inline bool isHidden() { return iHidden; }
 
     void move(int newRow, int newColumn);
+    void paste(Led &copyLed);
 
     void copyFrames(Led& copyLed);
 
@@ -56,6 +58,7 @@ private:
     QSignalMapper* iSignalMapper;
 
     int iNumber;
+    int iGroupNumber;
 
     bool iHidden;
 };

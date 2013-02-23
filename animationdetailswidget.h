@@ -5,6 +5,9 @@
 #include <QSlider>
 #include <QVBoxLayout>
 #include <QSignalMapper>
+#include <QLabel>
+#include <QPushButton>
+#include <QHash>
 
 #include "colourgroupgroupwidget.h"
 
@@ -17,19 +20,20 @@ using namespace AnimatorModel;
 
 namespace AnimatorUi {
 
-class AnimationDetailsWidget : public ColourGroupGroupWidget {
+class LedDetails;
 
+class AnimationDetailsWidget : public ColourGroupGroupWidget {
     Q_OBJECT
+
 public:
     explicit AnimationDetailsWidget(QWidget* parent, Animation &animation);
+
     void frameListPosition(int x, int width);
+    void closeClicked(LedDetails &details);
 
 private slots:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
-
-    void closeClicked(int whichLed);
-    void closeClicked();
 
 protected:
     void resizeEvent(QResizeEvent*);
@@ -50,12 +54,32 @@ private:
 
     QSlider*                iFrameSlider;
     QGridLayout*            iGridLayout;
+  //  QList<QLabel*>          iLedNumberLabels;
 
     QSignalMapper*          iSignalMapper;
-    QList<Led*>             iShownLeds;
+    QHash<int, LedDetails*> iShownLeds;
 
     bool iClosed;
 };
+
+class LedDetails : public QObject {
+    Q_OBJECT
+
+public:
+    explicit LedDetails(AnimationDetailsWidget &parent, Led& led, QLabel& label, QPushButton& closeButton);
+
+private slots:
+    void closeClicked();
+    void ledUpdated();
+
+private:
+    Led& iLed;
+    QLabel& iLabel;
+    QPushButton& iCloseButton;
+
+    AnimationDetailsWidget& iDetailsWidget;
+};
+
 }
 
 #endif // FRAMEDETAILSWIDGET_H

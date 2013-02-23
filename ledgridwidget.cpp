@@ -70,8 +70,23 @@ void LedGridWidget::addWidget(SelectableWidget *widget, int row, int column) {
         iLedGridLayout->addWidget(widget, row, column);
     } else {
         oldWidget = oldItem->widget();
+
+        LedWidget* ledWidget = qobject_cast<LedWidget*>(oldItem->widget());
+        if(ledWidget != NULL) {
+            SocketWidget* socketWidget = qobject_cast<SocketWidget*>(widget);
+            if(socketWidget != NULL) {
+                socketWidget->setCutLed(&ledWidget->led());
+            }
+        }
+
+        SocketWidget* socketWidget = qobject_cast<SocketWidget*>(oldItem->widget());
+
         iLedGridLayout->removeWidget(oldItem->widget());
         iLedGridLayout->addWidget(widget, row, column);
+
+        if(socketWidget != NULL) {
+            toggle(*widget);
+        }
     }
 
     widget->resize(LED_RADIUS*2, LED_RADIUS*2);
@@ -110,7 +125,7 @@ void LedGridWidget::addWidget(SelectableWidget *widget, int row, int column) {
     }
 }
 
-void LedGridWidget::copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn) {
+/*void LedGridWidget::copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn) {
     Led& led = getLed(fromRow, fromColumn);
 
     if(led.isHidden()) {
@@ -118,9 +133,9 @@ void LedGridWidget::copyOrMoveLed(int fromRow, int fromColumn, int toRow, int to
     } else {
         copyLed(led, toRow, toColumn);
     }
-}
+}*/
 
-void LedGridWidget::moveLed(int fromRow, int fromColumn, int toRow, int toColumn) {
+void LedGridWidget::moveItem(int fromRow, int fromColumn, int toRow, int toColumn) {
     hideLed(fromRow, fromColumn);
 
     Led& led = getLed(fromRow, fromColumn);
@@ -128,11 +143,19 @@ void LedGridWidget::moveLed(int fromRow, int fromColumn, int toRow, int toColumn
     moveLed(led, toRow, toColumn);
 }
 
-void LedGridWidget::copyLed(Led& led, int toRow, int toColumn) {
-    Led& newLed = iAnimation.addLed(toRow, toColumn);
+void LedGridWidget::copyItem(int fromRow, int fromColumn, int toRow, int toColumn) {
+    Led* toLed = iAnimation.ledAt(toRow, toColumn);
+    Led& fromLed = getLed(fromRow, fromColumn);
 
-    newLed.copyFrames(led);
-    newLed.move(toRow, toColumn);
+    if(toLed == NULL || toLed->isHidden()) {
+        copyLed(fromLed, toRow, toColumn);
+    } else {
+        toLed->setCurrentColour(fromLed.currentColour());
+    }
+}
+
+void LedGridWidget::copyLed(Led& led, int toRow, int toColumn) {
+    iAnimation.copyLed(led, toRow, toColumn);
 }
 
 void LedGridWidget::moveLed(Led &led, int toRow, int toColumn) {
@@ -167,9 +190,10 @@ void LedGridWidget::addSelectedLeds() {
 
     foreach(widget, selectedItems()) {
         getWidgetPosition(*widget, &row, &column);
-        Led& led = iAnimation.addLed(row, column);
 
         toggle(*widget);
+
+        iAnimation.addNewLed(row, column);
     }
 }
 

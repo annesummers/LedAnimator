@@ -22,6 +22,8 @@ const int INVALID = -1;
 const int INITIAL_FRAME = 1;
 const int INITIAL_LED = 1;
 
+const int DEFAULT_GROUP = 0;
+
 const int LED_RADIUS = 15;
 const int LED_OFFSET_X = LED_RADIUS*2 + 40;
 const int LED_OFFSET_Y = LED_OFFSET_X;

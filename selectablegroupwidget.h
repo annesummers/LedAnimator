@@ -18,6 +18,7 @@ public:
                                    ColourGroupGroupWidget* groupGroupWidget = NULL);
 
     void selectOne(SelectableWidget &selectable);
+    void select(SelectableWidget &selectable);
     void toggleOne(SelectableWidget &widget);
     void toggle(SelectableWidget &widget);
     void selectArea(SelectableWidget& widget);
@@ -48,6 +49,9 @@ protected:
     virtual bool validKeyPress(Qt::Key key) = 0;
 
     virtual void deleteIfNeeded(int row, int column) { Q_UNUSED(row); Q_UNUSED(column);}
+
+    virtual void moveItem(int fromRow, int fromColumn, int toRow, int toColumn) = 0;
+    virtual void copyItem(int fromRow, int fromColumn, int toRow, int toColumn) = 0;
 
     inline int selectedCount() { return iSelected.count(); }
 

@@ -20,6 +20,7 @@ Led::Led(QObject* parent, Animation &animation, int number, int row, int column)
     iAnimation(animation),
     iSignalMapper(NULL),
     iNumber(number),
+    iGroupNumber(DEFAULT_GROUP),
     iHidden(false) {
 
 #ifndef NDEBUG
@@ -124,4 +125,8 @@ void Led::setCurrentColour(QColor colour) {
 void Led::move(int newRow, int newColumn) {
     setRow(newRow);
     setColumn(newColumn);
+}
+
+void Led::paste(Led& copyLed) {
+    setCurrentColour(copyLed.currentColour());
 }

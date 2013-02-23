@@ -11,6 +11,7 @@
 #include <QTimer>
 #include <QPoint>
 #include <QApplication>
+#include <QHash>
 
 #include "engine.h"
 
@@ -30,9 +31,12 @@ public:
     void play();
     void stop();
 
-    Led& addLed(int row, int column);
+    void addNewLed(int row, int column);
     void moveLed(Led& led, int toRow, int toColumm);
+    void copyLed(Led& led, int toRow, int toColumn);
     void deleteLed(Led& led);
+
+    void renumberLed(Led& led, int newNumber);
 
     Led* ledAt(int row, int column) const;
     Led& ledAt(int number) const;
@@ -49,7 +53,7 @@ public:
 
     inline const int numRows() const { return iNumRows; }
     inline const int numColumns() const { return iNumColumns; }
-    inline const int numLeds() const { return iLeds.count(); }
+    inline const int numLeds() const { return iNumLeds; }
 
     inline const bool isPlaying() const { return iIsPlaying; }
     
@@ -74,6 +78,8 @@ private slots:
     void nextFrame();
 
 private:
+    void addLed(Led &led, int row, int column);
+
     inline void setNumRows(int numRows) { iNumRows = numRows; }
     inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
     inline void setNumLeds(int numLeds) { iNumLeds = numLeds; }
@@ -81,11 +87,13 @@ private:
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
     void getGridPosition(int index, int* row, int* column) const;
+
     int gridPositionNumber(int row, int column) const;
+    void setGridPositionNumber(int row, int column, int number);
 
     const Engine& iEngine;
 
-    QList<Led*> iLeds;
+    QHash<int, Led*> iLeds;
     QList<int> iPositions;
 
     QTimer*     iPlayTimer;

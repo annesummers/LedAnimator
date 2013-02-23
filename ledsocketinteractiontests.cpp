@@ -28,7 +28,7 @@ void LedSocketInteractionTests::copyPasteOneLedToSocket() {
 
     setupAnimation(*animation, gridPositions);
 
-    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    ColourWidget& copyWidget = static_cast<ColourWidget&>(gridWidget->widgetAt(0,0));
     copyWidget.setColour(Qt::magenta);
     QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
@@ -54,11 +54,51 @@ void LedSocketInteractionTests::cutPasteOneLedToSocket() {
 
 }
 
+void LedSocketInteractionTests::cutPasteOneLedToManySockets_data() {
+
+}
+
+void LedSocketInteractionTests::cutPasteOneLedToManySockets() {
+
+}
+
 void LedSocketInteractionTests::cutPasteManyLedToSocket_data() {
 
 }
 
 void LedSocketInteractionTests::cutPasteManyLedToSocket() {
+
+}
+
+void LedSocketInteractionTests::cutPasteOneLedToSocket_data() {
+
+}
+
+void LedSocketInteractionTests::cutPasteOneLedToLed() {
+
+}
+
+void LedSocketInteractionTests::cutPasteOneLedToManyLeds_data() {
+
+}
+
+void LedSocketInteractionTests::cutPasteOneLedToManyLeds() {
+
+}
+
+void LedSocketInteractionTests::cutPasteManyLedToLed_data() {
+
+}
+
+void LedSocketInteractionTests::cutPasteManyLedToLed() {
+
+}
+
+void LedSocketInteractionTests::cutPasteManyLedToMixed_data() {
+
+}
+
+void LedSocketInteractionTests::cutPasteManyLedToMixed() {
 
 }
 
@@ -79,4 +119,31 @@ void LedSocketInteractionTests::setupAnimation(Animation& animation, QList<QPoin
     }
 
     animation.setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
+}
+
+void LedSocketInteractionTests::chooseColour(LedGridTestWidget& groupWidget, QPoint widgetPoint) {
+    LedWidget& widget = (LedGridTestWidget&)(groupWidget.widgetAt(widgetPoint.y(), widgetPoint.x()));
+
+    iColourDialog = &(widget.colourDialog());
+
+    iAsyncTimeoutTimer.setInterval(20);
+    iAsyncTimeoutTimer.setSingleShot(true);
+
+    iAsyncEventLoop.connect(&iAsyncTimeoutTimer, SIGNAL(timeout()), this, SLOT(dismissDialog()));
+    iAsyncTimeoutTimer.start();
+
+    QTest::mouseDClick(&widget, Qt::LeftButton);
+
+    iAsyncEventLoop.exec();
+}
+
+void LedSocketInteractionTests::dismissDialog() {
+    if(iColourDialog != NULL) {
+        QTest::keyClick(iColourDialog, Qt::Key_Enter);
+        iColourDialog = NULL;
+
+        iAsyncTimeoutTimer.start();
+    } else {
+        iAsyncEventLoop.exit();
+    }
 }

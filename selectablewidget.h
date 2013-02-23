@@ -22,8 +22,8 @@ public:
     inline void select(bool selected) { iItem.select(selected); }
     inline bool isSelected() { return iItem.isSelected(); }
 
-    virtual void handleMimeData(QDataStream& dataStream, bool move) = 0;
-    virtual void writeMimeData(QDataStream& dataStream) = 0;
+  //  virtual void handleMimeData(QDataStream& dataStream, bool move) = 0;
+   // virtual void writeMimeData(QDataStream& dataStream) = 0;
 
 private slots:
     inline void selected() { update(); }
@@ -72,4 +72,6 @@ private:
 };
 
 }
+
+//Q_DECLARE_METATYPE ( SelectableWidget )
 #endif // ANIMATORWIDGET_H

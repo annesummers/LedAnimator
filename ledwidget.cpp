@@ -16,50 +16,49 @@
 
 using namespace AnimatorUi;
 
-LedWidget::LedWidget(QWidget *parent, const Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
+LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
     ColourWidget(parent, ledGroup, led),
     iAnimation(animation) {
 
     setObjectName("LedWidget");
 
     connect(&led, SIGNAL(ledUpdated()), this, SLOT(updated()));
-   // QObject::connect(&led, SIGNAL(selected()), this, SLOT(selected()));
-
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
 
     iCutAction = new QAction(tr("&Cut"), this);
     iCutAction->setStatusTip(tr("Cut this led"));
 
     connect(iCutAction, SIGNAL(triggered()), this, SLOT(cut()));
+
+    iRenumberAction = new QAction(tr("&Renumber..."), this);
+    iRenumberAction->setStatusTip(tr("Renumber this led"));
+
+    connect(iRenumberAction, SIGNAL(triggered()), this, SLOT(renumber()));
 }
 
 // from SelectableWidget -----------------------
 
-void LedWidget::writeMimeData(QDataStream& dataStream) {
-    ColourWidget::writeMimeData(dataStream);
-
-
-    dataStream << led().row() << led().column();
-    qDebug("row %d, column %d", led().row(), led().column());
-}
-
-void LedWidget::handleMimeData(QDataStream &dataStream, bool move) {
-    ColourWidget::handleMimeData(dataStream, move);
-
-    int row;
-    int column;
-
-    dataStream >> row >> column;
-}
-
 void LedWidget::addCutAction(QMenu* menu) {
     menu->addAction(iCutAction);
+}
+
+void LedWidget::addExtraActions(QMenu* menu) {
+    menu->addAction(iRenumberAction);
 }
 
 void LedWidget::cut() {
     copy();
 
     gridWidget().hideSelectedLeds();
+}
+
+void LedWidget::renumber() {
+    bool ok;
+    int i = QInputDialog::getInt(this, tr("Renumber led"),
+                                 tr("New number:"), led().number(), 1, iAnimation.numLeds() + 1, 1, &ok);
+    if (ok) {
+        iAnimation.renumberLed(led(), i);
+    }
 }
 
 // events ------------------------------------

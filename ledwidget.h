@@ -19,18 +19,17 @@ class LedWidget : public ColourWidget {
     Q_OBJECT
 
 public:
-    explicit LedWidget(QWidget* parent, const Animation &animation, ColourGroupWidget& ledGroup, Led& led);
+    explicit LedWidget(QWidget* parent, Animation &animation, ColourGroupWidget& ledGroup, Led& led);
 
     void hideLed();
+    inline Led &led() const { return static_cast<Led&>(iItem); }
 
 private slots:
     void cut();
+    void renumber();
 
 protected:
     void paintEvent(QPaintEvent *event);
-
-    void handleMimeData(QDataStream& dataStream, bool move);
-    void writeMimeData(QDataStream &dataStream);
 
     void setColour(QColor colour) {led().setCurrentColour(colour); }
     const QColor colour() const {return led().currentColour(); }
@@ -43,14 +42,15 @@ protected:
     inline Qt::DropAction  controlDropAction() const { return Qt::MoveAction; }
 
     void addCutAction(QMenu* menu);
+    void addExtraActions(QMenu* menu);
 
 private:
-    inline Led &led() const { return static_cast<Led&>(iItem); }
     LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }
 
-    const Animation& iAnimation;
+    Animation& iAnimation;
 
     QAction* iCutAction;
+    QAction* iRenumberAction;
 };
 }
 

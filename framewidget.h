@@ -21,6 +21,7 @@ class FrameWidget : public ColourWidget {
 
 public:
     explicit FrameWidget(QWidget* parent, ColourGroupWidget &frameGroup, Frame& frame);
+    inline Frame& frame() const { return static_cast<Frame&>(iItem); }
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -36,7 +37,6 @@ protected:
     inline Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
 private:
-    inline Frame& frame() const { return static_cast<Frame&>(iItem); }
 };
 }
 

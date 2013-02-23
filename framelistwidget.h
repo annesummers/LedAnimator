@@ -33,6 +33,9 @@ private slots:
     void numFramesChanged(int numFrames);
 
 protected:
+    void moveItem(int fromRow, int fromColumn, int toRow, int toColumn) {}
+    void copyItem(int fromRow, int fromColumn, int toRow, int toColumn);
+
     SelectableWidget& widgetAt(int row, int column);
     void getWidgetPosition(SelectableWidget &widget, int* row, int* column);
 

@@ -30,9 +30,6 @@ public:
     virtual const QColor colour() const = 0;
     virtual void setColour(QColor colour) = 0;
 
-    virtual void handleMimeData(QDataStream& dataStream, bool move);
-    virtual void writeMimeData(QDataStream& dataStream);
-
 protected slots:
     void updated();
     void copy();
@@ -52,6 +49,7 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
     virtual void cut() {}
+    virtual void addExtraActions(QMenu* menu) { Q_UNUSED(menu); }
 
     bool iFading;
   //  bool iSetAllFrames;

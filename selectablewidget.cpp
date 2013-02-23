@@ -75,37 +75,22 @@ Qt::DropAction SelectableWidget::handleDragDropEvent(QDropEvent* event) {
         }*/
         if (event->source() !=  NULL &&
             event->source() != this) {
-
             Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
-           /* if(modifiers != 0) {
-                qDebug("modifier");
-            }*/
-            if((modifiers & Qt::ControlModifier) == Qt::ControlModifier) {
 
-              //  qDebug("control mod");
+            if((modifiers & Qt::ControlModifier) == Qt::ControlModifier) {
                 action = controlDropAction();
                 event->setDropAction(action);
             } else {
-
-              //  qDebug("no mod");
                 action = defaultDropAction();
                 event->setDropAction(action);
             }
 
-            qDebug("source is ok");
-            //if((possibleActions & actions) != 0 ) {
-
-            //    qDebug("actions are ok");
-
             event->accept();
-            qDebug("accept");
         } else {
              event->ignore();
-             qDebug("ignore");
          }
      } else {
          event->ignore();
-         qDebug("ignore");
      }
 
      return action;
@@ -122,7 +107,7 @@ void SelectableWidget::addPasteActions(QMenu* menu) {
 // events ----------------------------------------
 
 void SelectableWidget::mousePressEvent(QMouseEvent* event) {
-    //qDebug("singleWidget mousePress");
+   // qDebug("singleWidget mousePress");
     if (event->button() != Qt::LeftButton) {
         return;
     }
@@ -137,7 +122,7 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
-    //qDebug("singleWidget mouseRelease");
+   // qDebug("singleWidget mouseRelease");
     if (event->button() != Qt::LeftButton ||
        (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
         return;
@@ -158,7 +143,6 @@ void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
 void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
     //qDebug("singelWidge mouse move");
     if(event->buttons() != Qt::LeftButton ||
-       //iSelectableGroup.isMultipleSelected() ||
        (event->pos() - iDragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
         return;
     }
@@ -181,15 +165,9 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
     drag->setMimeData(mimeData());
     drag->setHotSpot(pos());
 
-   // if(iSelectableGroup.isMultipleSelected()) {
-  //      drag->exec(dropAction());
-  //  } else {
-        if(drag->exec(dragActions()) == Qt::MoveAction) {
-            qDebug("move event");
-        }
-
-  //  }
-
+    if(drag->exec(dragActions()) == Qt::MoveAction) {
+        qDebug("move event");
+    }
 }
 
 void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -226,7 +204,7 @@ void SelectableWidget::dropEvent(QDropEvent *event) {
 }
 
 void SelectableWidget::contextMenuEvent(QContextMenuEvent *) {
-    if(!iSelectableGroup.isAnySelected()) {
+    if(!isSelected()) {
         iSelectableGroup.selectOne(*this);
     }
 }

@@ -7,7 +7,7 @@
 #include "animationdetailswidget.h"
 
 #include "mainwindow.h"
-#include "leddetailswidgets.h"
+#include "led.h"
 #include "animation.h"
 #include "framelistwidget.h"
 
@@ -16,6 +16,34 @@
 
 using namespace AnimatorUi;
 using namespace Exception;
+
+LedDetails::LedDetails(AnimationDetailsWidget& parent, Led &led, QLabel &label, QPushButton &closeButton) :
+    QObject(&parent),
+    iLed(led),
+    iLabel(label),
+    iCloseButton(closeButton),
+    iDetailsWidget(parent) {
+
+    /*iSignalMapper->setMapping(detailsCloseWidget, count);
+    connect(detailsCloseWidget, SIGNAL(clicked()), iSignalMapper, SLOT(map()));
+    connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(closeClicked(int)));
+*/
+    connect(&closeButton, SIGNAL(clicked()), this, SLOT(closeClicked()));
+
+    connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
+
+    ledUpdated();
+}
+
+void LedDetails::closeClicked() {
+    qDebug("closeClicked %d", iLed.number());
+
+    iDetailsWidget.closeClicked(*this);
+}
+
+void LedDetails::ledUpdated() {
+    iLabel.setText(QString("%1").arg(iLed.number()));
+}
 
 AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation) :
     ColourGroupGroupWidget(parent),
@@ -124,66 +152,47 @@ void AnimationDetailsWidget::addLed(int row, int column) {
         throw IllegalArgumentException("AnimationDetailsWidget::addLed : NULL led");
     }
 
-    if(!iShownLeds.contains(led)) {
-        iShownLeds.append(led);
+    if(!iShownLeds.contains(led->number())) {
+        //iShownLeds.append(led);
 
-        int count = iShownLeds.count();
+        int count = iShownLeds.count() + 1;
 
-        QLabel* positionLabel = new QLabel(this);
-        positionLabel->setText(QString("%1").arg(count));
+        QLabel* ledNumberLabel = new QLabel(this);
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this);
         framesListWidget->resize(40, framesListWidget->height());
 
         QPushButton* detailsCloseWidget = new QPushButton("X", this);
 
-        iGridLayout->addWidget(positionLabel, count, 0);
+        iGridLayout->addWidget(ledNumberLabel, count, 0);
         iGridLayout->addWidget(framesListWidget, count, 1);
         iGridLayout->addWidget(detailsCloseWidget, count, 2);
 
-        iSignalMapper->setMapping(detailsCloseWidget, count);
-        connect(detailsCloseWidget, SIGNAL(clicked()), iSignalMapper, SLOT(map()));
-        connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(closeClicked(int)));
-
-        connect(detailsCloseWidget, SIGNAL(clicked()), this, SLOT(closeClicked()));
-
         addGroup(*framesListWidget);
+
+        iShownLeds.insert(count, new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
 
         qDebug("add new led, %d, %d", row, column);
     }
 }
 
-void AnimationDetailsWidget::closeClicked() {
-    qDebug("closeClicked");
-    iClosed = false;
-}
+void AnimationDetailsWidget::closeClicked(LedDetails &details) {
+    int key = iShownLeds.key(&details);
 
-void AnimationDetailsWidget::closeClicked(int whichLed) {
-    if(!iClosed) {
-        qDebug("closeClicked %d", whichLed);
+    int numRows = iGridLayout->rowCount();
+    int numColumns = iGridLayout->columnCount();
 
-        Led* led = iShownLeds.at(whichLed - 1);
-        //led->setDetailsShown(INVALID);
+    qDebug("rows %d, columns %d", numRows, numColumns);
 
-        int numRows = iGridLayout->rowCount();
-        int numColumns = iGridLayout->columnCount();
-
-        qDebug("rows %d, columns %d", numRows, numColumns);
-
-        for(int i = 0; i < 3; i++) {
-            QWidget* widget =  iGridLayout->itemAtPosition(whichLed, i)->widget();
-            widget->close();
-            iGridLayout->removeWidget(widget);
-        }
-
-        iShownLeds.removeOne(led);
-
-        update();
-
-        iClosed = true;
+    for(int i = 0; i < 3; i++) {
+        QWidget* widget =  iGridLayout->itemAtPosition(key, i)->widget();
+        widget->close();
+        iGridLayout->removeWidget(widget);
     }
 
-    //TODO this doesn't work
+    iShownLeds.remove(key);
+
+    update();
 }
 
 bool AnimationDetailsWidget::handleDragDropEvent(QDropEvent* event) {
@@ -236,7 +245,6 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
         QByteArray itemData = event->mimeData()->data(LED_MIME_TYPE);
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
-        QColor colour;
         int row;
         int column;
 
@@ -248,7 +256,7 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
         dataStream >> numRows >> numColumns;
 
         for(int i = 0; i < numRows * numColumns; i++) {
-           dataStream >> colour >> row >> column;
+           dataStream >> row >> column;
            addLed(row, column);
         }
 
