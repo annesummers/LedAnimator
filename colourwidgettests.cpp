@@ -8,12 +8,12 @@
 #include "exceptions.h"
 #include "constants.h"
 
-#include "colourgroupgroupwidget.h"
+#include "selectablegroupgroupwidget.h"
 
 using namespace AnimatorTest;
 using namespace Exception;
 
-ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, ColourGroupGroupWidget *groupGroupWidget = 0) :
+ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, SelectableGroupGroupWidget *groupGroupWidget = 0) :
     ColourGroupWidget(parent, maxRow, maxColumn, groupGroupWidget) {
 
     // TODO yuck this is horrilbe
@@ -50,6 +50,21 @@ bool ColourGroupTestWidget::validKeyPress(Qt::Key key) {
            (key & Qt::Key_Left) == Qt::Key_Left ||
            (key & Qt::Key_Up) == Qt::Key_Up ||
            (key & Qt::Key_Down) == Qt::Key_Down;
+}
+
+void ColourGroupTestWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+    ColourTestWidget* fromWidget;
+
+    if(fromGroup == iGroupNumber) {
+        fromWidget = static_cast<ColourTestWidget*>(&widgetAt(fromRow, fromColumn));
+    } else {
+        ColourGroupTestWidget& group = static_cast<ColourGroupTestWidget&>(iGroupGroup->group(fromGroup));
+        fromWidget = static_cast<ColourTestWidget*>(&group.widgetAt(fromRow, fromColumn));
+    }
+
+    ColourTestWidget& toWidget = static_cast<ColourTestWidget&>(widgetAt(toRow, toColumn));
+
+    toWidget.setColour(fromWidget->colour());
 }
 
 ColourWidgetTests::ColourWidgetTests(QObject *parent) :
@@ -841,9 +856,13 @@ void ColourWidgetTests::copyPasteOneInternal() {
 
     ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget->widgetAt(copyPoint.y(), copyPoint.x());
     copyWidget.setColour(copyColour);
+
+    groupWidget->selectOne(copyWidget);
     QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
     ColourTestWidget& pasteWidget = (ColourTestWidget&)groupWidget->widgetAt(pastePoint.y(), pastePoint.x());
+
+    groupWidget->selectOne(pasteWidget);
     QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
 
     QCOMPARE(copyWidget.colour(), pasteWidget.colour());
@@ -914,6 +933,7 @@ void ColourWidgetTests::copyPasteManyInternal() {
 
     ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget->widgetAt(pastePoint.y(), pastePoint.x()));
 
+    groupWidget->selectOne(pastePointWidget);
     QTest::keyPress(&pastePointWidget, Qt::Key_V, Qt::ControlModifier);
 
     QList<QPoint> testPoints;
@@ -958,14 +978,19 @@ void ColourWidgetTests::copyPasteOneExternal() {
     QFETCH(QPoint, pastePoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
-    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
+    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
 
     ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget1->widgetAt(copyPoint.y(), copyPoint.x());
     copyWidget.setColour(copyColour);
+
+    groupWidget1->selectOne(copyWidget);
     QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
     ColourTestWidget& pasteWidget = (ColourTestWidget&)groupWidget2->widgetAt(pastePoint.y(), pastePoint.x());
+
+    groupWidget2->selectOne(pasteWidget);
     QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
 
     QCOMPARE(copyWidget.colour(), pasteWidget.colour());
@@ -1004,7 +1029,9 @@ void ColourWidgetTests::copyPasteManyExternal() {
     QFETCH(QPoint, pasteSecondPoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
 
     ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget1->widgetAt(copyFirstPoint.y(), copyFirstPoint.x()));
 
@@ -1014,10 +1041,11 @@ void ColourWidgetTests::copyPasteManyExternal() {
 
     QTest::keyPress(&copyFirstWidget, Qt::Key_C, Qt::ControlModifier);
 
-    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
 
     ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget2->widgetAt(pastePoint.y(), pastePoint.x()));
 
+    groupWidget2->selectOne(pastePointWidget);
     QTest::keyPress(&pastePointWidget, Qt::Key_V, Qt::ControlModifier);
 
     QList<QPoint> selectedPoints;

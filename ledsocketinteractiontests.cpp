@@ -4,16 +4,18 @@
 #include "ledwidget.h"
 #include "socketwidget.h"
 
+#include "constants.h"
+
 LedSocketInteractionTests::LedSocketInteractionTests(QObject *parent) :
     QObject(parent)
 {
 }
 
-void LedSocketInteractionTests::copyPasteOneLedToSocket_data() {
+void LedSocketInteractionTests::copyPasteOneLedToOneSocket_data() {
 
 }
 
-void LedSocketInteractionTests::copyPasteOneLedToSocket() {
+void LedSocketInteractionTests::copyPasteOneLedToOneSocket() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
@@ -28,14 +30,154 @@ void LedSocketInteractionTests::copyPasteOneLedToSocket() {
 
     setupAnimation(*animation, gridPositions);
 
-    ColourWidget& copyWidget = static_cast<ColourWidget&>(gridWidget->widgetAt(0,0));
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
     copyWidget.setColour(Qt::magenta);
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
     QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
     SocketWidget& pasteWidget = static_cast<SocketWidget&>(gridWidget->widgetAt(3,3));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
     QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
 
-    QCOMPARE(copyWidget.colour(), pasteWidget.colour());
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(3,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
+
+    delete engine;
+}
+
+void LedSocketInteractionTests::copyPasteOneLedToOneLed_data() {
+
+}
+
+void LedSocketInteractionTests::copyPasteOneLedToOneLed() {
+    Engine* engine = new Engine(this);
+    Animation* animation = new Animation(*engine);
+    TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
+
+    QList<QPoint> gridPositions;
+
+    gridPositions.append(QPoint(0, 0));
+    gridPositions.append(QPoint(0, 1));
+    gridPositions.append(QPoint(1, 1));
+    gridPositions.append(QPoint(1, 2));
+    gridPositions.append(QPoint(2, 2));
+
+    setupAnimation(*animation, gridPositions);
+
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    copyWidget.setColour(Qt::magenta);
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
+    QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
+
+    LedWidget& pasteWidget = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
+
+    delete engine;
+}
+
+
+void LedSocketInteractionTests::copyPasteOneLedToManySockets_data() {
+
+}
+
+void LedSocketInteractionTests::copyPasteOneLedToManySockets() {
+    Engine* engine = new Engine(this);
+    Animation* animation = new Animation(*engine);
+    TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
+
+    QList<QPoint> gridPositions;
+
+    gridPositions.append(QPoint(0, 0));
+    gridPositions.append(QPoint(0, 1));
+    gridPositions.append(QPoint(1, 1));
+    gridPositions.append(QPoint(1, 2));
+    gridPositions.append(QPoint(2, 2));
+
+    setupAnimation(*animation, gridPositions);
+
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    copyWidget.setColour(Qt::magenta);
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
+    QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
+
+    SocketWidget& pasteWidget = static_cast<SocketWidget&>(gridWidget->widgetAt(2,3));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(2,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
+
+    SocketWidget& pasteWidget2 = static_cast<SocketWidget&>(gridWidget->widgetAt(3,3));
+    QTest::mouseClick(&pasteWidget2, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget2, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(3,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget2.led().frameAt(i).colour());
+    }
+
+    delete engine;
+}
+
+void LedSocketInteractionTests::copyPasteOneLedToManyLeds_data() {
+
+}
+
+void LedSocketInteractionTests::copyPasteOneLedToManyLeds() {
+    Engine* engine = new Engine(this);
+    Animation* animation = new Animation(*engine);
+    TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
+
+    QList<QPoint> gridPositions;
+
+    gridPositions.append(QPoint(0, 0));
+    gridPositions.append(QPoint(0, 1));
+    gridPositions.append(QPoint(1, 1));
+    gridPositions.append(QPoint(1, 2));
+    gridPositions.append(QPoint(2, 2));
+
+    setupAnimation(*animation, gridPositions);
+
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    copyWidget.setColour(Qt::magenta);
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
+    QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
+
+    LedWidget& pasteWidget = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
+
+    LedWidget& pasteWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+    QTest::mouseClick(&pasteWidget2, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget2, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget2.led().frameAt(i).colour());
+    }
+
+    delete engine;
 }
 
 void LedSocketInteractionTests::copyPasteManyLedToSocket_data() {
@@ -43,63 +185,203 @@ void LedSocketInteractionTests::copyPasteManyLedToSocket_data() {
 }
 
 void LedSocketInteractionTests::copyPasteManyLedToSocket() {
+    Engine* engine = new Engine(this);
+    Animation* animation = new Animation(*engine);
+    TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
+
+    QList<QPoint> gridPositions;
+
+    gridPositions.append(QPoint(0, 0));
+    gridPositions.append(QPoint(0, 1));
+    gridPositions.append(QPoint(1, 0));
+    gridPositions.append(QPoint(1, 1));
+
+    setupAnimation(*animation, gridPositions);
+
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    copyWidget.setColour(Qt::magenta);
+
+    LedWidget& copyWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(0,1));
+    copyWidget2.setColour(Qt::green);
+
+    LedWidget& copyWidget3 = static_cast<LedWidget&>(gridWidget->widgetAt(1,0));
+    copyWidget3.setColour(Qt::yellow);
+
+    LedWidget& copyWidget4 = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+    copyWidget4.setColour(Qt::blue);
+
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
+    QTest::mouseClick(&copyWidget4, Qt::LeftButton, Qt::ShiftModifier);
+
+    QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
+
+    SocketWidget& pasteWidget = static_cast<SocketWidget&>(gridWidget->widgetAt(2,2));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(2,2));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
+
+    LedWidget& pastedWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(2,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget2.led().frameAt(i).colour(), pastedWidget2.led().frameAt(i).colour());
+    }
+
+    LedWidget& pastedWidget3 = static_cast<LedWidget&>(gridWidget->widgetAt(3,2));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget3.led().frameAt(i).colour(), pastedWidget3.led().frameAt(i).colour());
+    }
+
+    LedWidget& pastedWidget4 = static_cast<LedWidget&>(gridWidget->widgetAt(3,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget4.led().frameAt(i).colour(), pastedWidget4.led().frameAt(i).colour());
+    }
+
+    delete engine;
+}
+
+void LedSocketInteractionTests::copyPasteManyLedToLed_data() {
 
 }
 
-void LedSocketInteractionTests::cutPasteOneLedToSocket_data() {
+void LedSocketInteractionTests::copyPasteManyLedToLed() {
+    Engine* engine = new Engine(this);
+    Animation* animation = new Animation(*engine);
+    TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
+
+    QList<QPoint> gridPositions;
+
+    gridPositions.append(QPoint(0, 0));
+    gridPositions.append(QPoint(0, 1));
+    gridPositions.append(QPoint(1, 0));
+    gridPositions.append(QPoint(1, 1));
+    gridPositions.append(QPoint(2, 2));
+    gridPositions.append(QPoint(3, 2));
+    gridPositions.append(QPoint(2, 3));
+    gridPositions.append(QPoint(3, 3));
+
+    setupAnimation(*animation, gridPositions);
+
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    copyWidget.setColour(Qt::magenta);
+
+    LedWidget& copyWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(0,1));
+    copyWidget2.setColour(Qt::green);
+
+    LedWidget& copyWidget3 = static_cast<LedWidget&>(gridWidget->widgetAt(1,0));
+    copyWidget3.setColour(Qt::yellow);
+
+    LedWidget& copyWidget4 = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+    copyWidget4.setColour(Qt::blue);
+
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
+    QTest::mouseClick(&copyWidget4, Qt::LeftButton, Qt::ShiftModifier);
+
+    QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
+
+    LedWidget& pasteWidget = static_cast<LedWidget&>(gridWidget->widgetAt(2,2));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
+
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(2,2));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
+
+    LedWidget& pastedWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(2,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget2.led().frameAt(i).colour(), pastedWidget2.led().frameAt(i).colour());
+    }
+
+    LedWidget& pastedWidget3 = static_cast<LedWidget&>(gridWidget->widgetAt(3,2));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget3.led().frameAt(i).colour(), pastedWidget3.led().frameAt(i).colour());
+    }
+
+    LedWidget& pastedWidget4 = static_cast<LedWidget&>(gridWidget->widgetAt(3,3));
+
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget4.led().frameAt(i).colour(), pastedWidget4.led().frameAt(i).colour());
+    }
+
+    delete engine;
+}
+
+void LedSocketInteractionTests::copyPasteManyLedToMixed_data() {
 
 }
 
-void LedSocketInteractionTests::cutPasteOneLedToSocket() {
+void LedSocketInteractionTests::copyPasteManyLedToMixed() {
+    Engine* engine = new Engine(this);
+    Animation* animation = new Animation(*engine);
+    TestLedGridWidget* gridWidget = new TestLedGridWidget(NULL, *animation);
 
-}
+    QList<QPoint> gridPositions;
 
-void LedSocketInteractionTests::cutPasteOneLedToManySockets_data() {
+    gridPositions.append(QPoint(0, 0));
+    gridPositions.append(QPoint(0, 1));
+    gridPositions.append(QPoint(1, 0));
+    gridPositions.append(QPoint(1, 1));
+    gridPositions.append(QPoint(2, 3));
+    gridPositions.append(QPoint(3, 3));
 
-}
+    setupAnimation(*animation, gridPositions);
 
-void LedSocketInteractionTests::cutPasteOneLedToManySockets() {
+    LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(0,0));
+    copyWidget.setColour(Qt::magenta);
 
-}
+    LedWidget& copyWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(0,1));
+    copyWidget2.setColour(Qt::green);
 
-void LedSocketInteractionTests::cutPasteManyLedToSocket_data() {
+    LedWidget& copyWidget3 = static_cast<LedWidget&>(gridWidget->widgetAt(1,0));
+    copyWidget3.setColour(Qt::yellow);
 
-}
+    LedWidget& copyWidget4 = static_cast<LedWidget&>(gridWidget->widgetAt(1,1));
+    copyWidget4.setColour(Qt::blue);
 
-void LedSocketInteractionTests::cutPasteManyLedToSocket() {
+    QTest::mouseClick(&copyWidget, Qt::LeftButton);
+    QTest::mouseClick(&copyWidget4, Qt::LeftButton, Qt::ShiftModifier);
 
-}
+    QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
-void LedSocketInteractionTests::cutPasteOneLedToSocket_data() {
+    SocketWidget& pasteWidget = static_cast<SocketWidget&>(gridWidget->widgetAt(2,2));
+    QTest::mouseClick(&pasteWidget, Qt::LeftButton);
+    QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
 
-}
+    LedWidget& pastedWidget = static_cast<LedWidget&>(gridWidget->widgetAt(2,2));
 
-void LedSocketInteractionTests::cutPasteOneLedToLed() {
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget.led().frameAt(i).colour(), pastedWidget.led().frameAt(i).colour());
+    }
 
-}
+    LedWidget& pastedWidget2 = static_cast<LedWidget&>(gridWidget->widgetAt(2,3));
 
-void LedSocketInteractionTests::cutPasteOneLedToManyLeds_data() {
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget2.led().frameAt(i).colour(), pastedWidget2.led().frameAt(i).colour());
+    }
 
-}
+    LedWidget& pastedWidget3 = static_cast<LedWidget&>(gridWidget->widgetAt(3,2));
 
-void LedSocketInteractionTests::cutPasteOneLedToManyLeds() {
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget3.led().frameAt(i).colour(), pastedWidget3.led().frameAt(i).colour());
+    }
 
-}
+    LedWidget& pastedWidget4 = static_cast<LedWidget&>(gridWidget->widgetAt(3,3));
 
-void LedSocketInteractionTests::cutPasteManyLedToLed_data() {
+    for(int i = INITIAL_FRAME; i < animation->numFrames() + INITIAL_FRAME; i++) {
+        QCOMPARE(copyWidget4.led().frameAt(i).colour(), pastedWidget4.led().frameAt(i).colour());
+    }
 
-}
-
-void LedSocketInteractionTests::cutPasteManyLedToLed() {
-
-}
-
-void LedSocketInteractionTests::cutPasteManyLedToMixed_data() {
-
-}
-
-void LedSocketInteractionTests::cutPasteManyLedToMixed() {
-
+    delete engine;
 }
 
 void LedSocketInteractionTests::setupAnimation(Animation& animation, QList<QPoint> gridPositions) {
@@ -115,35 +397,8 @@ void LedSocketInteractionTests::setupAnimation(Animation& animation, QList<QPoin
     int numLeds = gridPositions.count();
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
     }
 
     animation.setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
-}
-
-void LedSocketInteractionTests::chooseColour(LedGridTestWidget& groupWidget, QPoint widgetPoint) {
-    LedWidget& widget = (LedGridTestWidget&)(groupWidget.widgetAt(widgetPoint.y(), widgetPoint.x()));
-
-    iColourDialog = &(widget.colourDialog());
-
-    iAsyncTimeoutTimer.setInterval(20);
-    iAsyncTimeoutTimer.setSingleShot(true);
-
-    iAsyncEventLoop.connect(&iAsyncTimeoutTimer, SIGNAL(timeout()), this, SLOT(dismissDialog()));
-    iAsyncTimeoutTimer.start();
-
-    QTest::mouseDClick(&widget, Qt::LeftButton);
-
-    iAsyncEventLoop.exec();
-}
-
-void LedSocketInteractionTests::dismissDialog() {
-    if(iColourDialog != NULL) {
-        QTest::keyClick(iColourDialog, Qt::Key_Enter);
-        iColourDialog = NULL;
-
-        iAsyncTimeoutTimer.start();
-    } else {
-        iAsyncEventLoop.exit();
-    }
 }

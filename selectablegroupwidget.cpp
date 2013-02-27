@@ -3,7 +3,7 @@
 #include <QtGui>
 
 #include "selectablewidget.h"
-#include "colourgroupgroupwidget.h"
+#include "selectablegroupgroupwidget.h"
 
 #include "exceptions.h"
 #include "constants.h"
@@ -11,18 +11,23 @@
 using namespace AnimatorUi;
 using namespace Exception;
 
-SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget *groupGroupWidget) :
+SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget *groupGroupWidget) :
     QWidget(parent),
+    iGroupGroup(groupGroupWidget),
+    iGroupNumber(0),
     iNumRows(numRows),
     iNumColumns(numColumns),
     iFirstSelectedRow(0),
     iLastSelectedRow(0),
     iFirstSelectedColumn(0),
     iLastSelectedColumn(0),
-    iGroupGroup(groupGroupWidget) {
+    iTopLeftSelectedRow(INVALID),
+    iTopLeftSelectedColumn(INVALID),
+    iBottomRightSelectedRow(INVALID),
+    iBottomRightSelectedColumn(INVALID){
 
   if(iGroupGroup != NULL) {
-      iGroupGroup->addGroup(*this);
+      iGroupNumber = iGroupGroup->addGroup(*this);
   }
 }
 
@@ -48,7 +53,7 @@ bool SelectableGroupWidget::isSingleSelected() {
 // selecting ----------------------------
 
 void SelectableGroupWidget::toggle(SelectableWidget &widget) {
-   // qDebug("select %d", !widget.isSelected());
+    qDebug("select %d", !widget.isSelected());
     doSelect(widget, !widget.isSelected());
 
     if(selectedCount() == 1) {
@@ -58,18 +63,8 @@ void SelectableGroupWidget::toggle(SelectableWidget &widget) {
     }
 }
 
-void SelectableGroupWidget::select(SelectableWidget &widget) {
-    doSelect(widget, true);
-
-    if(selectedCount() == 1) {
-        setSingleSelected(widget);
-    } else {
-        clearGroupSelection();
-    }
-}
-
 void SelectableGroupWidget::toggleOne(SelectableWidget &widget) {
-//    qDebug("toggleOne");
+    qDebug("toggleOne");
     bool selected = false;
 
     if(iSelected.count() > 1 ||
@@ -89,7 +84,7 @@ void SelectableGroupWidget::toggleOne(SelectableWidget &widget) {
 }
 
 void SelectableGroupWidget::selectOne(SelectableWidget &widget) {
-   // qDebug("selectOne");
+    qDebug("selectOne");
     clearSelection();
 
     doSelect(widget, true);
@@ -98,7 +93,7 @@ void SelectableGroupWidget::selectOne(SelectableWidget &widget) {
 }
 
 void SelectableGroupWidget::selectArea(SelectableWidget& widget) {
-    //qDebug("selectArea");
+    qDebug("selectArea");
     if(!isSingleSelected()) {
         return;
     }
@@ -148,8 +143,8 @@ void SelectableGroupWidget::setSingleSelected(SelectableWidget& widget) {
 
     getWidgetPosition(widget, &row, &column);
 
-    iFirstSelectedRow = iLastSelectedRow = row;
-    iFirstSelectedColumn = iLastSelectedColumn = column;
+    iFirstSelectedRow = iLastSelectedRow = iTopLeftSelectedRow = iBottomRightSelectedRow = row;
+    iFirstSelectedColumn = iLastSelectedColumn = iTopLeftSelectedColumn = iBottomRightSelectedColumn = column;
 }
 
 void SelectableGroupWidget::clearGroupSelection() {
@@ -163,34 +158,87 @@ void SelectableGroupWidget::clearSelection() {
     }
 
     iSelected.clear();
+    iTopLeftSelectedRow = iBottomRightSelectedRow = iTopLeftSelectedColumn = iBottomRightSelectedColumn = INVALID;
 }
 
 void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected) {
+    int row;
+    int column;
+    getWidgetPosition(widget, &row, &column);
+
     if(selected) {
         QString widgetType = "";
         if(iSelected.count() != 0) {
             widgetType = iSelected.at(0)->objectName();
-            if(widget.objectName() == widgetType){
-                iSelected.append(&widget);
+        }
 
-                if(iGroupGroup != NULL) {
-                    iGroupGroup->selected(*this);
-                }
+        if(iSelected.count() == 0 ||
+           widget.objectName() == widgetType) {
+
+            if(iTopLeftSelectedRow == INVALID || row < iTopLeftSelectedRow ||
+               iTopLeftSelectedColumn == INVALID || column < iTopLeftSelectedColumn) {
+                iTopLeftSelectedRow = row;
+                iTopLeftSelectedColumn = column;
+                qDebug("ADD : topLeftRow is %d, topLeftColumn is %d", iTopLeftSelectedRow, iTopLeftSelectedColumn);
+
+                iSelected.insert(0, &widget);
             } else {
-                selected = false;
+                iSelected.append(&widget);
             }
-        } else {
-            iSelected.append(&widget);
 
             if(iGroupGroup != NULL) {
                 iGroupGroup->selected(*this);
             }
+        } else {
+            selected = false;
         }
     } else {
         iSelected.removeOne(&widget);
+
+        if(row == iTopLeftSelectedRow &&
+           column == iTopLeftSelectedColumn) {
+            iTopLeftSelectedRow = numRows() - 1;
+            iTopLeftSelectedColumn = numColumns() - 1;
+
+            if(iSelected.count() == 0) {
+                iTopLeftSelectedRow = INVALID;
+                iTopLeftSelectedColumn = INVALID;
+                qDebug("REMOVE : topLeftRow is %d, topLeftColumn is %d", iTopLeftSelectedRow, iTopLeftSelectedColumn);
+
+            } else {
+                sortSelected();
+            }
+        }
     }
 
     widget.select(selected);
+}
+
+void SelectableGroupWidget::sortSelected() {
+    int row;
+    int column;
+    SelectableWidget* widget;
+
+    for(int i = 0; i < iSelected.count(); i++) {
+        widget = iSelected.at(i);
+        getWidgetPosition(*widget, &row, &column);
+
+        if((row < iTopLeftSelectedRow &&
+           column < iTopLeftSelectedColumn) ||
+           (row == iTopLeftSelectedRow &&
+            column < iTopLeftSelectedColumn) ||
+           (row < iTopLeftSelectedRow &&
+            column == iTopLeftSelectedColumn)) {
+            iTopLeftSelectedRow = row;
+            iTopLeftSelectedColumn = column;
+            qDebug("SORT : topLeftRow is %d, topLeftColumn is %d", iTopLeftSelectedRow, iTopLeftSelectedColumn);
+
+            iSelected.removeOne(widget);
+            iSelected.insert(0, widget);
+
+            i--;
+        }
+    }
 }
 
 void SelectableGroupWidget::doGroupSelection() {
@@ -199,7 +247,13 @@ void SelectableGroupWidget::doGroupSelection() {
     QString widgetType = widgetAt(iFirstSelectedRow, iFirstSelectedColumn).objectName();
 
     if(iFirstSelectedRow < iLastSelectedRow) {
+        iTopLeftSelectedRow = iFirstSelectedRow;
+        iBottomRightSelectedRow = iLastSelectedRow;
+
         if(iFirstSelectedColumn < iLastSelectedColumn) {
+            iTopLeftSelectedColumn = iFirstSelectedColumn;
+            iBottomRightSelectedColumn = iLastSelectedColumn;
+
             for(int i = iFirstSelectedRow; i < iLastSelectedRow + 1; i++) {
                 for(int j = iFirstSelectedColumn; j < iLastSelectedColumn + 1; j++) {
                     SelectableWidget& widget = widgetAt(i, j);
@@ -209,6 +263,9 @@ void SelectableGroupWidget::doGroupSelection() {
                 }
             }
         } else {
+            iTopLeftSelectedColumn = iLastSelectedColumn;
+            iBottomRightSelectedColumn = iFirstSelectedColumn;
+
             for(int i = iFirstSelectedRow; i < iLastSelectedRow + 1; i++) {
                 for(int j = iFirstSelectedColumn; j > iLastSelectedColumn - 1; j--) {
                     SelectableWidget& widget = widgetAt(i, j);
@@ -219,7 +276,13 @@ void SelectableGroupWidget::doGroupSelection() {
             }
         }
     } else {
+        iTopLeftSelectedRow = iLastSelectedRow;
+        iBottomRightSelectedRow = iFirstSelectedRow;
+
         if(iFirstSelectedColumn < iLastSelectedColumn) {
+            iTopLeftSelectedColumn = iFirstSelectedColumn;
+            iBottomRightSelectedColumn = iLastSelectedColumn;
+
             for(int i = iFirstSelectedRow; i > iLastSelectedRow - 1; i--) {
                 for(int j = iFirstSelectedColumn; j < iLastSelectedColumn + 1; j++) {
                     SelectableWidget& widget = widgetAt(i, j);
@@ -229,6 +292,9 @@ void SelectableGroupWidget::doGroupSelection() {
                 }
             }
         } else {
+            iTopLeftSelectedColumn = iLastSelectedColumn;
+            iBottomRightSelectedColumn = iFirstSelectedColumn;
+
             for(int i = iFirstSelectedRow; i > iLastSelectedRow - 1; i--) {
                 for(int j = iFirstSelectedColumn; j > iLastSelectedColumn - 1; j--) {
                     SelectableWidget& widget = widgetAt(i, j);
@@ -242,7 +308,12 @@ void SelectableGroupWidget::doGroupSelection() {
 }
 
 void SelectableGroupWidget::getLeftRightTopBottomSelection(int * const topRow, int * const bottomRow, int * const leftColumn, int * const rightColumn) const {
-    *topRow = iFirstSelectedRow;
+    *topRow = iTopLeftSelectedRow;
+    *bottomRow = iBottomRightSelectedRow;
+    *leftColumn = iTopLeftSelectedColumn;
+    *rightColumn = iBottomRightSelectedColumn;
+
+    /**topRow = iFirstSelectedRow;
     *bottomRow = iLastSelectedRow;
     *leftColumn = iFirstSelectedColumn;
     *rightColumn = iLastSelectedColumn;
@@ -255,256 +326,9 @@ void SelectableGroupWidget::getLeftRightTopBottomSelection(int * const topRow, i
     if(iFirstSelectedColumn > iLastSelectedColumn) {
         *leftColumn = iLastSelectedColumn;
         *rightColumn = iFirstSelectedColumn;
-    }
+    }*/
 }
 
-// events ---------------------------------
-
-void SelectableGroupWidget::keyPressEvent(QKeyEvent *event) {
-    Qt::Key key = (Qt::Key)event->key();
-
-  //  Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
-  //  if(mods != 0) {
-  //      qDebug("mod");
-  //  }
-
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-        if(selectedCount() > 0 && key != Qt::Key_Shift) {
-            if(validKeyPress(key)) {
-                selectDirection(key);
-                return;
-            }
-        }
-    }
-
-    if(isGroupSelected() || isSingleSelected()) {
-        if(((key == Qt::Key_V) || (key == Qt::Key_C) || (key == Qt::Key_X)) &&
-            (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-            QCoreApplication::sendEvent(&widgetAt(iFirstSelectedRow, iFirstSelectedColumn), event);
-        }
-    }
-}
-
-// mime data handlers ------------------------
-
-const QByteArray SelectableGroupWidget::writeMimeData() {
-    QByteArray itemData;
-    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-
-    int topRow;
-    int bottomRow;
-    int leftColumn;
-    int rightColumn;
-
-     if(isMultipleSelected()) {
-      /*   dataStream << iSelected.count() << 0 << 0;
-
-         SelectableWidget* widget;
-         foreach(widget, iSelected) {
-             dataStream << static_cast<ColourWidget&widget->colour();
-             widget->addExtraData(dataStream);
-         }*/
-     } else {
-         getLeftRightTopBottomSelection(&topRow, &bottomRow, &leftColumn, &rightColumn);
-
-         int rowSpan = bottomRow + 1 - topRow;
-         int columnSpan = rightColumn + 1 - leftColumn;
-
-         dataStream << rowSpan * columnSpan;
-         dataStream << rowSpan
-                    << columnSpan;
-
-         for(int i = topRow; i < bottomRow + 1; i++) {
-             for(int j = leftColumn; j < rightColumn + 1; j++) {
-                 //widgetAt(i, j).writeMimeData(dataStream);
-                 dataStream << i << j;
-             }
-         }
-    }
-
-    return itemData;
-}
-
-void SelectableGroupWidget::handleMimeData(QByteArray itemData, SelectableWidget& dropWidget, bool move, bool wrap) {
-    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-
-    selectOne(dropWidget);
-
-    int row;
-    int column;
-
-    getWidgetPosition(dropWidget, &row, &column);
-
-    int numWidgets;
-
-    dataStream >> numWidgets;
-
-    int rowSpan;
-    int columnSpan;
-
-    dataStream >> rowSpan >> columnSpan;
-/*
-    QList<int> oldRows;
-    QList<int> oldColumns;
-
-    int oldRow;
-    int oldColumn;
-
-    int newRow;
-    int newColumn;
-
-    for(int i = 0; i < numWidgets; i++) {
-        dataStream >> oldRow;
-        dataStream >> oldColumn;
-
-        oldRows.append(oldRow);
-        oldColumns.append(oldColumn);
-    }
-
-
-
-    foreach
-
-        newRow = row + oldRow;
-        if(numRows() != 0 && newRow >= numRows()) {
-            if(wrap) {
-                newRow = newRow - numRows();
-            } else {
-                newRow = INVALID;
-            }
-        }
-
-        newColumn = column + oldColumn;
-        if(numRows() != 0 && newColumn >= numColumns()) {
-            if(wrap) {
-                newColumn = newColumn - numColumns();
-            } else {
-                newColumn = INVALID;
-            }
-        }
-
-        if(newRow != INVALID && newColumn != INVALID) {
-            if(move) {
-                moveItem(oldRow, oldColumn, newRow, newColumn);
-            } else {
-                copyItem(oldRow, oldColumn, newRow, newColumn);
-            }
-        }
-    }
-*/
-
-
-    int oldRow;
-    int oldColumn;
-
-    if(rowSpan != 0 && columnSpan != 0) {
-        int rowEnd = row + rowSpan;
-        int columnEnd = column + columnSpan;
-
-        bool secondLoop = false;
-        int newRowEnd = 1;
-        int newColumnEnd = 1;
-
-        if(wrap) {
-            if(numRows() != 0 && rowEnd >= numRows()) {
-                int oldRowEnd = rowEnd;
-                rowEnd = numRows();
-                secondLoop = true;
-
-                newRowEnd = oldRowEnd - rowEnd;
-            }
-
-            if(numColumns() != 0 && columnEnd >= numColumns()) {
-                int oldColumnEnd = columnEnd;
-                columnEnd = numColumns();
-                secondLoop = true;
-
-                newColumnEnd = oldColumnEnd - columnEnd;
-            }
-        } else {
-            if(numRows() != 0 && rowEnd >= numRows()) {
-                rowEnd = numRows();
-            }
-
-            if(numColumns() != 0 && columnEnd >= numColumns()) {
-                columnEnd = numColumns();
-            }
-        }
-
-        for(int i = row; i < rowEnd; i++) {
-            for(int j = column; j < columnEnd; j++) {
-              //  SelectableWidget& widget = widgetAt(i, j);
-
-              //  widget.handleMimeData(dataStream, move);
-                dataStream >> oldRow >> oldColumn;
-
-                if(move) {
-                    moveItem(oldRow, oldColumn, i, j);
-                } else {
-                    copyItem(oldRow, oldColumn, i, j);
-                }
-
-                if(i == rowEnd - 1 && j == columnEnd - 1) {
-                    SelectableWidget& newWidget = widgetAt(i, j);
-                    selectArea(newWidget);
-                }
-            }
-        }
-
-        if(secondLoop) {
-            for(int i = 0; i < newRowEnd; i++) {
-                for(int j = 0; j < newColumnEnd; j++) {
-                    //  widget.handleMimeData(dataStream, move);
-                      dataStream >> oldRow >> oldColumn;
-
-                      if(move) {
-                          moveItem(oldRow, oldColumn, i, j);
-                      } else {
-                          copyItem(oldRow, oldColumn, i, j);
-                      }
-
-                    if(i == newRowEnd - 1 && j == newColumnEnd - 1) {
-                        SelectableWidget& newWidget = widgetAt(i, j);
-                        selectArea(newWidget);
-                    }
-                }
-            }
-        }
-    } else {
-       /* QColor colour;
-        int row;
-        int column;
-
-        for(int i = 0; i < numCopied; i++) {
-            dataStream >> colour;
-            dataStream >> row >> column;
-
-           // widgetAt(row, column).hand
-        }*/
-    }
-}
-
-void SelectableGroupWidget::handleOldMimeData(QByteArray itemData) {
-    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-
-    int numCopied;
-
-    dataStream >> numCopied;
-
-    int rowSpan;
-    int columnSpan;
-
-    dataStream >> rowSpan >> columnSpan;
-
-    int row;
-    int column;
-
-    for(int i = 0; i < numCopied; i++) {
-        dataStream >> row >> column;
-
-        deleteIfNeeded(row, column);
-    }
-}
 
 SelectableWidget& SelectableGroupWidget::widgetAt(int row, int column) {
 #ifndef NDEBUG
@@ -545,4 +369,150 @@ void SelectableGroupWidget::getWidgetPosition(SelectableWidget &widget, int *row
         throw IllegalArgumentException("SelectableGroupWidget::getWidgetPosition : Column is greater than number of columns");
     }
 #endif
+}
+
+// mime data handlers ------------------------
+
+const QByteArray SelectableGroupWidget::writeMimeData() {
+    QByteArray itemData;
+    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+
+     dataStream << iSelected.count() << 0 << 0;
+     dataStream << iGroupNumber;
+
+     int row;
+     int column;
+
+     SelectableWidget* widget;
+     foreach(widget, iSelected) {
+         getWidgetPosition(*widget, &row, &column);
+         dataStream << row << column;
+     }
+
+    return itemData;
+}
+
+void SelectableGroupWidget::handleMimeData(QByteArray itemData, SelectableWidget& dropWidget, bool move, bool wrap) {
+    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+
+   // selectOne(dropWidget);
+
+    int row;
+    int column;
+
+    getWidgetPosition(dropWidget, &row, &column);
+    toggle(dropWidget);  // unselect the drop widget
+
+    int numWidgets;
+
+    dataStream >> numWidgets;
+
+    int rowSpan;
+    int columnSpan;
+
+    dataStream >> rowSpan >> columnSpan;
+
+    int groupNumber;
+
+    dataStream >> groupNumber;
+
+    QList<int> newRows;
+    QList<int> newColumns;
+
+    int oldRow;
+    int oldColumn;
+
+    int newRow;
+    int newColumn;
+
+    int firstRow;
+    int firstColumn;
+
+    for(int i = 0; i < numWidgets; i++) {
+        dataStream >> oldRow;
+        dataStream >> oldColumn;
+
+        if(i == 0) {
+            firstRow = oldRow;
+            firstColumn = oldColumn;
+        }
+
+        newRow = row + (oldRow - firstRow);
+        if(numRows() != 0 && newRow >= numRows()) {
+            if(wrap) {
+                newRow = newRow - numRows();
+            } else {
+                newRow = INVALID;
+            }
+
+        }
+
+        newColumn = column + (oldColumn - firstColumn);
+        if(numColumns() != 0 && newColumn >= numColumns()) {
+            if(wrap) {
+                newColumn = newColumn - numColumns();
+            } else {
+                newColumn = INVALID;
+            }
+        }
+
+        if(newRow != INVALID && newColumn != INVALID) {
+            newRows.append(newRow);
+            newColumns.append(newColumn);
+
+            if(move) {
+                moveItem(groupNumber, oldRow, oldColumn, newRow, newColumn);
+            } else {
+                copyItem(groupNumber, oldRow, oldColumn, newRow, newColumn);
+            }
+        }
+    }
+
+    for(int i = 0; i < newRows.count(); i++) {
+        toggle(widgetAt(newRows.at(i), newColumns.at(i)));
+    }
+}
+
+void SelectableGroupWidget::handleOldMimeData(QByteArray itemData) {
+    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
+
+    int numCopied;
+
+    dataStream >> numCopied;
+
+    int rowSpan;
+    int columnSpan;
+
+    dataStream >> rowSpan >> columnSpan;
+
+    int row;
+    int column;
+
+    for(int i = 0; i < numCopied; i++) {
+        dataStream >> row >> column;
+
+        deleteIfNeeded(row, column);
+    }
+}
+
+// events ---------------------------------
+
+void SelectableGroupWidget::keyPressEvent(QKeyEvent *event) {
+    Qt::Key key = (Qt::Key)event->key();
+
+    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+        if(selectedCount() > 0 && key != Qt::Key_Shift) {
+            if(validKeyPress(key)) {
+                selectDirection(key);
+                return;
+            }
+        }
+    }
+
+    /*if(isGroupSelected() || isSingleSelected()) {
+        if(((key == Qt::Key_V) || (key == Qt::Key_C)) || (key == Qt::Key_X)) &&
+            (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+            QCoreApplication::sendEvent(&widgetAt(iFirstSelectedRow, iFirstSelectedColumn), event);
+        }
+    }*/
 }

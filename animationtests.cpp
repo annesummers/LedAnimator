@@ -194,7 +194,7 @@ void AnimationTests::setupNewPopulated_data() {
     }
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
     }
 
     QTest::newRow("partial") << numRows
@@ -221,7 +221,7 @@ void AnimationTests::setupNewPopulated_data() {
     }
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
     }
 
     QTest::newRow("all") << numRows

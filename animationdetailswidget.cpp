@@ -17,36 +17,8 @@
 using namespace AnimatorUi;
 using namespace Exception;
 
-LedDetails::LedDetails(AnimationDetailsWidget& parent, Led &led, QLabel &label, QPushButton &closeButton) :
-    QObject(&parent),
-    iLed(led),
-    iLabel(label),
-    iCloseButton(closeButton),
-    iDetailsWidget(parent) {
-
-    /*iSignalMapper->setMapping(detailsCloseWidget, count);
-    connect(detailsCloseWidget, SIGNAL(clicked()), iSignalMapper, SLOT(map()));
-    connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(closeClicked(int)));
-*/
-    connect(&closeButton, SIGNAL(clicked()), this, SLOT(closeClicked()));
-
-    connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
-
-    ledUpdated();
-}
-
-void LedDetails::closeClicked() {
-    qDebug("closeClicked %d", iLed.number());
-
-    iDetailsWidget.closeClicked(*this);
-}
-
-void LedDetails::ledUpdated() {
-    iLabel.setText(QString("%1").arg(iLed.number()));
-}
-
 AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation) :
-    ColourGroupGroupWidget(parent),
+    SelectableGroupGroupWidget(parent),
     iAnimation(animation),
     iFramesListX(0),
     iFramesListWidth(0),
@@ -123,7 +95,46 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     connect(iFrameSlider, SIGNAL(valueChanged(int)), &animation, SLOT(setCurrentFrame(int)));
 }
 
-// slots -----------
+void AnimationDetailsWidget::closeClicked(LedDetails &details) {
+    int key = iShownLeds.key(&details);
+
+    int numRows = iGridLayout->rowCount();
+    int numColumns = iGridLayout->columnCount();
+
+    qDebug("rows %d, columns %d", numRows, numColumns);
+
+    for(int i = 0; i < 3; i++) {
+        QWidget* widget =  iGridLayout->itemAtPosition(key, i)->widget();
+        widget->close();
+        iGridLayout->removeWidget(widget);
+    }
+
+    iShownLeds.remove(key);
+
+    update();
+}
+
+bool AnimationDetailsWidget::handleDragDropEvent(QDropEvent* event) {
+    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
+        if (event->source() != 0 &&
+            (event->possibleActions() & Qt::LinkAction) == Qt::LinkAction) {
+            event->setDropAction(Qt::LinkAction);
+            event->accept();
+
+            return true;
+         } else {
+            event->ignore();
+
+            return false;
+        }
+     } else {
+         event->ignore();
+
+         return false;
+     }
+}
+
+// slots ---------------------------
 
 void AnimationDetailsWidget::currentFrameChanged(int currentFrame) {
     iFrameSlider->setValue(currentFrame);
@@ -137,6 +148,8 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
 
 // TODO this is bollocks
 void AnimationDetailsWidget::frameListPosition(int x, int width) {
+    Q_UNUSED(x);
+    Q_UNUSED(width);
   //  iFramesListX = x;
    // iFramesListWidth = width;
     //int frameIncrements = iFramesListWidth/(iAnimation.numFrames());
@@ -174,41 +187,6 @@ void AnimationDetailsWidget::addLed(int row, int column) {
 
         qDebug("add new led, %d, %d", row, column);
     }
-}
-
-void AnimationDetailsWidget::closeClicked(LedDetails &details) {
-    int key = iShownLeds.key(&details);
-
-    int numRows = iGridLayout->rowCount();
-    int numColumns = iGridLayout->columnCount();
-
-    qDebug("rows %d, columns %d", numRows, numColumns);
-
-    for(int i = 0; i < 3; i++) {
-        QWidget* widget =  iGridLayout->itemAtPosition(key, i)->widget();
-        widget->close();
-        iGridLayout->removeWidget(widget);
-    }
-
-    iShownLeds.remove(key);
-
-    update();
-}
-
-bool AnimationDetailsWidget::handleDragDropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasFormat(LED_MIME_TYPE)) {
-        if (event->source() != 0 &&
-            (event->possibleActions() & Qt::LinkAction) == Qt::LinkAction) {
-            event->setDropAction(Qt::LinkAction);
-            event->accept();
-
-            return true;
-         }
-     } else {
-         event->ignore();
-
-         return false;
-     }
 }
 
 // events -------------------------------------
@@ -249,11 +227,17 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
         int column;
 
         int numLeds;
+
         dataStream >> numLeds;
 
         int numRows;
         int numColumns;
+
         dataStream >> numRows >> numColumns;
+
+        int groupNumber;
+
+        dataStream >> groupNumber;
 
         for(int i = 0; i < numRows * numColumns; i++) {
            dataStream >> row >> column;
@@ -262,6 +246,31 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
 
         update();
     }
+}
+
+// LedDetails ------------------------------
+
+LedDetails::LedDetails(AnimationDetailsWidget& parent, Led &led, QLabel &label, QPushButton &closeButton) :
+    QObject(&parent),
+    iLed(led),
+    iLabel(label),
+    iCloseButton(closeButton),
+    iDetailsWidget(parent) {
+
+    connect(&closeButton, SIGNAL(clicked()), this, SLOT(closeClicked()));
+    connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
+
+    ledUpdated();
+}
+
+void LedDetails::closeClicked() {
+    qDebug("closeClicked %d", iLed.number());
+
+    iDetailsWidget.closeClicked(*this);
+}
+
+void LedDetails::ledUpdated() {
+    iLabel.setText(QString("%1").arg(iLed.number()));
 }
 
 

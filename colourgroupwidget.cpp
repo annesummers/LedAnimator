@@ -10,7 +10,7 @@
 #include "colourwidget.h"
 #include "selectable.h"
 #include "fadecalculator.h"
-#include "colourgroupgroupwidget.h"
+#include "selectablegroupgroupwidget.h"
 
 #include "constants.h"
 #include "exceptions.h"
@@ -21,7 +21,7 @@ using namespace AnimatorUi;
 ColourGroupWidget::ColourGroupWidget(QWidget *parent,
                                      int maxRow,
                                      int maxColumn,
-                                     ColourGroupGroupWidget *groupGroup) :
+                                     SelectableGroupGroupWidget *groupGroup) :
     SelectableGroupWidget(parent, maxRow, maxColumn, groupGroup),
     iFadeCalculator(NULL),
     iFadeParameters(NULL) {

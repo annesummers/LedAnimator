@@ -8,7 +8,6 @@
 
 #include "led.h"
 #include "ledgridwidget.h"
-#include "leddetailswidgets.h"
 #include "mainwindow.h"
 #include "animation.h"
 
@@ -25,25 +24,32 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
     connect(&led, SIGNAL(ledUpdated()), this, SLOT(updated()));
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
 
-    iCutAction = new QAction(tr("&Cut"), this);
+   /* iCutAction = new QAction(tr("&Cut"), this);
     iCutAction->setStatusTip(tr("Cut this led"));
 
-    connect(iCutAction, SIGNAL(triggered()), this, SLOT(cut()));
+    connect(iCutAction, SIGNAL(triggered()), this, SLOT(cut()));*/
 
     iRenumberAction = new QAction(tr("&Renumber..."), this);
     iRenumberAction->setStatusTip(tr("Renumber this led"));
 
     connect(iRenumberAction, SIGNAL(triggered()), this, SLOT(renumber()));
+
+    iSetGroupAction = new QAction(tr("&Set group..."), this);
+    iSetGroupAction->setStatusTip(tr("Set this led's group"));
+
+    connect(iSetGroupAction, SIGNAL(triggered()), this, SLOT(setGroup()));
 }
 
 // from SelectableWidget -----------------------
 
 void LedWidget::addCutAction(QMenu* menu) {
-    menu->addAction(iCutAction);
+    Q_UNUSED(menu);
+    //menu->addAction(iCutAction);
 }
 
 void LedWidget::addExtraActions(QMenu* menu) {
     menu->addAction(iRenumberAction);
+    menu->addAction(iSetGroupAction);
 }
 
 void LedWidget::cut() {
@@ -58,6 +64,15 @@ void LedWidget::renumber() {
                                  tr("New number:"), led().number(), 1, iAnimation.numLeds() + 1, 1, &ok);
     if (ok) {
         iAnimation.renumberLed(led(), i);
+    }
+}
+
+void LedWidget::setGroup() {
+    bool ok;
+    int i = QInputDialog::getInt(this, tr("Set led group"),
+                                 tr("Group number:"), led().groupNumber(), 1, iAnimation.numGroups() + 1, 1, &ok);
+    if (ok) {
+        led().setGroupNumber(i);
     }
 }
 

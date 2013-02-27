@@ -16,7 +16,6 @@ SelectableWidget::SelectableWidget(QWidget *parent, SelectableGroupWidget &selec
 
     setAcceptDrops(true);
 
-
     iPasteWrapAction = new QAction(tr("&Paste wrap"), this);
     iPasteWrapAction->setStatusTip(tr("Paste the copied items with wrapping"));
 
@@ -26,6 +25,10 @@ SelectableWidget::SelectableWidget(QWidget *parent, SelectableGroupWidget &selec
     iPasteTruncateAction->setStatusTip(tr("Paste the copied items without wrapping"));
 
     connect(iPasteTruncateAction, SIGNAL(triggered()), this, SLOT(pasteTruncate()));
+}
+
+SelectableWidget::~SelectableWidget() {
+   // qDebug("delete widget");
 }
 
 QMimeData* SelectableWidget::mimeData() {
@@ -39,40 +42,18 @@ void SelectableWidget::paste(bool wrap) {
     const QClipboard *clipboard = QApplication::clipboard();
 
     if(clipboard->mimeData()->hasFormat(mimeType())) {
-        iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, false, wrap);
+        bool move = shouldMove();
+        iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, move, wrap);
+
+        if(move) {
+            QApplication::clipboard()->setMimeData(mimeData());
+        }
     }
 }
 
 Qt::DropAction SelectableWidget::handleDragDropEvent(QDropEvent* event) {
     Qt::DropAction action = Qt::IgnoreAction;
     if (event->mimeData()->hasFormat(mimeType())) {
-       /* Qt::DropActions actions = dropActions();
-        Qt::DropActions possibleActions = event->possibleActions();
-
-
-        if(actions & Qt::CopyAction == Qt::CopyAction){
-            qDebug("can copy");
-        }
-
-        if(actions & Qt::MoveAction == Qt::MoveAction){
-            qDebug("can move");
-        }
-
-        if(actions & Qt::LinkAction == Qt::LinkAction){
-            qDebug("can link");
-        }
-
-        if(possibleActions & Qt::CopyAction == Qt::CopyAction){
-            qDebug("drag event can copy");
-        }
-
-        if(possibleActions & Qt::MoveAction == Qt::MoveAction){
-            qDebug("drag event can move");
-        }
-
-        if(possibleActions & Qt::LinkAction == Qt::LinkAction){
-            qDebug("drag event can link");
-        }*/
         if (event->source() !=  NULL &&
             event->source() != this) {
             Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
@@ -87,8 +68,8 @@ Qt::DropAction SelectableWidget::handleDragDropEvent(QDropEvent* event) {
 
             event->accept();
         } else {
-             event->ignore();
-         }
+            event->ignore();
+        }
      } else {
          event->ignore();
      }

@@ -22,17 +22,19 @@ public:
     explicit LedWidget(QWidget* parent, Animation &animation, ColourGroupWidget& ledGroup, Led& led);
 
     void hideLed();
+
     inline Led &led() const { return static_cast<Led&>(iItem); }
+
+    void setColour(QColor colour) {led().setCurrentColour(colour); }
+    const QColor colour() const {return led().currentColour(); }
 
 private slots:
     void cut();
     void renumber();
+    void setGroup();
 
 protected:
     void paintEvent(QPaintEvent *event);
-
-    void setColour(QColor colour) {led().setCurrentColour(colour); }
-    const QColor colour() const {return led().currentColour(); }
 
     inline QString mimeType() const { return LED_MIME_TYPE; }
 
@@ -44,6 +46,8 @@ protected:
     void addCutAction(QMenu* menu);
     void addExtraActions(QMenu* menu);
 
+    inline bool shouldMove() { return gridWidget().shouldMoveLeds(); }
+
 private:
     LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }
 
@@ -51,6 +55,7 @@ private:
 
     QAction* iCutAction;
     QAction* iRenumberAction;
+    QAction* iSetGroupAction;
 };
 }
 

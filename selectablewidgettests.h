@@ -19,14 +19,11 @@ public:
         setObjectName("SelectableTestWidget");
     }
 
-    virtual void handleMimeData(QDataStream& dataStream, bool move) {}
-    virtual void writeMimeData(QDataStream& dataStream) {}
-
     inline QString mimeType() const { return QString("test"); }
-    Qt::DropActions dropActions() const { return Qt::IgnoreAction; }
-    Qt::DropActions dragActions() const { return Qt::IgnoreAction; }
-    Qt::DropAction  defaultDropAction() const { return Qt::IgnoreAction; }
-    Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
+    inline Qt::DropActions dropActions() const { return Qt::IgnoreAction; }
+    inline Qt::DropActions dragActions() const { return Qt::IgnoreAction; }
+    inline Qt::DropAction  defaultDropAction() const { return Qt::IgnoreAction; }
+    inline Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
     inline QMimeData* mimeData()  { return SelectableWidget::mimeData(); }
 };
@@ -55,11 +52,15 @@ class SelectableGroupTestWidget : public SelectableGroupWidget {
     Q_OBJECT
 
 public:
-    SelectableGroupTestWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget* groupGroupWidget = NULL);
+    SelectableGroupTestWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget* groupGroupWidget = NULL);
 
     SelectableWidget& widgetAt(int row, int column);
     virtual void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+
     bool validKeyPress(Qt::Key key);
+
+    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
 
     QVector<WidgetVector*>*  iWidgetArray;
 

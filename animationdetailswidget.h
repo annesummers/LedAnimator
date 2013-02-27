@@ -9,7 +9,7 @@
 #include <QPushButton>
 #include <QHash>
 
-#include "colourgroupgroupwidget.h"
+#include "selectablegroupgroupwidget.h"
 
 namespace AnimatorModel {
 class Led;
@@ -22,7 +22,7 @@ namespace AnimatorUi {
 
 class LedDetails;
 
-class AnimationDetailsWidget : public ColourGroupGroupWidget {
+class AnimationDetailsWidget : public SelectableGroupGroupWidget {
     Q_OBJECT
 
 public:
@@ -54,7 +54,6 @@ private:
 
     QSlider*                iFrameSlider;
     QGridLayout*            iGridLayout;
-  //  QList<QLabel*>          iLedNumberLabels;
 
     QSignalMapper*          iSignalMapper;
     QHash<int, LedDetails*> iShownLeds;

@@ -50,11 +50,14 @@ class ColourGroupTestWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget* groupGroupWidget);
+    ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget* groupGroupWidget);
 
     SelectableWidget& widgetAt(int row, int column);
     void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
     bool validKeyPress(Qt::Key key);
+
+    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
 
     QVector<WidgetVector*>*  iWidgetArray;
 

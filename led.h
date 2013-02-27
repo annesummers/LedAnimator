@@ -36,6 +36,9 @@ public:
     inline int number() { return iNumber; }
     inline void setNumber(int newNumber) { iNumber = newNumber; emit ledUpdated(); }
 
+    inline int groupNumber() { return iGroupNumber; }
+    void setGroupNumber(int groupNumber);
+
     inline void setHidden(bool isHidden) { iHidden = isHidden; }
     inline bool isHidden() { return iHidden; }
 

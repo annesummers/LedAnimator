@@ -34,17 +34,26 @@ public:
     explicit LedSocketInteractionTests(QObject *parent = 0);
     
 private slots:
-    void copyPasteOneLedToSocket_data();
-    void copyPasteOneLedToSocket();
+    void copyPasteOneLedToOneSocket_data();
+    void copyPasteOneLedToOneSocket();
+
+    void copyPasteOneLedToOneLed_data();
+    void copyPasteOneLedToOneLed();
+
+    void copyPasteOneLedToManySockets_data();
+    void copyPasteOneLedToManySockets();
+
+    void copyPasteOneLedToManyLeds_data();
+    void copyPasteOneLedToManyLeds();
 
     void copyPasteManyLedToSocket_data();
     void copyPasteManyLedToSocket();
 
-    void cutPasteOneLedToSocket_data();
-    void cutPasteOneLedToSocket();
+    void copyPasteManyLedToLed_data();
+    void copyPasteManyLedToLed();
 
-    void cutPasteManyLedToSocket_data();
-    void cutPasteManyLedToSocket();
+    void copyPasteManyLedToMixed_data();
+    void copyPasteManyLedToMixed();
 
 private:
     void setupAnimation(Animation& animation, QList<QPoint> gridPositions);

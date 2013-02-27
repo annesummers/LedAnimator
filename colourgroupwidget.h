@@ -22,7 +22,7 @@ using namespace AnimatorModel;
 namespace AnimatorUi {
 
 class ColourWidget;
-class ColourGroupGroupWidget;
+class SelectableGroupGroupWidget;
 
 struct FadeParameters {
     int nextColumn;
@@ -56,7 +56,7 @@ public:
     explicit ColourGroupWidget(QWidget *parent,
                                int numRows,
                                int numColumns,
-                               ColourGroupGroupWidget *groupGroupWidget = NULL);
+                               SelectableGroupGroupWidget *groupGroupWidget = NULL);
 
 
     void fade();

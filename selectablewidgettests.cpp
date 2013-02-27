@@ -1,13 +1,13 @@
 #include "selectablewidgettests.h"
 
-#include "colourgroupgroupwidget.h"
+#include "selectablegroupgroupwidget.h"
 
 #include "constants.h"
 #include "testconstants.h"
 
 using namespace AnimatorTest;
 
-SelectableGroupTestWidget::SelectableGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, ColourGroupGroupWidget *groupGroupWidget) :
+SelectableGroupTestWidget::SelectableGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, SelectableGroupGroupWidget *groupGroupWidget) :
     SelectableGroupWidget(parent, maxRow, maxColumn, groupGroupWidget) {
 
     // TODO yuck this is horrilbe
@@ -186,7 +186,7 @@ void SelectableWidgetTests::selectOneSelectExternal() {
     QFETCH(int, maxColumn);
     QFETCH(QPoint, selectedPoint);
 
-    ColourGroupGroupWidget* groupGroupWidget = new ColourGroupGroupWidget(NULL);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
 
     SelectableGroupTestWidget* groupWidget1 = new SelectableGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
     SelectableGroupTestWidget* groupWidget2 = new SelectableGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);

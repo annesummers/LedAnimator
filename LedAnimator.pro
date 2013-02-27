@@ -71,14 +71,15 @@ HEADERS += \
     fadecalculator.h \
     gammacorrect.h \
     colourgroupwidget.h \
-    colourgroupgroupwidget.h \
     colourwidget.h \
     newanimationdialog.h \
     socketwidget.h \
     selectablegroupwidget.h \
     selectablewidget.h \
     griditem.h \
-    animationdetailswidget.h
+    animationdetailswidget.h \
+    selectablegroupgroupwidget.h \
+    grouplistwidget.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -97,19 +98,17 @@ SOURCES += \
     fadecalculator.cpp \
     colourgroupwidget.cpp \
     colourwidget.cpp \
-    colourgroupgroupwidget.cpp \
     newanimationdialog.cpp \
     socketwidget.cpp \
     selectablegroupwidget.cpp \
     selectablewidget.cpp \
     griditem.cpp \
-    animationdetailswidget.cpp
+    animationdetailswidget.cpp \
+    selectablegroupgroupwidget.cpp \
+    grouplistwidget.cpp
 
 FORMS += \
-    newanimation.ui
-# \
- #   mainwindow.ui \
-  #  animationdetailswidget.ui \
-   # playinfowidget.ui
+    newanimation.ui \
+    gridlistwidget.ui
 
 

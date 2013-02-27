@@ -44,7 +44,7 @@ void FrameTests::initTestCase() {
     int numLeds = gridPositions.count();
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
     }
 
     iAnimation->setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);

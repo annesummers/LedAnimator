@@ -6,7 +6,6 @@
 
 #include "mainwindow.h"
 
-//#include "ui_mainwindow.h"
 #include "led.h"
 #include "ledwidget.h"
 #include "ledgridwidget.h"
@@ -14,6 +13,7 @@
 #include "engine.h"
 #include "animation.h"
 #include "animationdetailswidget.h"
+#include "grouplistwidget.h"
 
 #include "constants.h"
 
@@ -35,27 +35,27 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
     LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation());
-    ledGridWidget->setObjectName(QString::fromUtf8("iLedGridWidget"));
+    ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
     gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
 
-    PlayInfoWidget* iPlayInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
-    iPlayInfoWidget->setObjectName(QString::fromUtf8("iPlayInfoWidget"));
+    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
+    playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
 
-    gridLayout->addWidget(iPlayInfoWidget, 0, 1, 1, 1);
+    gridLayout->addWidget(playInfoWidget, 0, 1, 1, 1);
 
     QWidget* widget_4 = new QWidget(centralWidget);
     widget_4->setObjectName(QString::fromUtf8("widget_4"));
 
-    gridLayout->addWidget(widget_4, 0, 2, 1, 1);
+    gridLayout->addWidget(widget_4, 0, 2, 2, 1);
 
-    QWidget* widget_3 = new QWidget(centralWidget);
-    widget_3->setObjectName(QString::fromUtf8("widget_3"));
+    GroupListWidget* groupListWidget = new GroupListWidget(centralWidget, engine.animation());
+    groupListWidget->setObjectName(QString::fromUtf8("GroupListWidget"));
 
-    gridLayout->addWidget(widget_3, 1, 1, 1, 2);
+    gridLayout->addWidget(groupListWidget, 1, 1, 1, 1);
 
     AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
-    iAnimationDetailsWidget->setObjectName(QString::fromUtf8("iAnimationDetailsWidget"));
+    iAnimationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
 
     gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 3);
 
@@ -81,6 +81,15 @@ MainWindow::MainWindow(Engine& engine) :
 
     menuBar()->addMenu(fileMenu);
 
+    /*QMenu* editMenu = new QMenu("&Edit", this);
+    QAction* cutAction = editMenu->addAction("&Cut");
+    QAction* copyAction = editMenu->addAction("C&opy");
+    QAction* pasteAction = editMenu->addAction("&Paste");
+
+    // TODO make edit menu work
+
+    menuBar()->addMenu(editMenu);*/
+
     QMenu* animationMenu = new QMenu("&Animation", this);
     QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");
     QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
@@ -96,7 +105,7 @@ MainWindow::MainWindow(Engine& engine) :
     QAction* toggleLedNumbersAction = viewMenu->addAction("&Toggle led numbers");
 
     connect(toggleLedNumbersAction, SIGNAL(triggered()), ledGridWidget, SLOT(toggleLedNumbers()));
-
+// TODO attach this up
     menuBar()->addMenu(viewMenu);
 }
 
@@ -126,7 +135,6 @@ void MainWindow::readSettings() {
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (iEngine.askSaveAnimation()) {
-        //writeSettings(); // this is done in the destructor now
         event->accept();
     } else {
         event->ignore();

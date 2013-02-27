@@ -3,7 +3,7 @@
 #include "animation.h"
 #include "led.h"
 #include "framewidget.h"
-#include "colourgroupgroupwidget.h"
+#include "selectablegroupgroupwidget.h"
 
 #include "exceptions.h"
 
@@ -15,7 +15,7 @@ using namespace AnimatorUi;
 FrameListWidget::FrameListWidget(QWidget *parent,
                                  const Animation& animation,
                                  const Led &led,
-                                 ColourGroupGroupWidget &framesListGroup) :
+                                 SelectableGroupGroupWidget &framesListGroup) :
     ColourGroupWidget(parent, 0, animation.numFrames(), &framesListGroup),
     iLed(led) {
 
@@ -80,11 +80,19 @@ bool FrameListWidget::validKeyPress(Qt::Key key) {
            (key & Qt::Key_Left) == Qt::Key_Left;
 }
 
-void FrameListWidget::copyItem(int fromRow, int fromColumn, int toRow, int toColumn) {
-    FrameWidget& fromWidget = static_cast<FrameWidget&>(widgetAt(fromRow, fromColumn));
+void FrameListWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+    FrameWidget* fromWidget;
+
+    if(fromGroup == iGroupNumber) {
+        fromWidget = static_cast<FrameWidget*>(&widgetAt(fromRow, fromColumn));
+    } else {
+        FrameListWidget& group = static_cast<FrameListWidget&>(iGroupGroup->group(fromGroup));
+        fromWidget = static_cast<FrameWidget*>(&group.widgetAt(fromRow, fromColumn));
+    }
+
     FrameWidget& toWidget = static_cast<FrameWidget&>(widgetAt(toRow, toColumn));
 
-    toWidget.frame().setColour(fromWidget.frame().colour());
+    toWidget.frame().setColour(fromWidget->frame().colour());
 }
 
 // events ------------------------------------
@@ -105,10 +113,4 @@ void FrameListWidget::resizeEvent(QResizeEvent *) {
     }
 
     emit resized(x() + 10, width() + 7);
-}
-
-void FrameListWidget::paintEvent(QPaintEvent *){
-    //QPainter painter(this);
-    //painter.setBrush(Qt::black);
-    //painter.drawRect(0, 0, width(), height());
 }

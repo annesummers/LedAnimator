@@ -16,10 +16,7 @@ using namespace AnimatorModel;
 
 typedef QList<QPoint> PointList;
 Q_DECLARE_METATYPE ( PointList )
-/*
-typedef QList<int> IntList;
-Q_DECLARE_METATYPE ( IntList )
-*/
+
 namespace AnimatorTest {
 
 const int MAX_TEST_WIDGETS = 4;

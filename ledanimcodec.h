@@ -64,7 +64,7 @@ protected:
     virtual const QString     asString() const = 0;
 
     virtual void writePositionData() { }
-    virtual QList<int> readPositionData(int numRows, int numColumns, int numLeds) { }
+    virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); }
 
     virtual void writeColourData() = 0;
     virtual void readColourData() = 0;
@@ -119,7 +119,7 @@ protected:
     const AnimChar readControlCharacter() const;
 
     void writePositionData();
-    QList<int> readPositionData(int numRows, int numColumns, int numLeds);
+    QList<int> readPositionData(int *numRows, int *numColumns, int numLeds);
 
     void writeColourData();
     void readColourData();

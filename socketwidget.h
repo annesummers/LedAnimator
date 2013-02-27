@@ -15,12 +15,7 @@ class SocketWidget : public SelectableWidget {
 
 public:
     SocketWidget(QWidget* parent, LedGridWidget &group, GridItem &item);
-
- //   void handleMimeData(QDataStream& dataStream, bool move);
- //   void writeMimeData(QDataStream& dataStream);
-
-    void setCutLed(Led* led) { iCutLed = led; }
-    const Led& cutLed() { return *iCutLed; }
+    virtual ~SocketWidget();
 
 private slots:
     void addLed();
@@ -29,6 +24,7 @@ private slots:
 protected:
    void contextMenuEvent(QContextMenuEvent *event);
    void paintEvent(QPaintEvent *);
+   void keyPressEvent(QKeyEvent *event);
 
    inline QString mimeType() const { return LED_MIME_TYPE; }
 
@@ -36,6 +32,8 @@ protected:
    inline Qt::DropActions dragActions() const { return Qt::IgnoreAction; }
    inline Qt::DropAction  defaultDropAction() const { return Qt::MoveAction; }
    inline Qt::DropAction  controlDropAction() const { return Qt::CopyAction; }
+
+   inline bool shouldMove() { return gridWidget().shouldMoveLeds(); }
 
 private:
    LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }

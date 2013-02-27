@@ -8,7 +8,6 @@
 #include "ledtests.h"
 #include "enginetests.h"
 #include "ledanimcodectests.h"
-#include "leddetailswidgetstests.h"
 #include "frametests.h"
 #include "selectablewidgettests.h"
 #include "colourwidgettests.h"

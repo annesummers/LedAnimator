@@ -5,7 +5,7 @@
 
 namespace AnimatorUi {
 
-class ColourGroupGroupWidget;
+class SelectableGroupGroupWidget;
 class SelectableWidget;
 
 class SelectableGroupWidget : public QWidget {
@@ -15,12 +15,13 @@ public:
     explicit SelectableGroupWidget(QWidget *parent,
                                    int numRows,
                                    int numColumns,
-                                   ColourGroupGroupWidget* groupGroupWidget = NULL);
+                                   SelectableGroupGroupWidget* groupGroupWidget = NULL);
 
     void selectOne(SelectableWidget &selectable);
-    void select(SelectableWidget &selectable);
+
     void toggleOne(SelectableWidget &widget);
     void toggle(SelectableWidget &widget);
+
     void selectArea(SelectableWidget& widget);
 
     bool isGroupSelected();
@@ -48,10 +49,10 @@ protected:
 
     virtual bool validKeyPress(Qt::Key key) = 0;
 
-    virtual void deleteIfNeeded(int row, int column) { Q_UNUSED(row); Q_UNUSED(column);}
+    virtual void deleteIfNeeded(int row, int column) { Q_UNUSED(row); Q_UNUSED(column); }
 
-    virtual void moveItem(int fromRow, int fromColumn, int toRow, int toColumn) = 0;
-    virtual void copyItem(int fromRow, int fromColumn, int toRow, int toColumn) = 0;
+    virtual void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
+    virtual void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
 
     inline int selectedCount() { return iSelected.count(); }
 
@@ -67,6 +68,9 @@ protected:
 
     void getLeftRightTopBottomSelection(int *const topRow, int *const bottomRow, int *const leftColumn, int *const rightColumn) const ;
 
+    SelectableGroupGroupWidget* iGroupGroup;
+    int iGroupNumber;
+
 private:
     void setSingleSelected(SelectableWidget &widget);
 
@@ -74,6 +78,8 @@ private:
     void doSelect(SelectableWidget &widget, bool selectedItems);
 
     void clearGroupSelection();
+
+    void sortSelected();
 
     QList<SelectableWidget*> iSelected;
 
@@ -85,7 +91,10 @@ private:
     int iFirstSelectedColumn;
     int iLastSelectedColumn;
 
-    ColourGroupGroupWidget* iGroupGroup;
+    int iTopLeftSelectedRow;
+    int iTopLeftSelectedColumn;
+    int iBottomRightSelectedRow;
+    int iBottomRightSelectedColumn;
 };
 }
 #endif // SELECTABLEWIDGETGROUP_H

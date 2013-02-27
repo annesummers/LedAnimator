@@ -18,12 +18,10 @@ class SelectableWidget : public QWidget {
 
 public:
     explicit SelectableWidget(QWidget *parent, SelectableGroupWidget& selectableGroup, Selectable &item);
-    
+    virtual ~SelectableWidget();
+
     inline void select(bool selected) { iItem.select(selected); }
     inline bool isSelected() { return iItem.isSelected(); }
-
-  //  virtual void handleMimeData(QDataStream& dataStream, bool move) = 0;
-   // virtual void writeMimeData(QDataStream& dataStream) = 0;
 
 private slots:
     inline void selected() { update(); }
@@ -49,6 +47,8 @@ protected:
     virtual Qt::DropActions dragActions() const = 0;
     virtual Qt::DropAction  defaultDropAction() const = 0;
     virtual Qt::DropAction  controlDropAction() const = 0;
+
+    virtual bool shouldMove() { return false; }
 
     QMimeData* mimeData();
 

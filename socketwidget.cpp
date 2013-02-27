@@ -18,6 +18,10 @@ SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item
     connect(&iItem, SIGNAL(selected()), this, SLOT(selected()));
 }
 
+SocketWidget::~SocketWidget() {
+   // qDebug("delete widget at %d, %d", gridItem().row(), gridItem().column());
+}
+
 // slots --------------------------------------
 
 void SocketWidget::addLed() {
@@ -28,30 +32,6 @@ void SocketWidget::selected() {
     update();
 }
 
-// from SelectableWidget ---------------------
-
-/*void SocketWidget::handleMimeData(QDataStream& dataStream, bool move) {
-    QColor colour;
-
-    dataStream >> colour;
-
-    int row;
-    int column;
-
-    dataStream >> row >> column;
-
-    if(move) {
-        gridWidget().moveLed(row, column, gridItem().row(), gridItem().column());
-    } else {
-        gridWidget().copyOrMoveLed(row, column, gridItem().row(), gridItem().column());
-    }
-}
-
-void SocketWidget::writeMimeData(QDataStream& dataStream) {
-    dataStream << QColor();
-    dataStream << gridItem().row() << gridItem().column();
-}
-*/
 // events -----------------------------------
 
 void SocketWidget::contextMenuEvent(QContextMenuEvent *event) {
@@ -100,3 +80,10 @@ void SocketWidget::paintEvent(QPaintEvent *) {
     }
 }
 
+void SocketWidget::keyPressEvent(QKeyEvent *event) {
+    Qt::Key key = (Qt::Key)event->key();
+
+    if (key == Qt::Key_V && event->modifiers() == Qt::ControlModifier) {
+        paste(false);
+    }
+}

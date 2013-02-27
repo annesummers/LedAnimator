@@ -12,7 +12,6 @@
 #include <QPoint>
 #include <QRect>
 
-//#include "ledwidget.h"
 #include "colourgroupwidget.h"
 
 namespace AnimatorModel {
@@ -32,15 +31,15 @@ public:
 
     inline bool ledNumbersShown() const { return iLedNumbersShown; }
 
-   // void copyOrMoveLed(int fromRow, int fromColumn, int toRow, int toColumn);
-   // void moveLed(int fromRow, int fromColumn, int toRow, int toColumn);
     void deleteLed(int row, int column);
 
     void addSelectedLeds();
     void hideSelectedLeds();
 
+    bool shouldMoveLeds();
+
 public slots:
-    Led& addLed(int row, int column, Led *led = NULL);
+    void addLed(int row, int column, Led *led = NULL);
 
 private slots:
     void addSocket(int row, int column);
@@ -60,8 +59,8 @@ protected:
     bool validKeyPress(Qt::Key key);
 
 private:
-    void moveItem(int fromRow, int fromColumn, int toRow, int toColumn);
-    void copyItem(int fromRow, int fromColumn, int toRow, int toColumn);
+    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
 
     void copyLed(Led &led, int toRow, int toColumn);
     void moveLed(Led& led, int toRow, int toColumn);
@@ -87,7 +86,7 @@ private:
 
     bool            iLedNumbersShown;
 
-    Led*            iCopyLed;
+    bool            iMoveLeds;
 };
 }
 

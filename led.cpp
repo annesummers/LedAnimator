@@ -130,3 +130,10 @@ void Led::move(int newRow, int newColumn) {
 void Led::paste(Led& copyLed) {
     setCurrentColour(copyLed.currentColour());
 }
+
+void Led::setGroupNumber(int groupNumber) {
+    iGroupNumber = groupNumber;
+
+    if(iAnimation.numGroups() >= groupNumber) {
+    }
+}

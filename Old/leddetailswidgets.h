@@ -49,7 +49,7 @@ private:
 
 };
 
-class LedDetailsListWidget : public ColourGroupGroupWidget {
+class LedDetailsListWidget : public SelectableGroupGroupWidget {
     Q_OBJECT
 
 public:
@@ -79,7 +79,7 @@ private:
 
     QSignalMapper* iSignalMapper;
 
-    ColourGroupGroupWidget*         iFramesListGroup;
+    SelectableGroupGroupWidget*         iFramesListGroup;
 };
 
 /*class LedDetailsWidget : public QWidget {

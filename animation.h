@@ -14,6 +14,7 @@
 #include <QHash>
 
 #include "engine.h"
+#include "constants.h"
 
 namespace AnimatorModel {
 
@@ -28,21 +29,21 @@ public:
     void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency, int numLeds, QList<int> ledPositions);
     void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency);
 
-    void play();
-    void stop();
-
-    void addNewLed(int row, int column);
+    void addNewLed(int row, int column, int ledNum = INVALID);
     void moveLed(Led& led, int toRow, int toColumm);
     void copyLed(Led& led, int toRow, int toColumn);
     void deleteLed(Led& led);
 
     void renumberLed(Led& led, int newNumber);
 
+    void play();
+    void stop();
+
     Led* ledAt(int row, int column) const;
     Led& ledAt(int number) const;
 
     void getLedPosition(int number, int* const row, int* const column) const;
-    const int getLedNumber(int row, int column) const;
+   // const int getLedNumber(int row, int column) const;
 
     inline const QString fileName() const { return iFileName; }
     inline const bool isSaved() const { return iIsSaved; }
@@ -54,12 +55,18 @@ public:
     inline const int numRows() const { return iNumRows; }
     inline const int numColumns() const { return iNumColumns; }
     inline const int numLeds() const { return iNumLeds; }
+    inline const int numGroups() const { return iNumGroups; }
+    inline const int numSubAnimations() const { return iNumSubAnimations; }
 
     inline const bool isPlaying() const { return iIsPlaying; }
+
+    inline void addGroup() { iNumGroups++; emit groupAdded(iNumGroups); }
+    void selectGroup(int groupNumber);
     
 signals:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
+    void groupAdded(int groupNumber);
 
     void newLed(int row, int column);
     void newSocket(int row, int column);
@@ -86,7 +93,7 @@ private:
 
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
-    void getGridPosition(int index, int* row, int* column) const;
+    //void getGridPosition(int index, int* row, int* column) const;
 
     int gridPositionNumber(int row, int column) const;
     void setGridPositionNumber(int row, int column, int number);
@@ -102,10 +109,13 @@ private:
     int iNumColumns;
 
     int iNumLeds;
+    int iNumGroups;
 
     int iNumFrames;
     int iCurrentFrame;
     int iFrameFrequency;
+
+    int iNumSubAnimations;
 
     bool iIsPlaying;
 

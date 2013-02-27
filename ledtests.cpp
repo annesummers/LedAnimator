@@ -55,14 +55,12 @@ void LedTests::constructor() {
     QFETCH(int, column);
     QFETCH(QString, error);
 
-    //Animation* animation = NULL;
     Led* led = NULL;
 
     try {
-        //iAnimation = new Animation(*(iEngine));
         iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
 
-        led = new Led(iAnimation, *iAnimation, 0, row, column);
+        led = new Led(iAnimation, *iAnimation, INITIAL_LED, row, column);
 
         QCOMPARE(led->row(), row);
         QCOMPARE(led->column(), column);
@@ -70,11 +68,8 @@ void LedTests::constructor() {
     } catch(IllegalArgumentException& e){
         QCOMPARE(e.errorMessage(), error);
 
-        //delete animation;
         return;
     }
-
-    ///delete animation; // deletes the led
 }
 
 void LedTests::numFramesChanged_data() {
@@ -91,8 +86,6 @@ void LedTests::numFramesChanged_data() {
 void LedTests::numFramesChanged() {
     QFETCH(int, numFrames);
     QFETCH(QString, errorString);
-
-    //Animation* animation = new Animation(*(iEngine));
 
     try {
         setupAnimation();
@@ -221,7 +214,7 @@ void LedTests::setupAnimation() {
     int numLeds = gridPositions.count();
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i);
+        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
     }
 
     iAnimation->setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
