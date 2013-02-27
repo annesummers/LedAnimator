@@ -14,15 +14,28 @@ FadeCalculator::FadeCalculator(QObject *parent,
     iStartColour(startColour),
     iEndColour(endColour),
     iIterations(iterations),
-    iRedIncrement((startColour.red() - endColour.red()) / iterations),
-    iGreenIncrement((startColour.green() - endColour.green()) / iterations),
-    iBlueIncrement((startColour.blue() - endColour.blue()) / iterations),
+    iRedIncrement((startColour.redF() - endColour.redF()) / iIterations),
+    iGreenIncrement((startColour.greenF() - endColour.greenF()) / iIterations),
+    iBlueIncrement((startColour.blueF() - endColour.blueF()) / iIterations),
     iTimer(NULL){
+
+   /* iCurrentHueValue = startColour.hueF();
+    iCurrentSatValue = startColour.saturationF();
+    iCurrentValValue = startColour.valueF();*/
+
+    iCurrentRedValue = startColour.redF();
+    iCurrentGreenValue = startColour.greenF();
+    iCurrentBlueValue = startColour.blueF();
+
+  /*  iHueIncrement = (startColour.hueF() - endColour.hueF()) / iIterations;
+    iSatIncrement = (startColour.saturationF() - endColour.saturationF()) / iIterations;
+    iValIncrement = (startColour.valueF() - endColour.valueF()) / iIterations;*/
 
     resetColour();
 }
 
 void FadeCalculator::start() {
+    qDebug("start fade");
     if(iTimer != NULL) {
         delete iTimer;
         iTimer = NULL;
@@ -42,10 +55,51 @@ void FadeCalculator::nextColour() {
     iCurrentGreenValue -= iGreenIncrement;
     iCurrentBlueValue -= iBlueIncrement;
 
-    emit colourCalculated(currentColour());
+  /*  iCurrentHueValue -= iHueIncrement;
+    iCurrentSatValue -= iSatIncrement;
+    iCurrentValValue -= iValIncrement;*/
+    qDebug("red : %f green : %f blue %f", iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
+
+    if(iCurrentRedValue > 1) {
+        iCurrentRedValue = 1;
+    }
+
+    if(iCurrentBlueValue > 1) {
+        iCurrentBlueValue = 1;
+    }
+
+    if(iCurrentGreenValue > 1) {
+        iCurrentGreenValue = 1;
+    }
+
+    if(iCurrentRedValue < 0) {
+        iCurrentRedValue = 0;
+    }
+
+    if(iCurrentBlueValue < 0) {
+        iCurrentBlueValue = 0;
+    }
+
+    if(iCurrentGreenValue < 0) {
+        iCurrentGreenValue = 0;
+    }
+
+    QColor colour = currentColour();
+    if(!colour.isValid()) {
+        qDebug("Colour is not valid");
+    }
+
+    emit colourCalculated(colour);
 
     if(++iCurrentIteration == iIterations) {
         if(currentColour() != iEndColour) {
+            qDebug("End colour is %d, %d, %d Actual is %d, %d, %d",
+                   iEndColour.hue(),
+                   iEndColour.saturation(),
+                   iEndColour.value(),
+                   currentColour().hue(),
+                   currentColour().saturation(),
+                   currentColour().value());
         //    throw new IllegalColourException();
         }
 
@@ -60,11 +114,11 @@ void FadeCalculator::nextColour() {
 }
 
 QColor FadeCalculator::currentColour() {
-    return QColor::fromRgb(iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
+   return QColor::fromRgbF(iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
 }
 
 void FadeCalculator::resetColour() {
-    iCurrentRedValue = iStartColour.red();
-    iCurrentGreenValue = iStartColour.green();
-    iCurrentBlueValue = iStartColour.blue();
+    iCurrentRedValue = iStartColour.redF();
+    iCurrentGreenValue = iStartColour.greenF();
+    iCurrentBlueValue = iStartColour.blueF();
 }

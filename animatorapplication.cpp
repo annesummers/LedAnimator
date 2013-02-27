@@ -6,6 +6,8 @@
 
 #include "animatorapplication.h"
 
+#include <QMessageBox>
+
 #include "exceptions.h"
 
 using namespace Exception;
@@ -21,6 +23,9 @@ bool AnimatorApplication::notify(QObject *rec, QEvent *ev) {
 
     } catch(AnimatorException& e) {
         qDebug() << "Exception: " << e.errorMessage();
+
+        QMessageBox::critical(NULL, "Exception", QString("LedAnimator has thrown an exception:\n").append(e.errorMessage()));
+
         exit(0);
     }
 

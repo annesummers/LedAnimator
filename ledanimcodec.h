@@ -50,7 +50,7 @@ class LedAnimCodec : public QObject {
 public:
     explicit LedAnimCodec(Animation &animation);
 
-    void writeAnimation();
+    void writeAnimation(bool withPositions);
     void readAnimation();
 
 protected:
@@ -64,7 +64,7 @@ protected:
     virtual const QString     asString() const = 0;
 
     virtual void writePositionData() { }
-    virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); }
+    virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); QList<int> positions; return positions; }
 
     virtual void writeColourData() = 0;
     virtual void readColourData() = 0;
@@ -105,7 +105,7 @@ public:
     explicit LedAnimByteArrayCodec(Animation& animation);
     LedAnimByteArrayCodec(Animation& animation, QByteArray bytes);
 
-    void writeAnimation();
+    void writeAnimation(bool withPositions);
     void readAnimation();
 
     const QString asString() const;

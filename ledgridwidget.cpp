@@ -199,7 +199,7 @@ void LedGridWidget::hideSelectedLeds() {
 Led& LedGridWidget::getLed(int row, int column) {
     Led* led = iAnimation.ledAt(row, column);
     if(led == NULL) {
-        throw IllegalArgumentException("LedGridWidget::getLed : led is NULL");
+        throw IllegalArgumentException(QString("LedGridWidget::getLed : led at %1, %2 is NULL").arg(row).arg(column));
     }
 
     return *led;

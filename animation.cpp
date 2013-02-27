@@ -299,7 +299,7 @@ void Animation::nextFrame() {
 
 void Animation::copyToClipboard() {
     LedAnimStringCodec codec(*this);
-    codec.writeAnimation();
+    codec.writeAnimation(false);
 
     QClipboard *clipboard = QApplication::clipboard();
     QMimeData *data = new QMimeData;

@@ -377,7 +377,7 @@ const QByteArray SelectableGroupWidget::writeMimeData() {
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
-     dataStream << iSelected.count() << 0 << 0;
+     dataStream << iSelected.count();
      dataStream << iGroupNumber;
 
      int row;
@@ -407,10 +407,10 @@ void SelectableGroupWidget::handleMimeData(QByteArray itemData, SelectableWidget
 
     dataStream >> numWidgets;
 
-    int rowSpan;
+  /*  int rowSpan;
     int columnSpan;
 
-    dataStream >> rowSpan >> columnSpan;
+    dataStream >> rowSpan >> columnSpan;*/
 
     int groupNumber;
 
@@ -480,11 +480,11 @@ void SelectableGroupWidget::handleOldMimeData(QByteArray itemData) {
 
     dataStream >> numCopied;
 
-    int rowSpan;
+   /* int rowSpan;
     int columnSpan;
 
     dataStream >> rowSpan >> columnSpan;
-
+*/
     int row;
     int column;
 

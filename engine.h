@@ -45,11 +45,13 @@ private slots:
     void loadAnimation();
     void newAnimation();
 
+    void exportAnimation();
+
     void setNumFrames();
     void setFrameFrequency();
 
 private:
-    void doSave(QString fileName);
+    void doSave(QString fileName, bool withPositions = true);
     bool doLoad(QString fileName);
 
     void setupUI();

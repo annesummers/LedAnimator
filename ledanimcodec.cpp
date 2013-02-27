@@ -40,11 +40,15 @@ LedAnimCodec::LedAnimCodec(Animation& animation) :
     iAnimation(animation){
 }
 
-void LedAnimCodec::writeAnimation() {
+void LedAnimCodec::writeAnimation(bool withPositions) {
     writeControlCharacter(HEADER_BYTE);
 
     writeCharacter(iAnimation.numLeds());
-    writePositionData();
+
+    if(withPositions) {
+        writePositionData();
+    }
+
     int numSubAnimations = iAnimation.numSubAnimations();
     writeCharacter(numSubAnimations);
 
@@ -94,13 +98,22 @@ void LedAnimCodec::readAnimation() {
 }
 
 void LedAnimCodec::writeColour(QColor colour) {
-    writeCharacter(colour.hue());
+    int hue = colour.hue();
+    char hueHigh = hue;
+    char hueLow = hue >> 8;
+    writeCharacter(hueHigh);
+    writeCharacter(hueLow);
     writeCharacter(colour.saturation());
     writeCharacter(colour.value());
 }
 
 const QColor LedAnimCodec::readColour() const {
-    int hue = readCharacter().intValue();
+    char hueHigh = readCharacter().charValue();
+    char hueLow = readCharacter().charValue();
+
+    int hue = hueHigh;
+    hue |= hueLow << 8;
+
     int saturation = readCharacter().intValue();
     int value = readCharacter().intValue();
 
@@ -158,7 +171,7 @@ void LedAnimStringCodec::writeControlCharacter(AnimChar character) {
 void LedAnimStringCodec::writeColourData() {
     for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
         for(int i = 0; i < iAnimation.numLeds(); i++) {
-            writeColour(iAnimation.ledAt(i).frameAt(frame + INITIAL_FRAME).colour());
+            writeColour(iAnimation.ledAt(i + INITIAL_LED).frameAt(frame + INITIAL_FRAME).colour());
         }
 
     }
@@ -189,8 +202,8 @@ LedAnimByteArrayCodec::LedAnimByteArrayCodec(Animation& animation, QByteArray by
     iPosition(0) {
 }
 
-void LedAnimByteArrayCodec::writeAnimation() {
-    LedAnimCodec::writeAnimation();
+void LedAnimByteArrayCodec::writeAnimation(bool withPositions) {
+    LedAnimCodec::writeAnimation(withPositions);
 
     iAnimation.setSaved(true);
 }
@@ -292,8 +305,9 @@ void LedAnimByteArrayCodec::writeColourData() {
     try {
         for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
             for(int i = 0; i < iAnimation.numLeds(); i++) {
-                writeCharacter(iAnimation.ledAt(i + INITIAL_LED).groupNumber());
-                writeColour(iAnimation.ledAt(i + INITIAL_LED).frameAt(frame + INITIAL_FRAME).colour());
+                Led& led = iAnimation.ledAt(i + INITIAL_LED);
+                writeCharacter(led.groupNumber());
+                writeColour(led.frameAt(frame + INITIAL_FRAME).colour());
             }
         }
     } catch (InvalidStateException* e) {

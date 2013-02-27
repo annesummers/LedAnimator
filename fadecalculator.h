@@ -32,13 +32,21 @@ private:
 
     const int iIterations;
 
-    const int iRedIncrement;
-    const int iGreenIncrement;
-    const int iBlueIncrement;
+    const float iRedIncrement;
+    const float iGreenIncrement;
+    const float iBlueIncrement;
 
-    int iCurrentRedValue;
-    int iCurrentGreenValue;
-    int iCurrentBlueValue;
+    float iHueIncrement;
+    float iSatIncrement;
+    float iValIncrement;
+
+    float iCurrentRedValue;
+    float iCurrentGreenValue;
+    float iCurrentBlueValue;
+
+    float iCurrentHueValue;
+    float iCurrentSatValue;
+    float iCurrentValValue;
 
     int iCurrentIteration;
 

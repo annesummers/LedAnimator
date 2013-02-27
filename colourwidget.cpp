@@ -57,6 +57,7 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 }
 
 void ColourWidget::chooseColour() {
+    iColourDialog->setCurrentColor(colour());
     iColourDialog->exec();
 }
 

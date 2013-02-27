@@ -70,6 +70,9 @@ MainWindow::MainWindow(Engine& engine) :
     saveAction->setShortcuts(QKeySequence::Save);
     QAction* saveAsAction = fileMenu->addAction("Save &As...");
     saveAsAction->setShortcuts(QKeySequence::SaveAs);
+    fileMenu->addSeparator();
+    QAction* exportAction = fileMenu->addAction("&Export");
+    fileMenu->addSeparator();
     QAction* quitAction = fileMenu->addAction("E&xit");
     quitAction->setShortcuts(QKeySequence::Quit);
 
@@ -77,6 +80,7 @@ MainWindow::MainWindow(Engine& engine) :
     connect(openAction, SIGNAL(triggered()), &iEngine, SLOT(loadAnimation()));
     connect(saveAction, SIGNAL(triggered()), &iEngine, SLOT(saveAnimation()));
     connect(saveAsAction, SIGNAL(triggered()), &iEngine, SLOT(saveAnimationAs()));
+    connect(exportAction, SIGNAL(triggered()), &iEngine, SLOT(exportAnimation()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     menuBar()->addMenu(fileMenu);

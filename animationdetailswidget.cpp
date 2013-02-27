@@ -166,26 +166,25 @@ void AnimationDetailsWidget::addLed(int row, int column) {
     }
 
     if(!iShownLeds.contains(led->number())) {
-        //iShownLeds.append(led);
-
         int count = iShownLeds.count() + 1;
+        qDebug("add new led, %d, %d", row, column);
 
         QLabel* ledNumberLabel = new QLabel(this);
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this);
+        qDebug("1");
         framesListWidget->resize(40, framesListWidget->height());
-
+        qDebug("2");
         QPushButton* detailsCloseWidget = new QPushButton("X", this);
 
         iGridLayout->addWidget(ledNumberLabel, count, 0);
         iGridLayout->addWidget(framesListWidget, count, 1);
         iGridLayout->addWidget(detailsCloseWidget, count, 2);
-
+        qDebug("3");
         addGroup(*framesListWidget);
-
-        iShownLeds.insert(count, new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
-
-        qDebug("add new led, %d, %d", row, column);
+        qDebug("4");
+        iShownLeds.insert(led->number(), new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
+        qDebug("5");
     }
 }
 
@@ -230,16 +229,11 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
 
         dataStream >> numLeds;
 
-        int numRows;
-        int numColumns;
-
-        dataStream >> numRows >> numColumns;
-
         int groupNumber;
 
         dataStream >> groupNumber;
 
-        for(int i = 0; i < numRows * numColumns; i++) {
+        for(int i = 0; i < numLeds; i++) {
            dataStream >> row >> column;
            addLed(row, column);
         }

@@ -105,9 +105,9 @@ bool Engine::doLoad(QString fileName) {
     return false;
 }
 
-void Engine::doSave(QString fileName) {
+void Engine::doSave(QString fileName, bool withPositions) {
     LedAnimByteArrayCodec codec(*iAnimation);
-    codec.writeAnimation();
+    codec.writeAnimation(withPositions);
 
     QFile file(fileName);
     file.open(QIODevice::WriteOnly);
@@ -143,6 +143,14 @@ void Engine::loadAnimation() {
                 // TODO what if we don't find the file?
             }
         }
+    }
+}
+
+void Engine::exportAnimation() {
+    QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Export Animation", "~", "Led Animation Files (*.anim)");
+
+    if(fileName != "") {
+        doSave(fileName);
     }
 }
 
