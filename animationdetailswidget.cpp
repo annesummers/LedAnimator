@@ -96,7 +96,7 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 }
 
 void AnimationDetailsWidget::closeClicked(LedDetails &details) {
-    int key = iShownLeds.key(&details);
+    int key = iLedDetails.key(&details);
 
     int numRows = iGridLayout->rowCount();
     int numColumns = iGridLayout->columnCount();
@@ -109,7 +109,8 @@ void AnimationDetailsWidget::closeClicked(LedDetails &details) {
         iGridLayout->removeWidget(widget);
     }
 
-    iShownLeds.remove(key);
+    iLedDetails.remove(key);
+    iShownLeds.remove(details.ledNumber());
 
     update();
 }
@@ -183,7 +184,8 @@ void AnimationDetailsWidget::addLed(int row, int column) {
         qDebug("3");
         addGroup(*framesListWidget);
         qDebug("4");
-        iShownLeds.insert(led->number(), new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
+        iShownLeds.insert(led->number(), led);
+        iLedDetails.insert(count, new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
         qDebug("5");
     }
 }
