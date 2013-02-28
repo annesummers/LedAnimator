@@ -162,25 +162,37 @@ void LedGridWidget::deleteLed(int row, int column) {
 }
 
 void LedGridWidget::addSelectedLeds() {
-    int topLeftRow;
-    int topLeftColumn;
-    int bottomRightRow;
-    int bottomRightColumn;
-    getLeftRightTopBottomSelection(&topLeftRow, &bottomRightRow, &topLeftColumn, &bottomRightColumn);
+   // int topLeftRow;
+   // int topLeftColumn;
+   // int bottomRightRow;
+   // int bottomRightColumn;
+   // getLeftRightTopBottomSelection(&topLeftRow, &bottomRightRow, &topLeftColumn, &bottomRightColumn);
 
     SelectableWidget* widget;
     int row;
     int column;
+
+    QList<int> newRows;
+    QList<int> newColumns;
 
     foreach(widget, selectedItems()) {
         toggle(*widget);
 
         getWidgetPosition(*widget, &row, &column);
         iAnimation.addNewLed(row, column);
+
+        newRows.append(row);
+        newColumns.append(column);
     }
 
-    selectOne(widgetAt(topLeftRow, topLeftColumn));
-    selectArea(widgetAt(bottomRightRow, bottomRightColumn));
+   // selectOne(widgetAt(topLeftRow, topLeftColumn));
+   // selectArea(widgetAt(bottomRightRow, bottomRightColumn));
+
+    for(int i = 0; i < newRows.count(); i++) {
+        toggle(widgetAt(newRows.at(i), newColumns.at(i)));
+    }
+
+    iAnimation.setSaved(false);
 }
 
 void LedGridWidget::hideSelectedLeds() {

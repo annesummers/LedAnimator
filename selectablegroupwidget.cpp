@@ -15,6 +15,7 @@ SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int numRows, int n
     QWidget(parent),
     iGroupGroup(groupGroupWidget),
     iGroupNumber(0),
+    iColourDialog(NULL),
     iNumRows(numRows),
     iNumColumns(numColumns),
     iFirstSelectedRow(0),
@@ -24,11 +25,14 @@ SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int numRows, int n
     iTopLeftSelectedRow(INVALID),
     iTopLeftSelectedColumn(INVALID),
     iBottomRightSelectedRow(INVALID),
-    iBottomRightSelectedColumn(INVALID){
+    iBottomRightSelectedColumn(INVALID) {
 
   if(iGroupGroup != NULL) {
       iGroupNumber = iGroupGroup->addGroup(*this);
   }
+
+  iColourDialog = new QColorDialog(Qt::white, this);
+  iColourDialog->setOptions(QColorDialog::DontUseNativeDialog);
 }
 
 bool SelectableGroupWidget::isMultipleSelected() {

@@ -29,6 +29,10 @@ FrameListWidget::FrameListWidget(QWidget *parent,
 // slots --------------------
 
 void FrameListWidget::numFramesChanged(int numFrames) {
+    QElapsedTimer timer;
+    timer.start();
+    qDebug("numFramesChanged");
+
 
     int oldNumFrames = iFramesList.count();
 
@@ -50,10 +54,12 @@ void FrameListWidget::numFramesChanged(int numFrames) {
        // resize(parentWidget()->width(), height());
 
        // emit resized(pos().x(), width());
-        update();
+       // update();
 
         // TODO why doesn't this work?
     }
+
+    qDebug("0 %d", timer.elapsed());
 }
 
 // from SelectableWidget -----------------------------

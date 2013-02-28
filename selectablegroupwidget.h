@@ -2,6 +2,7 @@
 #define SELECTABLEWIDGETGROUP_H
 
 #include <QWidget>
+#include <QColorDialog>
 
 namespace AnimatorUi {
 
@@ -33,6 +34,8 @@ public:
 
     virtual SelectableWidget& widgetAt(int row, int column);
     virtual void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+
+    inline QColorDialog& colourDialog() { return *iColourDialog; }
 
     inline void setMaxRow(int max) { iNumRows = max; }
     inline void setMaxColumn(int max) { iNumColumns = max; }
@@ -82,6 +85,8 @@ private:
     void sortSelected();
 
     QList<SelectableWidget*> iSelected;
+
+    QColorDialog* iColourDialog;
 
     int iNumRows;
     int iNumColumns;

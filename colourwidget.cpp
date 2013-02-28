@@ -19,8 +19,6 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     iFading(false),
     iColourDialog(NULL){
 
-    setAcceptDrops(true);
-
     iSetColourAction = new QAction(tr("&Set colour..."), this);
     iSetColourAction->setStatusTip(tr("Choose a colour"));
 
@@ -50,15 +48,16 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 
     connect(&item, SIGNAL(selected()), this, SLOT(selected()));
 
-    iColourDialog = new QColorDialog(Qt::white, this);
-    iColourDialog->setOptions(QColorDialog::DontUseNativeDialog);
+  //  iColourDialog = new QColorDialog(Qt::white, this);
+  //  iColourDialog->setOptions(QColorDialog::DontUseNativeDialog);
 
-    connect(iColourDialog, SIGNAL(accepted()), this, SLOT(colourDialogAccepted()));
 }
 
 void ColourWidget::chooseColour() {
-    iColourDialog->setCurrentColor(colour());
-    iColourDialog->exec();
+    connect(&colourGroup().colourDialog(), SIGNAL(accepted()), this, SLOT(colourDialogAccepted()));
+
+    colourGroup().colourDialog().setCurrentColor(colour());
+    colourGroup().colourDialog().exec();
 }
 
 /*void ColourWidget::setAllFramesColour() {
@@ -67,7 +66,7 @@ void ColourWidget::chooseColour() {
 }*/
 
 void ColourWidget::colourDialogAccepted() {
-    QColor newColour = iColourDialog->currentColor();
+    QColor newColour = colourGroup().colourDialog().currentColor();
     if(iFading) {
         if(newColour.isValid()) {
             colourGroup().fadeTo(newColour);
@@ -80,6 +79,8 @@ void ColourWidget::colourDialogAccepted() {
     }*/ else {
         colourGroup().setColour(newColour);
     }
+
+    disconnect(&colourGroup().colourDialog());
 }
 
 void ColourWidget::updated() {

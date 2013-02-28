@@ -167,24 +167,28 @@ void AnimationDetailsWidget::addLed(int row, int column) {
 
     if(!iShownLeds.contains(led->number())) {
         int count = iShownLeds.count() + 1;
+        QElapsedTimer timer;
+        timer.start();
         qDebug("add new led, %d, %d", row, column);
 
         QLabel* ledNumberLabel = new QLabel(this);
+      //  qDebug("0 %d", timer.elapsed());
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this);
-        qDebug("1");
+      //  qDebug("1 %d", timer.elapsed());
         framesListWidget->resize(40, framesListWidget->height());
-        qDebug("2");
+       // qDebug("2 %d", timer.elapsed());
         QPushButton* detailsCloseWidget = new QPushButton("X", this);
 
         iGridLayout->addWidget(ledNumberLabel, count, 0);
         iGridLayout->addWidget(framesListWidget, count, 1);
         iGridLayout->addWidget(detailsCloseWidget, count, 2);
-        qDebug("3");
+       // qDebug("3 %d", timer.elapsed());
         addGroup(*framesListWidget);
-        qDebug("4");
+       // qDebug("4 %d", timer.elapsed());
+
         iShownLeds.insert(led->number(), new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
-        qDebug("5");
+       // qDebug("5 %d", timer.elapsed());
     }
 }
 
