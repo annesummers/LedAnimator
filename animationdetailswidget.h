@@ -10,6 +10,7 @@
 #include <QHash>
 
 #include "selectablegroupgroupwidget.h"
+#include "led.h"
 
 namespace AnimatorModel {
 class Led;
@@ -56,7 +57,8 @@ private:
     QGridLayout*            iGridLayout;
 
     QSignalMapper*          iSignalMapper;
-    QHash<int, LedDetails*> iShownLeds;
+    QHash<int, LedDetails*> iLedDetails;
+    QHash<int, Led*>        iShownLeds;
 
     bool iClosed;
 };
@@ -66,6 +68,8 @@ class LedDetails : public QObject {
 
 public:
     explicit LedDetails(AnimationDetailsWidget &parent, Led& led, QLabel& label, QPushButton& closeButton);
+
+    inline int ledNumber() { return iLed.number(); }
 
 private slots:
     void closeClicked();

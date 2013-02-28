@@ -108,7 +108,7 @@ void LedAnimCodec::writeColour(QColor colour) {
 }
 
 const QColor LedAnimCodec::readColour() const {
-    char hueHigh = readCharacter().charValue();
+    unsigned char hueHigh = readCharacter().charValue();
     char hueLow = readCharacter().charValue();
 
     int hue = hueHigh;
@@ -117,7 +117,13 @@ const QColor LedAnimCodec::readColour() const {
     int saturation = readCharacter().intValue();
     int value = readCharacter().intValue();
 
-    return QColor::fromHsv(hue, saturation, value);
+    QColor colour = QColor::fromHsv(hue, saturation, value);
+
+    if(!colour.isValid()) {
+        qDebug("invalid colour");
+    }
+
+    return colour;
 }
 
 // -----------------------------------------
