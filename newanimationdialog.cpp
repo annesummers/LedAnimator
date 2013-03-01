@@ -8,6 +8,11 @@ NewAnimationDialog::NewAnimationDialog(QWidget *parent, Engine &engine) :
     ui(new Ui::NewAnimation),
     iEngine(engine) {
     ui->setupUi(this);
+
+    iNumFrames = ui->iNumFramesSpin->value();
+    iFrameFrequency = ui->iFrameFrequencySpin->value();
+    iNumRows = ui->iNumRowsSpin->value();
+    iNumColumns = ui->iNumColumnsSpin->value();
 }
 
 NewAnimationDialog::~NewAnimationDialog() {

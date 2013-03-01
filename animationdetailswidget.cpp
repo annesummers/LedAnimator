@@ -172,6 +172,8 @@ void AnimationDetailsWidget::addLed(int row, int column) {
 
         iShownLeds.insert(led->number(), led);
         iLedDetails.append(new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
+
+        resize(width(), height());
     }
 }
 

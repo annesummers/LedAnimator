@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'newanimation.ui'
 **
-** Created: Thu 28. Feb 15:47:52 2013
+** Created: Fri 1. Mar 14:52:58 2013
 **      by: Qt User Interface Compiler version 4.8.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -71,6 +71,7 @@ public:
         iNumFramesSpin->setMaximumSize(QSize(71, 25));
         iNumFramesSpin->setMinimum(1);
         iNumFramesSpin->setMaximum(999);
+        iNumFramesSpin->setValue(100);
 
         gridLayout_2->addWidget(iNumFramesSpin, 0, 1, 1, 1);
 
@@ -109,6 +110,7 @@ public:
         iNumRowsSpin->setMaximumSize(QSize(57, 16777215));
         iNumRowsSpin->setMinimum(1);
         iNumRowsSpin->setMaximum(100);
+        iNumRowsSpin->setValue(8);
 
         gridLayout->addWidget(iNumRowsSpin, 0, 1, 1, 1);
 
@@ -118,6 +120,7 @@ public:
         iNumColumnsSpin->setMaximumSize(QSize(57, 16777215));
         iNumColumnsSpin->setMinimum(1);
         iNumColumnsSpin->setMaximum(100);
+        iNumColumnsSpin->setValue(8);
 
         gridLayout->addWidget(iNumColumnsSpin, 1, 1, 1, 1);
 
