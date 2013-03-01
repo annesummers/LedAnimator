@@ -96,17 +96,12 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 }
 
 void AnimationDetailsWidget::closeClicked(LedDetails &details) {
-   // int key = iLedDetails.indexOf(&details);
-
-    int numRows = iGridLayout->rowCount();
-    int numColumns = iGridLayout->columnCount();
-
-    qDebug("rows %d, columns %d", numRows, numColumns);
     int index = iGridLayout->indexOf(&details.label());
     int row;
     int column;
     int rowSpan;
     int columnSpan;
+
     iGridLayout->getItemPosition(index, &row, &column, &rowSpan, &columnSpan);
 
     for(int i = 0; i < 3; i++) {
@@ -167,7 +162,6 @@ void AnimationDetailsWidget::addLed(int row, int column) {
         QLabel* ledNumberLabel = new QLabel(this);
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this);
-       // framesListWidget->resize(40, framesListWidget->height());
         QPushButton* detailsCloseWidget = new QPushButton("X", this);
 
         iGridLayout->addWidget(ledNumberLabel, count, 0);

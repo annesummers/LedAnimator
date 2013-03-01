@@ -103,12 +103,12 @@ void AnimatorUi::PlayInfoWidget::playClicked() {
 }
 
 void AnimatorUi::PlayInfoWidget::lastClicked() {
-    iAnimation.setCurrentFrame(iAnimation.numFrames() - 1);
+    iAnimation.setCurrentFrame(iAnimation.numFrames());
 }
 
 void AnimatorUi::PlayInfoWidget::nextClicked() {
-    int frame = iAnimation.currentFrame() - 1;
-    if(frame < iAnimation.numFrames()) {
+    int frame = iAnimation.currentFrame() + 1;
+    if(frame > iAnimation.numFrames()) {
         frame = iAnimation.numFrames();
     }
     iAnimation.setCurrentFrame(frame);

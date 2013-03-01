@@ -42,8 +42,10 @@ public:
     Led* ledAt(int row, int column) const;
     Led& ledAt(int number) const;
 
-    void getLedPosition(int number, int* const row, int* const column) const;
-   // const int getLedNumber(int row, int column) const;
+    inline bool isMissing(int ledNumber) { return iMissingLeds.contains(ledNumber); }
+    inline bool ledsMissing() { return iMissingLeds.count() == 0; }
+
+    bool getLedPosition(int number, int* const row, int* const column) const;
 
     inline const QString fileName() const { return iFileName; }
     inline const bool isSaved() const { return iIsSaved; }
@@ -93,8 +95,6 @@ private:
 
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
-    //void getGridPosition(int index, int* row, int* column) const;
-
     int gridPositionNumber(int row, int column) const;
     void setGridPositionNumber(int row, int column, int number);
 
@@ -102,6 +102,8 @@ private:
 
     QHash<int, Led*> iLeds;
     QList<int> iPositions;
+
+    QList<int> iMissingLeds;
 
     QTimer*     iPlayTimer;
 

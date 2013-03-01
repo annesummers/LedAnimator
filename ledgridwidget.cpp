@@ -162,12 +162,6 @@ void LedGridWidget::deleteLed(int row, int column) {
 }
 
 void LedGridWidget::addSelectedLeds() {
-   // int topLeftRow;
-   // int topLeftColumn;
-   // int bottomRightRow;
-   // int bottomRightColumn;
-   // getLeftRightTopBottomSelection(&topLeftRow, &bottomRightRow, &topLeftColumn, &bottomRightColumn);
-
     SelectableWidget* widget;
     int row;
     int column;
@@ -184,9 +178,6 @@ void LedGridWidget::addSelectedLeds() {
         newRows.append(row);
         newColumns.append(column);
     }
-
-   // selectOne(widgetAt(topLeftRow, topLeftColumn));
-   // selectArea(widgetAt(bottomRightRow, bottomRightColumn));
 
     for(int i = 0; i < newRows.count(); i++) {
         toggle(widgetAt(newRows.at(i), newColumns.at(i)));

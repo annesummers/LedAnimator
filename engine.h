@@ -43,7 +43,7 @@ private slots:
     void saveAnimationAs();
 
     void loadAnimation();
-    void newAnimation();
+    void newAnimation(bool askSaveOld = true);
 
     void exportAnimation();
 

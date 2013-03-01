@@ -96,10 +96,15 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
 
     int row;
     int column;
+    int ledNum = INITIAL_LED;
 
-    for(int i = INITIAL_LED; i < numLeds + 1; i++) {
-        getLedPosition(i, &row, &column);
-        addNewLed(row, column, i);
+    for(int i = 0; i < numLeds; i++) {
+        while(!getLedPosition(ledNum, &row, &column)) {
+            iMissingLeds.append(ledNum++);
+        }
+
+        addNewLed(row, column, ledNum);
+        ledNum++;
     }
 
     const QClipboard *clipboard = QApplication::clipboard();
@@ -157,6 +162,8 @@ void Animation::copyLed(Led& led, int toRow, int toColumn) {
 void Animation::deleteLed(Led& led) {
     iLeds.remove(led.number());
     setGridPositionNumber(led.row(), led.column(), INVALID);
+    iMissingLeds.append(led.number());
+    iNumLeds--;
    // delete &led;
     // TODO why does this fail?
 }
@@ -168,6 +175,11 @@ void Animation::renumberLed(Led& led, int newNumber) {
     setGridPositionNumber(led.row(), led.column(), newNumber);
 
     led.setNumber(newNumber);
+
+    iMissingLeds.append(led.number());
+    if(isMissing(newNumber)) {
+        iMissingLeds.removeOne(newNumber);
+    }
 }
 
 void Animation::addLed(Led& led, int row, int column) {
@@ -245,31 +257,24 @@ Led& Animation::ledAt(int number) const {
     }
 }
 
-void Animation::getLedPosition(int number, int *const row, int *const column)  const {
+bool Animation::getLedPosition(int number, int *const row, int *const column)  const {
     int index = iPositions.indexOf(number);
 
     if(index == INVALID) {
-        throw IllegalArgumentException(QString("Animation::getLedPosition : led %1 does not exist").arg(number));
+        //throw IllegalArgumentException(QString("Animation::getLedPosition : led %1 does not exist").arg(number));
+        return false;
     }
 
     *row = index/numRows();
     *column = index%numRows();
+
+    return true;
 }
-/*
-const int Animation::getLedNumber(int row, int column) const {
-    int gridPositionNum = gridPositionNumber(row, column);
-    return iPositions.at(gridPositionNum);
-}
-*/
+
 int Animation::gridPositionNumber(int row, int column) const {
     return (row*numColumns()) + column;
 }
-/*
-void Animation::getGridPosition(int index, int* row, int* column) const {
-    *row = index/numRows();
-    *column = index%numRows();
-}
-*/
+
 void Animation::setGridPositionNumber(int row, int column, int number) {
     iPositions[gridPositionNumber(row, column)] = number;
 }

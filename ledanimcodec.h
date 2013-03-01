@@ -73,6 +73,7 @@ protected:
     const QColor readColour() const;
 
     Animation& iAnimation;
+    bool iWriteLedNumber;
 };
 
 class LedAnimStringCodec: public LedAnimCodec {

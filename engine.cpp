@@ -39,10 +39,10 @@ void Engine::start() {
     QString animFileName = var.toString();
 
     if(animFileName == "") {
-        newAnimation();
+        newAnimation(false);
     } else {
         if(!doLoad(animFileName)) {
-            newAnimation();
+            newAnimation(false);
         }
     }
 }
@@ -120,8 +120,9 @@ void Engine::doSave(QString fileName, bool withPositions) {
 
 // slots -------------------
 
-void Engine::newAnimation() {
-    if(askSaveAnimation()) {
+void Engine::newAnimation(bool askSaveOld) {
+    if(!askSaveOld ||
+        askSaveAnimation()) {
         NewAnimationDialog newAnimationDialog(NULL, *this);
         if(newAnimationDialog.exec() == QDialog::Accepted) {
             setupUI();
@@ -147,10 +148,18 @@ void Engine::loadAnimation() {
 }
 
 void Engine::exportAnimation() {
-    QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Export Animation", "~", "Led Animation Files (*.anim)");
+    if(iAnimation->ledsMissing()) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(iMainWindow, tr("Animation is missing leds"),
+                                    tr("There are leds missing from the animation.  Do you want to continue the export?"),
+                                    QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Export Animation", "~", "Led Animation Files (*.anim)");
 
-    if(fileName != "") {
-        doSave(fileName);
+            if(fileName != "") {
+                doSave(fileName);
+            }
+        }
     }
 }
 

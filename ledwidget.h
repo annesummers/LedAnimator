@@ -32,6 +32,7 @@ private slots:
     void cut();
     void renumber();
     void setGroup();
+    void deleteLed();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -56,6 +57,7 @@ private:
     QAction* iCutAction;
     QAction* iRenumberAction;
     QAction* iSetGroupAction;
+    QAction* iDeleteLedAction;
 };
 }
 

@@ -41,6 +41,10 @@ LedAnimCodec::LedAnimCodec(Animation& animation) :
 }
 
 void LedAnimCodec::writeAnimation(bool withPositions) {
+    if(withPositions) {
+        iWriteLedNumber = true;
+    }
+
     writeControlCharacter(HEADER_BYTE);
 
     writeCharacter(iAnimation.numLeds());
@@ -176,10 +180,19 @@ void LedAnimStringCodec::writeControlCharacter(AnimChar character) {
 
 void LedAnimStringCodec::writeColourData() {
     for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
+        int ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
-            writeColour(iAnimation.ledAt(i + INITIAL_LED).frameAt(frame + INITIAL_FRAME).colour());
-        }
+            while(iAnimation.isMissing(ledNum)) {
+                ledNum++;
+            }
 
+            if(iWriteLedNumber) {
+                writeCharacter(ledNum);
+            }
+
+            writeColour(iAnimation.ledAt(ledNum).frameAt(frame + INITIAL_FRAME).colour());
+            ledNum++;
+        }
     }
 }
 
@@ -271,11 +284,16 @@ void LedAnimByteArrayCodec::writePositionData() {
     writeCharacter(iAnimation.numRows());
     writeCharacter(iAnimation.numColumns());
 
-    for(int i = INITIAL_LED; i < iAnimation.numLeds() + 1; i++) {
-        iAnimation.getLedPosition(i, &row, &column);
+    int ledNum = INITIAL_LED;
+    for(int i = 0; i < iAnimation.numLeds(); i++) {
+        while(!iAnimation.getLedPosition(ledNum, &row, &column)) {
+            ledNum++;
+        }
 
+        writeCharacter(ledNum);
         writeCharacter(AnimChar(row));
         writeCharacter(AnimChar(column));
+        ledNum++;
     }
 }
 
@@ -289,15 +307,17 @@ QList<int> LedAnimByteArrayCodec::readPositionData(int* numRows, int* numColumns
         positions.append(INVALID);
     }
 
+    int ledNum;
     int row;
     int column;
 
-    for(int i = INITIAL_LED; i < numLeds + INITIAL_LED; i++) {
+    for(int i = 0; i < numLeds; i++) {
+        ledNum = readCharacter().intValue();
         row = readCharacter().intValue();
         column = readCharacter().intValue();
 
         if(row != INVALID && column != INVALID) {
-            positions.replace((row*columns) + column, i);
+            positions.replace((row*columns) + column, ledNum);
         }
     }
 
@@ -308,24 +328,34 @@ QList<int> LedAnimByteArrayCodec::readPositionData(int* numRows, int* numColumns
 }
 
 void LedAnimByteArrayCodec::writeColourData() {
-    try {
-        for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
-            for(int i = 0; i < iAnimation.numLeds(); i++) {
-                Led& led = iAnimation.ledAt(i + INITIAL_LED);
-                writeCharacter(led.groupNumber());
-                writeColour(led.frameAt(frame + INITIAL_FRAME).colour());
+    for (int frame = 0; frame < iAnimation.numFrames(); frame++) {
+        int ledNum = INITIAL_LED;
+        for(int i = 0; i < iAnimation.numLeds(); i++) {
+            while(iAnimation.isMissing(ledNum)) {
+                ledNum++;
             }
+
+            if(iWriteLedNumber) {
+                writeCharacter(ledNum);
+            }
+
+            writeColour(iAnimation.ledAt(ledNum).frameAt(frame + INITIAL_FRAME).colour());
+            ledNum++;
         }
-    } catch (InvalidStateException* e) {
-        // WTF?
     }
 }
 
 void LedAnimByteArrayCodec::readColourData() {
     for(int frame = 0; frame < iAnimation.numFrames(); frame++) {
+        int ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
-            iAnimation.ledAt(i + INITIAL_LED).setGroupNumber(readCharacter().intValue());
-            iAnimation.ledAt(i + INITIAL_LED).frameAt(frame + INITIAL_FRAME).setColour(readColour());
+            //iAnimation.ledAt(i + INITIAL_LED).setGroupNumber(readCharacter().intValue());
+            readCharacter();
+            while(iAnimation.isMissing(ledNum)){
+                ledNum++;
+            }
+            iAnimation.ledAt(ledNum).frameAt(frame + INITIAL_FRAME).setColour(readColour());
+            ledNum++;
         }
     }
 }
