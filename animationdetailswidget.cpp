@@ -96,20 +96,26 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 }
 
 void AnimationDetailsWidget::closeClicked(LedDetails &details) {
-    int key = iLedDetails.key(&details);
+   // int key = iLedDetails.indexOf(&details);
 
     int numRows = iGridLayout->rowCount();
     int numColumns = iGridLayout->columnCount();
 
     qDebug("rows %d, columns %d", numRows, numColumns);
+    int index = iGridLayout->indexOf(&details.label());
+    int row;
+    int column;
+    int rowSpan;
+    int columnSpan;
+    iGridLayout->getItemPosition(index, &row, &column, &rowSpan, &columnSpan);
 
     for(int i = 0; i < 3; i++) {
-        QWidget* widget =  iGridLayout->itemAtPosition(key, i)->widget();
+        QWidget* widget =  iGridLayout->itemAtPosition(row, i)->widget();
         widget->close();
         iGridLayout->removeWidget(widget);
     }
 
-    iLedDetails.remove(key);
+    iLedDetails.removeOne(&details);
     iShownLeds.remove(details.ledNumber());
 
     update();
@@ -147,18 +153,6 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
     iFrameSlider->setTickInterval(numFrames);
 }
 
-// TODO this is bollocks
-void AnimationDetailsWidget::frameListPosition(int x, int width) {
-    Q_UNUSED(x);
-    Q_UNUSED(width);
-  //  iFramesListX = x;
-   // iFramesListWidth = width;
-    //int frameIncrements = iFramesListWidth/(iAnimation.numFrames());
-
-   // iFrameSlider->move(x + frameIncrements/2, iFrameSlider->y());
-  //  iFrameSlider->resize(width-frameIncrements+frameIncrements/4, iFrameSlider->height());
-}
-
 void AnimationDetailsWidget::addLed(int row, int column) {
     Led* led = iAnimation.ledAt(row, column);
 
@@ -168,50 +162,49 @@ void AnimationDetailsWidget::addLed(int row, int column) {
 
     if(!iShownLeds.contains(led->number())) {
         int count = iShownLeds.count() + 1;
-        QElapsedTimer timer;
-        timer.start();
         qDebug("add new led, %d, %d", row, column);
 
         QLabel* ledNumberLabel = new QLabel(this);
-      //  qDebug("0 %d", timer.elapsed());
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this);
-      //  qDebug("1 %d", timer.elapsed());
-        framesListWidget->resize(40, framesListWidget->height());
-       // qDebug("2 %d", timer.elapsed());
+       // framesListWidget->resize(40, framesListWidget->height());
         QPushButton* detailsCloseWidget = new QPushButton("X", this);
 
         iGridLayout->addWidget(ledNumberLabel, count, 0);
         iGridLayout->addWidget(framesListWidget, count, 1);
         iGridLayout->addWidget(detailsCloseWidget, count, 2);
-       // qDebug("3 %d", timer.elapsed());
+
         addGroup(*framesListWidget);
 
-        qDebug("4");
         iShownLeds.insert(led->number(), led);
-        iLedDetails.insert(count, new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
+        iLedDetails.append(new LedDetails(*this, *led, *ledNumberLabel, *detailsCloseWidget));
     }
 }
 
 // events -------------------------------------
 
 void AnimationDetailsWidget::paintEvent(QPaintEvent *) {
-    if(iFramesListWidth > 0) {
-        int currentFrameIncrements = iFramesListWidth/(iAnimation.numFrames());
-        int currentFramePosition = (iAnimation.currentFrame() - 1)*currentFrameIncrements;
+    int currentFrameIncrements = iFrameSlider->width()/(iAnimation.numFrames());
+    int currentFramePosition = (iAnimation.currentFrame() - 1)*currentFrameIncrements;
 
-        QPainter painter(this);
-        painter.setPen(Qt::black);
-        painter.drawLine(QPoint(currentFramePosition + (iFramesListX + currentFrameIncrements/2), iFrameSlider->height() - 8), QPoint(currentFramePosition + iFramesListX + currentFrameIncrements/2 + 2, height() - iFrameSlider->height() - 8));
-    }
+    QPainter painter(this);
+    painter.setPen(Qt::black);
+    painter.drawLine(QPoint(currentFramePosition + /*(iFrameSlider->pos().x() + */currentFrameIncrements/2,
+                            iFrameSlider->height() - 8),
+                     QPoint(currentFramePosition/* + iFrameSlider->pos().x()*/ + currentFrameIncrements/2,
+                            height() - iFrameSlider->height() - 8));
 }
 
 void AnimationDetailsWidget::resizeEvent(QResizeEvent*) {
     resize(parentWidget()->width() - BORDER*2, parentWidget()->height());
+    int numFrames = iAnimation.numFrames();
+    int width = iFrameSlider->width();
 
-    // slider must start from the start of the frames
-    //iFrameSlider->resize(width(), SLIDER_HEIGHT);
-    //iLedDetailsList->resize(width(), height() - SLIDER_HEIGHT);
+    if(numFrames > 0) {
+        int extra = width%numFrames;
+
+        iFrameSlider->resize(width-extra, iFrameSlider->height());
+    }
 }
 
 void AnimationDetailsWidget::dragEnterEvent(QDragEnterEvent* event) {

@@ -57,7 +57,7 @@ private:
     QGridLayout*            iGridLayout;
 
     QSignalMapper*          iSignalMapper;
-    QHash<int, LedDetails*> iLedDetails;
+    QList<LedDetails*>      iLedDetails;
     QHash<int, Led*>        iShownLeds;
 
     bool iClosed;
@@ -70,6 +70,7 @@ public:
     explicit LedDetails(AnimationDetailsWidget &parent, Led& led, QLabel& label, QPushButton& closeButton);
 
     inline int ledNumber() { return iLed.number(); }
+    inline QWidget& label() { return iLabel; }
 
 private slots:
     void closeClicked();
