@@ -153,7 +153,9 @@ void AnimationDetailsWidget::doResize() {
 
 void AnimationDetailsWidget::currentFrameChanged(int currentFrame) {
     iFrameSlider->setValue(currentFrame);
-    update();
+
+    iScrollAreaWidgetContents->update();
+   // update();
 }
 
 void AnimationDetailsWidget::numFramesChanged(int numFrames) {
