@@ -41,10 +41,10 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(iScrollAreaWidgetContents);
     horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
 
-    QVBoxLayout* verticalLayout = new QVBoxLayout(iScrollAreaWidgetContents);
+    QVBoxLayout* verticalLayout = new QVBoxLayout();
     verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
 
-    iGridLayout = new QGridLayout(iScrollAreaWidgetContents);
+    iGridLayout = new QGridLayout();
     iGridLayout->setObjectName(QString::fromUtf8("iGridLayout"));
 
     QWidget* widget = new QWidget(iScrollAreaWidgetContents);

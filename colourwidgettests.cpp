@@ -985,9 +985,9 @@ void ColourWidgetTests::copyPasteOneExternal() {
     QFETCH(QPoint, pastePoint);
     QFETCH(QColor, copyColour);
 
-    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
-    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
+    ColourGroupGroupWidget* groupGroupWidget = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
+    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 1);
 
     ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget1->widgetAt(copyPoint.y(), copyPoint.x());
     copyWidget.setColour(copyColour);
@@ -1036,9 +1036,9 @@ void ColourWidgetTests::copyPasteManyExternal() {
     QFETCH(QPoint, pasteSecondPoint);
     QFETCH(QColor, copyColour);
 
-    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+    ColourGroupGroupWidget* groupGroupWidget = new ColourGroupGroupWidget(NULL);
 
-    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
+    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
 
     ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget1->widgetAt(copyFirstPoint.y(), copyFirstPoint.x()));
 
@@ -1048,7 +1048,7 @@ void ColourWidgetTests::copyPasteManyExternal() {
 
     QTest::keyPress(&copyFirstWidget, Qt::Key_C, Qt::ControlModifier);
 
-    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
+    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 1);
 
     ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget2->widgetAt(pastePoint.y(), pastePoint.x()));
 
@@ -1071,7 +1071,7 @@ void ColourWidgetTests::copyPasteManyExternal() {
 void ColourWidgetTests::doubleClickWidgetAndDismissDialog(ColourGroupTestWidget& groupWidget, QPoint widgetPoint) {
     ColourTestWidget& widget = (ColourTestWidget&)(groupWidget.widgetAt(widgetPoint.y(), widgetPoint.x()));
 
-    iColourDialog = &(widget.colourDialog());
+    iColourDialog = &(groupWidget.colourDialog());
 
     iAsyncTimeoutTimer.setInterval(20);
     iAsyncTimeoutTimer.setSingleShot(true);

@@ -7,8 +7,8 @@
 
 using namespace AnimatorTest;
 
-SelectableGroupTestWidget::SelectableGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, SelectableGroupGroupWidget *groupGroupWidget) :
-    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroupWidget) {
+SelectableGroupTestWidget::SelectableGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, SelectableGroupGroupWidget &groupGroupWidget, int groupNumber) :
+    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroupWidget, groupNumber) {
 
     // TODO yuck this is horrilbe
 
@@ -17,7 +17,7 @@ SelectableGroupTestWidget::SelectableGroupTestWidget(QWidget *parent, int maxRow
         (*iWidgetArray)[i] = new WidgetVector(maxColumn);
         for(int j = 0; j < maxColumn; j++) {
             WidgetVector& row = *((*iWidgetArray)[i]);
-            Selectable* item = new Selectable(this);
+            Selectable* item = new Selectable(this, i*j + j);
             row[j] =  new SelectableTestWidget(this, *this, *item);
         }
     }
@@ -79,7 +79,8 @@ void SelectableWidgetTests::select() {
     QFETCH(int, maxColumn);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < selectedPoints.count(); i++) {
         groupWidget->toggle(groupWidget->widgetAt(selectedPoints.at(i).y(), selectedPoints.at(i).x()));
@@ -109,7 +110,8 @@ void SelectableWidgetTests::selectOne() {
     QFETCH(int, maxColumn);
     QFETCH(QPoint, selectedPoint);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     groupWidget->selectOne(groupWidget->widgetAt(selectedPoint.y(), selectedPoint.x()));
 
@@ -129,7 +131,8 @@ void SelectableWidgetTests::selectArea() {
     QFETCH(QPoint, firstSelected);
     QFETCH(QPoint, secondSelected);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     groupWidget->selectOne(groupWidget->widgetAt(firstSelected.y(), firstSelected.x()));
     groupWidget->selectArea(groupWidget->widgetAt(secondSelected.y(), secondSelected.x()));
@@ -153,7 +156,8 @@ void SelectableWidgetTests::selectDirection() {
     QFETCH(IntList, selectedDirections);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     groupWidget->selectOne(groupWidget->widgetAt(firstSelected.y(), firstSelected.x()));
 
@@ -188,8 +192,8 @@ void SelectableWidgetTests::selectOneSelectExternal() {
 
     SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
 
-    SelectableGroupTestWidget* groupWidget1 = new SelectableGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
-    SelectableGroupTestWidget* groupWidget2 = new SelectableGroupTestWidget(NULL, maxRow, maxColumn, groupGroupWidget);
+    SelectableGroupTestWidget* groupWidget1 = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
+    SelectableGroupTestWidget* groupWidget2 = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 1);
 
     groupWidget1->selectOne(groupWidget1->widgetAt(selectedPoint.y(), selectedPoint.x()));
     groupWidget2->selectOne(groupWidget2->widgetAt(selectedPoint.y(), selectedPoint.x()));
@@ -222,7 +226,9 @@ void SelectableWidgetTests::clickOne() {
     QFETCH(int, maxColumn);
     QFETCH(QPoint, selectedPoint);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(selectedPoint.y(), selectedPoint.x())), Qt::LeftButton);
 
@@ -265,7 +271,9 @@ void SelectableWidgetTests::clickOneClickOne() {
     QFETCH(QPoint, secondPoint);
     QFETCH(QPoint, selectedPoint);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstPoint.y(), firstPoint.x())), Qt::LeftButton);
     QTest::mouseClick(&(groupWidget->widgetAt(secondPoint.y(), secondPoint.x())), Qt::LeftButton);
@@ -327,7 +335,9 @@ void SelectableWidgetTests::ctrlClickMany() {
     QFETCH(QPoint, thirdPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstPoint.y(), firstPoint.x())), Qt::LeftButton, Qt::ControlModifier);
     QTest::mouseClick(&(groupWidget->widgetAt(secondPoint.y(), secondPoint.x())), Qt::LeftButton, Qt::ControlModifier);
@@ -381,11 +391,13 @@ void SelectableWidgetTests::ctrlClickManyDifferentType() {
     QFETCH(QPoint, thirdPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < otherPositions.count(); i++) {
         QPoint position = otherPositions.at(i);
-        Selectable* item = new Selectable(this);
+        Selectable* item = new Selectable(this, i + maxRow*maxColumn);
         groupWidget->iWidgetArray->at(position.y())->replace(position.x(), new SelectableTestWidget2(groupWidget, *groupWidget, *item));
     }
 
@@ -445,7 +457,9 @@ void SelectableWidgetTests::clickOneCtrlClickMany() {
     QFETCH(QPoint, thirdPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstPoint.y(), firstPoint.x())), Qt::LeftButton);
     QTest::mouseClick(&(groupWidget->widgetAt(secondPoint.y(), secondPoint.x())), Qt::LeftButton, Qt::ControlModifier);
@@ -507,11 +521,13 @@ void SelectableWidgetTests::clickOneCtrlClickManyDifferentType() {
     QFETCH(QPoint, thirdPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < otherPositions.count(); i++) {
         QPoint position = otherPositions.at(i);
-        Selectable* item = new Selectable(this);
+        Selectable* item = new Selectable(this, i + maxRow*maxColumn);
         groupWidget->iWidgetArray->at(position.y())->replace(position.x(), new SelectableTestWidget2(groupWidget, *groupWidget, *item));
     }
 
@@ -569,7 +585,9 @@ void SelectableWidgetTests::ctrlClickManyClickOne() {
     QFETCH(QPoint, thirdPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstPoint.y(), firstPoint.x())), Qt::LeftButton, Qt::ControlModifier);
     QTest::mouseClick(&(groupWidget->widgetAt(secondPoint.y(), secondPoint.x())), Qt::LeftButton, Qt::ControlModifier);
@@ -631,11 +649,13 @@ void SelectableWidgetTests::ctrlClickManyClickOneDifferentType() {
     QFETCH(QPoint, thirdPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < otherPositions.count(); i++) {
         QPoint position = otherPositions.at(i);
-        Selectable* item = new Selectable(this);
+        Selectable* item = new Selectable(this, i + maxColumn*maxRow);
         groupWidget->iWidgetArray->at(position.y())->replace(position.x(), new SelectableTestWidget2(groupWidget, *groupWidget, *item));
     }
 
@@ -658,7 +678,9 @@ void SelectableWidgetTests::clickShiftClick() {
     QFETCH(QPoint, firstSelected);
     QFETCH(QPoint, secondSelected);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstSelected.y(), firstSelected.x())), Qt::LeftButton);
     QTest::mouseClick(&(groupWidget->widgetAt(secondSelected.y(), secondSelected.x())), Qt::LeftButton, Qt::ShiftModifier);
@@ -723,11 +745,13 @@ void SelectableWidgetTests::clickShiftClickMixedType() {
     QFETCH(QPoint, secondPoint);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < otherPositions.count(); i++) {
         QPoint position = otherPositions.at(i);
-        Selectable* item = new Selectable(this);
+        Selectable* item = new Selectable(this, i + maxColumn*maxRow);
         groupWidget->iWidgetArray->at(position.y())->replace(position.x(), new SelectableTestWidget2(groupWidget, *groupWidget, *item));
     }
 
@@ -750,7 +774,9 @@ void SelectableWidgetTests::clickShiftDirection() {
     QFETCH(IntList, selectedDirections);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
     SelectableTestWidget& widget = (SelectableTestWidget&)(groupWidget->widgetAt(firstSelected.y(), firstSelected.x()));
 
     QTest::mouseClick(&widget, Qt::LeftButton);
@@ -810,11 +836,13 @@ void SelectableWidgetTests::clickShiftDirectionMixedType() {
     QFETCH(int, secondDirection);
     QFETCH(PointList, selectedPoints);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < otherPositions.count(); i++) {
         QPoint position = otherPositions.at(i);
-        Selectable* item = new Selectable(this);
+        Selectable* item = new Selectable(this, i + maxRow*maxColumn);
         groupWidget->iWidgetArray->at(position.y())->replace(position.x(), new SelectableTestWidget2(groupWidget, *groupWidget, *item));
     }
 
@@ -873,7 +901,9 @@ void SelectableWidgetTests::clickShiftDirectionClick() {
     QFETCH(QPoint, secondSelected);
     QFETCH(QPoint, selectedPoint);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
     SelectableTestWidget& widget = (SelectableTestWidget&)(groupWidget->widgetAt(firstSelected.y(), firstSelected.x()));
 
     QTest::mouseClick(&widget, Qt::LeftButton);
@@ -916,7 +946,9 @@ void SelectableWidgetTests::clickShiftClickRightClick() {
     QFETCH(QPoint, firstSelected);
     QFETCH(QPoint, secondSelected);
 
-    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, maxRow, maxColumn);
+    SelectableGroupGroupWidget* groupGroupWidget = new SelectableGroupGroupWidget(NULL);
+
+    SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, maxRow, maxColumn, *groupGroupWidget, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstSelected.y(), firstSelected.x())), Qt::LeftButton);
     QTest::mouseClick(&(groupWidget->widgetAt(secondSelected.y(), secondSelected.x())), Qt::LeftButton, Qt::ShiftModifier);

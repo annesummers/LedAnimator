@@ -65,7 +65,7 @@ protected:
 
     inline int selectedCount() { return iSelected.count(); }
 
-    void selectDirection(Qt::Key direction);
+    void selectDirection(Qt::Key direction, bool singleSelect = false);
 
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }

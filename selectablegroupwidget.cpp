@@ -93,10 +93,10 @@ void SelectableGroupWidget::selectOne(SelectableWidget &widget, bool singleSelec
 
 void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool singleSelect) {
     qDebug("selectArea");
-   // if(!isSingleSelected() &&
-   //    !isGroupSelected()) {
-   //     return;
-   // }
+
+    if(!isAnySelected()) {
+        return;
+    }
 
     if(singleSelect) {
         iGroupGroup.selectSingle(*this);
@@ -107,10 +107,13 @@ void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool singleSele
     doGroupSelection();
 }
 
-void SelectableGroupWidget::selectDirection(Qt::Key direction) {
-    if(!isSingleSelected() &&
-       !isGroupSelected()) {
+void SelectableGroupWidget::selectDirection(Qt::Key direction, bool singleSelect) {
+    if(!isAnySelected()) {
         return;
+    }
+
+    if(singleSelect) {
+        iGroupGroup.selectSingle(*this);
     }
 
     switch(direction) {
@@ -448,7 +451,7 @@ void SelectableGroupWidget::keyPressEvent(QKeyEvent *event) {
     if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
         if(selectedCount() > 0 && key != Qt::Key_Shift) {
             if(validKeyPress(key)) {
-                selectDirection(key);
+                selectDirection(key, (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
                 return;
             }
         }
