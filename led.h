@@ -33,14 +33,14 @@ public:
 
     void setCurrentColour(QColor colour);
 
-    inline int number() { return iNumber; }
-    inline void setNumber(int newNumber) { iNumber = newNumber; emit ledUpdated(); }
+    //inline int number() { return iNumber; }
+    inline void setNumber(int newNumber) { Selectable::setNumber(newNumber); emit ledUpdated(); }
 
-    inline int groupNumber() { return iGroupNumber; }
+    inline const int groupNumber() const { return iGroupNumber; }
     void setGroupNumber(int groupNumber);
 
     inline void setHidden(bool isHidden) { iHidden = isHidden; }
-    inline bool isHidden() { return iHidden; }
+    inline bool isHidden() const { return iHidden; }
 
     void move(int newRow, int newColumn);
     void paste(Led &copyLed);
@@ -60,7 +60,7 @@ private:
     QList<Frame*> iFrames;
     QSignalMapper* iSignalMapper;
 
-    int iNumber;
+   // int iNumber;
     int iGroupNumber;
 
     bool iHidden;

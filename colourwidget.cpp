@@ -16,21 +16,18 @@ using namespace AnimatorUi;
 
 ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Selectable& item) :
     SelectableWidget(parent, groupWidget, item),
-    iFading(false),
-    iColourDialog(NULL){
+    iSignalMapper(NULL),
+    iSetColourAction(NULL),
+    iFadeAction(NULL),
+    iFadeToAction(NULL),
+    iCopyAction(NULL),
+    iFading(false) {
 
     iSetColourAction = new QAction(tr("&Set colour..."), this);
     iSetColourAction->setStatusTip(tr("Choose a colour"));
 
     connect(iSetColourAction, SIGNAL(triggered()), this, SLOT(chooseColour()));
 
-  /*  iSetAllFramesColourAction = new QAction(tr("&Set colour for all frames..."), this);
-    iSetAllFramesColourAction->setStatusTip(tr("Choose a colour"));
-
-    connect(iSetAllFramesColourAction, SIGNAL(triggered()), this, SLOT(setAllFramesColour()));
-*/
-
-    // TODO set all frames colour
     iCopyAction = new QAction(tr("&Copy"), this);
     iCopyAction->setStatusTip(tr("Copy this colour"));
 
@@ -48,39 +45,30 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 
     connect(&item, SIGNAL(selected()), this, SLOT(selected()));
 
-  //  iColourDialog = new QColorDialog(Qt::white, this);
-  //  iColourDialog->setOptions(QColorDialog::DontUseNativeDialog);
-
+    iSignalMapper = new QSignalMapper(this);
+    iSignalMapper->setMapping(&colourGroup().colourDialog(), iItem.number());
+    connect(&colourGroup().colourDialog(), SIGNAL(accepted()), iSignalMapper, SLOT(map()));
 }
 
 void ColourWidget::chooseColour() {
-    connect(&colourGroup().colourDialog(), SIGNAL(accepted()), this, SLOT(colourDialogAccepted()));
-
+    connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourDialogAccepted(int)));
     colourGroup().colourDialog().setCurrentColor(colour());
     colourGroup().colourDialog().exec();
 }
 
-/*void ColourWidget::setAllFramesColour() {
-    iSetAllFrames = true;
-    iColourDialog->exec();
-}*/
-
-void ColourWidget::colourDialogAccepted() {
-    QColor newColour = colourGroup().colourDialog().currentColor();
-    if(iFading) {
-        if(newColour.isValid()) {
+void ColourWidget::colourDialogAccepted(int number) {
+    if(number == iItem.number()) {
+        QColor newColour = colourGroup().colourDialog().currentColor();
+        if(iFading) {
             colourGroup().fadeTo(newColour);
 
             iFading = false;
+        } else {
+            colourGroup().setColour(newColour);
         }
-    } /*else if(iSetAllFrames) {
-
-        iSetAllFrames = false;
-    }*/ else {
-        colourGroup().setColour(newColour);
     }
 
-    disconnect(&colourGroup().colourDialog());
+    iSignalMapper->disconnect(this);
 }
 
 void ColourWidget::updated() {
@@ -129,11 +117,14 @@ void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
     QMenu menu(this);
 
     menu.addAction(iSetColourAction);
-    //menu.addAction(iSetAllFramesColourAction);
     addExtraActions(&menu);
-    menu.addSeparator();
-    menu.addAction(iFadeAction);
-    menu.addAction(iFadeToAction);
+
+    if(colourGroup().isGroupSelected()) {
+        menu.addSeparator();
+        menu.addAction(iFadeAction);
+        menu.addAction(iFadeToAction);
+    }
+
     menu.addSeparator();
     addCutAction(&menu);
     menu.addAction(iCopyAction);

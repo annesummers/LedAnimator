@@ -16,14 +16,15 @@ public:
     explicit SelectableGroupWidget(QWidget *parent,
                                    int numRows,
                                    int numColumns,
-                                   SelectableGroupGroupWidget* groupGroupWidget = NULL);
+                                   SelectableGroupGroupWidget &groupGroupWidget,
+                                   int groupNumber);
 
-    void selectOne(SelectableWidget &selectable);
+    void selectOne(SelectableWidget &selectable, bool singleSelect = true);
 
-    void toggleOne(SelectableWidget &widget);
+    void toggleOne(SelectableWidget &widget, bool singleSelect = true);
     void toggle(SelectableWidget &widget);
 
-    void selectArea(SelectableWidget& widget);
+    void selectArea(SelectableWidget& widget, bool singleSelect = false);
 
     bool isGroupSelected();
     bool isMultipleSelected();
@@ -40,10 +41,15 @@ public:
     inline void setMaxRow(int max) { iNumRows = max; }
     inline void setMaxColumn(int max) { iNumColumns = max; }
 
-    virtual const QByteArray writeMimeData();
-    virtual void handleMimeData(QByteArray writeMimeData, SelectableWidget &dropWidget, bool move, bool wrap);
-
+    const QByteArray writeMimeData();
+    void handleMimeData(QByteArray mimeData, SelectableWidget &dropWidget, bool wrap, bool move = false);
     void handleOldMimeData(QByteArray itemData);
+
+    void doWriteMimeData(QDataStream& dataStream);
+    void doHandleMimeData(QDataStream& dataStream, int dropRow, int dropColumn, int *originRow, int *originColumn, bool wrap, bool move);
+    void doHandleOldMimeData(QDataStream& dataStream);
+
+    inline const int groupNumber() const { return iGroupNumber; }
 
     inline const QList<SelectableWidget*> selectedItems() const { return iSelected; }
 
@@ -69,18 +75,15 @@ protected:
     inline const int firstSelectedColumn() { return iFirstSelectedColumn; }
     inline const int lastSelectedColumn() { return iLastSelectedColumn; }
 
-    void getLeftRightTopBottomSelection(int *const topRow, int *const bottomRow, int *const leftColumn, int *const rightColumn) const ;
-
-    SelectableGroupGroupWidget* iGroupGroup;
+    SelectableGroupGroupWidget& iGroupGroup;
     int iGroupNumber;
 
 private:
-    void setSingleSelected(SelectableWidget &widget);
+    void setNoneSelected();
+    void setLastSelected(SelectableWidget& widget);
 
     void doGroupSelection();
-    void doSelect(SelectableWidget &widget, bool selectedItems);
-
-    void clearGroupSelection();
+    void doSelect(SelectableWidget &widget, bool selectedItems, bool singleSelect = false);
 
     void sortSelected();
 

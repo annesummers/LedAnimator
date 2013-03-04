@@ -11,13 +11,13 @@
 using namespace Exception;
 using namespace AnimatorModel;
 
-Frame::Frame(QObject *parent) :
-    Selectable(parent),
-    iColour(Qt::black){
+Frame::Frame(QObject *parent, int number) :
+    Selectable(parent, number),
+    iColour(Qt::black) {
 }
 
-Frame::Frame(QObject* parent, QColor colour) :
-    Selectable(parent),
+Frame::Frame(QObject* parent, QColor colour, int number) :
+    Selectable(parent, number),
     iColour(colour) {}
 
 const QColor Frame::colour() const {

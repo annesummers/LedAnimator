@@ -18,8 +18,8 @@ class ColourTestObject : public Selectable {
     Q_OBJECT
 
 public :
-    explicit ColourTestObject(QObject* parent) :
-        Selectable(parent) { }
+    explicit ColourTestObject(QObject* parent, int number) :
+        Selectable(parent, number) { }
 
     QColor iColour;
 };
@@ -42,15 +42,13 @@ public:
 
     inline const QColor colour() const { return static_cast<ColourTestObject&>(iItem).iColour; }
     inline void setColour(QColor colour) { static_cast<ColourTestObject&>(iItem).iColour = colour; }
-
-    inline QColorDialog& colourDialog() { return *iColourDialog; }
 };
 
 class ColourGroupTestWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget* groupGroupWidget);
+    ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget& groupGroupWidget, int groupNumber);
 
     SelectableWidget& widgetAt(int row, int column);
     void getWidgetPosition(SelectableWidget& widget, int* row, int* column);

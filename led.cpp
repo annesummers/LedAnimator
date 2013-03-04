@@ -16,10 +16,9 @@
 using namespace Exception;
 
 Led::Led(QObject* parent, Animation &animation, int number, int row, int column) :
-    GridItem(parent, row, column),
+    GridItem(parent, number, row, column),
     iAnimation(animation),
     iSignalMapper(NULL),
-    iNumber(number),
     iGroupNumber(DEFAULT_GROUP),
     iHidden(false) {
 
@@ -88,7 +87,7 @@ void Led::numFramesChanged(int numFrames) {
 
     if(numFrames > oldNumFrames) {  // we need to add some frames
         for(int i = oldNumFrames; i < numFrames; i++) {
-            Frame* frame = new Frame(this);
+            Frame* frame = new Frame(this, i + INITIAL_FRAME);
             iFrames.append(frame);
 
             iSignalMapper->setMapping(frame, i + INITIAL_FRAME);

@@ -23,12 +23,13 @@ public:
     explicit FrameListWidget(QWidget *parent,
                              const Animation &animation,
                              const Led& led,
-                             SelectableGroupGroupWidget &framesListGroup);
+                             ColourGroupGroupWidget &framesListGroup,
+                             int groupNumber);
 
     const Led& led() { return iLed; }
 
 signals:
-    void resized(int x, int newWidth);
+    void resized();
 
 private slots:
     void numFramesChanged(int numFrames);
@@ -47,6 +48,8 @@ private:
     QList<FrameWidget*> iFramesList;
 
     const Led& iLed;
+
+    bool iResized;
 };
 }
 

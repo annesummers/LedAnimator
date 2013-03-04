@@ -2,6 +2,7 @@
 #define SELECTABLEGROUPOFGROUPSWIDGET_H
 
 #include <QWidget>
+#include <QHash>
 
 namespace AnimatorUi {
 
@@ -13,14 +14,27 @@ class SelectableGroupGroupWidget : public QWidget {
 public:
     explicit SelectableGroupGroupWidget(QWidget *parent);
 
-    void selected(SelectableGroupWidget& selectedWidget);
-    int addGroup(SelectableGroupWidget& newGroup);
+    void selected(SelectableGroupWidget& selectedWidget, bool isSelected, bool selectSingle = false);
 
-    inline SelectableGroupWidget& group(int groupNumber) { return *iColourGroups.at(groupNumber); }
+    int addGroup(SelectableGroupWidget& newGroup);
+    void removeGroup(SelectableGroupWidget& group);
+
+    void selectSingle(SelectableGroupWidget& selectedWidget);
+
+    const QByteArray writeMimeData();
+    void handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move);
+    void handleOldMimeData(QByteArray itemData);
+
+    inline SelectableGroupWidget& group(int groupNumber) { return *iGroups.value(groupNumber); }
+
+protected:
+    QHash<int, SelectableGroupWidget*>  iSelectedGroups;
 
 private:
-    QList<SelectableGroupWidget*>   iColourGroups;
-    
+    QHash<int, SelectableGroupWidget*>  iGroups;
+
+    QList<int> iFreeGroupNumbers;
+    int iHighestGroupNumber;
 };
 }
 

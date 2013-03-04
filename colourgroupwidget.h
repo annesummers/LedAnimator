@@ -10,6 +10,7 @@
 #include <QWidget>
 
 #include "selectablegroupwidget.h"
+#include "colourgroupgroupwidget.h"
 
 namespace AnimatorModel {
 class Animation;
@@ -22,7 +23,6 @@ using namespace AnimatorModel;
 namespace AnimatorUi {
 
 class ColourWidget;
-class SelectableGroupGroupWidget;
 
 struct FadeParameters {
     int nextColumn;
@@ -56,11 +56,13 @@ public:
     explicit ColourGroupWidget(QWidget *parent,
                                int numRows,
                                int numColumns,
-                               SelectableGroupGroupWidget *groupGroupWidget = NULL);
+                               ColourGroupGroupWidget &groupGroupWidget,
+                               int groupNumber);
 
 
     void fade();
     void fadeTo(QColor fadeToColour);
+    void doSetColour(QColor colour);
 
 public slots:
     void setColour(QColor colour);
@@ -74,12 +76,11 @@ protected:
     void setupFade(QColor fadeToColor);
     void startFade();
 
-    void readMimeData(QDataStream data);
-    void writeMimeData(QDataStream data);
-
     FadeCalculator* iFadeCalculator;
 
 private:
+    inline ColourGroupGroupWidget& colourGroupGroup() { return static_cast<ColourGroupGroupWidget&>(iGroupGroup); }
+
     void calculateNumWidgetsInLine();
     void calculateRowStartAndEnd(int* rowStart, int* rowEnd);
     void calculateColumnStartAndEnd(int* columnStart, int* columnEnd);

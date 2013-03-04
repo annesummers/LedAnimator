@@ -10,7 +10,7 @@
 #include "colourwidget.h"
 #include "selectable.h"
 #include "fadecalculator.h"
-#include "selectablegroupgroupwidget.h"
+#include "colourgroupgroupwidget.h"
 
 #include "constants.h"
 #include "exceptions.h"
@@ -21,8 +21,9 @@ using namespace AnimatorUi;
 ColourGroupWidget::ColourGroupWidget(QWidget *parent,
                                      int maxRow,
                                      int maxColumn,
-                                     SelectableGroupGroupWidget *groupGroup) :
-    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroup),
+                                     ColourGroupGroupWidget &groupGroup,
+                                     int groupNumber) :
+    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroup, groupNumber),
     iFadeCalculator(NULL),
     iFadeParameters(NULL) {
 }
@@ -30,11 +31,15 @@ ColourGroupWidget::ColourGroupWidget(QWidget *parent,
 void ColourGroupWidget::setColour(QColor colour) {
    // qDebug("setColour, %d", iSelected.count());
     if(colour.isValid()) {
-        SelectableWidget* item = NULL;
+        colourGroupGroup().setColour(colour);
+    }
+}
 
-        foreach(item, selectedItems()){
-            static_cast<ColourWidget*>(item)->setColour(colour);
-        }
+void ColourGroupWidget::doSetColour(QColor colour) {
+    SelectableWidget* item = NULL;
+
+    foreach(item, selectedItems()){
+        static_cast<ColourWidget*>(item)->setColour(colour);
     }
 }
 
@@ -45,8 +50,10 @@ void ColourGroupWidget::fade() {
 }
 
 void ColourGroupWidget::fadeTo(QColor fadeToColour) {
-    setupFade(fadeToColour);
-    startFade();
+    if(fadeToColour.isValid()) {
+        setupFade(fadeToColour);
+        startFade();
+    }
 }
 
 void ColourGroupWidget::setupFade(QColor fadeToColour) {
@@ -108,8 +115,11 @@ void ColourGroupWidget::setupFade(QColor fadeToColour) {
 
     iFadeParameters->numWidgets = 0;
 
+    ColourWidget& fromWidget = static_cast<ColourWidget&>(widgetAt(firstSelectedRow(), firstSelectedColumn()));
+    QColor fromColour = fromWidget.colour();
+
     iFadeCalculator = new FadeCalculator(reinterpret_cast<QObject*>(this),
-                                static_cast<ColourWidget&>(widgetAt(firstSelectedRow(), firstSelectedColumn())).colour(),
+                                fromColour,
                                 fadeToColour,
                                 iFadeParameters->increments);
 

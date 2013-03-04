@@ -43,7 +43,7 @@ void SelectableWidget::paste(bool wrap) {
 
     if(clipboard->mimeData()->hasFormat(mimeType())) {
         bool move = shouldMove();
-        iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, move, wrap);
+        iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, wrap, move);
 
         if(move) {
             QApplication::clipboard()->setMimeData(mimeData());
@@ -96,21 +96,29 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
     iDragStartPosition = event->pos();
 
     if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
-         !iSelectableGroup.isGroupSelected()) {
-         iSelectableGroup.toggle(*this);
+        (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
+         if(iSelectableGroup.isAnySelected()) {
+             iSelectableGroup.toggle(*this);
+         } else {
+             iSelectableGroup.toggleOne(*this, false);
+         }
+
          return;
     }
 }
 
 void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
    // qDebug("singleWidget mouseRelease");
-    if (event->button() != Qt::LeftButton ||
-       (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+    if (event->button() != Qt::LeftButton) {
         return;
     }
 
     if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-        iSelectableGroup.selectArea(*this);
+        iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier);
+        return;
+    }
+
+    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
         return;
     }
 
@@ -175,10 +183,7 @@ void SelectableWidget::dropEvent(QDropEvent *event) {
    // qDebug("singleWidget drop");
     Qt::DropAction action = handleDragDropEvent(event);
     if(action != Qt::IgnoreAction) {
-      //  if() {
-        //    setHidden(true);
-       // }
-        iSelectableGroup.handleMimeData(event->mimeData()->data(mimeType()), *this, action == Qt::MoveAction ? true : false, false);
+        iSelectableGroup.handleMimeData(event->mimeData()->data(mimeType()), *this, false, action == Qt::MoveAction);
 
         update();
     }

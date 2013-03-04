@@ -13,17 +13,17 @@
 using namespace AnimatorTest;
 using namespace Exception;
 
-ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, SelectableGroupGroupWidget *groupGroupWidget = 0) :
-    ColourGroupWidget(parent, maxRow, maxColumn, groupGroupWidget) {
+ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, ColourGroupGroupWidget &groupGroupWidget, int groupNumber) :
+    ColourGroupWidget(parent, maxRow, maxColumn, groupGroupWidget, groupNumber) {
 
     // TODO yuck this is horrilbe
-
+    int number = 0;
     iWidgetArray = new QVector<WidgetVector*>(maxRow);
     for(int i = 0; i < maxRow; i++) {
         (*iWidgetArray)[i] = new WidgetVector(maxColumn);
         for(int j = 0; j < maxColumn; j++) {
             WidgetVector& row = *((*iWidgetArray)[i]);
-            row[j] =  new ColourTestWidget(this, *this, *(new ColourTestObject(this)));
+            row[j] =  new ColourTestWidget(this, *this, *(new ColourTestObject(this, number++)));
         }
     }
 }
@@ -58,7 +58,7 @@ void ColourGroupTestWidget::copyItem(int fromGroup, int fromRow, int fromColumn,
     if(fromGroup == iGroupNumber) {
         fromWidget = static_cast<ColourTestWidget*>(&widgetAt(fromRow, fromColumn));
     } else {
-        ColourGroupTestWidget& group = static_cast<ColourGroupTestWidget&>(iGroupGroup->group(fromGroup));
+        ColourGroupTestWidget& group = static_cast<ColourGroupTestWidget&>(iGroupGroup.group(fromGroup));
         fromWidget = static_cast<ColourTestWidget*>(&group.widgetAt(fromRow, fromColumn));
     }
 
@@ -598,7 +598,8 @@ void ColourWidgetTests::fade() {
             iFadeData->fadePoints.append(fadePoint);
         }
 
-        iGroupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+        ColourGroupGroupWidget* groupGroupWidget =  new ColourGroupGroupWidget(NULL);
+        iGroupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
 
         iGroupWidget->selectOne(iGroupWidget->widgetAt(startPoint.y(), startPoint.x()));
         iGroupWidget->setColour(startColour);
@@ -676,7 +677,8 @@ void ColourWidgetTests::doubleClickOne() {
     QFETCH(int, maxColumn);
     QFETCH(QPoint, selectedPoint);
 
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, selectedPoint);
 
@@ -718,7 +720,8 @@ void ColourWidgetTests::doubleClickOneClickOne() {
     QFETCH(QPoint, secondPoint);
     QFETCH(QPoint, selectedPoint);
 
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, firstPoint);
 
@@ -762,7 +765,8 @@ void ColourWidgetTests::clickOneDoubleClickOne() {
     QFETCH(QPoint, secondPoint);
     QFETCH(QPoint, selectedPoint);
 
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
 
     QTest::mouseClick(&(groupWidget->widgetAt(firstPoint.y(), firstPoint.x())), Qt::LeftButton);
 
@@ -809,7 +813,8 @@ void ColourWidgetTests::doubleClickOneDoubleClickOne() {
     QFETCH(QPoint, secondPoint);
     QFETCH(QPoint, selectedPoint);
 
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, firstPoint);
     doubleClickWidgetAndDismissDialog(*groupWidget, secondPoint);
@@ -852,7 +857,8 @@ void ColourWidgetTests::copyPasteOneInternal() {
     QFETCH(QPoint, pastePoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
 
     ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget->widgetAt(copyPoint.y(), copyPoint.x());
     copyWidget.setColour(copyColour);
@@ -921,7 +927,8 @@ void ColourWidgetTests::copyPasteManyInternal() {
     QFETCH(QPoint, pasteSecondPoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn);
+    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
 
     ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget->widgetAt(copyFirstPoint.y(), copyFirstPoint.x()));
 

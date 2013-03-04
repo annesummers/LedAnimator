@@ -25,7 +25,7 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
 
     iCutAction = new QAction(tr("&Cut"), this);
-    iCutAction->setStatusTip(tr("Cut this led"));
+    iCutAction->setStatusTip(tr("Cut selected"));
 
     connect(iCutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
@@ -34,13 +34,13 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
 
     connect(iRenumberAction, SIGNAL(triggered()), this, SLOT(renumber()));
 
-    iDeleteLedAction = new QAction(tr("&Delete led"), this);
-    iDeleteLedAction->setStatusTip(tr("Delete this led"));
+    iDeleteLedAction = new QAction(tr("&Delete"), this);
+    iDeleteLedAction->setStatusTip(tr("Delete selected leds"));
 
     connect(iDeleteLedAction, SIGNAL(triggered()), this, SLOT(deleteLed()));
 
     iSetGroupAction = new QAction(tr("&Set group..."), this);
-    iSetGroupAction->setStatusTip(tr("Set this led's group"));
+    iSetGroupAction->setStatusTip(tr("Set selected led's group"));
 
     connect(iSetGroupAction, SIGNAL(triggered()), this, SLOT(setGroup()));
 }
@@ -53,7 +53,9 @@ void LedWidget::addCutAction(QMenu* menu) {
 }
 
 void LedWidget::addExtraActions(QMenu* menu) {
-    menu->addAction(iRenumberAction);
+    if(gridWidget().isSingleSelected()) {
+        menu->addAction(iRenumberAction);
+    }
     menu->addAction(iDeleteLedAction);
     menu->addAction(iSetGroupAction);
 }
@@ -65,25 +67,15 @@ void LedWidget::cut() {
 }
 
 void LedWidget::renumber() {
-    bool ok;
-    int i = QInputDialog::getInt(this, tr("Renumber led"),
-                                 tr("New number:"), iAnimation.numLeds() + 1, INITIAL_LED, iAnimation.numLeds() + 1, 1, &ok);
-    if (ok) {
-        iAnimation.renumberLed(led(), i);
-    }
+    gridWidget().renumberLed(led());
 }
 
 void LedWidget::setGroup() {
-    bool ok;
-    int i = QInputDialog::getInt(this, tr("Set led group"),
-                                 tr("Group number:"), led().groupNumber(), 1, iAnimation.numGroups() + 1, 1, &ok);
-    if (ok) {
-        led().setGroupNumber(i);
-    }
+    gridWidget().setSelectedLedsGroupNumber();
 }
 
 void LedWidget::deleteLed() {
-    gridWidget().deleteLed(led().row(), led().column());
+    gridWidget().deleteSelectedLeds();
 }
 
 // events ------------------------------------

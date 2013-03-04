@@ -23,20 +23,28 @@ using namespace AnimatorModel;
 
 namespace AnimatorUi {
 
+class ColourGroupGroupWidget;
+
 class LedGridWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedGridWidget(QWidget* parent, Animation &animation);
+    explicit LedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget& groupGroup);
 
     inline bool ledNumbersShown() const { return iLedNumbersShown; }
 
-    void deleteLed(int row, int column);
+    void renumberLed(Led& led);
 
     void addSelectedLeds();
     void hideSelectedLeds();
+    void setSelectedLedsGroupNumber();
+    void deleteSelectedLeds();
 
     bool shouldMoveLeds();
+
+signals:
+    void hideLed(int row, int column);
+    void renumberLed(int row, int column, int oldNumber);
 
 public slots:
     void addLed(int row, int column, Led *led = NULL);
@@ -65,12 +73,13 @@ private:
     void copyLed(Led &led, int toRow, int toColumn);
     void moveLed(Led& led, int toRow, int toColumn);
 
-    void hideLed(int row, int column);
+    void hideLed(Led& led);
 
     int gridWidth();
     int gridHeight();
 
     void deleteIfNeeded(int row, int column);
+    void deleteLed(int row, int column);
 
     void addWidget(SelectableWidget *widget, int row, int column);
 

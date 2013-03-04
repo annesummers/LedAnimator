@@ -11,6 +11,7 @@
 #include <QColorDialog>
 #include <QMimeData>
 #include <QMenu>
+#include <QSignalMapper>
 
 #include "selectable.h"
 #include "selectablewidget.h"
@@ -36,8 +37,7 @@ protected slots:
 
 private slots:
     void chooseColour();
-  //  void setAllFramesColour();
-    void colourDialogAccepted();
+    void colourDialogAccepted(int number);
 
     void fade();
     void fadeTo();
@@ -51,19 +51,18 @@ protected:
     virtual void cut() {}
     virtual void addExtraActions(QMenu* menu) { Q_UNUSED(menu); }
 
-    bool iFading;
-  //  bool iSetAllFrames;
-
-    QColorDialog* iColourDialog;
-
 private:
     ColourGroupWidget& colourGroup() { return static_cast<ColourGroupWidget&>(iSelectableGroup); }
+
+    QSignalMapper* iSignalMapper;
 
     QAction* iSetColourAction;
  //   QAction* iSetAllFramesColourAction;
     QAction* iFadeAction;
     QAction* iFadeToAction;
     QAction* iCopyAction;
+
+    bool iFading;
 };
 }
 

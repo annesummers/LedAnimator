@@ -9,7 +9,7 @@ class GridItem : public Selectable {
     Q_OBJECT
 
 public:
-    explicit GridItem(QObject *parent, int row, int column);
+    explicit GridItem(QObject *parent, int number, int row, int column);
 
     inline const int row() const { return iRow; }
     inline const int column() const {return iColumn; }

@@ -8,9 +8,10 @@
 
 using namespace AnimatorModel;
 
-Selectable::Selectable(QObject *parent) :
+Selectable::Selectable(QObject *parent, int number) :
     QObject(parent),
-    iIsSelected(false) {
+    iIsSelected(false),
+    iNumber(number) {
 }
 
 void Selectable::select(bool isSelected) {

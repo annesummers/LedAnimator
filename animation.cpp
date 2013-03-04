@@ -26,7 +26,7 @@ Animation::Animation(Engine& engine) :
     iPlayTimer(NULL),
     iNumRows(INVALID),
     iNumColumns(INVALID),
-    iNumLeds(INVALID),
+  //  iNumLeds(INVALID),
     iNumFrames(INVALID),
     iCurrentFrame(INVALID),
     iFrameFrequency(DEFAULT_FRAME_FREQUENCY),
@@ -71,8 +71,6 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
     setNumRows(numRows);
     setNumColumns(numColumns);
 
-    setNumLeds(numLeds);
-
     setNumFrames(numFrames);
     setCurrentFrame(INITIAL_FRAME);
     setFrameFrequency(frameFrequency);
@@ -89,6 +87,7 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
     if(ledPositions.count() != 0) {
         iPositions = ledPositions;
     } else {
+        iPositions.clear();
         for(int i = 0; i < numRows * numColumns; i++) {
             iPositions.append(INVALID);
         }
@@ -98,14 +97,16 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
     int column;
     int ledNum = INITIAL_LED;
 
+    iMissingLeds.clear();
     for(int i = 0; i < numLeds; i++) {
         while(!getLedPosition(ledNum, &row, &column)) {
             iMissingLeds.append(ledNum++);
         }
 
-        addNewLed(row, column, ledNum);
-        ledNum++;
+        addNewLed(row, column, ledNum++);
     }
+
+    iGreatestNumber = ledNum - 1;
 
     const QClipboard *clipboard = QApplication::clipboard();
 
@@ -136,9 +137,23 @@ void Animation::addNewLed(int row, int column, int ledNum) {
         throw IllegalArgumentException("Animation::addNewLed : column is bigger than num columns");
     }
 
-    Led* led = new Led(this, *this, ledNum != INVALID ? ledNum : ++iNumLeds, row, column);
-
+    Led* led = new Led(this, *this, ledNum != INVALID ? ledNum : nextLedNumber(), row, column);
     addLed(*led, row, column);
+}
+
+void Animation::addLed(Led& led, int row, int column) {
+    addLed(led, led.number());
+
+    led.numFramesChanged(iNumFrames);
+
+    emit newLed(row, column);
+}
+
+void Animation::deleteLed(Led& led) {
+    removeLed(led);
+
+   // delete &led;
+    // TODO why does this fail?
 }
 
 void Animation::moveLed(Led& led, int toRow, int toColumn) {
@@ -152,44 +167,48 @@ void Animation::moveLed(Led& led, int toRow, int toColumn) {
 void Animation::copyLed(Led& led, int toRow, int toColumn) {
     Led* newLed = ledAt(toRow, toColumn);
     if(newLed == NULL) {
-        newLed = new Led(this, *this, ++iNumLeds, toRow, toColumn);
+        newLed = new Led(this, *this, nextLedNumber(), toRow, toColumn);
         addLed(*newLed, toRow, toColumn);
     }
 
     newLed->copyFrames(led);
 }
 
-void Animation::deleteLed(Led& led) {
-    iLeds.remove(led.number());
-    setGridPositionNumber(led.row(), led.column(), INVALID);
-    iMissingLeds.append(led.number());
-    iNumLeds--;
-   // delete &led;
-    // TODO why does this fail?
-}
-
 void Animation::renumberLed(Led& led, int newNumber) {
-    iLeds.remove(led.number());
-    iLeds.insert(newNumber, &led);
-
-    setGridPositionNumber(led.row(), led.column(), newNumber);
+    removeLed(led);
+    addLed(led, newNumber);
 
     led.setNumber(newNumber);
-
-    iMissingLeds.append(led.number());
-    if(isMissing(newNumber)) {
-        iMissingLeds.removeOne(newNumber);
-    }
 }
 
-void Animation::addLed(Led& led, int row, int column) {
-    iLeds.insert(led.number(), &led);
+int Animation::nextLedNumber() {
+    return ++iGreatestNumber;
+}
 
-    setGridPositionNumber(row, column, led.number());
+void Animation::addLed(Led& led, int number) {
+    iLeds.insert(number, &led);
 
-    led.numFramesChanged(iNumFrames);
+    if(number > iGreatestNumber) {
+        iGreatestNumber = number;
+    }
 
-    emit newLed(row, column);
+    if(isMissing(number)) {
+        iMissingLeds.removeOne(number);
+    }
+
+    setGridPositionNumber(led.row(), led.column(), led.number());
+}
+
+void Animation::removeLed(Led& led) {
+    iLeds.remove(led.number());
+
+    if(led.number() == iGreatestNumber) {
+        iGreatestNumber--;
+    } else {
+        iMissingLeds.append(led.number());
+    }
+
+    setGridPositionNumber(led.row(), led.column(), INVALID);
 }
 
 void Animation::selectGroup(int groupNumber) {
@@ -242,18 +261,19 @@ Led *Animation::ledAt(int row, int column) const {
 
     int ledNumber = iPositions.at(gridPositionNumber(row, column));
             //getLedNumber(row, column);
-    if(ledNumber != INVALID) {
-        return &ledAt(ledNumber);
-    }
+   // if(ledNumber != INVALID) {
+        return ledAt(ledNumber);
+   // }
 
-    return NULL;
+   // return NULL;
 }
 
-Led& Animation::ledAt(int number) const {
+Led* Animation::ledAt(int number) const {
     if(iLeds.contains(number)) {
-        return *iLeds.value(number);
+        return iLeds.value(number);
     } else {
-        throw IllegalArgumentException(QString("Animation::ledAt : led %1 does not exist").arg(number));
+       // throw IllegalArgumentException(QString("Animation::ledAt : led %1 does not exist").arg(number));
+        return NULL;
     }
 }
 

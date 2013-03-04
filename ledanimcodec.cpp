@@ -190,8 +190,7 @@ void LedAnimStringCodec::writeColourData() {
                 writeCharacter(ledNum);
             }
 
-            writeColour(iAnimation.ledAt(ledNum).frameAt(frame + INITIAL_FRAME).colour());
-            ledNum++;
+            writeColour(iAnimation.ledAt(ledNum++)->frameAt(frame + INITIAL_FRAME).colour());
         }
     }
 }
@@ -290,10 +289,9 @@ void LedAnimByteArrayCodec::writePositionData() {
             ledNum++;
         }
 
-        writeCharacter(ledNum);
+        writeCharacter(ledNum++);
         writeCharacter(AnimChar(row));
         writeCharacter(AnimChar(column));
-        ledNum++;
     }
 }
 
@@ -332,6 +330,7 @@ void LedAnimByteArrayCodec::writeColourData() {
         int ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
             while(iAnimation.isMissing(ledNum)) {
+                qDebug("led %d is missing", ledNum);
                 ledNum++;
             }
 
@@ -339,8 +338,7 @@ void LedAnimByteArrayCodec::writeColourData() {
                 writeCharacter(ledNum);
             }
 
-            writeColour(iAnimation.ledAt(ledNum).frameAt(frame + INITIAL_FRAME).colour());
-            ledNum++;
+            writeColour(iAnimation.ledAt(ledNum++)->frameAt(frame + INITIAL_FRAME).colour());
         }
     }
 }
@@ -354,8 +352,8 @@ void LedAnimByteArrayCodec::readColourData() {
             while(iAnimation.isMissing(ledNum)){
                 ledNum++;
             }
-            iAnimation.ledAt(ledNum).frameAt(frame + INITIAL_FRAME).setColour(readColour());
-            ledNum++;
+
+            iAnimation.ledAt(ledNum++)->frameAt(frame + INITIAL_FRAME).setColour(readColour());
         }
     }
 }

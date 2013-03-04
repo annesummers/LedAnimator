@@ -89,9 +89,9 @@ void LedTests::numFramesChanged() {
 
     try {
         setupAnimation();
-        Led& led = iAnimation->ledAt(INITIAL_LED);
+        Led* led = iAnimation->ledAt(INITIAL_LED);
 
-        led.numFramesChanged(numFrames); // should always throw an exception
+        led->numFramesChanged(numFrames); // should always throw an exception
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);

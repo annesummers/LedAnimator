@@ -34,7 +34,8 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
-    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation());
+    ColourGroupGroupWidget* gridGroupGroup = new ColourGroupGroupWidget(centralWidget);
+    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *gridGroupGroup);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
     gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
@@ -56,6 +57,9 @@ MainWindow::MainWindow(Engine& engine) :
 
     AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
     iAnimationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
+
+    connect(ledGridWidget, SIGNAL(hideLed(int, int)), iAnimationDetailsWidget, SLOT(deleteLed(int, int)));
+    connect(ledGridWidget, SIGNAL(renumberLed(int,int,int)), iAnimationDetailsWidget, SLOT(renumberLed(int, int, int)));
 
     gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 3);
 

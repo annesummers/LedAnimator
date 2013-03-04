@@ -40,7 +40,7 @@ public:
     void stop();
 
     Led* ledAt(int row, int column) const;
-    Led& ledAt(int number) const;
+    Led *ledAt(int number) const;
 
     inline bool isMissing(int ledNumber) { return iMissingLeds.contains(ledNumber); }
     inline bool ledsMissing() { return iMissingLeds.count() == 0; }
@@ -56,7 +56,7 @@ public:
 
     inline const int numRows() const { return iNumRows; }
     inline const int numColumns() const { return iNumColumns; }
-    inline const int numLeds() const { return iNumLeds; }
+    inline const int numLeds() const { return iLeds.count(); }
     inline const int numGroups() const { return iNumGroups; }
     inline const int numSubAnimations() const { return iNumSubAnimations; }
 
@@ -88,10 +88,13 @@ private slots:
 
 private:
     void addLed(Led &led, int row, int column);
+    void addLed(Led & led, int number);
+    void removeLed(Led& led);
+    int nextLedNumber();
 
     inline void setNumRows(int numRows) { iNumRows = numRows; }
     inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
-    inline void setNumLeds(int numLeds) { iNumLeds = numLeds; }
+    //inline void setNumLeds(int numLeds) { iNumLeds = numLeds; }
 
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
@@ -110,8 +113,10 @@ private:
     int iNumRows;
     int iNumColumns;
 
-    int iNumLeds;
+   // int iNumLeds;
     int iNumGroups;
+
+    int iGreatestNumber;
 
     int iNumFrames;
     int iCurrentFrame;

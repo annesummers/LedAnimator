@@ -21,8 +21,8 @@ class TestLedGridWidget : public LedGridWidget {
     Q_OBJECT
 
 public:
-    explicit TestLedGridWidget(QWidget* parent, Animation &animation) :
-        LedGridWidget(parent, animation) {}
+    explicit TestLedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget& colourGroupGroup) :
+        LedGridWidget(parent, animation, colourGroupGroup) {}
 
     SelectableWidget& widgetAt(int row, int column) { return LedGridWidget::widgetAt(row, column); }
 };

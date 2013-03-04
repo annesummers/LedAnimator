@@ -15,9 +15,11 @@ using namespace AnimatorUi;
 FrameListWidget::FrameListWidget(QWidget *parent,
                                  const Animation& animation,
                                  const Led &led,
-                                 SelectableGroupGroupWidget &framesListGroup) :
-    ColourGroupWidget(parent, 0, animation.numFrames(), &framesListGroup),
-    iLed(led) {
+                                 ColourGroupGroupWidget &framesListGroup,
+                                 int groupNumber) :
+    ColourGroupWidget(parent, 0, animation.numFrames(), framesListGroup, groupNumber),
+    iLed(led),
+    iResized(false){
 
     numFramesChanged(animation.numFrames());
 
@@ -85,7 +87,7 @@ void FrameListWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int t
     if(fromGroup == iGroupNumber) {
         fromWidget = static_cast<FrameWidget*>(&widgetAt(fromRow, fromColumn));
     } else {
-        FrameListWidget& group = static_cast<FrameListWidget&>(iGroupGroup->group(fromGroup));
+        FrameListWidget& group = static_cast<FrameListWidget&>(iGroupGroup.group(fromGroup));
         fromWidget = static_cast<FrameWidget*>(&group.widgetAt(fromRow, fromColumn));
     }
 
@@ -97,19 +99,24 @@ void FrameListWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int t
 // events ------------------------------------
 
 void FrameListWidget::resizeEvent(QResizeEvent *) {
-    int numFrames = iFramesList.count();
+    if(!iResized) {
+        iResized = true;
+        int numFrames = iFramesList.count();
 
-    if(numFrames > 0) {
-        int extra = width()%numFrames;
-        int frameWidth = (width()-extra)/numFrames;
+        if(numFrames > 0) {
+            int extra = width()%numFrames;
+            int frameWidth = (width()-extra)/numFrames;
 
-        for(int i = 0; i < numFrames; i++) {
-            iFramesList.at(i)->resize(frameWidth, height());
-            iFramesList.at(i)->move(frameWidth*i, 0);
+            for(int i = 0; i < numFrames; i++) {
+                iFramesList.at(i)->resize(frameWidth, height());
+                iFramesList.at(i)->move(frameWidth*i + (10 - frameWidth/2), 0);
+            }
+
+            resize(width() - extra + (20 - frameWidth), height());
+
+            emit resized();
         }
-
-        resize(width()-extra, height());
+    } else {
+        iResized = false;
     }
-
-  //  emit resized(x() + 10, width() + 7);
 }
