@@ -114,6 +114,12 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
        clipboard->mimeData()->hasFormat(FRAME_MIME_TYPE)) {
         QApplication::clipboard()->clear();
     }
+
+    iClipboardLeds.clear();
+    iClipboardPositions.clear();
+    for(int i = 0; i < numRows * numColumns; i++) {
+        iClipboardPositions.append(INVALID);
+    }
 }
 
 void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFrequency) {
@@ -149,29 +155,83 @@ void Animation::addLed(Led& led, int row, int column) {
     emit newLed(row, column);
 }
 
-void Animation::deleteLed(Led& led) {
+void Animation::deleteLed(int row, int column) {
+    Led& led = *ledAt(row, column);
+    int number = led.number();
+
     removeLed(led);
+
+    emit ledDeleted(row, column, number);
 
    // delete &led;
     // TODO why does this fail?
 }
 
-void Animation::moveLed(Led& led, int toRow, int toColumn) {
-    setGridPositionNumber(led.row(), led.column(), INVALID);
+void Animation::moveLed(int fromRow, int fromColumn, int toRow, int toColumn) {
+    Led& led = *ledAt(fromRow, fromColumn);
+    Led* toLed = ledAt(toRow, toColumn);
+
+    if(toLed != NULL) {
+        return;
+        //deleteLed(toRow, toColumn);
+    }
+
+    setGridPositionNumber(fromRow, fromColumn, INVALID);
     setGridPositionNumber(toRow, toColumn, led.number());
 
     led.move(toRow, toColumn);
-    led.setHidden(false);
+
+    emit ledMoved(fromRow, fromColumn, toRow, toColumn);
 }
 
-void Animation::copyLed(Led& led, int toRow, int toColumn) {
+void Animation::cloneLed(int fromRow, int fromColumn, int toRow, int toColumn) {
     Led* newLed = ledAt(toRow, toColumn);
     if(newLed == NULL) {
         newLed = new Led(this, *this, nextLedNumber(), toRow, toColumn);
         addLed(*newLed, toRow, toColumn);
     }
 
-    newLed->copyFrames(led);
+    newLed->copyFrames(*ledAt(fromRow, fromColumn));
+}
+
+void Animation::moveLedToClipboard(int row, int column) {
+    Led* led = ledAt(row, column);
+
+    setClipboardGridPositionNumber(row, column, led->number());
+    iClipboardLeds.insert(led->number(), led);
+
+    deleteLed(row, column);
+}
+
+void Animation::pasteLed(int fromRow, int fromColumn, int toRow, int toColumn) {
+    if(fromRow >= numRows()) {
+        throw IllegalArgumentException("Animation::pasteLed : Row is greater than number of rows");
+    }
+
+    if(fromRow < 0) {
+        throw IllegalArgumentException("Animation::pasteLed : Row is negative");
+    }
+
+    if(fromColumn >= numColumns()) {
+        throw IllegalArgumentException("Animation::pasteLed : Column is greater than number of columns");
+     }
+
+    if(fromColumn < 0 ) {
+        throw IllegalArgumentException("Animation::pasteLed : Column is negative");
+    }
+
+    int ledNumber = iClipboardPositions.at(gridPositionNumber(fromRow, fromColumn));
+    if(!iClipboardLeds.contains(ledNumber)) {
+        throw IllegalArgumentException("Animation::pasteLed : Led is NULL");
+    }
+
+    Led* led = iClipboardLeds.value(ledNumber);
+
+    setClipboardGridPositionNumber(fromRow, fromColumn, INVALID);
+    iClipboardLeds.remove(ledNumber);
+
+    led->move(toRow, toColumn);
+    addLed(*led, toRow, toColumn);
 }
 
 void Animation::renumberLed(Led& led, int newNumber) {
@@ -260,12 +320,8 @@ Led *Animation::ledAt(int row, int column) const {
     }
 
     int ledNumber = iPositions.at(gridPositionNumber(row, column));
-            //getLedNumber(row, column);
-   // if(ledNumber != INVALID) {
-        return ledAt(ledNumber);
-   // }
 
-   // return NULL;
+    return ledAt(ledNumber);
 }
 
 Led* Animation::ledAt(int number) const {
@@ -297,6 +353,10 @@ int Animation::gridPositionNumber(int row, int column) const {
 
 void Animation::setGridPositionNumber(int row, int column, int number) {
     iPositions[gridPositionNumber(row, column)] = number;
+}
+
+void Animation::setClipboardGridPositionNumber(int row, int column, int number) {
+    iClipboardPositions[gridPositionNumber(row, column)] = number;
 }
 
 // slots -------------------------

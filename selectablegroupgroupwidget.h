@@ -21,9 +21,9 @@ public:
 
     void selectSingle(SelectableGroupWidget& selectedWidget);
 
-    const QByteArray writeMimeData();
-    void handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move);
-    void handleOldMimeData(QByteArray itemData);
+    const QByteArray writeMimeData(bool cut);
+    bool handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move);
+   // void handleOldMimeData(QByteArray itemData);
 
     inline SelectableGroupWidget& group(int groupNumber) { return *iGroups.value(groupNumber); }
 

@@ -80,7 +80,8 @@ HEADERS += \
     animationdetailswidget.h \
     selectablegroupgroupwidget.h \
     grouplistwidget.h \
-    colourGroupGroupWidget.h
+    colourgroupgroupwidget.h \
+    ledanimatoractionbase.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -107,7 +108,8 @@ SOURCES += \
     animationdetailswidget.cpp \
     selectablegroupgroupwidget.cpp \
     grouplistwidget.cpp \
-    colourGroupGroupWidget.cpp \
+    colourgroupgroupwidget.cpp \
+    ledanimatoractionbase.cpp
 
 FORMS += \
     newanimation.ui \

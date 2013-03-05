@@ -81,7 +81,7 @@ bool FrameListWidget::validKeyPress(Qt::Key key) {
            (key & Qt::Key_Left) == Qt::Key_Left;
 }
 
-void FrameListWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+void FrameListWidget::cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
     FrameWidget* fromWidget;
 
     if(fromGroup == iGroupNumber) {

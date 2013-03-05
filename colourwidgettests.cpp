@@ -52,7 +52,7 @@ bool ColourGroupTestWidget::validKeyPress(Qt::Key key) {
            (key & Qt::Key_Down) == Qt::Key_Down;
 }
 
-void ColourGroupTestWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+void ColourGroupTestWidget::cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
     ColourTestWidget* fromWidget;
 
     if(fromGroup == iGroupNumber) {

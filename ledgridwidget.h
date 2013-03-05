@@ -11,6 +11,7 @@
 #include <QGridLayout>
 #include <QPoint>
 #include <QRect>
+#include <QUndoStack>
 
 #include "colourgroupwidget.h"
 
@@ -29,7 +30,7 @@ class LedGridWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget& groupGroup);
+    explicit LedGridWidget(QWidget* parent, Animation &animation, QUndoStack &undoStack, ColourGroupGroupWidget& groupGroup);
 
     inline bool ledNumbersShown() const { return iLedNumbersShown; }
 
@@ -39,11 +40,12 @@ public:
     void hideSelectedLeds();
     void setSelectedLedsGroupNumber();
     void deleteSelectedLeds();
+    void moveSelectedLedsToClipboard();
 
     bool shouldMoveLeds();
 
 signals:
-    void hideLed(int row, int column);
+    void hideLed(int number);
     void renumberLed(int row, int column, int oldNumber);
 
 public slots:
@@ -51,6 +53,8 @@ public slots:
 
 private slots:
     void addSocket(int row, int column);
+    void ledDeleted(int row, int column, int ledNumber);
+    void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
 
     void toggleLedNumbers();
 
@@ -68,24 +72,21 @@ protected:
 
 private:
     void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
-    void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
 
-    void copyLed(Led &led, int toRow, int toColumn);
-    void moveLed(Led& led, int toRow, int toColumn);
-
-    void hideLed(Led& led);
+    void moveToClipboard(int group, int row, int column);
 
     int gridWidth();
     int gridHeight();
-
-    void deleteIfNeeded(int row, int column);
-    void deleteLed(int row, int column);
 
     void addWidget(SelectableWidget *widget, int row, int column);
 
     Led& getLed(int row, int column);
 
     Animation&      iAnimation;
+
+    QUndoStack&     iUndoStack;
 
     QGridLayout*    iLedGridLayout;
     QWidget*        iContainerWidget;
@@ -94,8 +95,6 @@ private:
     QRect           iDragArea;
 
     bool            iLedNumbersShown;
-
-    bool            iMoveLeds;
 };
 }
 

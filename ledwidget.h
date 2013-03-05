@@ -21,7 +21,7 @@ class LedWidget : public ColourWidget {
 public:
     explicit LedWidget(QWidget* parent, Animation &animation, ColourGroupWidget& ledGroup, Led& led);
 
-    void hideLed();
+   // void hideLed();
 
     inline Led &led() const { return static_cast<Led&>(iItem); }
 
@@ -29,7 +29,6 @@ public:
     const QColor colour() const {return led().currentColour(); }
 
 private slots:
-    void cut();
     void renumber();
     void setGroup();
     void deleteLed();
@@ -44,17 +43,13 @@ protected:
     inline Qt::DropAction  defaultDropAction() const { return Qt::CopyAction; }
     inline Qt::DropAction  controlDropAction() const { return Qt::MoveAction; }
 
-    void addCutAction(QMenu* menu);
     void addExtraActions(QMenu* menu);
 
-    inline bool shouldMove() { return gridWidget().shouldMoveLeds(); }
+    inline bool canCut() { return true; }
 
 private:
     LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }
 
-    Animation& iAnimation;
-
-    QAction* iCutAction;
     QAction* iRenumberAction;
     QAction* iSetGroupAction;
     QAction* iDeleteLedAction;

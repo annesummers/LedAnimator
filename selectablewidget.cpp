@@ -16,6 +16,16 @@ SelectableWidget::SelectableWidget(QWidget *parent, SelectableGroupWidget &selec
 
     setAcceptDrops(true);
 
+    iCutAction = new QAction(tr("&Cut"), this);
+    iCutAction->setStatusTip(tr("Cut selected"));
+
+    connect(iCutAction, SIGNAL(triggered()), this, SLOT(cut()));
+
+    iCopyAction = new QAction(tr("&Copy"), this);
+    iCopyAction->setStatusTip(tr("Copy this colour"));
+
+    connect(iCopyAction, SIGNAL(triggered()), this, SLOT(copy()));
+
     iPasteWrapAction = new QAction(tr("&Paste wrap"), this);
     iPasteWrapAction->setStatusTip(tr("Paste the copied items with wrapping"));
 
@@ -31,22 +41,33 @@ SelectableWidget::~SelectableWidget() {
    // qDebug("delete widget");
 }
 
-QMimeData* SelectableWidget::mimeData() {
+QMimeData* SelectableWidget::mimeData(bool cut) {
     QMimeData *data = new QMimeData;
-    data->setData(mimeType(), iSelectableGroup.writeMimeData());
+    data->setData(mimeType(), iSelectableGroup.writeMimeData(cut));
 
     return data;
+}
+
+void SelectableWidget::cut() {
+    clearClipboard();
+
+    QApplication::clipboard()->setMimeData(mimeData(true));
+}
+
+void SelectableWidget::copy() {
+    clearClipboard();
+
+    QApplication::clipboard()->setMimeData(mimeData(false));
 }
 
 void SelectableWidget::paste(bool wrap) {
     const QClipboard *clipboard = QApplication::clipboard();
 
     if(clipboard->mimeData()->hasFormat(mimeType())) {
-        bool move = shouldMove();
-        iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, wrap, move);
+        bool wasCut = iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, wrap);//, move);
 
-        if(move) {
-            QApplication::clipboard()->setMimeData(mimeData());
+        if(wasCut) {
+            QApplication::clipboard()->setMimeData(mimeData(false));
         }
     }
 }
@@ -77,11 +98,23 @@ Qt::DropAction SelectableWidget::handleDragDropEvent(QDropEvent* event) {
      return action;
 }
 
+void SelectableWidget::addCutAction(QMenu* menu) {
+    menu->addAction(iCutAction);
+}
+
 void SelectableWidget::addPasteActions(QMenu* menu) {
     const QClipboard *clipboard = QApplication::clipboard();
     if(clipboard->mimeData()->hasFormat(mimeType())) {
         menu->addAction(iPasteWrapAction);
         menu->addAction(iPasteTruncateAction);
+    }
+}
+
+void SelectableWidget::clearClipboard() {
+    const QClipboard *clipboard = QApplication::clipboard();
+
+    if(clipboard->mimeData()->hasFormat(mimeType())) {
+        QApplication::clipboard()->clear();
     }
 }
 
@@ -132,7 +165,7 @@ void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
 void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
     //qDebug("singelWidge mouse move");
     if(event->buttons() != Qt::LeftButton ||
-       (event->pos() - iDragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
+       (event->pos() - iDragStartPosition).manhattanLength() < QApplication::startDragDistance()*2) {
         return;
     }
 
@@ -151,12 +184,10 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
     }
 
     QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData());
+    drag->setMimeData(mimeData(false));
     drag->setHotSpot(pos());
 
-    if(drag->exec(dragActions()) == Qt::MoveAction) {
-        qDebug("move event");
-    }
+    drag->exec(dragActions());
 }
 
 void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -189,8 +220,41 @@ void SelectableWidget::dropEvent(QDropEvent *event) {
     }
 }
 
-void SelectableWidget::contextMenuEvent(QContextMenuEvent *) {
+void SelectableWidget::contextMenuEvent(QContextMenuEvent *event) {
     if(!isSelected()) {
         iSelectableGroup.selectOne(*this);
+    }
+
+    QMenu menu(this);
+
+    addDefaultAction(&menu);
+
+    if(canCut()) {
+        menu.addAction(iCutAction);
+    }
+
+    if(canCopy()) {
+        menu.addAction(iCopyAction);
+
+        if(QApplication::clipboard()->mimeData()->hasFormat(mimeType())) {
+            menu.addAction(iPasteTruncateAction);
+            menu.addAction(iPasteWrapAction);
+        }
+    }
+
+    addExtraActions(&menu);
+
+    menu.exec(event->globalPos());
+}
+
+void SelectableWidget::keyPressEvent(QKeyEvent *event) {
+    Qt::Key key = (Qt::Key)event->key();
+
+    if(key == Qt::Key_C && event->modifiers() == Qt::ControlModifier) {
+        copy();
+    } else if(key == Qt::Key_X && event->modifiers() == Qt::ControlModifier) {
+        cut();
+    } else if (key == Qt::Key_V && event->modifiers() == Qt::ControlModifier) {
+        paste(false);
     }
 }

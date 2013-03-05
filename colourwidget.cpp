@@ -20,18 +20,12 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     iSetColourAction(NULL),
     iFadeAction(NULL),
     iFadeToAction(NULL),
-    iCopyAction(NULL),
     iFading(false) {
 
     iSetColourAction = new QAction(tr("&Set colour..."), this);
     iSetColourAction->setStatusTip(tr("Choose a colour"));
 
     connect(iSetColourAction, SIGNAL(triggered()), this, SLOT(chooseColour()));
-
-    iCopyAction = new QAction(tr("&Copy"), this);
-    iCopyAction->setStatusTip(tr("Copy this colour"));
-
-    connect(iCopyAction, SIGNAL(triggered()), this, SLOT(copy()));
 
     iFadeAction = new QAction(tr("&Fade"), this);
     iFadeAction->setStatusTip("Fade to last selected colour");
@@ -97,57 +91,25 @@ void ColourWidget::fadeTo() {
     chooseColour();
 }
 
-// copy and paste ------------------------
+// from SelectableWidget ------------------
 
-void ColourWidget::copy() {
-    const QClipboard *clipboard = QApplication::clipboard();
+void ColourWidget::addDefaultAction(QMenu* menu) {
+    menu->addAction(iSetColourAction);
+    menu->addSeparator();
+}
 
-    if(clipboard->mimeData()->hasFormat(mimeType())) {
-        colourGroup().handleOldMimeData(clipboard->mimeData()->data(mimeType()));
+void ColourWidget::addExtraActions(QMenu *menu) {
+    if(colourGroup().isGroupSelected()) {
+        menu->addSeparator();
+        menu->addAction(iFadeAction);
+        menu->addAction(iFadeToAction);
     }
-
-    QApplication::clipboard()->setMimeData(mimeData());
 }
 
 // events -----------------------------------
-
-void ColourWidget::contextMenuEvent(QContextMenuEvent *event) {
-    SelectableWidget::contextMenuEvent(event);
-
-    QMenu menu(this);
-
-    menu.addAction(iSetColourAction);
-    addExtraActions(&menu);
-
-    if(colourGroup().isGroupSelected()) {
-        menu.addSeparator();
-        menu.addAction(iFadeAction);
-        menu.addAction(iFadeToAction);
-    }
-
-    menu.addSeparator();
-    addCutAction(&menu);
-    menu.addAction(iCopyAction);
-
-    addPasteActions(&menu);
-
-    menu.exec(event->globalPos());
-}
 
 void ColourWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     SelectableWidget::mouseDoubleClickEvent(event);
 
     chooseColour();
-}
-
-void ColourWidget::keyPressEvent(QKeyEvent *event) {
-    Qt::Key key = (Qt::Key)event->key();
-
-    if(key == Qt::Key_C && event->modifiers() == Qt::ControlModifier) {
-        copy();
-    } else if(key == Qt::Key_X && event->modifiers() == Qt::ControlModifier) {
-        cut();
-    } else if (key == Qt::Key_V && event->modifiers() == Qt::ControlModifier) {
-        paste(false);
-    }
 }

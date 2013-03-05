@@ -35,8 +35,12 @@ private slots:
     void numFramesChanged(int numFrames);
 
 protected:
-    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
-    void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+
+    inline void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    inline void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
 
     SelectableWidget& widgetAt(int row, int column);
     void getWidgetPosition(SelectableWidget &widget, int* row, int* column);

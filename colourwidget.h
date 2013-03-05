@@ -33,7 +33,6 @@ public:
 
 protected slots:
     void updated();
-    void copy();
 
 private slots:
     void chooseColour();
@@ -43,13 +42,10 @@ private slots:
     void fadeTo();
 
 protected:
-    void contextMenuEvent(QContextMenuEvent *event);
     void mouseDoubleClickEvent(QMouseEvent* event);
 
-    void keyPressEvent(QKeyEvent *event);
-
-    virtual void cut() {}
-    virtual void addExtraActions(QMenu* menu) { Q_UNUSED(menu); }
+    void addDefaultAction(QMenu* menu);
+    virtual void addExtraActions(QMenu* menu);
 
 private:
     ColourGroupWidget& colourGroup() { return static_cast<ColourGroupWidget&>(iSelectableGroup); }
@@ -57,10 +53,8 @@ private:
     QSignalMapper* iSignalMapper;
 
     QAction* iSetColourAction;
- //   QAction* iSetAllFramesColourAction;
     QAction* iFadeAction;
     QAction* iFadeToAction;
-    QAction* iCopyAction;
 
     bool iFading;
 };

@@ -33,7 +33,7 @@ protected:
    inline Qt::DropAction  defaultDropAction() const { return Qt::MoveAction; }
    inline Qt::DropAction  controlDropAction() const { return Qt::CopyAction; }
 
-   inline bool shouldMove() { return gridWidget().shouldMoveLeds(); }
+   inline bool canCopy() { return false; }
 
 private:
    LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }

@@ -26,6 +26,8 @@ MainWindow::MainWindow(Engine& engine) :
 
     readSettings();
 
+    iUndoStack = new QUndoStack(this);
+
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
 
@@ -35,7 +37,7 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
     ColourGroupGroupWidget* gridGroupGroup = new ColourGroupGroupWidget(centralWidget);
-    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *gridGroupGroup);
+    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *iUndoStack, *gridGroupGroup);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
     gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
@@ -58,7 +60,7 @@ MainWindow::MainWindow(Engine& engine) :
     AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
     iAnimationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
 
-    connect(ledGridWidget, SIGNAL(hideLed(int, int)), iAnimationDetailsWidget, SLOT(deleteLed(int, int)));
+    connect(ledGridWidget, SIGNAL(hideLed(int)), iAnimationDetailsWidget, SLOT(hideLed(int)));
     connect(ledGridWidget, SIGNAL(renumberLed(int,int,int)), iAnimationDetailsWidget, SLOT(renumberLed(int, int, int)));
 
     gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 3);
@@ -89,14 +91,23 @@ MainWindow::MainWindow(Engine& engine) :
 
     menuBar()->addMenu(fileMenu);
 
-    /*QMenu* editMenu = new QMenu("&Edit", this);
-    QAction* cutAction = editMenu->addAction("&Cut");
+    QMenu* editMenu = new QMenu("&Edit", this);
+   /* QAction* cutAction = editMenu->addAction("&Cut");
     QAction* copyAction = editMenu->addAction("C&opy");
-    QAction* pasteAction = editMenu->addAction("&Paste");
+    QAction* pasteAction = editMenu->addAction("&Paste");*/
 
     // TODO make edit menu work
 
-    menuBar()->addMenu(editMenu);*/
+    QAction* undoAction = iUndoStack->createUndoAction(this, tr("&Undo"));
+    undoAction->setShortcuts(QKeySequence::Undo);
+
+    QAction* redoAction = iUndoStack->createRedoAction(this, tr("&Redo"));
+    redoAction->setShortcuts(QKeySequence::Redo);
+
+    editMenu->addAction(undoAction);
+    editMenu->addAction(redoAction);
+
+    menuBar()->addMenu(editMenu);
 
     QMenu* animationMenu = new QMenu("&Animation", this);
     QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");

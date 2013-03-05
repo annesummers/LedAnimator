@@ -37,10 +37,12 @@ public:
 private slots:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
-    void deleteLed(int row, int column);
+
+    void hideLed(int ledNumber);
     void renumberLed(int row, int column, int oldNumber);
 
     void framesResized();
+    void closeAllClicked();
 
 protected:
     void resizeEvent(QResizeEvent*);
