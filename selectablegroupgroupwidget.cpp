@@ -60,11 +60,13 @@ void SelectableGroupGroupWidget::removeGroup(SelectableGroupWidget& group) {
     }
 }
 
-const QByteArray SelectableGroupGroupWidget::writeMimeData() {
+const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
     dataStream << iSelectedGroups.count();
+
+    qDebug("Selected group count is %d", iSelectedGroups.count());
 
     int groupNum = 0;
     for(int i = 0; i < iSelectedGroups.count(); i++) {
@@ -72,13 +74,15 @@ const QByteArray SelectableGroupGroupWidget::writeMimeData() {
             groupNum++;
         }
 
-        iSelectedGroups.value(groupNum++)->doWriteMimeData(dataStream);
+        iSelectedGroups.value(groupNum++)->doWriteMimeData(dataStream, cut);
     }
 
     return itemData;
 }
 
-void SelectableGroupGroupWidget::handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move) {
+bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move) {
+    bool wasCut = false;
+
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
     int numCopyGroups;
@@ -95,11 +99,13 @@ void SelectableGroupGroupWidget::handleMimeData(QByteArray itemData, int dropGro
             groupNumber++;
         }
 
-        iGroups.value(groupNumber++)->doHandleMimeData(dataStream, dropRow, dropColumn, &originRow, &originColumn, wrap, move);
+        wasCut = iGroups.value(groupNumber++)->doHandleMimeData(dataStream, dropRow, dropColumn, &originRow, &originColumn, wrap, move);
     }
+
+    return wasCut;
 }
 
-void SelectableGroupGroupWidget::handleOldMimeData(QByteArray itemData) {
+/*void SelectableGroupGroupWidget::handleOldMimeData(QByteArray itemData) {
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
     int numGroups;
@@ -113,4 +119,4 @@ void SelectableGroupGroupWidget::handleOldMimeData(QByteArray itemData) {
 
         iGroups.value(groupNum)->doHandleOldMimeData(dataStream);
     }
-}
+}*/

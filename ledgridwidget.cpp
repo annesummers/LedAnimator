@@ -10,6 +10,7 @@
 #include "mainwindow.h"
 #include "socketwidget.h"
 #include "colourgroupgroupwidget.h"
+#include "ledanimatoractionbase.h"
 
 #include "constants.h"
 #include "exceptions.h"
@@ -17,12 +18,12 @@
 using namespace Exception;
 using namespace AnimatorUi;
 
-LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget &groupGroup) :
+LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, QUndoStack &undoStack, ColourGroupGroupWidget &groupGroup) :
     ColourGroupWidget(parent, 0, 0, groupGroup, 0),
     iAnimation(animation),
+    iUndoStack(undoStack),
     iLedGridLayout(NULL),
-    iLedNumbersShown(true),
-    iMoveLeds(false) {
+    iLedNumbersShown(true) {
 
     iContainerWidget = new QWidget(this);
     iLedGridLayout = new QGridLayout(iContainerWidget);
@@ -44,6 +45,8 @@ LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, ColourGroupG
 
     connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(addLed(int, int)));
     connect(&animation, SIGNAL(newSocket(int, int)), this, SLOT(addSocket(int, int)));
+    connect(&animation, SIGNAL(ledDeleted(int, int, int)), this, SLOT(ledDeleted(int, int, int)));
+    connect(&animation, SIGNAL(ledMoved(int, int, int, int)), this, SLOT(ledMoved(int, int, int, int)));
 }
 
 int LedGridWidget::gridWidth() {
@@ -116,51 +119,25 @@ void LedGridWidget::addWidget(SelectableWidget *widget, int row, int column) {
 void LedGridWidget::moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
     Q_UNUSED(fromGroup);// there is only one group
 
-    if(iAnimation.ledAt(toRow, toColumn) == NULL) {
-        Led& led = getLed(fromRow, fromColumn);
+    //qDebug("LedGridWidget::moveItem : from %d,%d to %d,%d", fromRow, fromColumn, toRow, toColumn);
 
-        hideLed(led);
-        moveLed(led, toRow, toColumn);
-    }
+  //  iUndoStack.push(new MoveLedCommand(iAnimation, fromRow, fromColumn, toRow, toColumn));
+    iAnimation.moveLed(fromRow, fromColumn, toRow, toColumn);
 }
 
-void LedGridWidget::copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+void LedGridWidget::cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
     Q_UNUSED(fromGroup);// there is only one group
+    qDebug("LedGridWidget::copyItem : from %d,%d to %d,%d", fromRow, fromColumn, toRow, toColumn);
 
-    Led& fromLed = getLed(fromRow, fromColumn);
-
-    copyLed(fromLed, toRow, toColumn);
+    //iUndoStack.push(new CloneLedCommand(iAnimation, fromRow, fromColumn, toRow, toColumn));
+    iAnimation.cloneLed(fromRow, fromColumn, toRow, toColumn);
 }
 
-void LedGridWidget::copyLed(Led& led, int toRow, int toColumn) {
-    iAnimation.copyLed(led, toRow, toColumn);
-}
+void LedGridWidget::pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+    Q_UNUSED(fromGroup);// there is only one group
+    qDebug("LedGridWidget::pasteItem : from %d,%d to %d,%d", fromRow, fromColumn, toRow, toColumn);
 
-void LedGridWidget::moveLed(Led &led, int toRow, int toColumn) {
-    iAnimation.moveLed(led, toRow, toColumn);
-
-    addLed(toRow, toColumn, &led);
-}
-
-void LedGridWidget::hideLed(Led &led) {
-    if(!led.isHidden()) {
-        led.setHidden(true);
-
-        addSocket(led.row(), led.column());
-    }
-
-    emit hideLed(led.row(), led.column());
-}
-
-void LedGridWidget::deleteLed(int row, int column) {
-    Led& led = getLed(row, column);
-    led.setHidden(true);
-
-    addSocket(row, column);
-
-    emit hideLed(led.row(), led.column());
-
-    iAnimation.deleteLed(led);
+    iAnimation.pasteLed(fromRow, fromColumn, toRow, toColumn);
 }
 
 void LedGridWidget::addSelectedLeds() {
@@ -176,6 +153,7 @@ void LedGridWidget::addSelectedLeds() {
 
         getWidgetPosition(*widget, &row, &column);
         iAnimation.addNewLed(row, column);
+        //iUndoStack.push(new AddLedCommand(iAnimation, row, column));
 
         newRows.append(row);
         newColumns.append(column);
@@ -186,15 +164,6 @@ void LedGridWidget::addSelectedLeds() {
     }
 
     iAnimation.setSaved(false);
-}
-
-void LedGridWidget::hideSelectedLeds() {
-    SelectableWidget* widget;
-    foreach(widget, selectedItems()) {
-        hideLed(static_cast<LedWidget*>(widget)->led());
-    }
-
-    iMoveLeds = true;
 }
 
 void LedGridWidget::setSelectedLedsGroupNumber() {
@@ -213,8 +182,17 @@ void LedGridWidget::deleteSelectedLeds() {
     SelectableWidget* widget;
     foreach(widget, selectedItems()) {
         LedWidget& ledWidget = static_cast<LedWidget&>(*widget);
-        deleteLed(ledWidget.led().row(), ledWidget.led().column());
+        Led& led = ledWidget.led();
+
+        //iUndoStack.push(new DeleteLedCommand(iAnimation, led.row(), led.column(), led.number()));
+        iAnimation.deleteLed(ledWidget.led().row(), ledWidget.led().column());
     }
+}
+
+void LedGridWidget::moveToClipboard(int group, int row, int column) {
+    Q_UNUSED(group);
+
+    iAnimation.moveLedToClipboard(row, column);
 }
 
 Led& LedGridWidget::getLed(int row, int column) {
@@ -224,16 +202,6 @@ Led& LedGridWidget::getLed(int row, int column) {
     }
 
     return *led;
-}
-
-bool LedGridWidget::shouldMoveLeds() {
-    bool shouldMove = iMoveLeds;
-
-    if(iMoveLeds) {
-        iMoveLeds = false;
-    }
-
-    return shouldMove;
 }
 
 void LedGridWidget::renumberLed(Led& led) {
@@ -274,6 +242,22 @@ void LedGridWidget::addSocket(int row, int column) {
     addWidget(new SocketWidget(this, *this, *item), row, column);
 }
 
+void LedGridWidget::ledDeleted(int row, int column, int ledNumber) {
+    qDebug("LedGridWidget::ledDeleted : %d,%d #%d", row, column, ledNumber);
+    addSocket(row, column);
+
+    update();
+
+    emit hideLed(ledNumber);
+}
+
+void LedGridWidget::ledMoved(int oldRow, int oldColumn, int newRow, int newColumn) {
+    qDebug("LedGridWidget::ledMoved : from %d,%d to %d,%d", oldRow, oldColumn, newRow, newColumn);
+
+    addSocket(oldRow, oldColumn);
+    addLed(newRow, newColumn, iAnimation.ledAt(newRow, newColumn));
+}
+
 void LedGridWidget::toggleLedNumbers() {
     if(iLedNumbersShown) {
         iLedNumbersShown = false;
@@ -306,14 +290,6 @@ bool LedGridWidget::validKeyPress(Qt::Key key) {
             (key & Qt::Key_Left) == Qt::Key_Left ||
             (key & Qt::Key_Up) == Qt::Key_Up ||
             (key & Qt::Key_Down) == Qt::Key_Down;
-}
-
-void LedGridWidget::deleteIfNeeded(int row, int column) {
-    Led& led = getLed(row, column);
-
-    if(led.isHidden()) {
-        iAnimation.deleteLed(led);
-    }
 }
 
 // events ---------------------------

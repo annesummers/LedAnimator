@@ -33,6 +33,7 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
     scrollArea->setWidgetResizable(true);
     scrollArea->setFrameStyle(QFrame::Box);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     iScrollAreaWidgetContents = new ScrollContentsWidget(this, animation);
     iScrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
@@ -62,10 +63,12 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 
     iGridLayout->addWidget(iFrameSlider, 0, 1, 1, 1);
 
-    QWidget* widget_2 = new QWidget(iScrollAreaWidgetContents);
-    widget_2->setObjectName(QString::fromUtf8("widget_2"));
+    QPushButton* closeAll = new QPushButton("X", iScrollAreaWidgetContents);
+    closeAll->setObjectName(QString::fromUtf8("closeAll"));
 
-    iGridLayout->addWidget(widget_2, 0, 2, 1, 1);
+    connect(closeAll, SIGNAL(clicked()), this, SLOT(closeAllClicked()));
+
+    iGridLayout->addWidget(closeAll, 0, 2, 1, 1);
 
     verticalLayout->addLayout(iGridLayout);
 
@@ -193,15 +196,10 @@ void AnimationDetailsWidget::addLed(int row, int column) {
     }
 }
 
-void AnimationDetailsWidget::deleteLed(int row, int column) {
-    Led* led = iAnimation.ledAt(row, column);
-
-    if(led == NULL) {
-        throw IllegalArgumentException("AnimationDetailsWidget::addLed : NULL led");
-    }
-
-    if(iLedDetails.contains(led->number())) {
-        deleteLed(*iLedDetails.value(led->number()));
+void AnimationDetailsWidget::hideLed(int ledNumber) {
+    //qDebug("AnimationDetailsWidget::deleteLed %d", ledNumber);
+    if(iLedDetails.contains(ledNumber)) {
+        deleteLed(*iLedDetails.value(ledNumber));
     }
 }
 
@@ -220,6 +218,13 @@ void AnimationDetailsWidget::renumberLed(int row, int column, int oldNumber) {
 
 void AnimationDetailsWidget::framesResized() {
     doResize();
+}
+
+void AnimationDetailsWidget::closeAllClicked() {
+    LedDetails* details;
+    foreach(details, iLedDetails) {
+        deleteLed(*details);
+    }
 }
 
 // events -------------------------------------
@@ -241,13 +246,11 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
         QByteArray itemData = event->mimeData()->data(LED_MIME_TYPE);
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
 
+        bool cut;
         int numGroups;
-
-        dataStream >> numGroups;
-
         int groupNumber;
 
-        dataStream >> groupNumber;
+        dataStream >> cut >> numGroups >> groupNumber;
 
         int numLeds;
 

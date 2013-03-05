@@ -41,13 +41,11 @@ public:
     inline void setMaxRow(int max) { iNumRows = max; }
     inline void setMaxColumn(int max) { iNumColumns = max; }
 
-    const QByteArray writeMimeData();
-    void handleMimeData(QByteArray mimeData, SelectableWidget &dropWidget, bool wrap, bool move = false);
-    void handleOldMimeData(QByteArray itemData);
+    const QByteArray writeMimeData(bool cut);
+    bool handleMimeData(QByteArray mimeData, SelectableWidget &dropWidget, bool wrap, bool move = false);
 
-    void doWriteMimeData(QDataStream& dataStream);
-    void doHandleMimeData(QDataStream& dataStream, int dropRow, int dropColumn, int *originRow, int *originColumn, bool wrap, bool move);
-    void doHandleOldMimeData(QDataStream& dataStream);
+    void doWriteMimeData(QDataStream& dataStream, bool cut);
+    bool doHandleMimeData(QDataStream& dataStream, int dropRow, int dropColumn, int *originRow, int *originColumn, bool wrap, bool move);
 
     inline const int groupNumber() const { return iGroupNumber; }
 
@@ -58,10 +56,12 @@ protected:
 
     virtual bool validKeyPress(Qt::Key key) = 0;
 
-    virtual void deleteIfNeeded(int row, int column) { Q_UNUSED(row); Q_UNUSED(column); }
-
     virtual void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
-    virtual void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
+    virtual void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
+    virtual void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
+
+    virtual void moveToClipboard(int group, int row, int column)
+        { Q_UNUSED(group); Q_UNUSED(row); Q_UNUSED(column); }
 
     inline int selectedCount() { return iSelected.count(); }
 

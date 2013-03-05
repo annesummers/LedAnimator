@@ -9,6 +9,8 @@
 
 #include <QMainWindow>
 #include <QMenuBar>
+#include <QUndoStack>
+#include <QUndoView>
 
 class Engine;
 
@@ -31,6 +33,8 @@ protected:
     
 private:
     Engine&         iEngine;
+
+    QUndoStack*     iUndoStack;
 };
 }
 #endif // MAINWINDOW_H

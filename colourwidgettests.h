@@ -38,7 +38,7 @@ public:
     Qt::DropAction  defaultDropAction() const { return Qt::IgnoreAction; }
     Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
-    inline QMimeData* mimeData()  { return SelectableWidget::mimeData(); }
+    inline QMimeData* mimeData(bool cut)  { return SelectableWidget::mimeData(cut); }
 
     inline const QColor colour() const { return static_cast<ColourTestObject&>(iItem).iColour; }
     inline void setColour(QColor colour) { static_cast<ColourTestObject&>(iItem).iColour = colour; }
@@ -54,8 +54,12 @@ public:
     void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
     bool validKeyPress(Qt::Key key);
 
-    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
-    void copyItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+
+    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
 
     QVector<WidgetVector*>*  iWidgetArray;
 

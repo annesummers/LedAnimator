@@ -30,9 +30,13 @@ public:
     void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency);
 
     void addNewLed(int row, int column, int ledNum = INVALID);
-    void moveLed(Led& led, int toRow, int toColumm);
-    void copyLed(Led& led, int toRow, int toColumn);
-    void deleteLed(Led& led);
+    void deleteLed(int row, int column);
+
+    void moveLed(int fromRow, int fromColumn, int toRow, int toColumm);
+    void cloneLed(int fromRow, int fromColumn, int toRow, int toColumn);
+
+    void moveLedToClipboard(int row, int column);
+    void pasteLed(int fromRow, int fromColumn, int toRow, int toColumn);
 
     void renumberLed(Led& led, int newNumber);
 
@@ -73,6 +77,9 @@ signals:
     void newLed(int row, int column);
     void newSocket(int row, int column);
 
+    void ledDeleted(int row, int column, int number);
+    void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
+
 public slots:
     inline void setFileName(QString fileName) { iFileName = fileName; }
     inline void setSaved(bool saved) { iIsSaved = saved; }
@@ -94,17 +101,20 @@ private:
 
     inline void setNumRows(int numRows) { iNumRows = numRows; }
     inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
-    //inline void setNumLeds(int numLeds) { iNumLeds = numLeds; }
 
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
     int gridPositionNumber(int row, int column) const;
     void setGridPositionNumber(int row, int column, int number);
+    void setClipboardGridPositionNumber(int row, int column, int number);
 
     const Engine& iEngine;
 
     QHash<int, Led*> iLeds;
     QList<int> iPositions;
+
+    QHash<int, Led*> iClipboardLeds;
+    QList<int> iClipboardPositions;
 
     QList<int> iMissingLeds;
 
@@ -113,7 +123,6 @@ private:
     int iNumRows;
     int iNumColumns;
 
-   // int iNumLeds;
     int iNumGroups;
 
     int iGreatestNumber;

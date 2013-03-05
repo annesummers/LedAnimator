@@ -16,18 +16,12 @@
 using namespace AnimatorUi;
 
 LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
-    ColourWidget(parent, ledGroup, led),
-    iAnimation(animation) {
+    ColourWidget(parent, ledGroup, led) {
 
     setObjectName("LedWidget");
 
     connect(&led, SIGNAL(ledUpdated()), this, SLOT(updated()));
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
-
-    iCutAction = new QAction(tr("&Cut"), this);
-    iCutAction->setStatusTip(tr("Cut selected"));
-
-    connect(iCutAction, SIGNAL(triggered()), this, SLOT(cut()));
 
     iRenumberAction = new QAction(tr("&Renumber..."), this);
     iRenumberAction->setStatusTip(tr("Renumber this led"));
@@ -45,27 +39,6 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
     connect(iSetGroupAction, SIGNAL(triggered()), this, SLOT(setGroup()));
 }
 
-// from SelectableWidget -----------------------
-
-void LedWidget::addCutAction(QMenu* menu) {
-    Q_UNUSED(menu);
-    menu->addAction(iCutAction);
-}
-
-void LedWidget::addExtraActions(QMenu* menu) {
-    if(gridWidget().isSingleSelected()) {
-        menu->addAction(iRenumberAction);
-    }
-    menu->addAction(iDeleteLedAction);
-    menu->addAction(iSetGroupAction);
-}
-
-void LedWidget::cut() {
-    copy();
-
-    gridWidget().hideSelectedLeds();
-}
-
 void LedWidget::renumber() {
     gridWidget().renumberLed(led());
 }
@@ -76,6 +49,21 @@ void LedWidget::setGroup() {
 
 void LedWidget::deleteLed() {
     gridWidget().deleteSelectedLeds();
+}
+
+// from SelectableWidget -----------------------
+
+void LedWidget::addExtraActions(QMenu* menu) {
+    ColourWidget::addExtraActions(menu);
+
+    menu->addSeparator();
+
+    if(gridWidget().isSingleSelected()) {
+        menu->addAction(iRenumberAction);
+    }
+
+    menu->addAction(iDeleteLedAction);
+    menu->addAction(iSetGroupAction);
 }
 
 // events ------------------------------------

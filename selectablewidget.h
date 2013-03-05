@@ -26,6 +26,9 @@ public:
 private slots:
     inline void selected() { update(); }
 
+    void cut();
+    void copy();
+
     inline void pasteWrap() { paste(true); }
     inline void pasteTruncate() { paste(false); }
     
@@ -39,7 +42,9 @@ protected:
     void dragMoveEvent(QDragMoveEvent *);
     void dropEvent(QDropEvent *);
 
-    void contextMenuEvent(QContextMenuEvent *);
+    void keyPressEvent(QKeyEvent *event);
+
+    void contextMenuEvent(QContextMenuEvent *event);
 
     virtual QString mimeType() const = 0;
 
@@ -48,11 +53,17 @@ protected:
     virtual Qt::DropAction  defaultDropAction() const = 0;
     virtual Qt::DropAction  controlDropAction() const = 0;
 
-    virtual bool shouldMove() { return false; }
+    virtual void addExtraActions(QMenu* menu) { Q_UNUSED(menu); }
+    virtual void addDefaultAction(QMenu* menu) { Q_UNUSED(menu); }
 
-    QMimeData* mimeData();
+    virtual inline bool canCut() { return false; }
+    virtual inline bool canCopy() { return true; }
 
-    virtual void addCutAction(QMenu* menu) { Q_UNUSED(menu); }
+    void clearClipboard();
+
+    QMimeData* mimeData(bool cut);
+
+    void addCutAction(QMenu* menu);
     void addPasteActions(QMenu* menu);
 
     void paste(bool wrap);
@@ -66,6 +77,9 @@ protected:
 
 private:
     Qt::DropAction handleDragDropEvent(QDropEvent *event);
+
+    QAction* iCutAction;
+    QAction* iCopyAction;
 
     QAction* iPasteWrapAction;
     QAction* iPasteTruncateAction;
