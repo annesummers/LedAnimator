@@ -79,7 +79,8 @@ HEADERS += \
     griditem.h \
     animationdetailswidget.h \
     selectablegroupgroupwidget.h \
-    grouplistwidget.h
+    grouplistwidget.h \
+    colourGroupGroupWidget.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -105,7 +106,8 @@ SOURCES += \
     griditem.cpp \
     animationdetailswidget.cpp \
     selectablegroupgroupwidget.cpp \
-    grouplistwidget.cpp
+    grouplistwidget.cpp \
+    colourGroupGroupWidget.cpp \
 
 FORMS += \
     newanimation.ui \

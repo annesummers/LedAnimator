@@ -155,7 +155,6 @@ void AnimationDetailsWidget::currentFrameChanged(int currentFrame) {
     iFrameSlider->setValue(currentFrame);
 
     iScrollAreaWidgetContents->update();
-   // update();
 }
 
 void AnimationDetailsWidget::numFramesChanged(int numFrames) {
