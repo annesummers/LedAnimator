@@ -9,7 +9,7 @@
 
 #include <QWidget>
 #include <QSlider>
-#include <QPushButton>
+#include <QToolButton>
 #include <QLabel>
 
 namespace AnimatorModel {
@@ -32,18 +32,22 @@ private slots:
     void previousClicked();
     void nextClicked();
     void lastClicked();
+    void repeatClicked();
+
+    void stopped();
 
     void currentFrameChanged(int currentFrame);
 
 private:
     Animation&      iAnimation;
 
-    QPushButton*    iFirstButton;
-    QPushButton*    iPreviousButton;
-    QPushButton*    iPlayButton;
-    QPushButton*    iNextButton;
-    QPushButton*    iLastButton;
-    QLabel*         iFrameNumberLabel;
+    QToolButton*    iFirstButton;
+    QToolButton*    iPreviousButton;
+    QToolButton*    iPlayButton;
+    QToolButton*    iNextButton;
+    QToolButton*    iLastButton;
+    QToolButton*    iRepeatButton;
+    //QLabel*         iFrameNumberLabel;
 };
 }
 

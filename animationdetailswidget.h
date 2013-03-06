@@ -64,7 +64,8 @@ private:
 
     QSlider*                iFrameSlider;
     QGridLayout*            iGridLayout;
-    ScrollContentsWidget* iScrollAreaWidgetContents;
+    ScrollContentsWidget*   iScrollAreaWidgetContents;
+    QToolButton*            iCloseAll;
 
     QHash<int, LedDetails*> iLedDetails;
     QHash<int, Led*>        iShownLeds;
@@ -93,7 +94,7 @@ class LedDetails : public QObject {
     Q_OBJECT
 
 public:
-    explicit LedDetails(AnimationDetailsWidget &parent, Led& led, QLabel& label, FrameListWidget& framesListWidget, QPushButton& closeButton);
+    explicit LedDetails(AnimationDetailsWidget &parent, Led& led, QLabel& label, FrameListWidget& framesListWidget, QToolButton& closeButton);
 
     inline int ledNumber() { return iLed.number(); }
     inline FrameListWidget& frameList() { return iFramesListWidget; }
@@ -107,7 +108,7 @@ private:
 
     QLabel&             iLabel;
     FrameListWidget&    iFramesListWidget;
-    QPushButton&        iCloseButton;
+    QToolButton&        iCloseButton;
 
     AnimationDetailsWidget& iDetailsWidget;
 };

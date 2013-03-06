@@ -46,6 +46,9 @@ public:
 
     void doWriteMimeData(QDataStream& dataStream, bool cut);
     bool doHandleMimeData(QDataStream& dataStream, int dropRow, int dropColumn, int *originRow, int *originColumn, bool wrap, bool move);
+    void doSelectArea(int startRow, int startColumn, int endRow, int endColumn);
+
+    void getLastSelected(int* lastRow, int* lastColumn);
 
     inline const int groupNumber() const { return iGroupNumber; }
 

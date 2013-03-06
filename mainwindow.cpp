@@ -6,6 +6,8 @@
 
 #include "mainwindow.h"
 
+//#include <QHBoxLayout>
+
 #include "led.h"
 #include "ledwidget.h"
 #include "ledgridwidget.h"
@@ -14,6 +16,8 @@
 #include "animation.h"
 #include "animationdetailswidget.h"
 #include "grouplistwidget.h"
+#include "leddetails.h"
+#include "framedetails.h"
 
 #include "constants.h"
 
@@ -31,6 +35,8 @@ MainWindow::MainWindow(Engine& engine) :
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
 
+  //  QVBoxLayout* horizontalLayout = new QVBoxLayout(centralWidget);
+
     QGridLayout* gridLayout = new QGridLayout(centralWidget);
     gridLayout->setSpacing(6);
     gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -42,20 +48,38 @@ MainWindow::MainWindow(Engine& engine) :
 
     gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
 
+    LedDetailsWidget* ledDetailsWidget = new LedDetailsWidget(centralWidget);
+    ledDetailsWidget->setObjectName(QString::fromUtf8("ledDetailsWidget"));
+
+    connect(ledGridWidget, SIGNAL(currentLedDetails(int, int, int, QColor)), ledDetailsWidget, SLOT(currentLedDetails(int, int, int, QColor)));
+
+    gridLayout->addWidget(ledDetailsWidget, 0, 1, 2, 1);
+
+    FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(centralWidget);
+    frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
+   /* QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    sizePolicy1.setHorizontalStretch(1);
+    sizePolicy1.setVerticalStretch(0);
+   // sizePolicy1.setHeightForWidth(frameDetailsWidget->sizePolicy().hasHeightForWidth());
+    frameDetailsWidget->setSizePolicy(sizePolicy1);
+*/
+    connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
+    connect(&engine.animation(), SIGNAL(numFramesChanged(int)), frameDetailsWidget, SLOT(numFramesChanged(int)));
+
+    gridLayout->addWidget(frameDetailsWidget, 0, 2, 1, 1);
+
     PlayInfoWidget* playInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
     playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
+ /*   QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    sizePolicy2.setHorizontalStretch(1);
+    sizePolicy2.setVerticalStretch(0);
+    //sizePolicy2.setHeightForWidth(playInfoWidget->sizePolicy().hasHeightForWidth());
+    playInfoWidget->setSizePolicy(sizePolicy1);*/
 
-    gridLayout->addWidget(playInfoWidget, 0, 1, 1, 1);
+    gridLayout->addWidget(playInfoWidget, 1, 2, 1, 1);
 
-    QWidget* widget_4 = new QWidget(centralWidget);
-    widget_4->setObjectName(QString::fromUtf8("widget_4"));
-
-    gridLayout->addWidget(widget_4, 0, 2, 2, 1);
-
-    GroupListWidget* groupListWidget = new GroupListWidget(centralWidget, engine.animation());
-    groupListWidget->setObjectName(QString::fromUtf8("GroupListWidget"));
-
-    gridLayout->addWidget(groupListWidget, 1, 1, 1, 1);
+    QWidget* widget1 = new QWidget(centralWidget);
+    gridLayout->addWidget(widget1, 0, 3, 2, 1);
 
     AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
     iAnimationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
@@ -63,9 +87,10 @@ MainWindow::MainWindow(Engine& engine) :
     connect(ledGridWidget, SIGNAL(hideLed(int)), iAnimationDetailsWidget, SLOT(hideLed(int)));
     connect(ledGridWidget, SIGNAL(renumberLed(int,int,int)), iAnimationDetailsWidget, SLOT(renumberLed(int, int, int)));
 
-    gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 3);
+    gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 4);
 
     setCentralWidget(centralWidget);
+   // horizontalLayout->addLayout(gridLayout);
 
     QMenu* fileMenu = new QMenu("&File", this);
     QAction* newAction = fileMenu->addAction("&New animation...");
@@ -119,13 +144,6 @@ MainWindow::MainWindow(Engine& engine) :
     connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
 
     menuBar()->addMenu(animationMenu);
-
-    QMenu* viewMenu = new QMenu("&View", this);
-    QAction* toggleLedNumbersAction = viewMenu->addAction("&Toggle led numbers");
-
-    connect(toggleLedNumbersAction, SIGNAL(triggered()), ledGridWidget, SLOT(toggleLedNumbers()));
-// TODO attach this up
-    menuBar()->addMenu(viewMenu);
 }
 
 MainWindow::~MainWindow() {

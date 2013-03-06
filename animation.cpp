@@ -26,12 +26,12 @@ Animation::Animation(Engine& engine) :
     iPlayTimer(NULL),
     iNumRows(INVALID),
     iNumColumns(INVALID),
-  //  iNumLeds(INVALID),
     iNumFrames(INVALID),
     iCurrentFrame(INVALID),
     iFrameFrequency(DEFAULT_FRAME_FREQUENCY),
     iNumSubAnimations(1),
     iIsPlaying(false),
+    iRepeat(false),
     iFileName(""),
     iIsSaved(false){ }
 
@@ -282,8 +282,9 @@ void Animation::selectGroup(int groupNumber) {
     }
 }
 
-void Animation::play() {
+void Animation::play(bool repeat) {
     if(!isPlaying()) {
+        iRepeat = repeat;
         iPlayTimer = new QTimer(this);
         connect(iPlayTimer, SIGNAL(timeout()), this, SLOT(nextFrame()));
         iPlayTimer->start(frameFrequency());
@@ -299,6 +300,8 @@ void Animation::stop() {
         iPlayTimer = NULL;
 
         setPlaying(false);
+
+        emit stopped();
     }
 }
 
@@ -379,7 +382,16 @@ void Animation::setFrameFrequency(int frameFrequency) {
 }
 
 void Animation::nextFrame() {
-    setCurrentFrame((currentFrame()%numFrames()) + INITIAL_FRAME);
+    if(iRepeat) {
+        setCurrentFrame((currentFrame()%numFrames()) + 1);
+    } else {
+        if(currentFrame() == numFrames()) {
+            stop();
+        } else {
+            setCurrentFrame(currentFrame() + 1);
+        }
+    }
+
 }
 
 void Animation::copyToClipboard() {

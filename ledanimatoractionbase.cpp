@@ -44,8 +44,8 @@ DeleteLedCommand::DeleteLedCommand(Animation &animation, int row, int column, in
 void DeleteLedCommand::redo() {
     Led* led = iAnimation.ledAt(iNumber);
 
-    for(int i = 0; i < iAnimation.numFrames(); i++) {
-        iFrames.append(led->frameAt(i).colour());
+    for(int i = INITIAL_FRAME; i <= iAnimation.numFrames(); i++) {
+        iFrames.append(led->frameAt(INITIAL_FRAME).colour());
     }
 
     iAnimation.deleteLed(iRow, iColumn);
@@ -57,8 +57,8 @@ void DeleteLedCommand::undo() {
     iAnimation.addNewLed(iRow, iColumn, iNumber);
     Led* led = iAnimation.ledAt(iNumber);
 
-    for(int i = 0; i < iAnimation.numFrames(); i++) {
-        led->frameAt(i).setColour(iFrames.at(i));
+    for(int i = INITIAL_FRAME; i <= iAnimation.numFrames(); i++) {
+        led->frameAt(i).setColour(iFrames.at(i-INITIAL_FRAME));
     }
 
     setText(QObject::tr("Delete led %1,%2").arg(iRow).arg(iColumn));

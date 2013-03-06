@@ -23,6 +23,7 @@ LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, QUndoStack &
     iAnimation(animation),
     iUndoStack(undoStack),
     iLedGridLayout(NULL),
+    iCurrentLed(NULL),
     iLedNumbersShown(true) {
 
     iContainerWidget = new QWidget(this);
@@ -140,6 +141,12 @@ void LedGridWidget::pasteItem(int fromGroup, int fromRow, int fromColumn, int to
     iAnimation.pasteLed(fromRow, fromColumn, toRow, toColumn);
 }
 
+void LedGridWidget::moveToClipboard(int group, int row, int column) {
+    Q_UNUSED(group);
+
+    iAnimation.moveLedToClipboard(row, column);
+}
+
 void LedGridWidget::addSelectedLeds() {
     SelectableWidget* widget;
     int row;
@@ -152,8 +159,8 @@ void LedGridWidget::addSelectedLeds() {
         toggle(*widget);
 
         getWidgetPosition(*widget, &row, &column);
-        iAnimation.addNewLed(row, column);
-        //iUndoStack.push(new AddLedCommand(iAnimation, row, column));
+        //iAnimation.addNewLed(row, column);
+        iUndoStack.push(new AddLedCommand(iAnimation, row, column));
 
         newRows.append(row);
         newColumns.append(column);
@@ -184,15 +191,9 @@ void LedGridWidget::deleteSelectedLeds() {
         LedWidget& ledWidget = static_cast<LedWidget&>(*widget);
         Led& led = ledWidget.led();
 
-        //iUndoStack.push(new DeleteLedCommand(iAnimation, led.row(), led.column(), led.number()));
-        iAnimation.deleteLed(ledWidget.led().row(), ledWidget.led().column());
+        iUndoStack.push(new DeleteLedCommand(iAnimation, led.row(), led.column(), led.number()));
+        //iAnimation.deleteLed(ledWidget.led().row(), ledWidget.led().column());
     }
-}
-
-void LedGridWidget::moveToClipboard(int group, int row, int column) {
-    Q_UNUSED(group);
-
-    iAnimation.moveLedToClipboard(row, column);
 }
 
 Led& LedGridWidget::getLed(int row, int column) {
@@ -222,6 +223,13 @@ void LedGridWidget::renumberLed(Led& led) {
                 break;
             }
         }
+    }
+}
+
+void LedGridWidget::setCurrentLed(Led& led) {
+    if(iCurrentLed != &led) {
+        iCurrentLed == &led;
+        emit currentLedDetails(led.number(), led.row(), led.column(), led.currentColour());
     }
 }
 

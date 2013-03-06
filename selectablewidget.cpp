@@ -121,12 +121,40 @@ void SelectableWidget::clearClipboard() {
 // events ----------------------------------------
 
 void SelectableWidget::mousePressEvent(QMouseEvent* event) {
-   // qDebug("singleWidget mousePress");
+    qDebug("singleWidget mousePress");
     if (event->button() != Qt::LeftButton) {
         return;
     }
 
     iDragStartPosition = event->pos();
+
+    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+        qDebug("mousepress : control modifier");
+    }
+
+    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+        qDebug("mousepress : shift modifier");
+    }
+
+    if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
+        qDebug("mousepress : meta modifier");
+    }
+
+   /* if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
+        (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
+         if(iSelectableGroup.isAnySelected()) {
+             iSelectableGroup.toggle(*this);
+         } else {
+             iSelectableGroup.toggleOne(*this, false);
+         }
+
+         return;
+    }*/
+
+  /*  if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+        iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier);
+        return;
+    }
 
     if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
         (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
@@ -138,27 +166,54 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
 
          return;
     }
-}
-
-void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
-   // qDebug("singleWidget mouseRelease");
-    if (event->button() != Qt::LeftButton) {
-        return;
-    }
-
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-        iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier);
-        return;
-    }
-
-    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-        return;
-    }
 
     if(!iDoubleClick) {
         iSelectableGroup.toggleOne(*this);
     } else {
         iDoubleClick = false;
+    }*/
+}
+
+void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
+    qDebug("singleWidget mouseRelease");
+    if (event->button() == Qt::RightButton) {
+        return;
+    }
+
+    if(event->button() == Qt::LeftButton) {
+        if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+            qDebug("mouseRelease : control modifier");
+        }
+
+        if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+            qDebug("mouseRelease : shift modifier");
+        }
+
+        if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
+            qDebug("mouseRelease : meta modifier");
+        }
+
+        if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+            iSelectableGroup.selectArea(*this);//(QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier);
+            return;
+        }
+
+        if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
+            (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
+             if(iSelectableGroup.isAnySelected()) {
+                 iSelectableGroup.toggle(*this);
+             } else {
+                 iSelectableGroup.toggleOne(*this, false);
+             }
+
+             return;
+        }
+
+        if(!iDoubleClick) {
+            iSelectableGroup.toggleOne(*this);
+        } else {
+            iDoubleClick = false;
+        }
     }
 }
 
@@ -191,12 +246,12 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-   // qDebug("singleWidget mouseDoubleClick");
+    qDebug("singleWidget mouseDoubleClick");
     if (event->buttons() != Qt::LeftButton) {
         return;
     }
 
-    iDoubleClick = true;
+  //  iDoubleClick = true;
     iSelectableGroup.selectOne(*this);
 }
 
@@ -221,6 +276,8 @@ void SelectableWidget::dropEvent(QDropEvent *event) {
 }
 
 void SelectableWidget::contextMenuEvent(QContextMenuEvent *event) {
+    qDebug("contextMenuevent");
+
     if(!isSelected()) {
         iSelectableGroup.selectOne(*this);
     }

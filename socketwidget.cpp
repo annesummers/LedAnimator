@@ -6,7 +6,7 @@ using namespace AnimatorUi;
 
 SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item) :
     SelectableWidget(parent, group, item),
-    iCutLed(NULL) {
+    iAddLedAction(NULL) {
 
     setObjectName("SocketWidget");
 
@@ -22,6 +22,11 @@ SocketWidget::~SocketWidget() {
    // qDebug("delete widget at %d, %d", gridItem().row(), gridItem().column());
 }
 
+void SocketWidget::addDefaultAction(QMenu *menu) {
+    menu->addAction(iAddLedAction);
+    menu->addSeparator();
+}
+
 // slots --------------------------------------
 
 void SocketWidget::addLed() {
@@ -34,19 +39,6 @@ void SocketWidget::selected() {
 
 // events -----------------------------------
 
-void SocketWidget::contextMenuEvent(QContextMenuEvent *event) {
-    SelectableWidget::contextMenuEvent(event);
-
-    QMenu menu(this);
-
-    menu.addAction(iAddLedAction);
-    menu.addSeparator();
-
-    addPasteActions(&menu);
-
-    menu.exec(event->globalPos());
-}
-
 void SocketWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
@@ -55,13 +47,13 @@ void SocketWidget::paintEvent(QPaintEvent *) {
     painter.drawRect(backgroundRect);
 
     painter.setPen(iItem.isSelected() ? Qt::white : Qt::black);
-    painter.setBrush(Qt::black);
+    painter.setBrush(Qt::NoBrush);
 
     int w = width();
     int h = height();
 
-    int extraX = w - 8;
-    int extraY = h - 8;
+    int extraX = w - 12;
+    int extraY = h - 12;
 
     int originX = extraX/2;
     int originY = extraY/2;

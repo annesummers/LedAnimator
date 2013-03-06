@@ -44,9 +44,12 @@ public:
 
     bool shouldMoveLeds();
 
+    void setCurrentLed(Led& led);
+
 signals:
     void hideLed(int number);
     void renumberLed(int row, int column, int oldNumber);
+    void currentLedDetails(int number, int row, int column, QColor colour);
 
 public slots:
     void addLed(int row, int column, Led *led = NULL);
@@ -93,6 +96,8 @@ private:
 
     QPoint          iDragStartPosition;
     QRect           iDragArea;
+
+    Led*            iCurrentLed;
 
     bool            iLedNumbersShown;
 };

@@ -94,15 +94,27 @@ void SelectableGroupWidget::selectOne(SelectableWidget &widget, bool singleSelec
 void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool singleSelect) {
  //   qDebug("selectArea");
 
+    int row;
+    int column;
+    getWidgetPosition(widget, &row, &column);
+
     if(!isAnySelected()) {
+        iGroupGroup.selectArea(iGroupNumber, row, column);
         return;
     }
 
-    if(singleSelect) {
-        iGroupGroup.selectSingle(*this);
-    }
+    //if(singleSelect) {
+    //    iGroupGroup.selectSingle(*this);
+   // }
 
-    getWidgetPosition(widget, &iLastSelectedRow, &iLastSelectedColumn);
+    doSelectArea(iFirstSelectedRow, iFirstSelectedColumn, row, column);
+}
+
+void SelectableGroupWidget::doSelectArea(int startRow, int startColumn, int endRow, int endColumn) {
+    iFirstSelectedRow = startRow;
+    iFirstSelectedColumn = startColumn;
+    iLastSelectedRow = endRow;
+    iLastSelectedColumn = endColumn;
 
     doGroupSelection();
 }
@@ -113,7 +125,7 @@ void SelectableGroupWidget::selectDirection(Qt::Key direction, bool singleSelect
     }
 
     if(singleSelect) {
-        iGroupGroup.selectSingle(*this);
+        iGroupGroup.selectSingleGroup(*this);
     }
 
     switch(direction) {
@@ -160,6 +172,11 @@ void SelectableGroupWidget::setNoneSelected() {
     iFirstSelectedColumn = iLastSelectedColumn = INVALID;
 }
 
+void SelectableGroupWidget::getLastSelected(int* lastRow, int* lastColumn) {
+    *lastRow = iFirstSelectedRow;
+    *lastColumn = iFirstSelectedColumn;
+}
+
 void SelectableGroupWidget::setLastSelected(SelectableWidget &widget) {
     int row;
     int column;
@@ -196,7 +213,7 @@ void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bo
                 iSelected.append(&widget);
             }
 
-            iGroupGroup.selected(*this, true, singleSelect);
+            iGroupGroup.selectGroup(iGroupNumber, true, singleSelect);
 
         } else {
             selected = false;
@@ -209,7 +226,7 @@ void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bo
             iTopLeftSelectedRow = iTopLeftSelectedColumn = INVALID;
           //  qDebug("REMOVE LAST");
 
-            iGroupGroup.selected(*this, false);
+            iGroupGroup.selectGroup(iGroupNumber, false);
         } else if(row == iTopLeftSelectedRow &&
                   column == iTopLeftSelectedColumn) {
             sortSelected();

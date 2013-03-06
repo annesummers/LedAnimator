@@ -19,6 +19,7 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
     ColourWidget(parent, ledGroup, led) {
 
     setObjectName("LedWidget");
+    setMouseTracking(true);
 
     connect(&led, SIGNAL(ledUpdated()), this, SLOT(updated()));
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
@@ -68,6 +69,11 @@ void LedWidget::addExtraActions(QMenu* menu) {
 
 // events ------------------------------------
 
+void LedWidget::mouseMoveEvent(QMouseEvent *event) {
+    SelectableWidget::mouseMoveEvent(event);
+    gridWidget().setCurrentLed(led());
+}
+
 void LedWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
 
@@ -92,11 +98,11 @@ void LedWidget::paintEvent(QPaintEvent *) {
             painter.drawEllipse(rect2);
         }
 
-        if(gridWidget().ledNumbersShown()) {
+        /*if(gridWidget().ledNumbersShown()) {
             painter.setPen(led().currentColour().value() > 100 ? Qt::black : Qt::white);
             QRect rect3(4, 4, width()-8, height()-8);
             painter.drawText(rect3, QString("%1").arg(led().number()));
-        }
+        }*/
     }
 }
 
