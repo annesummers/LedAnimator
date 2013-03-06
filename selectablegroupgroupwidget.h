@@ -14,16 +14,17 @@ class SelectableGroupGroupWidget : public QWidget {
 public:
     explicit SelectableGroupGroupWidget(QWidget *parent);
 
-    void selected(SelectableGroupWidget& selectedWidget, bool isSelected, bool selectSingle = false);
+    void selectGroup(int groupNumber, bool isSelected, bool selectSingleGroup = false);
 
     int addGroup(SelectableGroupWidget& newGroup);
     void removeGroup(SelectableGroupWidget& group);
 
-    void selectSingle(SelectableGroupWidget& selectedWidget);
+    void selectSingleGroup(SelectableGroupWidget& selectedWidget);
+
+    void selectArea(int endGroupNumber, int endRow, int endColumn);
 
     const QByteArray writeMimeData(bool cut);
     bool handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move);
-   // void handleOldMimeData(QByteArray itemData);
 
     inline SelectableGroupWidget& group(int groupNumber) { return *iGroups.value(groupNumber); }
 

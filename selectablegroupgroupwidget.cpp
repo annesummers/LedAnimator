@@ -11,21 +11,21 @@ SelectableGroupGroupWidget::SelectableGroupGroupWidget(QWidget *parent) :
     iHighestGroupNumber(INVALID) {
 }
 
-void SelectableGroupGroupWidget::selected(SelectableGroupWidget& selectedWidget, bool isSelected, bool singleSelect) {
+void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, bool singleSelect) {
     if(!isSelected) {
-        iSelectedGroups.remove(selectedWidget.groupNumber());
+        iSelectedGroups.remove(groupNumber);
     } else {
         if(singleSelect) {
-            selectSingle(selectedWidget);
+            selectSingleGroup(*iGroups.value(groupNumber));
         } else {
-            if(!iSelectedGroups.contains(selectedWidget.groupNumber())) {
-                iSelectedGroups.insert(selectedWidget.groupNumber(), &selectedWidget);
+            if(!iSelectedGroups.contains(groupNumber)) {
+                iSelectedGroups.insert(groupNumber, iGroups.value(groupNumber));
             }
         }
     }
 }
 
-void SelectableGroupGroupWidget::selectSingle(SelectableGroupWidget& selectedWidget) {
+void SelectableGroupGroupWidget::selectSingleGroup(SelectableGroupWidget& selectedWidget) {
     SelectableGroupWidget* group;
     foreach(group, iGroups) {
         if(group != &selectedWidget) {
@@ -57,6 +57,36 @@ void SelectableGroupGroupWidget::removeGroup(SelectableGroupWidget& group) {
         iHighestGroupNumber--;
     } else {
         iFreeGroupNumbers.append(group.groupNumber());
+    }
+}
+
+void SelectableGroupGroupWidget::selectArea(int endGroupNumber, int endRow, int endColumn) {
+    int groupNum = 0;
+    int startGroupNum = INVALID;
+    SelectableGroupWidget* group;
+    int startRow = INVALID;
+    int startColumn = INVALID;
+
+    for(int i = 0; i <= endGroupNumber, groupNum <= endGroupNumber; i++) {
+        while(!iGroups.contains(groupNum)) {
+            groupNum++;
+        }
+
+        group = iGroups.value(groupNum);
+
+        if(startGroupNum == INVALID) {
+            if(group->isAnySelected()) {
+                group->getLastSelected(&startRow, &startColumn);
+                startGroupNum = groupNum;
+            }
+        }
+
+        if(startGroupNum != INVALID){
+            //selectGroup(group->groupNumber(), true);
+            group->doSelectArea(startRow, startColumn, endRow, endColumn);
+        }
+
+        groupNum++;
     }
 }
 
