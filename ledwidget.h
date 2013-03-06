@@ -34,6 +34,7 @@ private slots:
     void deleteLed();
 
 protected:
+    void mouseMoveEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
 
     inline QString mimeType() const { return LED_MIME_TYPE; }

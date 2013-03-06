@@ -81,7 +81,9 @@ HEADERS += \
     selectablegroupgroupwidget.h \
     grouplistwidget.h \
     colourgroupgroupwidget.h \
-    ledanimatoractionbase.h
+    ledanimatoractionbase.h \
+    leddetails.h \
+    framedetails.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -109,10 +111,17 @@ SOURCES += \
     selectablegroupgroupwidget.cpp \
     grouplistwidget.cpp \
     colourgroupgroupwidget.cpp \
-    ledanimatoractionbase.cpp
+    ledanimatoractionbase.cpp \
+    leddetails.cpp \
+    framedetails.cpp
 
 FORMS += \
     newanimation.ui \
-    gridlistwidget.ui
+    gridlistwidget.ui \
+    leddetails.ui \
+    framedetails.ui
+
+RESOURCES += \
+    LedAnimator.qrc
 
 

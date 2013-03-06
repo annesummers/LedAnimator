@@ -72,6 +72,7 @@ public:
 signals:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
+
     void groupAdded(int groupNumber);
 
     void newLed(int row, int column);
