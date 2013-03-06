@@ -63,12 +63,14 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 
     iGridLayout->addWidget(iFrameSlider, 0, 1, 1, 1);
 
-    QPushButton* closeAll = new QPushButton("X", iScrollAreaWidgetContents);
-    closeAll->setObjectName(QString::fromUtf8("closeAll"));
+    iCloseAll = new QToolButton(iScrollAreaWidgetContents);
+    iCloseAll->setObjectName(QString::fromUtf8("closeAll"));
+    iCloseAll->setIcon(QIcon(":/images/delete.png"));
+    iCloseAll->setEnabled(false);
 
-    connect(closeAll, SIGNAL(clicked()), this, SLOT(closeAllClicked()));
+    connect(iCloseAll, SIGNAL(clicked()), this, SLOT(closeAllClicked()));
 
-    iGridLayout->addWidget(closeAll, 0, 2, 1, 1);
+    iGridLayout->addWidget(iCloseAll, 0, 2, 1, 1);
 
     verticalLayout->addLayout(iGridLayout);
 
@@ -137,6 +139,10 @@ void AnimationDetailsWidget::deleteLed(LedDetails &details) {
     removeGroup(details.frameList());
 
     update();
+
+    if(iLedDetails.count() == 0) {
+        iCloseAll->setEnabled(false);
+    }
 }
 
 void AnimationDetailsWidget::doResize() {
@@ -180,11 +186,13 @@ void AnimationDetailsWidget::addLed(int row, int column) {
         QLabel* ledNumberLabel = new QLabel(this);
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, iAnimation, *led, *this, count);
-        QPushButton* detailsCloseWidget = new QPushButton("X", this);
+        QToolButton* closeButton = new QToolButton(this);
+        closeButton->setObjectName(QString::fromUtf8("detailsClose"));
+        closeButton->setIcon(QIcon(":/images/delete.png"));
 
         iGridLayout->addWidget(ledNumberLabel, count, 0);
         iGridLayout->addWidget(framesListWidget, count, 1);
-        iGridLayout->addWidget(detailsCloseWidget, count, 2);
+        iGridLayout->addWidget(closeButton, count, 2);
 
         connect(framesListWidget, SIGNAL(resized()), this, SLOT(framesResized()));
 
@@ -192,7 +200,9 @@ void AnimationDetailsWidget::addLed(int row, int column) {
                                                          *led,
                                                          *ledNumberLabel,
                                                          *framesListWidget,
-                                                         *detailsCloseWidget));
+                                                         *closeButton));
+
+        iCloseAll->setEnabled(true);
     }
 }
 
@@ -299,7 +309,7 @@ void ScrollContentsWidget::paintEvent(QPaintEvent *) {
 
 // LedDetails ------------------------------
 
-LedDetails::LedDetails(AnimationDetailsWidget& parent, Led &led, QLabel &label, FrameListWidget& framesListWidget, QPushButton &closeButton) :
+LedDetails::LedDetails(AnimationDetailsWidget& parent, Led &led, QLabel &label, FrameListWidget& framesListWidget, QToolButton &closeButton) :
     QObject(&parent),
     iLed(led),
     iLabel(label),

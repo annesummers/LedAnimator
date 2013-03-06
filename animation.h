@@ -40,7 +40,7 @@ public:
 
     void renumberLed(Led& led, int newNumber);
 
-    void play();
+    void play(bool repeat);
     void stop();
 
     Led* ledAt(int row, int column) const;
@@ -79,6 +79,8 @@ signals:
 
     void ledDeleted(int row, int column, int number);
     void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
+
+    void stopped();
 
 public slots:
     inline void setFileName(QString fileName) { iFileName = fileName; }
@@ -134,6 +136,7 @@ private:
     int iNumSubAnimations;
 
     bool iIsPlaying;
+    bool iRepeat;
 
     QString iFileName;
     bool    iIsSaved;
