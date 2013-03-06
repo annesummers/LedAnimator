@@ -1,3 +1,9 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #ifndef COLOURWIDGETTESTS_H
 #define COLOURWIDGETTESTS_H
 

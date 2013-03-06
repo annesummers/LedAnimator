@@ -1,12 +1,10 @@
-/*************************************
-**                                  **
-** Copyright (C) 2012 Anne Summers  **
-**                                  **
-**************************************/
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
 
 #include "mainwindow.h"
-
-//#include <QHBoxLayout>
 
 #include "led.h"
 #include "ledwidget.h"
@@ -35,8 +33,6 @@ MainWindow::MainWindow(Engine& engine) :
     QWidget* centralWidget = new QWidget(this);
     centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
 
-  //  QVBoxLayout* horizontalLayout = new QVBoxLayout(centralWidget);
-
     QGridLayout* gridLayout = new QGridLayout(centralWidget);
     gridLayout->setSpacing(6);
     gridLayout->setContentsMargins(11, 11, 11, 11);
@@ -57,12 +53,7 @@ MainWindow::MainWindow(Engine& engine) :
 
     FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(centralWidget);
     frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
-   /* QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    sizePolicy1.setHorizontalStretch(1);
-    sizePolicy1.setVerticalStretch(0);
-   // sizePolicy1.setHeightForWidth(frameDetailsWidget->sizePolicy().hasHeightForWidth());
-    frameDetailsWidget->setSizePolicy(sizePolicy1);
-*/
+
     connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
     connect(&engine.animation(), SIGNAL(numFramesChanged(int)), frameDetailsWidget, SLOT(numFramesChanged(int)));
 
@@ -70,11 +61,6 @@ MainWindow::MainWindow(Engine& engine) :
 
     PlayInfoWidget* playInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
     playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
- /*   QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    sizePolicy2.setHorizontalStretch(1);
-    sizePolicy2.setVerticalStretch(0);
-    //sizePolicy2.setHeightForWidth(playInfoWidget->sizePolicy().hasHeightForWidth());
-    playInfoWidget->setSizePolicy(sizePolicy1);*/
 
     gridLayout->addWidget(playInfoWidget, 1, 2, 1, 1);
 
@@ -90,7 +76,6 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 4);
 
     setCentralWidget(centralWidget);
-   // horizontalLayout->addLayout(gridLayout);
 
     QMenu* fileMenu = new QMenu("&File", this);
     QAction* newAction = fileMenu->addAction("&New animation...");
