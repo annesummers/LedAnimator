@@ -31,7 +31,7 @@ const int LED_OFFSET_Y = LED_OFFSET_X;
 const int SLIDER_HEIGHT = 40;
 const int SLIDER_OFFSET = 2;
 
-const int BORDER = 20;
+const int BORDER = 12;
 
 const int HEADER_BYTE = 0x56;
 const int TERMINATING_BYTE = 0x45;
