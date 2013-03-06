@@ -22,7 +22,6 @@ private slots:
     void selected();
 
 protected:
-   void contextMenuEvent(QContextMenuEvent *event);
    void paintEvent(QPaintEvent *);
    void keyPressEvent(QKeyEvent *event);
 
@@ -33,13 +32,14 @@ protected:
    inline Qt::DropAction  defaultDropAction() const { return Qt::MoveAction; }
    inline Qt::DropAction  controlDropAction() const { return Qt::CopyAction; }
 
+   void addDefaultAction(QMenu *menu);
+
    inline bool canCopy() { return false; }
+   inline bool canCut() { return false; }
 
 private:
    LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }
    GridItem& gridItem() { return static_cast<GridItem&>(iItem); }
-
-   Led* iCutLed;
 
    QAction* iAddLedAction;
 };
