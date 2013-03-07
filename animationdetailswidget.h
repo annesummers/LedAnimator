@@ -71,6 +71,7 @@ private:
     QHash<int, Led*>        iShownLeds;
 
     bool iClosed;
+    int iResize;
 };
 
 class ScrollContentsWidget : public QWidget {

@@ -333,6 +333,8 @@ Position SelectableGroupWidget::widgetPosition(SelectableWidget &widget) {
         throw IllegalArgumentException("SelectableGroupWidget::getWidgetPosition : Column is greater than number of columns");
     }*/
 #endif
+
+    return Position();
 }
 
 // mime data handlers ------------------------

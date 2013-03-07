@@ -24,7 +24,8 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     iFramesListWidth(0),
     iFrameSlider(NULL),
     iGridLayout(NULL),
-    iClosed(false){
+    iClosed(false),
+    iResize(false){
 
     QHBoxLayout* horizontalLayout = new QHBoxLayout(this);
     horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -231,11 +232,17 @@ void AnimationDetailsWidget::ledRenumbered(int row, int column, int oldNumber) {
 
 void AnimationDetailsWidget::framesResized() {
     qDebug("animationdetails framesResized");
-    doResize();
+    if(iResize == 0) {
+        doResize();
 
-    LedDetails* details;
-    foreach(details, iLedDetails) {
-        details->frameList().doResize();
+        LedDetails* details;
+        foreach(details, iLedDetails) {
+            details->frameList().doResize();
+            iResize--;
+        }
+
+    } else {
+        iResize++;
     }
 }
 
