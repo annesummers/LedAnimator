@@ -38,8 +38,8 @@ private slots:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
 
-    void hideLed(int ledNumber);
-    void renumberLed(int row, int column, int oldNumber);
+    void ledDeleted(int row, int column, int ledNumber);
+    void ledRenumbered(int row, int column, int oldNumber);
 
     void framesResized();
     void closeAllClicked();
@@ -78,8 +78,11 @@ class ScrollContentsWidget : public QWidget {
 
 public:
     explicit ScrollContentsWidget(QWidget* parent, Animation &animation);
-    void setFramesSize(QSize size);
-    void setFramesPos(QPoint pos);
+
+    inline void setFramesSize(QSize size) { iFramesSize = size; }
+    inline void setFramesPos(QPoint pos) { iFramesPos = pos; }
+
+    inline void setShowCurrentFrameLine(bool show) { iShowLine = show; }
 
 protected:
     void paintEvent(QPaintEvent *);
@@ -88,6 +91,8 @@ private:
     Animation& iAnimation;
     QSize iFramesSize;
     QPoint iFramesPos;
+
+    bool iShowLine;
 };
 
 class LedDetails : public QObject {

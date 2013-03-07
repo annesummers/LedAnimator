@@ -21,12 +21,13 @@ class FrameListWidget : public ColourGroupWidget {
 
 public:
     explicit FrameListWidget(QWidget *parent,
-                             const Animation &animation,
+                             const Animation& animation,
                              const Led& led,
                              ColourGroupGroupWidget &framesListGroup,
                              int groupNumber);
 
     const Led& led() { return iLed; }
+    void doResize();
 
 signals:
     void resized();
@@ -35,6 +36,9 @@ private slots:
     void numFramesChanged(int numFrames);
 
 protected:
+    bool validKeyPress(Qt::Key key);
+    void resizeEvent(QResizeEvent *);
+
     void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
 
     inline void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
@@ -43,12 +47,10 @@ protected:
         { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
 
     SelectableWidget& widgetAt(int row, int column);
-    void getWidgetPosition(SelectableWidget &widget, int* row, int* column);
+    Position widgetPosition(SelectableWidget &widget);
 
-    bool validKeyPress(Qt::Key key);
-
-    void resizeEvent(QResizeEvent *);
 private:
+
     QList<FrameWidget*> iFramesList;
 
     const Led& iLed;

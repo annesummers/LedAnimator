@@ -1,8 +1,8 @@
-/*************************************
-**                                  **
-** Copyright (C) 2012 Anne Summers  **
-**                                  **
-**************************************/
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
 
 #include "ledanimcodec.h"
 
@@ -277,21 +277,22 @@ void LedAnimByteArrayCodec::writeControlCharacter(AnimChar character) {
 }
 
 void LedAnimByteArrayCodec::writePositionData() {
-    int row;
-    int column;
-
     writeCharacter(iAnimation.numRows());
     writeCharacter(iAnimation.numColumns());
 
     int ledNum = INITIAL_LED;
     for(int i = 0; i < iAnimation.numLeds(); i++) {
-        while(!iAnimation.getLedPosition(ledNum, &row, &column)) {
-            ledNum++;
-        }
+        Position position;
+        do {
+            position = iAnimation.ledPosition(ledNum);
+            if(!position.isValid()) {
+                ledNum++;
+            }
+        } while(!position.isValid());
 
         writeCharacter(ledNum++);
-        writeCharacter(AnimChar(row));
-        writeCharacter(AnimChar(column));
+        writeCharacter(position.row());
+        writeCharacter(position.column());
     }
 }
 

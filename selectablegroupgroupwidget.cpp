@@ -1,3 +1,9 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #include "selectablegroupgroupwidget.h"
 
 #include "selectablegroupwidget.h"
@@ -29,7 +35,7 @@ void SelectableGroupGroupWidget::selectSingleGroup(SelectableGroupWidget& select
     SelectableGroupWidget* group;
     foreach(group, iGroups) {
         if(group != &selectedWidget) {
-            group->clearSelection();
+            group->clearAllSelection();
         }
     }
 
@@ -60,34 +66,63 @@ void SelectableGroupGroupWidget::removeGroup(SelectableGroupWidget& group) {
     }
 }
 
-void SelectableGroupGroupWidget::selectArea(int endGroupNumber, int endRow, int endColumn) {
-    int groupNum = 0;
-    int startGroupNum = INVALID;
+void SelectableGroupGroupWidget::selectArea(int lastGroupNumber, Position end, bool multipleAreas) {
+    int groupNumber = 0;
+    int firstGroupNumber = INVALID;
     SelectableGroupWidget* group;
-    int startRow = INVALID;
-    int startColumn = INVALID;
+    Position start;
 
-    for(int i = 0; i <= endGroupNumber, groupNum <= endGroupNumber; i++) {
-        while(!iGroups.contains(groupNum)) {
-            groupNum++;
+    for(int i = 0; i < iGroups.count()&&  groupNumber <= iHighestGroupNumber; i++) {
+        while(!iGroups.contains(groupNumber)) {
+            groupNumber++;
         }
 
-        group = iGroups.value(groupNum);
+        group = iGroups.value(groupNumber);
 
-        if(startGroupNum == INVALID) {
+        if(firstGroupNumber == INVALID) {
             if(group->isAnySelected()) {
-                group->getLastSelected(&startRow, &startColumn);
-                startGroupNum = groupNum;
+                start = group->lastSelected();
+                firstGroupNumber = groupNumber;
             }
         }
 
-        if(startGroupNum != INVALID){
-            //selectGroup(group->groupNumber(), true);
-            group->doSelectArea(startRow, startColumn, endRow, endColumn);
+        groupNumber++;
+    }
+
+    int endGroupNumber;
+    if(firstGroupNumber < lastGroupNumber) {
+        groupNumber = firstGroupNumber;
+        endGroupNumber = lastGroupNumber;
+    } else {
+        groupNumber = lastGroupNumber;
+        endGroupNumber = firstGroupNumber;
+    }
+
+    for(int i = 0; i < iGroups.count() && groupNumber <= endGroupNumber; i++) {
+        while(!iGroups.contains(groupNumber)) {
+            groupNumber++;
         }
 
-        groupNum++;
+        iGroups.value(groupNumber)->doSelectArea(start, end, multipleAreas);
+        groupNumber++;
     }
+}
+
+bool SelectableGroupGroupWidget::isOtherSelected(int groupNumber) {
+    int otherGroupNumber = 0;
+    for(int i = 0; otherGroupNumber <= iHighestGroupNumber; i++) {
+        while(!iGroups.contains(otherGroupNumber)) {
+            otherGroupNumber++;
+        }
+
+        if(groupNumber != otherGroupNumber) {
+            return true;
+        }
+
+        otherGroupNumber++;
+    }
+
+    return false;
 }
 
 const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
@@ -97,6 +132,8 @@ const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
     dataStream << iSelectedGroups.count();
 
     qDebug("Selected group count is %d", iSelectedGroups.count());
+
+    int fromGroupNumber;
 
     int groupNum = 0;
     for(int i = 0; i < iSelectedGroups.count(); i++) {
@@ -110,7 +147,11 @@ const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
     return itemData;
 }
 
-bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move) {
+bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData,
+                                                int dropGroupNumber,
+                                                Position dropPosition,
+                                                bool wrap,
+                                                bool move) {
     bool wasCut = false;
 
     QDataStream dataStream(&itemData, QIODevice::ReadOnly);
@@ -123,13 +164,54 @@ bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData, int dropGro
     int originColumn = INVALID;
 
     int groupNumber = dropGroupNumber;
+    int fromGroupNumber;
+    int lastFromGroupNumber = INVALID;
+    int groupNumberGap;
+
+    QList<int> pasteGroups;
 
     for(int i = 0; i < numCopyGroups && groupNumber <= iHighestGroupNumber; i++) {
+        dataStream >> fromGroupNumber;
+
+        if(lastFromGroupNumber == INVALID) {
+            lastFromGroupNumber = fromGroupNumber;
+        }
+
+        groupNumberGap = fromGroupNumber - lastFromGroupNumber;
+
+        groupNumber+=groupNumberGap;
+
         while(!iGroups.contains(groupNumber)) {
             groupNumber++;
         }
 
-        wasCut = iGroups.value(groupNumber++)->doHandleMimeData(dataStream, dropRow, dropColumn, &originRow, &originColumn, wrap, move);
+        wasCut = iGroups.value(groupNumber)->doHandleMimeData(dataStream,
+                                                                fromGroupNumber,
+                                                                dropPosition,
+                                                                &originRow,
+                                                                &originColumn,
+                                                                wrap,
+                                                                move);
+        pasteGroups.append(groupNumber);
+
+        lastFromGroupNumber = fromGroupNumber;
+    }
+
+    groupNumber = 0;
+
+   for(int i = 0; i < iGroups.count() && groupNumber <= iHighestGroupNumber; i++) {
+        while(!iGroups.contains(groupNumber) ||
+              pasteGroups.contains(groupNumber)) {
+            groupNumber++;
+
+            if(groupNumber > iHighestGroupNumber) {
+                break;
+            }
+        }
+
+        iGroups.value(groupNumber)->clearAllSelection();
+        selectGroup(groupNumber, false);
+        groupNumber++;
     }
 
     return wasCut;

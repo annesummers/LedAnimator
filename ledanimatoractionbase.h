@@ -1,3 +1,9 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #ifndef LEDANIMATORACTIONBASE_H
 #define LEDANIMATORACTIONBASE_H
 

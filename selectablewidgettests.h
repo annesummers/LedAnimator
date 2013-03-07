@@ -55,7 +55,7 @@ public:
     SelectableGroupTestWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget &groupGroupWidget, int groupNumber);
 
     SelectableWidget& widgetAt(int row, int column);
-    virtual void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    virtual void widgetPosition(SelectableWidget& widget, int* row, int* column);
 
     bool validKeyPress(Qt::Key key);
 

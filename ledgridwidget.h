@@ -1,8 +1,8 @@
-/*************************************
-**                                  **
-** Copyright (C) 2012 Anne Summers  **
-**                                  **
-**************************************/
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
 
 #ifndef LEDGRID_H
 #define LEDGRID_H
@@ -68,7 +68,7 @@ protected:
 
     void paintEvent(QPaintEvent*);
 
-    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    Position widgetPosition(SelectableWidget& widget);
     SelectableWidget& widgetAt(int row, int column);
 
     bool validKeyPress(Qt::Key key);

@@ -1,8 +1,16 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #ifndef SELECTABLEGROUPOFGROUPSWIDGET_H
 #define SELECTABLEGROUPOFGROUPSWIDGET_H
 
 #include <QWidget>
 #include <QHash>
+
+#include "constants.h"
 
 namespace AnimatorUi {
 
@@ -21,10 +29,12 @@ public:
 
     void selectSingleGroup(SelectableGroupWidget& selectedWidget);
 
-    void selectArea(int endGroupNumber, int endRow, int endColumn);
+    void selectArea(int lastGroupNumber, Position end, bool multipleAreas);
+
+    bool isOtherSelected(int groupNumber);
 
     const QByteArray writeMimeData(bool cut);
-    bool handleMimeData(QByteArray itemData, int dropGroupNumber, int dropRow, int dropColumn, bool wrap, bool move);
+    bool handleMimeData(QByteArray itemData, int dropGroupNumber, Position dropPosition, bool wrap, bool move);
 
     inline SelectableGroupWidget& group(int groupNumber) { return *iGroups.value(groupNumber); }
 

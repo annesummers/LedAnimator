@@ -1,8 +1,8 @@
-/*************************************
-**                                  **
-** Copyright (C) 2012 Anne Summers  **
-**                                  **
-**************************************/
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
 
 #include "animationdetailswidget.h"
 
@@ -93,9 +93,6 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
 
     setAcceptDrops(true);
 
-    connect(&animation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
-    connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
-
     connect(iFrameSlider, SIGNAL(valueChanged(int)), &animation, SLOT(setCurrentFrame(int)));
 }
 
@@ -142,20 +139,24 @@ void AnimationDetailsWidget::deleteLed(LedDetails &details) {
 
     if(iLedDetails.count() == 0) {
         iCloseAll->setEnabled(false);
+        iScrollAreaWidgetContents->setShowCurrentFrameLine(false);
     }
 }
 
 void AnimationDetailsWidget::doResize() {
+    qDebug("animationdetails doresize");
     int numFrames = iAnimation.numFrames();
     int width = iFrameSlider->width();
     int extra = width%numFrames;
     int frameWidth = (width-extra)/numFrames;
 
-    iFrameSlider->resize(width-extra+(20 - frameWidth), iFrameSlider->height());
+    width = width - extra;
 
-    iScrollAreaWidgetContents->setFramesSize(QSize(width-extra, iFrameSlider->height()));
+    iScrollAreaWidgetContents->setFramesSize(QSize(width, iFrameSlider->height()));
     iScrollAreaWidgetContents->setFramesPos(QPoint(iFrameSlider->pos().x() + (10 - frameWidth/2), iFrameSlider->pos().y()));
     iScrollAreaWidgetContents->update();
+
+    iFrameSlider->resize(width+(20 - frameWidth), iFrameSlider->height());
 }
 
 // slots ---------------------------
@@ -180,7 +181,7 @@ void AnimationDetailsWidget::addLed(int row, int column) {
 
     if(!iLedDetails.contains(led->number())) {
         int count = iLedDetails.count() + 1;
-        //qDebug("add new led, %d, %d", row, column);
+        qDebug("add new led, %d, %d", row, column);
 
         QLabel* ledNumberLabel = new QLabel(this);
 
@@ -202,17 +203,20 @@ void AnimationDetailsWidget::addLed(int row, int column) {
                                                          *closeButton));
 
         iCloseAll->setEnabled(true);
+        iScrollAreaWidgetContents->setShowCurrentFrameLine(true);
     }
 }
 
-void AnimationDetailsWidget::hideLed(int ledNumber) {
+void AnimationDetailsWidget::ledDeleted(int row, int column, int ledNumber) {
+    Q_UNUSED(row);
+    Q_UNUSED(column);
     //qDebug("AnimationDetailsWidget::deleteLed %d", ledNumber);
     if(iLedDetails.contains(ledNumber)) {
         deleteLed(*iLedDetails.value(ledNumber));
     }
 }
 
-void AnimationDetailsWidget::renumberLed(int row, int column, int oldNumber) {
+void AnimationDetailsWidget::ledRenumbered(int row, int column, int oldNumber) {
     if(iLedDetails.contains(oldNumber)) {
         Led* led = iAnimation.ledAt(row, column);
 
@@ -226,7 +230,13 @@ void AnimationDetailsWidget::renumberLed(int row, int column, int oldNumber) {
 }
 
 void AnimationDetailsWidget::framesResized() {
+    qDebug("animationdetails framesResized");
     doResize();
+
+    LedDetails* details;
+    foreach(details, iLedDetails) {
+        details->frameList().doResize();
+    }
 }
 
 void AnimationDetailsWidget::closeAllClicked() {
@@ -239,6 +249,7 @@ void AnimationDetailsWidget::closeAllClicked() {
 // events -------------------------------------
 
 void AnimationDetailsWidget::resizeEvent(QResizeEvent*) {
+    qDebug("animation details resize event");
     doResize();
 }
 
@@ -259,7 +270,7 @@ void AnimationDetailsWidget::dropEvent(QDropEvent *event) {
         int numGroups;
         int groupNumber;
 
-        dataStream >> cut >> numGroups >> groupNumber;
+        dataStream >> numGroups >> groupNumber >> cut;
 
         int numLeds;
 
@@ -283,27 +294,22 @@ ScrollContentsWidget::ScrollContentsWidget(QWidget* parent, Animation& animation
     QWidget(parent),
     iAnimation(animation),
     iFramesSize(QSize()),
-    iFramesPos(QPoint()){}
-
-void ScrollContentsWidget::setFramesSize(QSize size) {
-    iFramesSize = size;
-}
-
-void ScrollContentsWidget::setFramesPos(QPoint pos) {
-    iFramesPos = pos;
-}
+    iFramesPos(QPoint()),
+    iShowLine(false) {}
 
 void ScrollContentsWidget::paintEvent(QPaintEvent *) {
-    int frameWidth = iFramesSize.width()/(iAnimation.numFrames());
-    int currentFramePosition = (iAnimation.currentFrame() - 1)*frameWidth;
+    if(iShowLine) {
+        int frameWidth = iFramesSize.width()/(iAnimation.numFrames());
+        int currentFramePosition = (iAnimation.currentFrame() - 1)*frameWidth;
 
-    QPainter painter(this);
-    painter.setPen(Qt::black);
-    QPoint topPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
-                    iFramesSize.height() - 8);
-    QPoint bottomPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
-                       height() - iFramesSize.height() - 8);
-    painter.drawLine(topPoint, bottomPoint);
+        QPainter painter(this);
+        painter.setPen(Qt::black);
+        QPoint topPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
+                        iFramesSize.height() - 8);
+        QPoint bottomPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
+                           height() - iFramesSize.height() - 8);
+        painter.drawLine(topPoint, bottomPoint);
+    }
 }
 
 // LedDetails ------------------------------

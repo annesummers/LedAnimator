@@ -93,17 +93,19 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
         }
     }
 
-    int row;
-    int column;
     int ledNum = INITIAL_LED;
 
     iMissingLeds.clear();
     for(int i = 0; i < numLeds; i++) {
-        while(!getLedPosition(ledNum, &row, &column)) {
-            iMissingLeds.append(ledNum++);
-        }
+        Position position;
+        do {
+            position = ledPosition(ledNum);
+            if(!position.isValid()) {
+                iMissingLeds.append(ledNum++);
+            }
+        } while(!position.isValid());
 
-        addNewLed(row, column, ledNum++);
+        addNewLed(position.row(), position.column(), ledNum++);
     }
 
     iGreatestNumber = ledNum - 1;
@@ -234,11 +236,17 @@ void Animation::pasteLed(int fromRow, int fromColumn, int toRow, int toColumn) {
     addLed(*led, toRow, toColumn);
 }
 
-void Animation::renumberLed(Led& led, int newNumber) {
+void Animation::renumberLed(int row, int column, int newNumber) {
+    Led& led = *ledAt(row, column);
+
+    int oldNumber = led.number();
+
     removeLed(led);
     addLed(led, newNumber);
 
     led.setNumber(newNumber);
+
+    emit ledRenumbered(row, column, oldNumber);
 }
 
 int Animation::nextLedNumber() {
@@ -336,18 +344,21 @@ Led* Animation::ledAt(int number) const {
     }
 }
 
-bool Animation::getLedPosition(int number, int *const row, int *const column)  const {
+Position Animation::ledPosition(int number) const {//, int *const row, int *const column)  const {
     int index = iPositions.indexOf(number);
 
     if(index == INVALID) {
         //throw IllegalArgumentException(QString("Animation::getLedPosition : led %1 does not exist").arg(number));
-        return false;
+        //return false;
+        return Position();
     }
 
-    *row = index/numRows();
+    return Position(index/numRows(), index%numRows());
+
+   /* *row = index/numRows();
     *column = index%numRows();
 
-    return true;
+    return true;*/
 }
 
 int Animation::gridPositionNumber(int row, int column) const {

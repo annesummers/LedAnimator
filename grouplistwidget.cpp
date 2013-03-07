@@ -1,3 +1,9 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #include "grouplistwidget.h"
 
 GroupListWidget::GroupListWidget(QWidget *parent, Animation& animation) :

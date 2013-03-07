@@ -1,13 +1,22 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #ifndef SELECTABLEWIDGETGROUP_H
 #define SELECTABLEWIDGETGROUP_H
 
 #include <QWidget>
 #include <QColorDialog>
 
+#include "constants.h"
+
 namespace AnimatorUi {
 
 class SelectableGroupGroupWidget;
 class SelectableWidget;
+class Area;
 
 class SelectableGroupWidget : public QWidget {
     Q_OBJECT
@@ -24,17 +33,17 @@ public:
     void toggleOne(SelectableWidget &widget, bool singleSelect = true);
     void toggle(SelectableWidget &widget);
 
-    void selectArea(SelectableWidget& widget, bool singleSelect = false);
+    void selectArea(SelectableWidget& widget, bool multipleAreas);
 
-    bool isGroupSelected();
+    bool isAreaSelected();
     bool isMultipleSelected();
     bool isSingleSelected();
     inline bool isAnySelected() { return selectedCount() > 0; }
 
-    void clearSelection();
+    void clearAllSelection();
 
     virtual SelectableWidget& widgetAt(int row, int column);
-    virtual void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    virtual Position widgetPosition(SelectableWidget& widget) = 0;
 
     inline QColorDialog& colourDialog() { return *iColourDialog; }
 
@@ -45,10 +54,11 @@ public:
     bool handleMimeData(QByteArray mimeData, SelectableWidget &dropWidget, bool wrap, bool move = false);
 
     void doWriteMimeData(QDataStream& dataStream, bool cut);
-    bool doHandleMimeData(QDataStream& dataStream, int dropRow, int dropColumn, int *originRow, int *originColumn, bool wrap, bool move);
-    void doSelectArea(int startRow, int startColumn, int endRow, int endColumn);
+    bool doHandleMimeData(QDataStream& dataStream, int fromGroupNumber, Position dropPosition, int *originRow, int *originColumn, bool wrap, bool move);
+    void doSelectArea(Position start, Position end, bool multipleAreas);
+    void doSelectDirection(Qt::Key direction);
 
-    void getLastSelected(int* lastRow, int* lastColumn);
+    Position lastSelected();
 
     inline const int groupNumber() const { return iGroupNumber; }
 
@@ -63,8 +73,8 @@ protected:
     virtual void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
     virtual void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) = 0;
 
-    virtual void moveToClipboard(int group, int row, int column)
-        { Q_UNUSED(group); Q_UNUSED(row); Q_UNUSED(column); }
+    virtual void moveToClipboard(int group, Position position)
+        { Q_UNUSED(group); Q_UNUSED(position); }
 
     inline int selectedCount() { return iSelected.count(); }
 
@@ -73,16 +83,18 @@ protected:
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }
 
-    inline const int firstSelectedRow() { return iFirstSelectedRow; }
+ /*   inline const int firstSelectedRow() { return iFirstSelectedRow; }
     inline const int lastSelectedRow() { return iLastSelectedRow; }
     inline const int firstSelectedColumn() { return iFirstSelectedColumn; }
-    inline const int lastSelectedColumn() { return iLastSelectedColumn; }
+    inline const int lastSelectedColumn() { return iLastSelectedColumn; }*/
 
     SelectableGroupGroupWidget& iGroupGroup;
     int iGroupNumber;
 
 private:
-    void setNoneSelected();
+    void clearAreaSelection();
+    void clearSelection();
+
     void setLastSelected(SelectableWidget& widget);
 
     void doGroupSelection();
@@ -97,15 +109,38 @@ private:
     int iNumRows;
     int iNumColumns;
 
-    int iFirstSelectedRow;
+  /*  int iFirstSelectedRow;
     int iLastSelectedRow;
     int iFirstSelectedColumn;
-    int iLastSelectedColumn;
+    int iLastSelectedColumn;*/
 
-    int iTopLeftSelectedRow;
+    QList<Area> iAreas;
+
+    Position iTopLeftSelected;
+    //Position iBottomRightSelected;
+
+    Position iLastSelected;
+
+   /* int iTopLeftSelectedRow;
     int iTopLeftSelectedColumn;
     int iBottomRightSelectedRow;
-    int iBottomRightSelectedColumn;
+    int iBottomRightSelectedColumn;*/
+};
+
+class Area {
+public:
+    inline Area(Position first, Position last) :
+        iFirstSelected(first), iLastSelected(last) {}
+
+    inline const Position firstSelected() const { return iFirstSelected; }
+    inline const Position lastSelected() const { return iLastSelected; }
+
+    inline void setFirstSelected(Position firstSelected) { iFirstSelected = firstSelected; }
+    inline void setLastSelected(Position lastSelected) { iLastSelected = lastSelected; }
+
+private:
+    Position iFirstSelected;
+    Position iLastSelected;
 };
 }
 #endif // SELECTABLEWIDGETGROUP_H

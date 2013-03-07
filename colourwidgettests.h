@@ -1,3 +1,9 @@
+/*****************************************
+**                                      **
+** Copyright (C) 2012-2013 Anne Summers **
+**                                      **
+*****************************************/
+
 #ifndef COLOURWIDGETTESTS_H
 #define COLOURWIDGETTESTS_H
 
@@ -51,7 +57,7 @@ public:
     ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget& groupGroupWidget, int groupNumber);
 
     SelectableWidget& widgetAt(int row, int column);
-    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    void widgetPosition(SelectableWidget& widget, int* row, int* column);
     bool validKeyPress(Qt::Key key);
 
     void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
