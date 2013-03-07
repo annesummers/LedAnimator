@@ -42,6 +42,11 @@ MainWindow::MainWindow(Engine& engine) :
     LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *iUndoStack, *gridGroupGroup);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
+    connect(&engine.animation(), SIGNAL(newLed(int, int)), ledGridWidget, SLOT(addLed(int, int)));
+    connect(&engine.animation(), SIGNAL(newSocket(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
+    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), ledGridWidget, SLOT(ledDeleted(int, int, int)));
+    connect(&engine.animation(), SIGNAL(ledMoved(int, int, int, int)), ledGridWidget, SLOT(ledMoved(int, int, int, int)));
+
     gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
 
     LedDetailsWidget* ledDetailsWidget = new LedDetailsWidget(centralWidget);
@@ -70,8 +75,10 @@ MainWindow::MainWindow(Engine& engine) :
     AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
     iAnimationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
 
-    connect(ledGridWidget, SIGNAL(hideLed(int)), iAnimationDetailsWidget, SLOT(hideLed(int)));
-    connect(ledGridWidget, SIGNAL(renumberLed(int,int,int)), iAnimationDetailsWidget, SLOT(renumberLed(int, int, int)));
+    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), iAnimationDetailsWidget, SLOT(ledDeleted(int, int, int)));
+    connect(&engine.animation(), SIGNAL(ledRenumbered(int,int,int)), iAnimationDetailsWidget, SLOT(ledRenumbered(int, int, int)));
+    connect(&engine.animation(), SIGNAL(numFramesChanged(int)), iAnimationDetailsWidget, SLOT(numFramesChanged(int)));
+    connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), iAnimationDetailsWidget, SLOT(currentFrameChanged(int)));
 
     gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 4);
 

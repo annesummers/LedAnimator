@@ -194,7 +194,7 @@ void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
         }
 
         if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-            iSelectableGroup.selectArea(*this);//(QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier);
+            iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
             return;
         }
 
@@ -224,7 +224,7 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
 
-    bool group = iSelectableGroup.isGroupSelected();
+    bool group = iSelectableGroup.isAreaSelected();
     bool multiple = iSelectableGroup.isMultipleSelected();
     if(!group &&
        !multiple) {

@@ -48,12 +48,7 @@ void FrameListWidget::numFramesChanged(int numFrames) {
     }
 
     if(oldNumFrames != numFrames) {
-       // resize(parentWidget()->width(), height());
-
-       // emit resized(pos().x(), width());
-       // update();
-
-        // TODO why doesn't this work?
+        doResize();
     }
 }
 
@@ -69,11 +64,8 @@ SelectableWidget &FrameListWidget::widgetAt(int row, int column) {
     return *iFramesList.at(column);
 }
 
-void FrameListWidget::getWidgetPosition(SelectableWidget& widget, int* row, int* column) {
-    *column = iFramesList.indexOf(&static_cast<FrameWidget&>(widget));
-    *row = 0;
-
-    ColourGroupWidget::getWidgetPosition(widget, row, column);
+Position FrameListWidget::widgetPosition(SelectableWidget& widget) {
+   return Position(0, iFramesList.indexOf(&static_cast<FrameWidget&>(widget)));
 }
 
 bool FrameListWidget::validKeyPress(Qt::Key key) {
@@ -99,7 +91,13 @@ void FrameListWidget::cloneItem(int fromGroup, int fromRow, int fromColumn, int 
 // events ------------------------------------
 
 void FrameListWidget::resizeEvent(QResizeEvent *) {
+    qDebug("FrameListWidget resize event");
+    doResize();
+}
+
+void FrameListWidget::doResize() {
     if(!iResized) {
+        qDebug("FrameListWidget doresize");
         iResized = true;
         int numFrames = iFramesList.count();
 

@@ -68,7 +68,7 @@ protected:
 
     void paintEvent(QPaintEvent*);
 
-    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    Position widgetPosition(SelectableWidget& widget);
     SelectableWidget& widgetAt(int row, int column);
 
     bool validKeyPress(Qt::Key key);

@@ -38,7 +38,7 @@ SelectableWidget& ColourGroupTestWidget::widgetAt(int row, int column) {
     return *((*(*iWidgetArray)[row])[column]);
 }
 
-void ColourGroupTestWidget::getWidgetPosition(SelectableWidget& widget, int* row, int* column) {
+void ColourGroupTestWidget::widgetPosition(SelectableWidget& widget, int* row, int* column) {
     for(int i = 0; i < iWidgetArray->count(); i++) {
         WidgetVector& searchRow = *((*iWidgetArray)[i]);
 

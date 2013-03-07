@@ -43,11 +43,6 @@ LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, QUndoStack &
     setSizePolicy(policy);
 
     setFocusPolicy(Qt::ClickFocus);
-
-    connect(&animation, SIGNAL(newLed(int, int)), this, SLOT(addLed(int, int)));
-    connect(&animation, SIGNAL(newSocket(int, int)), this, SLOT(addSocket(int, int)));
-    connect(&animation, SIGNAL(ledDeleted(int, int, int)), this, SLOT(ledDeleted(int, int, int)));
-    connect(&animation, SIGNAL(ledMoved(int, int, int, int)), this, SLOT(ledMoved(int, int, int, int)));
 }
 
 int LedGridWidget::gridWidth() {
@@ -158,9 +153,9 @@ void LedGridWidget::addSelectedLeds() {
     foreach(widget, selectedItems()) {
         toggle(*widget);
 
-        getWidgetPosition(*widget, &row, &column);
+        Position position = widgetPosition(*widget);
         //iAnimation.addNewLed(row, column);
-        iUndoStack.push(new AddLedCommand(iAnimation, row, column));
+        iUndoStack.push(new AddLedCommand(iAnimation, position.row(), position.column()));
 
         newRows.append(row);
         newColumns.append(column);
@@ -218,8 +213,8 @@ void LedGridWidget::renumberLed(Led& led) {
             if(iAnimation.ledAt(i) != NULL) {
                 QMessageBox::critical(this, "Led already exists", QString("There is already an led with number %1, please choose another number").arg(i));
             } else {
-                iAnimation.renumberLed(led, i);
-                emit renumberLed(led.row(), led.column(), oldNumber);
+                iAnimation.renumberLed(led.row(), led.column(), i);
+               // emit renumberLed(led.row(), led.column(), oldNumber);
                 break;
             }
         }
@@ -255,8 +250,6 @@ void LedGridWidget::ledDeleted(int row, int column, int ledNumber) {
     addSocket(row, column);
 
     update();
-
-    emit hideLed(ledNumber);
 }
 
 void LedGridWidget::ledMoved(int oldRow, int oldColumn, int newRow, int newColumn) {
@@ -276,15 +269,19 @@ void LedGridWidget::toggleLedNumbers() {
 
 // from ColourGroupWidget ----------------------
 
-void LedGridWidget::getWidgetPosition(SelectableWidget &widget, int* row, int* column) {
+Position LedGridWidget::widgetPosition(SelectableWidget &widget) {
+    int row;
+    int column;
     int rowSpan;
     int columnSpan;
 
     int index = iLedGridLayout->indexOf(&widget);
 
-    iLedGridLayout->getItemPosition(index, row, column, &rowSpan, &columnSpan);
+    iLedGridLayout->getItemPosition(index, &row, &column, &rowSpan, &columnSpan);
 
-    SelectableGroupWidget::getWidgetPosition(widget, row, column);
+    return Position(row, column);
+
+    //SelectableGroupWidget::getWidgetPosition(widget, row, column);
 }
 
 SelectableWidget &LedGridWidget::widgetAt(int row, int column) {
@@ -310,7 +307,7 @@ void LedGridWidget::mousePressEvent(QMouseEvent* event) {
         iDragStartPosition = event->pos();
         iDragArea.setRect(0, 0, 0, 0);
 
-        clearSelection();
+        clearAllSelection();
     }
 }
 

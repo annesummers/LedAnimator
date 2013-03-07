@@ -38,7 +38,7 @@ public:
     void moveLedToClipboard(int row, int column);
     void pasteLed(int fromRow, int fromColumn, int toRow, int toColumn);
 
-    void renumberLed(Led& led, int newNumber);
+    void renumberLed(int row, int column, int newNumber);
 
     void play(bool repeat);
     void stop();
@@ -49,7 +49,7 @@ public:
     inline bool isMissing(int ledNumber) { return iMissingLeds.contains(ledNumber); }
     inline bool ledsMissing() { return iMissingLeds.count() == 0; }
 
-    bool getLedPosition(int number, int* const row, int* const column) const;
+    Position ledPosition(int number) const;
 
     inline const QString fileName() const { return iFileName; }
     inline const bool isSaved() const { return iIsSaved; }
@@ -80,6 +80,7 @@ signals:
 
     void ledDeleted(int row, int column, int number);
     void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
+    void ledRenumbered(int row, int column, int oldNumber);
 
     void stopped();
 

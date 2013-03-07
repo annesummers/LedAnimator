@@ -57,7 +57,7 @@ public:
     ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget& groupGroupWidget, int groupNumber);
 
     SelectableWidget& widgetAt(int row, int column);
-    void getWidgetPosition(SelectableWidget& widget, int* row, int* column);
+    void widgetPosition(SelectableWidget& widget, int* row, int* column);
     bool validKeyPress(Qt::Key key);
 
     void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)

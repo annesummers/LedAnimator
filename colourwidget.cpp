@@ -53,12 +53,14 @@ void ColourWidget::chooseColour() {
 void ColourWidget::colourDialogAccepted(int number) {
     if(number == iItem.number()) {
         QColor newColour = colourGroup().colourDialog().currentColor();
-        if(iFading) {
-            colourGroup().fadeTo(newColour);
+        if(newColour.isValid()) {
+            if(iFading) {
+                colourGroup().fadeTo(newColour);
 
-            iFading = false;
-        } else {
-            colourGroup().setColour(newColour);
+                iFading = false;
+            } else {
+                colourGroup().setColour(newColour);
+            }
         }
     }
 
@@ -74,7 +76,7 @@ void ColourWidget::updated() {
 }
 
 void ColourWidget::fade() {
-    if(!colourGroup().isGroupSelected()) {
+    if(!colourGroup().isAreaSelected()) {
         return;
     }
 
@@ -82,7 +84,7 @@ void ColourWidget::fade() {
 }
 
 void ColourWidget::fadeTo() {
-    if(!colourGroup().isGroupSelected()) {
+    if(!colourGroup().isAreaSelected()) {
         return;
     }
 
@@ -99,7 +101,7 @@ void ColourWidget::addDefaultAction(QMenu* menu) {
 }
 
 void ColourWidget::addExtraActions(QMenu *menu) {
-    if(colourGroup().isGroupSelected()) {
+    if(colourGroup().isAreaSelected()) {
         menu->addSeparator();
         menu->addAction(iFadeAction);
         menu->addAction(iFadeToAction);

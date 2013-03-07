@@ -33,7 +33,7 @@ SelectableWidget& SelectableGroupTestWidget::widgetAt(int row, int column) {
     return *((*(*iWidgetArray)[row])[column]);
 }
 
-void SelectableGroupTestWidget::getWidgetPosition(SelectableWidget& widget, int* row, int* column) {
+void SelectableGroupTestWidget::widgetPosition(SelectableWidget& widget, int* row, int* column) {
     for(int i = 0; i < iWidgetArray->count(); i++) {
         WidgetVector& searchRow = *((*iWidgetArray)[i]);
 
