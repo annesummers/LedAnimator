@@ -196,3 +196,7 @@ void Engine::setFrameFrequency() {
         iAnimation->setFrameFrequency(i);
     }
 }
+
+void Engine::importBitmap() {
+
+}

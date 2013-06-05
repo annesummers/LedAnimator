@@ -49,6 +49,8 @@ private slots:
     void setNumFrames();
     void setFrameFrequency();
 
+    void importBitmap();
+
 private:
     void doSave(QString fileName, bool withPositions = true);
     bool doLoad(QString fileName);
