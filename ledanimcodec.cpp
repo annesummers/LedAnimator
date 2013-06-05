@@ -47,7 +47,11 @@ void LedAnimCodec::writeAnimation(bool withPositions) {
 
     writeControlCharacter(HEADER_BYTE);
 
-    writeCharacter(iAnimation.numLeds());
+    int numLeds = iAnimation.numLeds();
+    char numLedsHigh = numLeds;
+    char numLedsLow = numLeds >> 8;
+    writeCharacter(numLedsHigh);
+    writeCharacter(numLedsLow);
 
     if(withPositions) {
         writePositionData();
@@ -76,7 +80,11 @@ void LedAnimCodec::readAnimation() {
         throw new InvalidAnimationException("No header byte");
     }
 
-    int numLeds = readCharacter().intValue();
+    char numLedsHigh = readCharacter().charValue();
+    char numLedsLow = readCharacter().charValue();
+
+    int numLeds =  numLedsHigh |= numLedsLow << 8;
+    //int numLeds = readCharacter().intValue();
 
     int numRows;
     int numColumns;

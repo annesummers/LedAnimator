@@ -129,4 +129,8 @@ FORMS += \
 RESOURCES += \
     LedAnimator.qrc
 
+OTHER_FILES += \
+    README.txt \
+    .gitignore
+
 

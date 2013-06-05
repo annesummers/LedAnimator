@@ -1,0 +1,27 @@
+This is LedAnimator, an application written in Qt C++ to create animations for displaying on banks of RBG LEDs.
+
+The application allows the user to create an animation which can then be written out to file; another piece of software running on an embedded processor attached to a physical bank of LEDs is required to read the file and display the contents on the LEDs.
+
+The format the animations are written out in is as follows (each value is a byte):
+
+Header byte 0x56
+Number of LEDs high value
+Number of LEDs low value
+Number of rows
+Number of columns
+Unused byte
+Unused byte
+Number of frames
+Frame frequency
+FOREACH frame
+    LED Number
+    Hue high value
+    Hue Low value
+    Saturation
+    Value
+Terminating Byte 0x45
+
+If any value aside from the header byte or the terminating byte share their values the value is escaped using the value 0x02
+
+
+
