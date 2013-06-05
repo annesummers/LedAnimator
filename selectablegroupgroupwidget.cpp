@@ -281,31 +281,31 @@ int SelectableGroupGroupWidget::lastSelectedGroupNumber() {
 }
 
 void SelectableGroupGroupWidget::cutSelected() {
-    if(hasFocus()) {
+  //  if(hasFocus()) {
         clearClipboard();
 
         QApplication::clipboard()->setMimeData(mimeData(true));
-    }
+   // }
 }
 
 void SelectableGroupGroupWidget::copySelected() {
-    if(hasFocus()) {
+    //if(hasFocus()) {
         clearClipboard();
 
         QApplication::clipboard()->setMimeData(mimeData(false));
-    }
+  //  }
 }
 
 void SelectableGroupGroupWidget::paste() {
-    if(hasFocus()) {
+   // if(hasFocus()) {
         iSelectedGroups.value(lastSelectedGroupNumber())->paste(false);
-    }
+   // }
 }
 
 void SelectableGroupGroupWidget::pasteWrap() {
-    if(hasFocus()) {
+   // if(hasFocus()) {
         iSelectedGroups.value(lastSelectedGroupNumber())->paste(true);
-    }
+   // }
 }
 
 void SelectableGroupGroupWidget::clearClipboard() {
