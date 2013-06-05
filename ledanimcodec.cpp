@@ -84,7 +84,6 @@ void LedAnimCodec::readAnimation() {
     char numLedsLow = readCharacter().charValue();
 
     int numLeds =  numLedsHigh |= numLedsLow << 8;
-    //int numLeds = readCharacter().intValue();
 
     int numRows;
     int numColumns;
@@ -152,15 +151,15 @@ const AnimChar LedAnimStringCodec::readCharacter() const {
 void LedAnimStringCodec::writeCharacter(AnimChar character) {
     int value = character.intValue();
 
-   /* if(value == TERMINATING_BYTE ||
+    if(value == TERMINATING_BYTE ||
        value == ESCAPE_BYTE ||
        value == HEADER_BYTE ) {
         iString.append(QString::number(ESCAPE_BYTE));
         iString.append(",");
         iString.append(QString::number((value ^ XOR_BYTE)));
-    } else {*/
+    } else {
         iString.append(QString::number(value));
-   // }
+    }
 
     iString.append(",");
 
@@ -252,26 +251,26 @@ const AnimChar LedAnimByteArrayCodec::readControlCharacter() const {
 }
 
 const AnimChar LedAnimByteArrayCodec::readCharacter() const {
-   /* if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
+    if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
         AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
         iPosition = iPosition + 2;
         return character;
-    } else {*/
+    } else {
         return AnimChar(iByteArray.at(iPosition++));
-    //}
+    }
 }
 
 void LedAnimByteArrayCodec::writeCharacter(AnimChar character) {
     char value = character.charValue();
 
-    /*if(value == TERMINATING_BYTE ||
+    if(value == TERMINATING_BYTE ||
        value == ESCAPE_BYTE ||
        value == HEADER_BYTE ) {
         iByteArray.append(ESCAPE_BYTE);
         iByteArray.append(value ^ XOR_BYTE);
-    } else {*/
+    } else {
         iByteArray.append(value);
-   // }
+    }
 }
 
 void LedAnimByteArrayCodec::writeControlCharacter(AnimChar character) {
