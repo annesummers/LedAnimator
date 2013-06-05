@@ -39,14 +39,6 @@ Led::Led(QObject* parent, Animation &animation, int number, Position position) :
 }
 
 Led::~Led() {
-   /* Frame* frame = NULL;
-    foreach(frame, iFrames) {
-        disconnect(frame, 0, this, 0);
-    }
-
-    disconnect(iSignalMapper, 0, this, 0);
-
-    disconnect(&iAnimation, 0, this, 0);*/
 }
 
 Led::Led(const Led& copyLed) :
