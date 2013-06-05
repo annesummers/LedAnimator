@@ -131,6 +131,7 @@ RESOURCES += \
 
 OTHER_FILES += \
     README.txt \
-    .gitignore
+    .gitignore \
+    LICENSE.txt
 
 
