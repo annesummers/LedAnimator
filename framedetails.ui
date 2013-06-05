@@ -29,7 +29,7 @@
       </size>
      </property>
      <property name="title">
-      <string>FrameDetails</string>
+      <string>Frame Details</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>

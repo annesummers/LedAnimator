@@ -15,20 +15,21 @@
 
 using namespace Exception;
 
-Led::Led(QObject* parent, Animation &animation, int number, int row, int column) :
-    GridItem(parent, number, row, column),
-    iAnimation(animation),
+Led::Led(QObject* parent, Animation &animation, int number, Position position) :
+    GridItem(parent, animation, number, position),
     iSignalMapper(NULL),
     iGroupNumber(DEFAULT_GROUP),
     iHidden(false) {
 
-#ifndef NDEBUG
-    if(row < 0) {
-        throw IllegalArgumentException("Rows argument is invalid");
-    }
+#ifndef NDEBUG   
+    if(!position.isValid()) {
+        if(position.row() < 0) {
+            throw IllegalArgumentException("Rows argument is invalid");
+        }
 
-    if(column < 0) {
-        throw IllegalArgumentException("Columns argument is invalid");
+        if(position.column() < 0) {
+            throw IllegalArgumentException("Columns argument is invalid");
+        }
     }
 #endif
 
@@ -38,14 +39,39 @@ Led::Led(QObject* parent, Animation &animation, int number, int row, int column)
 }
 
 Led::~Led() {
-    Frame* frame = NULL;
+   /* Frame* frame = NULL;
     foreach(frame, iFrames) {
         disconnect(frame, 0, this, 0);
     }
 
     disconnect(iSignalMapper, 0, this, 0);
 
-    disconnect(&iAnimation, 0, this, 0);
+    disconnect(&iAnimation, 0, this, 0);*/
+}
+
+Led::Led(const Led& copyLed) :
+    GridItem(copyLed.parent(), copyLed.iAnimation, copyLed.number(), copyLed.position()),
+    iSignalMapper(NULL),
+    iGroupNumber(copyLed.iGroupNumber),
+    iHidden(false) {
+
+    iSignalMapper = new QSignalMapper(this);
+
+    numFramesChanged(copyLed.iAnimation.numFrames());
+    copyFrames(copyLed);
+
+    connect(&iAnimation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+}
+
+Led& Led::operator=(const Led& led) {
+    setNumber(led.number());
+    setPosition(led.position());
+    setGroupNumber(led.groupNumber());
+
+    numFramesChanged(led.iFrames.count());
+    copyFrames(led);
+
+    return *this;
 }
 
 Frame& Led::frameAt(int frameNum) const {
@@ -66,9 +92,9 @@ Frame& Led::frameAt(int frameNum) const {
     return *(iFrames.at(frameNum - INITIAL_FRAME));
 }
 
-void Led::copyFrames(Led& copyLed) {
+void Led::copyFrames(const Led &copyLed) {
     for(int i = INITIAL_FRAME; i < iAnimation.numFrames() + INITIAL_FRAME; i++) {
-        frameAt(i).setColour(copyLed.frameAt(i).colour());
+        frameAt(i).doSetColour(copyLed.frameAt(i).colour());
     }
 }
 
@@ -87,7 +113,7 @@ void Led::numFramesChanged(int numFrames) {
 
     if(numFrames > oldNumFrames) {  // we need to add some frames
         for(int i = oldNumFrames; i < numFrames; i++) {
-            Frame* frame = new Frame(this, i + INITIAL_FRAME);
+            Frame* frame = new Frame(this, iAnimation, i + INITIAL_FRAME);
             iFrames.append(frame);
 
             iSignalMapper->setMapping(frame, i + INITIAL_FRAME);
@@ -121,9 +147,8 @@ void Led::setCurrentColour(QColor colour) {
     frameAt(iAnimation.currentFrame()).setColour(colour);
 }
 
-void Led::move(int newRow, int newColumn) {
-    setRow(newRow);
-    setColumn(newColumn);
+void Led::move(Position newPosition) {
+    setPosition(newPosition);
 }
 
 void Led::paste(Led& copyLed) {

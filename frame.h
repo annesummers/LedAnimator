@@ -18,11 +18,13 @@ class Frame : public Selectable {
     Q_OBJECT
 
 public:
-    explicit Frame(QObject *parent, int number);
-    Frame(QObject* parent, QColor colour, int number);
+    explicit Frame(QObject *parent, Animation &animation, int number);
+    Frame(QObject* parent, Animation &animation, QColor colour, int number);
     
     const QColor colour() const;
     void setColour(QColor colour);
+
+    void doSetColour(QColor colour);
 
 signals:
     void colourChanged();

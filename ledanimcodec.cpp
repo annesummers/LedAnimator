@@ -354,7 +354,7 @@ void LedAnimByteArrayCodec::readColourData() {
                 ledNum++;
             }
 
-            iAnimation.ledAt(ledNum++)->frameAt(frame + INITIAL_FRAME).setColour(readColour());
+            iAnimation.ledAt(ledNum++)->frameAt(frame + INITIAL_FRAME).doSetColour(readColour());
         }
     }
 }

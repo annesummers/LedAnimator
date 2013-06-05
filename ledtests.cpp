@@ -33,26 +33,21 @@ void LedTests::cleanup() {
 }
 
 void LedTests::constructor_data() {
-    QTest::addColumn<int>("row");
-    QTest::addColumn<int>("column");
+    QTest::addColumn<Position>("position");
     QTest::addColumn<QString>("error");
 
-    QTest::newRow("negative row") << INVALID
-                                  << 1
+    QTest::newRow("negative row") << Position(INVALID, 1)
                                   << "Rows argument is invalid";
 
-    QTest::newRow("negative column") << 1
-                                     << INVALID
+    QTest::newRow("negative column") << Position(1, INVALID)
                                      << "Columns argument is invalid";
 
-    QTest::newRow("valid") << 1
-                             << 1
+    QTest::newRow("valid") << Position(1, 1)
                              << "";
 }
 
 void LedTests::constructor() {
-    QFETCH(int, row);
-    QFETCH(int, column);
+    QFETCH(Position, position);
     QFETCH(QString, error);
 
     Led* led = NULL;
@@ -60,10 +55,9 @@ void LedTests::constructor() {
     try {
         iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
 
-        led = new Led(iAnimation, *iAnimation, INITIAL_LED, row, column);
+        led = new Led(iAnimation, *iAnimation, INITIAL_LED, position);
 
-        QCOMPARE(led->row(), row);
-        QCOMPARE(led->column(), column);
+        QCOMPARE(led->position(), position);
 
     } catch(IllegalArgumentException& e){
         QCOMPARE(e.errorMessage(), error);
@@ -137,7 +131,7 @@ void LedTests::setCurrentColour() {
             iAnimation->setupNew(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY);
         }
 
-        led = new Led(iAnimation, *iAnimation, 0, 0, 0);
+        led = new Led(iAnimation, *iAnimation, 0, Position(0, 0));
 
         if(framesSetup) {
             led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
@@ -175,7 +169,7 @@ void LedTests::select() {
 
     setupAnimation();
 
-    Led* led = new Led(iAnimation, *iAnimation, 0, 0, 0);
+    Led* led = new Led(iAnimation, *iAnimation, 0, Position(0, 0));
     led->numFramesChanged(DEFAULT_NUM_FRAMES);  // sets up the frame objects
 
     QSignalSpy selectedSpy(led, SIGNAL(selected()));
@@ -195,7 +189,7 @@ void LedTests::copyFrames() {
 }
 
 void LedTests::setupAnimation() {
-    QList<QPoint> gridPositions;
+    QList<Position> gridPositions;
     QList<int> positions;
 
     int numRows = DEFAULT_NUM_ROWS;
@@ -203,7 +197,7 @@ void LedTests::setupAnimation() {
 
     for(int i = 0; i < numColumns; i++) {
         for(int j = 0; j < numRows; j++) {
-            gridPositions.append(QPoint(i, j));
+            gridPositions.append(Position(i, j));
         }
     }
 
@@ -214,7 +208,7 @@ void LedTests::setupAnimation() {
     int numLeds = gridPositions.count();
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
     }
 
     iAnimation->setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);

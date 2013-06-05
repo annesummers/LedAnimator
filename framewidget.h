@@ -29,8 +29,6 @@ protected:
     void setColour(QColor colour) { frame().setColour(colour); }
     const QColor colour() const { return frame().colour(); }
 
-    inline QString mimeType() const { return FRAME_MIME_TYPE; }
-
     inline Qt::DropActions dropActions() const { return Qt::CopyAction; }
     inline Qt::DropActions dragActions() const { return Qt::CopyAction; }
     inline Qt::DropAction  defaultDropAction() const { return Qt::CopyAction; }

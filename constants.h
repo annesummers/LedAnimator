@@ -10,6 +10,8 @@
 #include <QString>
 #include <QPair>
 
+#include <QMetaType>
+
 const int DEFAULT_FRAME_FREQUENCY = 500;
 const int DEFAULT_NUM_ROWS = 4;
 const int DEFAULT_NUM_COLUMNS = 4;
@@ -49,9 +51,7 @@ const QString SETTINGS_MAIN_WINDOW = "MainWindow";
 const QString LED_MIME_TYPE = "ledanimator/x-leditemdata";
 const QString FRAME_MIME_TYPE = "ledanimator/x-frameitemdata";
 
-//typedef QPair<int, int> Position;
-//typedef Position::first row;
-//typedef Position::second column;
+namespace AnimatorModel {
 
 class Position : public QPair<int, int> {
 public:
@@ -61,10 +61,18 @@ public:
 
     inline int row() const { return first; }
     inline int column() const { return second; }
-    inline bool isValid() const { return first != INVALID && second != INVALID; }
+    inline bool isValid() const { return first > INVALID && second > INVALID; }
     inline bool operator==(const Position& position) { return first == position.row() && second == position.column(); }
     inline bool operator<(const Position& position) { return (first < position.row() && second == position.column()) ||
                                                         (first == position.row() && second < position.column()); }
+    inline Position& operator=(const Position& position) { first = position.first; second = position.second; return *this; }
 };
+}
+
+using namespace AnimatorModel;
+
+Q_DECLARE_METATYPE ( Position )
+
+
 
 #endif // CONSTANTS_H

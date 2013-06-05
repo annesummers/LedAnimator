@@ -9,7 +9,6 @@
 
 #include <QObject>
 #include <QColor>
-#include <QPoint>
 #include <QSignalMapper>
 
 #include "animation.h"
@@ -24,7 +23,8 @@ class Led : public GridItem {
     Q_OBJECT
 
 public:
-    explicit Led(QObject* parent, Animation& animation, int number, int row, int column);
+    explicit Led(QObject* parent, Animation& animation, int number, Position position);
+    Led(const Led &copyLed);
     virtual ~Led();
 
     inline const QColor currentColour() const { return frameAt(iAnimation.currentFrame()).colour(); }
@@ -33,7 +33,6 @@ public:
 
     void setCurrentColour(QColor colour);
 
-    //inline int number() { return iNumber; }
     inline void setNumber(int newNumber) { Selectable::setNumber(newNumber); emit ledUpdated(); }
 
     inline const int groupNumber() const { return iGroupNumber; }
@@ -42,10 +41,14 @@ public:
     inline void setHidden(bool isHidden) { iHidden = isHidden; }
     inline bool isHidden() const { return iHidden; }
 
-    void move(int newRow, int newColumn);
+    void move(Position newPosition);
     void paste(Led &copyLed);
 
-    void copyFrames(Led& copyLed);
+    void copyFrames(const Led& copyLed);
+
+    inline Animation& animation() { return iAnimation; }
+
+    Led& operator=(const Led& led);
 
 signals:
     void ledUpdated();
@@ -55,12 +58,9 @@ public slots:
     void colourChanged(int frameNum);
 
 private:
-    Animation& iAnimation;
-
     QList<Frame*> iFrames;
     QSignalMapper* iSignalMapper;
 
-   // int iNumber;
     int iGroupNumber;
 
     bool iHidden;

@@ -9,7 +9,6 @@
 
 #include <QObject>
 #include <QList>
-#include <QPoint>
 #include <QColor>
 #include <QSize>
 

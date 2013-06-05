@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QVector>
 #include <QList>
-#include <QPoint>
 #include <QtTest/QtTest>
 
 #include "selectable.h"
@@ -14,8 +13,8 @@
 using namespace AnimatorUi;
 using namespace AnimatorModel;
 
-typedef QList<QPoint> PointList;
-Q_DECLARE_METATYPE ( PointList )
+typedef QList<Position> PositionList;
+Q_DECLARE_METATYPE ( PositionList )
 
 namespace AnimatorTest {
 
@@ -42,8 +41,8 @@ public:
     explicit SelectableWidgetTestBase(QObject *parent = 0);
     
 protected:
-    void compareAreaPoints(SelectableGroupWidget* groupWidget, QList<QPoint> selectedPoints);
-    void calculateAreaPoints(QList<QPoint>& selectedPoints, QPoint firstSelected, QPoint secondSelected);
+    void compareAreaPoints(SelectableGroupWidget* groupWidget, QList<Position> selectedPoints);
+    void calculateAreaPoints(QList<Position>& selectedPoints, Position firstSelected, Position secondSelected);
     
 };
 }

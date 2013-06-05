@@ -11,11 +11,13 @@
 
 namespace AnimatorModel {
 
+class Animation;
+
 class Selectable : public QObject {
     Q_OBJECT
 
 public:
-    explicit Selectable(QObject *parent, int number);
+    explicit Selectable(QObject *parent, Animation& animation, int number);
 
     inline const bool isSelected() const { return iIsSelected; }
     void select(bool isSelected);
@@ -24,6 +26,8 @@ public:
 
 protected:
     inline void setNumber(int newNumber) { iNumber = newNumber; }
+
+    Animation& iAnimation;
 
 signals:
     void selected();

@@ -23,32 +23,24 @@ SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int numRows, int n
     iGroupNumber(iGroupGroup.addGroup(*this)),
     iColourDialog(NULL),
     iNumRows(numRows),
-    iNumColumns(numColumns)//,
-    /*iFirstSelectedRow(INVALID),
-    iLastSelectedRow(INVALID),
-    iFirstSelectedColumn(INVALID),
-    iLastSelectedColumn(INVALID),
-    iTopLeftSelectedRow(INVALID),
-    iTopLeftSelectedColumn(INVALID),
-    iBottomRightSelectedRow(INVALID),
-    iBottomRightSelectedColumn(INVALID)*/ {
+    iNumColumns(numColumns) {
 
     iColourDialog = new QColorDialog(Qt::white, this);
     iColourDialog->setOptions(QColorDialog::DontUseNativeDialog);
 }
 
-bool SelectableGroupWidget::isMultipleSelected() {
+bool SelectableGroupWidget::isMultipleSelected() const {
     return  (iGroupGroup.isOtherSelected(iGroupNumber) &&
              iSelected.count() > 0) ||
             (iSelected.count() > 1 &&
             iAreas.count() == 0);
 }
 
-bool SelectableGroupWidget::isAreaSelected() {
+bool SelectableGroupWidget::isAreaSelected() const {
     return  iAreas.count() > 0;
 }
 
-bool SelectableGroupWidget::isSingleSelected() {
+bool SelectableGroupWidget::isSingleSelected() const {
     return iSelected.count() == 1;
 }
 
@@ -60,9 +52,7 @@ void SelectableGroupWidget::toggle(SelectableWidget &widget) {
 
     doSelect(widget, select);
 
-    if(select) {
-        setLastSelected(widget);
-    } else if(isSingleSelected()) {
+    if(isSingleSelected()) {
         clearAreaSelection();
     }
 }
@@ -81,8 +71,7 @@ void SelectableGroupWidget::toggleOne(SelectableWidget &widget, bool singleSelec
     if(selected){
         selectOne(widget, singleSelect);
     } else {
-        clearSelection();
-        clearAreaSelection();
+        clearAllSelection();
     }
 }
 
@@ -91,8 +80,6 @@ void SelectableGroupWidget::selectOne(SelectableWidget &widget, bool singleSelec
     clearSelection();
 
     doSelect(widget, true, singleSelect);
-
-    setLastSelected(widget);
 }
 
 void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool multipleAreas) {
@@ -100,18 +87,18 @@ void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool multipleAr
 
     Position position = widgetPosition(widget);
 
-    if(!isAnySelected()) {
-        iGroupGroup.selectArea(iGroupNumber, position, multipleAreas);
+    if((multipleAreas && lastSelected().isValid()) ||
+       !iGroupGroup.isOtherSelected(iGroupNumber)) {
+        doSelectArea(lastSelected(), position, multipleAreas);
         return;
     }
 
-    doSelectArea(iLastSelected, position, multipleAreas);
+    iGroupGroup.selectArea(iGroupNumber, position, multipleAreas);
 }
 
 void SelectableGroupWidget::doSelectArea(Position start, Position end, bool multipleAreas) {
     if(!multipleAreas) {
-        clearAreaSelection();
-        clearSelection();
+        clearAllSelection();
     }
 
     iAreas.append(Area(start, end));
@@ -177,19 +164,25 @@ void SelectableGroupWidget::clearSelection() {
     }
 
     iSelected.clear();
-    iLastSelected = Position();
+    setLastSelected(NULL);
 }
 
 void SelectableGroupWidget::clearAreaSelection() {
     iAreas.clear();
 }
 
-Position SelectableGroupWidget::lastSelected() {
+Position SelectableGroupWidget::lastSelected() const {
     return iLastSelected;
 }
 
-void SelectableGroupWidget::setLastSelected(SelectableWidget &widget) {
-    iLastSelected = widgetPosition(widget);
+void SelectableGroupWidget::setLastSelected(SelectableWidget *widget) {
+    if(widget == NULL) {
+        qDebug("setLastSelected NONE");
+        iLastSelected = Position();
+    } else {
+        iLastSelected = widgetPosition(*widget);
+        qDebug("setLastSelected %d,%d", iLastSelected.row(), iLastSelected.column());
+    }
 }
 
 void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bool singleSelect) {
@@ -203,14 +196,14 @@ void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bo
 
         if(iSelected.count() == 0 ||
            widget.objectName() == widgetType) {
+            setLastSelected(&widget);
 
-            if(!iLastSelected.isValid() || position < iLastSelected) {
-                iLastSelected = position;
-                qDebug("ADD TO HEAD: lastRow is %d, lastColumn is %d", iLastSelected.row(), iLastSelected.column());
+            if(!lastSelected().isValid() || position < lastSelected()) {
+                qDebug("ADD TO HEAD: lastRow is %d, lastColumn is %d", lastSelected().row(), lastSelected().column());
 
                 iSelected.insert(0, &widget);
             } else {
-                qDebug("ADD TO TAIL: lastRow is %d, lastColumn is %d", iLastSelected.row(), iLastSelected.column());
+                qDebug("ADD TO TAIL: lastRow is %d, lastColumn is %d", lastSelected().row(), lastSelected().column());
                 iSelected.append(&widget);
             }
 
@@ -221,14 +214,14 @@ void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bo
         }
     } else {
         iSelected.removeOne(&widget);
-        qDebug("REMOVE : lastRow is %d, lastColumn is %d", iLastSelected.row(), iLastSelected.column());
+        qDebug("REMOVE : lastRow is %d, lastColumn is %d", lastSelected().row(), lastSelected().column());
 
         if(iSelected.count() == 0) {
-            iLastSelected = Position();
+            setLastSelected(NULL);
             qDebug("REMOVE LAST");
 
             iGroupGroup.selectGroup(iGroupNumber, false);
-        } else if(position == iLastSelected) {
+        } else if(position == lastSelected()) {
             sortSelected();
         }
     }
@@ -245,9 +238,9 @@ void SelectableGroupWidget::sortSelected() {
         widget = iSelected.at(i);
         Position position = widgetPosition(*widget);
 
-        if(position < iLastSelected) {
-            iLastSelected = position;
-            qDebug("SORT : lastRow is %d, lastColumn is %d", iLastSelected.row(), iLastSelected.column());
+        if(position < lastSelected()) {
+            setLastSelected(widget);
+            qDebug("SORT : lastRow is %d, lastColumn is %d", lastSelected().row(), lastSelected().column());
 
             iSelected.removeOne(widget);
             iSelected.insert(0, widget);
@@ -261,7 +254,7 @@ void SelectableGroupWidget::doGroupSelection() {
     Position firstPosition = iAreas.last().firstSelected();
     Position lastPosition = iAreas.last().lastSelected();
 
-    QString widgetType = widgetAt(firstPosition.row(), firstPosition.column()).objectName();
+    QString widgetType = widgetAt(firstPosition).objectName();
 
     int topLeftRow;
     int topLeftColumn;
@@ -286,7 +279,7 @@ void SelectableGroupWidget::doGroupSelection() {
 
     for(int i = topLeftRow; i < bottomRightRow + 1; i++) {
         for(int j = topLeftColumn; j < bottomRightColumn + 1; j++) {
-            SelectableWidget& widget = widgetAt(i, j);
+            SelectableWidget& widget = widgetAt(Position(i, j));
             if(widget.objectName() == widgetType) {
                 doSelect(widget, true);
             }
@@ -294,21 +287,21 @@ void SelectableGroupWidget::doGroupSelection() {
     }
 }
 
-SelectableWidget& SelectableGroupWidget::widgetAt(int row, int column) {
+SelectableWidget& SelectableGroupWidget::widgetAt(Position position) {
 #ifndef NDEBUG
-    if(row < 0) {
+    if(position.row() < 0) {
         throw IllegalArgumentException("SelectableGroupWidget::widgetAt : Row is negative");
     }
 
-    if(numRows() != 0 && row >= numRows()) {
+    if(numRows() != 0 && position.row() >= numRows()) {
         throw IllegalArgumentException("SelectableGroupWidget::widgetAt : Row is greater than number of rows");
     }
 
-    if(column < 0) {
+    if(position.column() < 0) {
         throw IllegalArgumentException("SelectableGroupWidget::widgetAt : Column is negative");
     }
 
-    if(numColumns() != 0 && column >= numColumns()) {
+    if(numColumns() != 0 && position.column() >= numColumns()) {
         throw IllegalArgumentException("SelectableGroupWidget::widgetAt : Column is greater than number of columns");
     }
 #endif
@@ -316,32 +309,37 @@ SelectableWidget& SelectableGroupWidget::widgetAt(int row, int column) {
 
 Position SelectableGroupWidget::widgetPosition(SelectableWidget &widget) {
      Q_UNUSED(widget);
-#ifndef NDEBUG
- /*   if(*row < 0) {
-        throw IllegalArgumentException("SelectableGroupWidget::getWidgetPosition : Row is negative");
-    }
-
-    if(*row > iNumRows) {
-        throw IllegalArgumentException("SelectableGroupWidget::getWidgetPosition : Row is greater than number of rows");
-    }
-
-    if(*column < 0) {
-        throw IllegalArgumentException("SelectableGroupWidget::getWidgetPosition : Column is negative");
-    }
-
-    if(*column >= iNumColumns) {
-        throw IllegalArgumentException("SelectableGroupWidget::getWidgetPosition : Column is greater than number of columns");
-    }*/
-#endif
 
     return Position();
 }
 
-// mime data handlers ------------------------
+// cut copy and paste
 
-const QByteArray SelectableGroupWidget::writeMimeData(bool cut) {
-    return iGroupGroup.writeMimeData(cut);
+void SelectableGroupWidget::cutSelected() {
+    iGroupGroup.cutSelected();
 }
+
+void SelectableGroupWidget::copySelected() {
+    iGroupGroup.copySelected();
+}
+
+void SelectableGroupWidget::paste(bool wrap) {
+    paste(widgetAt(lastSelected()), wrap);
+}
+
+void SelectableGroupWidget::paste(SelectableWidget& dropWidget, bool wrap) {
+    const QClipboard *clipboard = QApplication::clipboard();
+
+    if(clipboard->mimeData()->hasFormat(mimeType())) {
+        bool wasCut = handleMimeData(clipboard->mimeData()->data(mimeType()), dropWidget, wrap);
+
+        if(wasCut) {
+            iGroupGroup.copySelected();
+        }
+    }
+}
+
+// mime data handlers ------------------------
 
 bool SelectableGroupWidget::handleMimeData(QByteArray mimeData, SelectableWidget& dropWidget, bool wrap, bool move) {
     Position position = widgetPosition(dropWidget);
@@ -388,8 +386,7 @@ bool SelectableGroupWidget::doHandleMimeData(QDataStream& dataStream,
 
     dataStream >> numWidgets;
 
-    QList<int> newRows;
-    QList<int> newColumns;
+    QList<Position> newPositions;
 
     int oldRow;
     int oldColumn;
@@ -426,29 +423,24 @@ bool SelectableGroupWidget::doHandleMimeData(QDataStream& dataStream,
         }
 
         if(newRow != INVALID && newColumn != INVALID) {
-            newRows.append(newRow);
-            newColumns.append(newColumn);
+            Position newPosition = Position(newRow, newColumn);
+            Position oldPosition = Position(oldRow, oldColumn);
+
+            newPositions.append(newPosition);
 
             if(move) {
-                moveItem(fromGroupNumber, oldRow, oldColumn, newRow, newColumn);
+                moveItem(fromGroupNumber, oldPosition, newPosition);
             } else if(cut) {
-                pasteItem(fromGroupNumber, oldRow, oldColumn, newRow, newColumn);
+                pasteItem(fromGroupNumber, oldPosition, newPosition);
             } else {
-                cloneItem(fromGroupNumber, oldRow, oldColumn, newRow, newColumn);
+                cloneItem(fromGroupNumber, oldPosition, newPosition);
             }
         }
     }
 
-   /* if(groupNumber != iGroupNumber) {
-        SelectableGroupWidget& oldGroup = iGroupGroup.group(groupNumber);
-        oldGroup.clearSelection();
-        oldGroup.clearAreaSelection();
-    }*/
-
-    clearSelection();
-    clearAreaSelection();
-    for(int i = 0; i < newRows.count(); i++) {
-        toggle(widgetAt(newRows.at(i), newColumns.at(i)));
+    clearAllSelection();
+    for(int i = 0; i < newPositions.count(); i++) {
+        toggle(widgetAt(newPositions.at(i)));
     }
 
     return cut;

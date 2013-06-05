@@ -8,7 +8,6 @@
 #define ANIMATORWIDGET_H
 
 #include <QWidget>
-#include <QMimeData>
 #include <QMenu>
 
 #include "selectable.h"
@@ -52,8 +51,6 @@ protected:
 
     void contextMenuEvent(QContextMenuEvent *event);
 
-    virtual QString mimeType() const = 0;
-
     virtual Qt::DropActions dropActions() const = 0;
     virtual Qt::DropActions dragActions() const = 0;
     virtual Qt::DropAction  defaultDropAction() const = 0;
@@ -65,9 +62,7 @@ protected:
     virtual inline bool canCut() { return false; }
     virtual inline bool canCopy() { return true; }
 
-    void clearClipboard();
-
-    QMimeData* mimeData(bool cut);
+  //  QMimeData* mimeData(bool cut);
 
     void addCutAction(QMenu* menu);
     void addPasteActions(QMenu* menu);

@@ -9,16 +9,97 @@
 
 #include <QObject>
 #include <QTimer>
-#include <QPoint>
 #include <QApplication>
 #include <QHash>
+#include <QUndoStack>
 
 #include "engine.h"
+#include "frame.h"
 #include "constants.h"
 
 namespace AnimatorModel {
 
 class Led;
+class LedSetIterator;
+
+class LedSet {
+
+public :
+    LedSet();
+
+    void addLed(Led& led);
+    void removeLed(Led& led);
+
+    void clearPositions();
+    inline void clear() { iLeds.clear(); }
+    void clearAll();
+
+    Led* findLed(Position position) const;
+    Led* findLed(int ledNumber) const;
+
+    void moveLed(Led &led, Position fromPosition, Position toPosition);
+
+    void setPositions(QList<int> positions);
+
+    Position ledPosition (int ledNumber) const;
+
+    inline bool ledsMissing() const { return iFreeNumbers.count() != 0; }
+    inline bool isMissing(int ledNumber) const { return iFreeNumbers.contains(ledNumber); }
+    inline const QList<int> missingLedNumbers() const { return iFreeNumbers; }
+
+    void clearMissing();
+    void addMissing(int ledNumber);
+
+    inline void setHighestNumber(int highestNumber) { iHighestNumber = highestNumber; }
+    inline int highestNumber() const { return iHighestNumber; }
+
+    inline int count() const { return iLeds.count(); }
+
+    LedSetIterator& iterator();
+
+    inline void setNumRows(int numRows) { iNumRows = numRows; }
+    inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
+
+private:
+    LedSet(const LedSet &set);
+    int positionNumber(Position position) const;
+    void setPositionNumber(Position position, int number);
+    LedSetIterator* iIterator;
+
+    int iHighestNumber;
+    QList<int> iFreeNumbers;
+
+    QList<int> iPositions;
+
+    QHash<int, Led*> iLeds;
+
+    int iNumRows;
+    int iNumColumns;
+
+    friend class LedSetIterator;
+};
+
+class LedSetIterator : public QObject {
+    Q_OBJECT
+
+public:
+    LedSetIterator (const LedSet *set);
+    bool findNext (const int group);
+    bool findPrevious (const int group);
+    bool hasNext () const;
+    bool hasPrevious () const;
+    Led& next ();
+    const Led& peekNext () const;
+    const Led& peekPrevious () const;
+    Led& previous ();
+    void toBack ();
+    void toFront ();
+private:
+    LedSetIterator &	operator= (const LedSetIterator &set);
+    const LedSet& iLedSet;
+    int iNextCounter;
+    int iPreviousCounter;
+};
 
 class Animation : public QObject {
     Q_OBJECT
@@ -29,25 +110,40 @@ public:
     void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency, int numLeds, QList<int> ledPositions);
     void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency);
 
-    void addNewLed(int row, int column, int ledNum = INVALID);
-    void deleteLed(int row, int column);
+    inline void setUndoStack(QUndoStack& undoStack) { iUndoStack = &undoStack; }
 
-    void moveLed(int fromRow, int fromColumn, int toRow, int toColumm);
-    void cloneLed(int fromRow, int fromColumn, int toRow, int toColumn);
+    void addNewLed(Position position);
+    void deleteLed(Led &led, bool deleteObject);
 
-    void moveLedToClipboard(int row, int column);
-    void pasteLed(int fromRow, int fromColumn, int toRow, int toColumn);
+    void moveLed(Position fromPosition, Position toPosition);
+    void cloneLed(Position fromPosition, Position toPosition);
+    void pasteLed(Position fromPosition, Position toPosition);
 
-    void renumberLed(int row, int column, int newNumber);
+    void setFrameColour(Frame& frame, QColor oldColour, QColor newColour);
+
+    void doAddNewLed(Position position, int ledNum = INVALID);
+    void doDeleteLed(Position position, bool deleteObject);
+
+    void doMoveLed(Position fromPosition, Position toPosition);
+    Led* doCloneLed(Position fromPosition, Position toPosition);
+    void doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
+
+    void moveLedToClipboard(Position position);
+    void addLedToClipboard(Led* led);
+    void deleteLedFromClipboard(int ledNumber);
+
+    void renumberLed(Position position, int oldNumber, int newNumber);
+    void doRenumberLed(Position position, int newNumber);
 
     void play(bool repeat);
     void stop();
 
-    Led* ledAt(int row, int column) const;
+    Led* ledAt(Position position) const;
     Led *ledAt(int number) const;
 
-    inline bool isMissing(int ledNumber) { return iMissingLeds.contains(ledNumber); }
-    inline bool ledsMissing() { return iMissingLeds.count() == 0; }
+    inline bool isMissing(int ledNumber) { return iLeds.isMissing(ledNumber); }
+    inline bool ledsMissing() { return iLeds.ledsMissing(); }
+    inline const QList<int> missingLedNumbers() const { return iLeds.missingLedNumbers(); }
 
     Position ledPosition(int number) const;
 
@@ -68,6 +164,8 @@ public:
 
     inline void addGroup() { iNumGroups++; emit groupAdded(iNumGroups); }
     void selectGroup(int groupNumber);
+
+    int nextLedNumber() const ;
     
 signals:
     void currentFrameChanged(int currentFrame);
@@ -98,29 +196,26 @@ private slots:
     void nextFrame();
 
 private:
-    void addLed(Led &led, int row, int column);
+    void addLed(Led &led, Position position);
     void addLed(Led & led, int number);
-    void removeLed(Led& led);
-    int nextLedNumber();
 
-    inline void setNumRows(int numRows) { iNumRows = numRows; }
-    inline void setNumColumns(int numColumns) { iNumColumns = numColumns; }
+    void removeLed(Led& led);
+
+    inline void setNumRows(int numRows) { iNumRows = numRows; iLeds.setNumRows(numRows); iClipboardLeds.setNumRows(numRows);}
+    inline void setNumColumns(int numColumns) { iNumColumns = numColumns; iLeds.setNumColumns(numColumns); iClipboardLeds.setNumColumns(numColumns);}
 
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
-    int gridPositionNumber(int row, int column) const;
-    void setGridPositionNumber(int row, int column, int number);
-    void setClipboardGridPositionNumber(int row, int column, int number);
+    int gridPositionNumber(Position position) const;
+    void setGridPositionNumber(Position position, int number);
+    void setClipboardGridPositionNumber(Position position, int number);
 
     const Engine& iEngine;
 
-    QHash<int, Led*> iLeds;
-    QList<int> iPositions;
+    QUndoStack*     iUndoStack;
 
-    QHash<int, Led*> iClipboardLeds;
-    QList<int> iClipboardPositions;
-
-    QList<int> iMissingLeds;
+    LedSet iLeds;
+    LedSet iClipboardLeds;
 
     QTimer*     iPlayTimer;
 
@@ -128,8 +223,6 @@ private:
     int iNumColumns;
 
     int iNumGroups;
-
-    int iGreatestNumber;
 
     int iNumFrames;
     int iCurrentFrame;

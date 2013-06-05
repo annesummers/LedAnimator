@@ -6,20 +6,164 @@
 
 #include "selectablegroupgroupwidget.h"
 
+#include <QApplication>
+#include <QClipboard>
+
 #include "selectablegroupwidget.h"
 
 #include "constants.h"
+#include "exceptions.h"
 
 using namespace AnimatorUi;
+using namespace Exception;
+
+GroupSet::GroupSet() :
+    iIterator(NULL),
+    iHighestNumber(INVALID) {
+}
+
+GroupSetIterator& GroupSet::iterator() {
+    if(iIterator != NULL) {
+        delete iIterator;
+    }
+    iIterator = new GroupSetIterator(this);
+    return *iIterator;
+}
+
+int GroupSet::addNumberedGroup(SelectableGroupWidget &group)  {
+    int groupNumber;
+    if(iFreeNumbers.count() > 0) {
+        groupNumber = iFreeNumbers.takeFirst();
+    } else {
+        groupNumber = ++iHighestNumber;
+    }
+
+    insert(groupNumber, &group);
+
+    return groupNumber;
+}
+
+void GroupSet::removeNumberedGroup(int groupNumber) {
+    remove(groupNumber);
+
+    if(groupNumber == iHighestNumber) {
+        iHighestNumber--;
+    } else {
+        iFreeNumbers.append(groupNumber);
+    }
+}
+
+GroupSetIterator::GroupSetIterator (const GroupSet* set) :
+    QObject(NULL),
+    iGroupSet(*set),
+    iNextCounter(0),
+    iPreviousCounter(-1) {
+
+}
+
+bool GroupSetIterator::findNext (const int group) {
+    while(hasNext()) {
+        if(next().groupNumber() == group) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool GroupSetIterator::findPrevious (const int group) {
+    while(hasPrevious()) {
+        if(previous().groupNumber() == group) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool GroupSetIterator::hasNext () const {
+    if(iNextCounter > iGroupSet.iHighestNumber ||
+       iNextCounter  > iGroupSet.count()) {
+        return false;
+    }
+
+    return true;
+}
+
+bool GroupSetIterator::hasPrevious () const {
+    if(iPreviousCounter < 0) {
+        return false;
+    }
+
+    return true;
+}
+
+SelectableGroupWidget& GroupSetIterator::next () {
+    while(!iGroupSet.contains(iNextCounter)  && iNextCounter < iGroupSet.iHighestNumber) {
+        iNextCounter++;
+    }
+
+    if(iNextCounter > iGroupSet.iHighestNumber) {
+        throw IllegalStateException("GroupSetIterator::next() : no next item");
+    }
+
+    iPreviousCounter = iNextCounter;
+    return *iGroupSet.value(iNextCounter++);
+}
+
+const SelectableGroupWidget& GroupSetIterator::peekNext () const {
+    int counter = iNextCounter;
+    while(!iGroupSet.contains(counter) && counter < iGroupSet.iHighestNumber) {
+        counter++;
+    }
+
+    return *iGroupSet.value(counter);
+}
+
+const SelectableGroupWidget& GroupSetIterator::peekPrevious () const {
+    int counter = iPreviousCounter;
+    while(!iGroupSet.contains(counter) && iPreviousCounter > INVALID) {
+        counter--;
+    }
+
+    return *iGroupSet.value(counter);
+}
+
+SelectableGroupWidget& GroupSetIterator::previous () {
+    while(!iGroupSet.contains(iPreviousCounter && iPreviousCounter > INVALID)) {
+        iPreviousCounter--;
+    }
+
+    if(iPreviousCounter < 0) {
+        throw IllegalStateException("GroupSetIterator::previous() : no previous item");
+    }
+
+    iNextCounter = iPreviousCounter;
+    return *iGroupSet.value(iPreviousCounter--);
+}
+
+void GroupSetIterator::toBack() {
+    iNextCounter = INVALID;
+    iPreviousCounter = iGroupSet.iHighestNumber;
+}
+
+void GroupSetIterator::toFront() {
+    iNextCounter = 0;
+    iPreviousCounter = INVALID;
+}
+
+GroupSetIterator& GroupSetIterator::operator= (const GroupSetIterator &set) {
+
+}
 
 SelectableGroupGroupWidget::SelectableGroupGroupWidget(QWidget *parent) :
-    QWidget(parent),
-    iHighestGroupNumber(INVALID) {
+    QWidget(parent) {
 }
 
 void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, bool singleSelect) {
     if(!isSelected) {
         iSelectedGroups.remove(groupNumber);
+        iLastSelectedGroups.removeAt(iLastSelectedGroups.lastIndexOf(groupNumber));
     } else {
         if(singleSelect) {
             selectSingleGroup(*iGroups.value(groupNumber));
@@ -27,6 +171,8 @@ void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, b
             if(!iSelectedGroups.contains(groupNumber)) {
                 iSelectedGroups.insert(groupNumber, iGroups.value(groupNumber));
             }
+
+            iLastSelectedGroups.append(groupNumber);
         }
     }
 }
@@ -41,88 +187,140 @@ void SelectableGroupGroupWidget::selectSingleGroup(SelectableGroupWidget& select
 
     iSelectedGroups.clear();
     iSelectedGroups.insert(selectedWidget.groupNumber(), &selectedWidget);
+
+    iLastSelectedGroups.clear();
+    iLastSelectedGroups.append(selectedWidget.groupNumber());
 }
 
 int SelectableGroupGroupWidget::addGroup(SelectableGroupWidget& newGroup) {
-    int groupNumber;
-    if(iFreeGroupNumbers.count() > 0) {
-        groupNumber = iFreeGroupNumbers.takeFirst();
-    } else {
-        groupNumber = ++iHighestGroupNumber;
-    }
-
-    iGroups.insert(groupNumber, &newGroup);
-
-    return groupNumber;
+    return iGroups.addNumberedGroup(newGroup);
 }
 
 void SelectableGroupGroupWidget::removeGroup(SelectableGroupWidget& group) {
-    iGroups.remove(group.groupNumber());
-
-    if(group.groupNumber() == iHighestGroupNumber) {
-        iHighestGroupNumber--;
-    } else {
-        iFreeGroupNumbers.append(group.groupNumber());
-    }
+    iGroups.removeNumberedGroup(group.groupNumber());
 }
 
-void SelectableGroupGroupWidget::selectArea(int lastGroupNumber, Position end, bool multipleAreas) {
-    int groupNumber = 0;
-    int firstGroupNumber = INVALID;
-    SelectableGroupWidget* group;
+void SelectableGroupGroupWidget::selectArea(int startGroupNumber, Position end, bool multipleAreas) {
+    int firstGroupNumber;
+    int endGroupNumber = INVALID;
     Position start;
 
-    for(int i = 0; i < iGroups.count()&&  groupNumber <= iHighestGroupNumber; i++) {
-        while(!iGroups.contains(groupNumber)) {
-            groupNumber++;
+    GroupSetIterator& iterator = iGroups.iterator();
+
+   /* while(iterator.hasNext()) {
+        const SelectableGroupWidget& group = iterator.next();
+
+        if(endGroupNumber == INVALID && group.isAnySelected()) {
+            start = group.lastSelected();
+            endGroupNumber = group.groupNumber();
+            break;
         }
+    }*/
 
-        group = iGroups.value(groupNumber);
+    iterator.findNext(iLastSelectedGroups.last());
+    iterator.previous();
 
-        if(firstGroupNumber == INVALID) {
-            if(group->isAnySelected()) {
-                start = group->lastSelected();
-                firstGroupNumber = groupNumber;
-            }
-        }
+    const SelectableGroupWidget& group = iterator.next();
+    start = group.lastSelected();
+    endGroupNumber = group.groupNumber();
 
-        groupNumber++;
-    }
-
-    int endGroupNumber;
-    if(firstGroupNumber < lastGroupNumber) {
-        groupNumber = firstGroupNumber;
-        endGroupNumber = lastGroupNumber;
+    int numGroups;
+    if(endGroupNumber < startGroupNumber) {
+        firstGroupNumber = endGroupNumber;
+        numGroups = startGroupNumber - endGroupNumber + 1;
     } else {
-        groupNumber = lastGroupNumber;
-        endGroupNumber = firstGroupNumber;
+        firstGroupNumber = startGroupNumber;
+        numGroups = endGroupNumber - startGroupNumber + 1;
     }
 
-    for(int i = 0; i < iGroups.count() && groupNumber <= endGroupNumber; i++) {
-        while(!iGroups.contains(groupNumber)) {
-            groupNumber++;
+    int counter = 0;
+
+    iterator.toFront();
+
+    while(iterator.hasNext()) {
+        SelectableGroupWidget& group = iterator.next();
+        if(group.groupNumber() == firstGroupNumber) {
+            break;
         }
 
-        iGroups.value(groupNumber)->doSelectArea(start, end, multipleAreas);
-        groupNumber++;
+        if(!multipleAreas) {
+            group.clearAllSelection();
+        }
+    }
+
+    iterator.previous();
+
+    while(iterator.hasNext() && counter++ < numGroups) {
+        iterator.next().doSelectArea(start, end, multipleAreas);
+    }
+
+    if(!multipleAreas) {
+        while(iterator.hasNext()) {
+            iterator.next().clearAllSelection();
+        }
     }
 }
 
 bool SelectableGroupGroupWidget::isOtherSelected(int groupNumber) {
-    int otherGroupNumber = 0;
-    for(int i = 0; otherGroupNumber <= iHighestGroupNumber; i++) {
-        while(!iGroups.contains(otherGroupNumber)) {
-            otherGroupNumber++;
-        }
-
-        if(groupNumber != otherGroupNumber) {
+    SelectableGroupWidget* group;
+    foreach(group, iSelectedGroups) {
+        if(group->groupNumber() != groupNumber) {
             return true;
         }
-
-        otherGroupNumber++;
     }
 
     return false;
+}
+
+bool SelectableGroupGroupWidget::isAnySelected() {
+    return iSelectedGroups.count() > 0;
+}
+
+int SelectableGroupGroupWidget::lastSelectedGroupNumber() {
+    return iLastSelectedGroups.last();
+}
+
+void SelectableGroupGroupWidget::cutSelected() {
+    if(hasFocus()) {
+        clearClipboard();
+
+        QApplication::clipboard()->setMimeData(mimeData(true));
+    }
+}
+
+void SelectableGroupGroupWidget::copySelected() {
+    if(hasFocus()) {
+        clearClipboard();
+
+        QApplication::clipboard()->setMimeData(mimeData(false));
+    }
+}
+
+void SelectableGroupGroupWidget::paste() {
+    if(hasFocus()) {
+        iSelectedGroups.value(lastSelectedGroupNumber())->paste(false);
+    }
+}
+
+void SelectableGroupGroupWidget::pasteWrap() {
+    if(hasFocus()) {
+        iSelectedGroups.value(lastSelectedGroupNumber())->paste(true);
+    }
+}
+
+void SelectableGroupGroupWidget::clearClipboard() {
+    const QClipboard *clipboard = QApplication::clipboard();
+
+    if(clipboard->mimeData()->hasFormat(mimeType())) {
+        QApplication::clipboard()->clear();
+    }
+}
+
+QMimeData* SelectableGroupGroupWidget::mimeData(bool cut) {
+    QMimeData *data = new QMimeData;
+    data->setData(mimeType(), writeMimeData(cut));
+
+    return data;
 }
 
 const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
@@ -133,15 +331,9 @@ const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
 
     qDebug("Selected group count is %d", iSelectedGroups.count());
 
-    int fromGroupNumber;
-
-    int groupNum = 0;
-    for(int i = 0; i < iSelectedGroups.count(); i++) {
-        while(!iSelectedGroups.contains(groupNum)) {
-            groupNum++;
-        }
-
-        iSelectedGroups.value(groupNum++)->doWriteMimeData(dataStream, cut);
+    SelectableGroupWidget* group;
+    foreach(group, iSelectedGroups) {
+        group->doWriteMimeData(dataStream, cut);
     }
 
     return itemData;
@@ -170,7 +362,14 @@ bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData,
 
     QList<int> pasteGroups;
 
-    for(int i = 0; i < numCopyGroups && groupNumber <= iHighestGroupNumber; i++) {
+    int counter = 0;
+
+    GroupSetIterator& iterator = iGroups.iterator();
+
+    iterator.findNext(dropGroupNumber);
+    iterator.previous();
+
+    while(iterator.hasNext() && counter++ < numCopyGroups) {
         dataStream >> fromGroupNumber;
 
         if(lastFromGroupNumber == INVALID) {
@@ -181,17 +380,13 @@ bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData,
 
         groupNumber+=groupNumberGap;
 
-        while(!iGroups.contains(groupNumber)) {
-            groupNumber++;
-        }
-
-        wasCut = iGroups.value(groupNumber)->doHandleMimeData(dataStream,
-                                                                fromGroupNumber,
-                                                                dropPosition,
-                                                                &originRow,
-                                                                &originColumn,
-                                                                wrap,
-                                                                move);
+        wasCut = iterator.next().doHandleMimeData(dataStream,
+                                                fromGroupNumber,
+                                                dropPosition,
+                                                &originRow,
+                                                &originColumn,
+                                                wrap,
+                                                move);
         pasteGroups.append(groupNumber);
 
         lastFromGroupNumber = fromGroupNumber;
@@ -199,36 +394,19 @@ bool SelectableGroupGroupWidget::handleMimeData(QByteArray itemData,
 
     groupNumber = 0;
 
-   for(int i = 0; i < iGroups.count() && groupNumber <= iHighestGroupNumber; i++) {
-        while(!iGroups.contains(groupNumber) ||
-              pasteGroups.contains(groupNumber)) {
-            groupNumber++;
+    iterator.toFront();
 
-            if(groupNumber > iHighestGroupNumber) {
-                break;
-            }
+    while(iterator.hasNext()) {
+        while(iterator.hasNext() &&pasteGroups.contains(iterator.peekNext().groupNumber())) {
+            iterator.next();
         }
 
-        iGroups.value(groupNumber)->clearAllSelection();
-        selectGroup(groupNumber, false);
-        groupNumber++;
+        if(iterator.hasNext()) {
+            SelectableGroupWidget& group = iterator.next();
+            group.clearAllSelection();
+            selectGroup(group.groupNumber(), false);
+        }
     }
 
     return wasCut;
 }
-
-/*void SelectableGroupGroupWidget::handleOldMimeData(QByteArray itemData) {
-    QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-
-    int numGroups;
-
-    dataStream >> numGroups;
-
-    int groupNum;
-
-    for(int i = 0; i < numGroups; i++) {
-        dataStream >> groupNum;
-
-        iGroups.value(groupNum)->doHandleOldMimeData(dataStream);
-    }
-}*/

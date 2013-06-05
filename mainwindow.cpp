@@ -8,6 +8,7 @@
 
 #include "led.h"
 #include "ledwidget.h"
+#include "ledgridgroupwidget.h"
 #include "ledgridwidget.h"
 #include "playinfowidget.h"
 #include "engine.h"
@@ -38,8 +39,8 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
-    ColourGroupGroupWidget* gridGroupGroup = new ColourGroupGroupWidget(centralWidget);
-    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *iUndoStack, *gridGroupGroup);
+    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(centralWidget);
+    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
     connect(&engine.animation(), SIGNAL(newLed(int, int)), ledGridWidget, SLOT(addLed(int, int)));
@@ -72,15 +73,15 @@ MainWindow::MainWindow(Engine& engine) :
     QWidget* widget1 = new QWidget(centralWidget);
     gridLayout->addWidget(widget1, 0, 3, 2, 1);
 
-    AnimationDetailsWidget* iAnimationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
-    iAnimationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
+    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
+    animationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
 
-    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), iAnimationDetailsWidget, SLOT(ledDeleted(int, int, int)));
-    connect(&engine.animation(), SIGNAL(ledRenumbered(int,int,int)), iAnimationDetailsWidget, SLOT(ledRenumbered(int, int, int)));
-    connect(&engine.animation(), SIGNAL(numFramesChanged(int)), iAnimationDetailsWidget, SLOT(numFramesChanged(int)));
-    connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), iAnimationDetailsWidget, SLOT(currentFrameChanged(int)));
+    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), animationDetailsWidget, SLOT(ledDeleted(int, int, int)));
+    connect(&engine.animation(), SIGNAL(ledRenumbered(int,int,int)), animationDetailsWidget, SLOT(ledRenumbered(int, int, int)));
+    connect(&engine.animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
+    connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), animationDetailsWidget, SLOT(currentFrameChanged(int)));
 
-    gridLayout->addWidget(iAnimationDetailsWidget, 2, 0, 1, 4);
+    gridLayout->addWidget(animationDetailsWidget, 2, 0, 1, 4);
 
     setCentralWidget(centralWidget);
 
@@ -94,7 +95,8 @@ MainWindow::MainWindow(Engine& engine) :
     QAction* saveAsAction = fileMenu->addAction("Save &As...");
     saveAsAction->setShortcuts(QKeySequence::SaveAs);
     fileMenu->addSeparator();
-    QAction* exportAction = fileMenu->addAction("&Export");
+    QAction* importAction = fileMenu->addAction("&Import...");
+    QAction* exportAction = fileMenu->addAction("&Export...");
     fileMenu->addSeparator();
     QAction* quitAction = fileMenu->addAction("E&xit");
     quitAction->setShortcuts(QKeySequence::Quit);
@@ -103,17 +105,31 @@ MainWindow::MainWindow(Engine& engine) :
     connect(openAction, SIGNAL(triggered()), &iEngine, SLOT(loadAnimation()));
     connect(saveAction, SIGNAL(triggered()), &iEngine, SLOT(saveAnimation()));
     connect(saveAsAction, SIGNAL(triggered()), &iEngine, SLOT(saveAnimationAs()));
+    connect(importAction, SIGNAL(triggered()), &iEngine, SLOT(importBitmap()));
     connect(exportAction, SIGNAL(triggered()), &iEngine, SLOT(exportAnimation()));
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
     menuBar()->addMenu(fileMenu);
 
     QMenu* editMenu = new QMenu("&Edit", this);
-   /* QAction* cutAction = editMenu->addAction("&Cut");
+    QAction* cutAction = editMenu->addAction("&Cut");
+    cutAction->setShortcuts(QKeySequence::Cut);
     QAction* copyAction = editMenu->addAction("C&opy");
-    QAction* pasteAction = editMenu->addAction("&Paste");*/
+    copyAction->setShortcuts(QKeySequence::Copy);
+    QAction* pasteAction = editMenu->addAction("&Paste");
+    pasteAction->setShortcuts(QKeySequence::Paste);
+    editMenu->addAction("Paste &wrap");
 
-    // TODO make edit menu work
+    connect(cutAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(cutSelected()));
+    connect(cutAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(cut()));
+    connect(copyAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(copySelected()));
+    connect(copyAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(copy()));
+    connect(pasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(paste()));
+    connect(pasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
+    connect(pasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(pasteWrap()));
+    connect(pasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
+
+    editMenu->addSeparator();
 
     QAction* undoAction = iUndoStack->createUndoAction(this, tr("&Undo"));
     undoAction->setShortcuts(QKeySequence::Undo);

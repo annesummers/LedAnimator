@@ -10,6 +10,9 @@
 #include <QUndoCommand>
 #include <QColor>
 
+#include "constants.h"
+#include "led.h"
+
 namespace AnimatorModel {
 
 class Animation;
@@ -32,113 +35,99 @@ protected:
 class AddLedCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit AddLedCommand(Animation& animation, int row, int column);
+    explicit AddLedCommand(Animation& animation, Position position);
 
     void undo();
     void redo();
     //bool mergeWith(const QUndoCommand *command);
 
 private:
-    int iRow;
-    int iColumn;
+    Position iPosition;
 };
 
 class DeleteLedCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit DeleteLedCommand(Animation& animation, int row, int column, int number);
+    explicit DeleteLedCommand(Animation& animation, Led &led, bool deleteObject);
 
     void undo();
     void redo();
     //bool mergeWith(const QUndoCommand *command);
 
 private:
-    int iRow;
-    int iColumn;
-
-    int iNumber;
-    QList<QColor> iFrames;
+    Led iOldLed;
+    bool iDeleteObject;
 };
 
 class CloneLedCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit CloneLedCommand(Animation& animation, int oldRow, int oldColumn, int newRow, int newColumn);
+    explicit CloneLedCommand(Animation& animation, Position fromPosition, Position toPosition);
 
     void undo();
     void redo();
     //bool mergeWith(const QUndoCommand *command);
 
 private:
-    int iOldRow;
-    int iOldColumn;
+    void setText();
 
-    int iNewRow;
-    int iNewColumn;
+    Position iFromPosition;
+    Position iToPosition;
+
+    Led* iOldLed;
 };
 
-class MoveLedCommand : public LedAnimatorCommandBase {
+class PasteLedCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit MoveLedCommand(Animation& animation, int oldRow, int oldColumn, int newRow, int newColumn);
+    explicit PasteLedCommand(Animation& animation, Position fromPosition, Position toPosition);
 
     void undo();
     void redo();
     //bool mergeWith(const QUndoCommand *command);
 
 private:
-    int iOldRow;
-    int iOldColumn;
+    void setText();
 
-    int iNewRow;
-    int iNewColumn;
-};
+    Position iFromPosition;
+    Position iToPosition;
 
-class CutLedCommand : public LedAnimatorCommandBase {
-
-public:
-    explicit CutLedCommand(Animation& animation, int row, int column);
-
-    void undo();
-    void redo();
-    //bool mergeWith(const QUndoCommand *command);
-
-private:
-    int iRow;
-    int iColumn;
-};
-
-class CopyLedCommand : public LedAnimatorCommandBase {
-
-public:
-    explicit CopyLedCommand(Animation& animation, int row, int column);
-
-    void undo();
-    void redo();
-    //bool mergeWith(const QUndoCommand *command);
-
-private:
-    int iRow;
-    int iColumn;
+    Led* iFromLed;
+    Led* iToLed;
 };
 
 class RenumberLedCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit RenumberLedCommand(Animation& animation);
+    explicit RenumberLedCommand(Animation& animation, Position position, int oldNumber, int newNumber);
 
-   // void undo();
-   // void redo();
+    void undo();
+    void redo();
+
+private:
+    void setText();
+
+    Position iPosition;
+
+    int iOldNumber;
+    int iNewNumber;
 };
 
 class SetFrameColourCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit SetFrameColourCommand(Animation& animation);
+    explicit SetFrameColourCommand(Animation& animation, Frame& frame, QColor oldColour, QColor newColour);
 
-   // void undo();
-   // void redo();
+    void undo();
+    void redo();
    // bool mergeWith(const QUndoCommand *command);
+
+private:
+    void setText();
+
+    Frame& iFrame;
+    QColor iOldColour;
+    QColor iNewColour;
 };
 
 class FadeCommand : public LedAnimatorCommandBase {
@@ -146,8 +135,11 @@ class FadeCommand : public LedAnimatorCommandBase {
 public:
     explicit FadeCommand(Animation& animation);
 
-  //  void undo();
-  //  void redo();
+    void undo();
+    void redo();
+
+private:
+    void setText();
 };
 
 class FadeToCommand : public LedAnimatorCommandBase {
@@ -155,9 +147,60 @@ class FadeToCommand : public LedAnimatorCommandBase {
 public:
     explicit FadeToCommand(Animation& animation);
 
-  //  void undo();
-  //  void redo();
+    void undo();
+    void redo();
+
+private:
+    void setText();
 };
+/*
+class MoveLedCommand : public LedAnimatorCommandBase {
+
+public:
+    explicit MoveLedCommand(Animation& animation, Position fromPosition, Position toPosition);
+
+    void undo();
+    void redo();
+    //bool mergeWith(const QUndoCommand *command);
+
+private:
+    void setText();
+
+    Position iFromPosition;
+    Position iToPosition;
+};
+
+class CutLedCommand : public LedAnimatorCommandBase {
+
+public:
+    explicit CutLedCommand(Animation& animation, Led &cutLed);
+
+    void undo();
+    void redo();
+    //bool mergeWith(const QUndoCommand *command);
+
+private:
+    void setText();
+
+    Led iCutLed;
+};
+
+class CopyLedCommand : public LedAnimatorCommandBase {
+
+public:
+    explicit CopyLedCommand(Animation& animation, Led &led);
+
+    void undo();
+    void redo();
+    //bool mergeWith(const QUndoCommand *command);
+
+private:
+    void setText();
+
+    Led iCopyLed;
+};
+*/
+
 
 }
 

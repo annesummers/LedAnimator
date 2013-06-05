@@ -10,6 +10,7 @@
 #include <QString>
 
 #include "fadecalculator.h"
+#include "animation.h"
 
 #include "exceptions.h"
 #include "constants.h"
@@ -19,7 +20,8 @@
 using namespace AnimatorTest;
 using namespace Exception;
 
-ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int maxColumn, ColourGroupGroupWidget &groupGroupWidget, int groupNumber) :
+ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, Animation& animation, int maxRow, int maxColumn,
+                                             ColourGroupGroupWidget &groupGroupWidget, int groupNumber) :
     ColourGroupWidget(parent, maxRow, maxColumn, groupGroupWidget, groupNumber) {
 
     // TODO yuck this is horrilbe
@@ -29,26 +31,26 @@ ColourGroupTestWidget::ColourGroupTestWidget(QWidget *parent, int maxRow, int ma
         (*iWidgetArray)[i] = new WidgetVector(maxColumn);
         for(int j = 0; j < maxColumn; j++) {
             WidgetVector& row = *((*iWidgetArray)[i]);
-            row[j] =  new ColourTestWidget(this, *this, *(new ColourTestObject(this, number++)));
+            row[j] =  new ColourTestWidget(this, *this, *(new ColourTestObject(this, animation, number++)));
         }
     }
 }
 
-SelectableWidget& ColourGroupTestWidget::widgetAt(int row, int column) {
-    return *((*(*iWidgetArray)[row])[column]);
+SelectableWidget& ColourGroupTestWidget::widgetAt(Position position) {
+    return *((*(*iWidgetArray)[position.row()])[position.column()]);
 }
 
-void ColourGroupTestWidget::widgetPosition(SelectableWidget& widget, int* row, int* column) {
+Position ColourGroupTestWidget::widgetPosition(SelectableWidget& widget) {
     for(int i = 0; i < iWidgetArray->count(); i++) {
         WidgetVector& searchRow = *((*iWidgetArray)[i]);
 
         int index = searchRow.indexOf(&widget);
-        if(index  != -1) {
-            *row = i;
-            *column = index;
-            return;
+        if(index  != INVALID) {
+            return Position(i, index);
         }
     }
+
+    return Position();
 }
 
 bool ColourGroupTestWidget::validKeyPress(Qt::Key key) {
@@ -58,17 +60,17 @@ bool ColourGroupTestWidget::validKeyPress(Qt::Key key) {
            (key & Qt::Key_Down) == Qt::Key_Down;
 }
 
-void ColourGroupTestWidget::cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+void ColourGroupTestWidget::cloneItem(int fromGroup, Position fromPosition, Position toPosition) {
     ColourTestWidget* fromWidget;
 
     if(fromGroup == iGroupNumber) {
-        fromWidget = static_cast<ColourTestWidget*>(&widgetAt(fromRow, fromColumn));
+        fromWidget = static_cast<ColourTestWidget*>(&widgetAt(fromPosition));
     } else {
         ColourGroupTestWidget& group = static_cast<ColourGroupTestWidget&>(iGroupGroup.group(fromGroup));
-        fromWidget = static_cast<ColourTestWidget*>(&group.widgetAt(fromRow, fromColumn));
+        fromWidget = static_cast<ColourTestWidget*>(&group.widgetAt(fromPosition));
     }
 
-    ColourTestWidget& toWidget = static_cast<ColourTestWidget&>(widgetAt(toRow, toColumn));
+    ColourTestWidget& toWidget = static_cast<ColourTestWidget&>(widgetAt(toPosition));
 
     toWidget.setColour(fromWidget->colour());
 }
@@ -76,23 +78,26 @@ void ColourGroupTestWidget::cloneItem(int fromGroup, int fromRow, int fromColumn
 ColourWidgetTests::ColourWidgetTests(QObject *parent) :
     SelectableWidgetTestBase(parent),
     iColourDialog(NULL){
+
+    Engine* engine = new Engine();
+    iAnimation = new Animation(*engine);
 }
 
 void ColourWidgetTests::fade_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("startPoint");
-    QTest::addColumn<QPoint>("endPoint");
+    QTest::addColumn<Position>("startPoint");
+    QTest::addColumn<Position>("endPoint");
     QTest::addColumn<QColor>("startColour");
     QTest::addColumn<QColor>("endColour");
     QTest::addColumn<IntList>("fadeSpread");
-    QTest::addColumn<PointList>("fadePoints");
+    QTest::addColumn<PositionList>("fadePoints");
 
     int maxRow = 3;
     int maxColumn = 3;
 
     IntList fadeData;
-    PointList fadePoints;
+    PositionList fadePoints;
 
     fadeData.clear();
     fadeData.append(1);
@@ -101,68 +106,68 @@ void ColourWidgetTests::fade_data() {
     fadeData.append(1);
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(1,2));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(2,1));
 
     QTest::newRow("top left bottom right 3 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(0,0)
-                                               << QPoint(1,2)
+                                               << Position(0,0)
+                                               << Position(2,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,0));
 
     QTest::newRow("bottom right top left 3 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(1,2)
-                                               << QPoint(0,0)
+                                               << Position(2,1)
+                                               << Position(0,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(0,2));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(2,0));
 
     QTest::newRow("top right bottom left 3 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(1,0)
-                                               << QPoint(0,2)
+                                               << Position(0,1)
+                                               << Position(2,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(1,0));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,1));
 
     QTest::newRow("bottom left top right 3 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(0,2)
-                                               << QPoint(1,0)
+                                               << Position(2,0)
+                                               << Position(0,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -175,51 +180,51 @@ void ColourWidgetTests::fade_data() {
     fadeData.append(1);
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(2,1));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(2,1));
 
     QTest::newRow("top left bottom right 2 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,0)
-                                               << QPoint(2,1)
+                                               << Position(0,0)
+                                               << Position(2,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(0,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,0));
 
     QTest::newRow("bottom right top left 2 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,1)
-                                               << QPoint(0,0)
+                                               << Position(2,1)
+                                               << Position(0,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,1));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,1));
 
     QTest::newRow("top right bottom left 2 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,0)
-                                               << QPoint(0,1)
+                                               << Position(2,0)
+                                               << Position(0,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -227,17 +232,17 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(2,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,0));
 
     QTest::newRow("bottom left top right 2 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,1)
-                                               << QPoint(2,0)
+                                               << Position(0,1)
+                                               << Position(2,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -251,80 +256,80 @@ void ColourWidgetTests::fade_data() {
     fadeData.append(1);
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(2,2));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,2));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(2,2));
 
     QTest::newRow("top left bottom right 3 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,0)
-                                               << QPoint(2,2)
+                                               << Position(0,0)
+                                               << Position(2,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(0,0));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,2));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,0));
 
     QTest::newRow("bottom right top left 3 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,2)
-                                               << QPoint(0,0)
+                                               << Position(2,2)
+                                               << Position(0,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(0,2));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,2));
 
     QTest::newRow("top right bottom left 3 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,0)
-                                               << QPoint(0,2)
+                                               << Position(2,0)
+                                               << Position(0,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(2,0));
+    fadePoints.append(Position(0,2));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(2,0));
 
     QTest::newRow("bottom left top right 3 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,2)
-                                               << QPoint(2,0)
+                                               << Position(0,2)
+                                               << Position(2,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -336,60 +341,60 @@ void ColourWidgetTests::fade_data() {
     fadeData.append(1);
 
     fadePoints.clear();
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(2,2));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(2,2));
 
     QTest::newRow("top left bottom right 2 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(1,1)
-                                               << QPoint(2,2)
+                                               << Position(1,1)
+                                               << Position(2,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(1,1));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(1,1));
 
     QTest::newRow("bottom right top left 2 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(2,2)
-                                               << QPoint(1,1)
+                                               << Position(2,2)
+                                               << Position(1,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(1,2));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(1,2));
 
     QTest::newRow("top right bottom left 2 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(2,1)
-                                               << QPoint(1,2)
+                                               << Position(2,1)
+                                               << Position(1,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(2,1));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(2,1));
 
     QTest::newRow("bottom left top right 2 x 2") << maxRow
                                                << maxColumn
-                                               << QPoint(1,2)
-                                               << QPoint(2,1)
+                                               << Position(1,2)
+                                               << Position(2,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -402,14 +407,14 @@ void ColourWidgetTests::fade_data() {
     fadeData.append(1);
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(0,2));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,2));
 
     QTest::newRow("top bottom first column 3 x 1") << maxRow
                                                << maxColumn
-                                               << QPoint(0,0)
-                                               << QPoint(0,2)
+                                               << Position(0,0)
+                                               << Position(0,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -417,14 +422,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(0,0));
+    fadePoints.append(Position(0,2));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(0,0));
 
     QTest::newRow("bottom top first column 3 x 1") << maxRow
                                                << maxColumn
-                                               << QPoint(0,2)
-                                               << QPoint(0,0)
+                                               << Position(0,2)
+                                               << Position(0,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -432,14 +437,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(1,2));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(1,2));
 
     QTest::newRow("top bottom middle column 3 x 1") << maxRow
                                                << maxColumn
-                                               << QPoint(1,0)
-                                               << QPoint(1,2)
+                                               << Position(1,0)
+                                               << Position(1,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -447,14 +452,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(1,0));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(1,0));
 
     QTest::newRow("bottom top middle column 3 x 1") << maxRow
                                                << maxColumn
-                                               << QPoint(1,2)
-                                               << QPoint(1,0)
+                                               << Position(1,2)
+                                               << Position(1,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -462,14 +467,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(2,2));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(2,2));
 
     QTest::newRow("top bottom last column 3 x 1") << maxRow
                                                << maxColumn
-                                               << QPoint(2,0)
-                                               << QPoint(2,2)
+                                               << Position(2,0)
+                                               << Position(2,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -477,28 +482,28 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(2,0));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(2,0));
 
     QTest::newRow("bottom top last column 3 x 1") << maxRow
                                                << maxColumn
-                                               << QPoint(2,2)
-                                               << QPoint(2,0)
+                                               << Position(2,2)
+                                               << Position(2,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
                                                << fadePoints;
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,0));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(2,0));
+    fadePoints.append(Position(0,0));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(2,0));
 
     QTest::newRow("top bottom first row 1 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,0)
-                                               << QPoint(2,0)
+                                               << Position(0,0)
+                                               << Position(2,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -506,14 +511,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,0));
-    fadePoints.append(QPoint(1,0));
-    fadePoints.append(QPoint(0,0));
+    fadePoints.append(Position(2,0));
+    fadePoints.append(Position(1,0));
+    fadePoints.append(Position(0,0));
 
     QTest::newRow("bottom top first row 1 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,0)
-                                               << QPoint(0,0)
+                                               << Position(2,0)
+                                               << Position(0,0)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -521,14 +526,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,1));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(2,1));
+    fadePoints.append(Position(0,1));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(2,1));
 
     QTest::newRow("top bottom middle row 1 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,1)
-                                               << QPoint(2,1)
+                                               << Position(0,1)
+                                               << Position(2,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -536,14 +541,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,1));
-    fadePoints.append(QPoint(1,1));
-    fadePoints.append(QPoint(0,1));
+    fadePoints.append(Position(2,1));
+    fadePoints.append(Position(1,1));
+    fadePoints.append(Position(0,1));
 
     QTest::newRow("bottom top middle row 1 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,1)
-                                               << QPoint(0,1)
+                                               << Position(2,1)
+                                               << Position(0,1)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -551,14 +556,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(0,2));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(2,2));
+    fadePoints.append(Position(0,2));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(2,2));
 
     QTest::newRow("top bottom last row 1 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(0,2)
-                                               << QPoint(2,2)
+                                               << Position(0,2)
+                                               << Position(2,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -566,14 +571,14 @@ void ColourWidgetTests::fade_data() {
 
 
     fadePoints.clear();
-    fadePoints.append(QPoint(2,2));
-    fadePoints.append(QPoint(1,2));
-    fadePoints.append(QPoint(0,2));
+    fadePoints.append(Position(2,2));
+    fadePoints.append(Position(1,2));
+    fadePoints.append(Position(0,2));
 
     QTest::newRow("bottom top last row 1 x 3") << maxRow
                                                << maxColumn
-                                               << QPoint(2,2)
-                                               << QPoint(0,2)
+                                               << Position(2,2)
+                                               << Position(0,2)
                                                << QColor(Qt::magenta)
                                                << QColor(Qt::green)
                                                << fadeData
@@ -584,12 +589,12 @@ void ColourWidgetTests::fade_data() {
 void ColourWidgetTests::fade() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, startPoint);
-    QFETCH(QPoint, endPoint);
+    QFETCH(Position, startPoint);
+    QFETCH(Position, endPoint);
     QFETCH(QColor, startColour);
     QFETCH(QColor, endColour);
     QFETCH(IntList, fadeSpread);
-    QFETCH(PointList, fadePoints);
+    QFETCH(PositionList, fadePoints);
 
     try {
         iFadeData = new FadeData();
@@ -599,18 +604,18 @@ void ColourWidgetTests::fade() {
             iFadeData->fadeSpread.append(fadeLine);
         }
 
-        QPoint fadePoint;
+        Position fadePoint;
         foreach(fadePoint, fadePoints) {
             iFadeData->fadePoints.append(fadePoint);
         }
 
-        ColourGroupGroupWidget* groupGroupWidget =  new ColourGroupGroupWidget(NULL);
-        iGroupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
+        ColourGroupGroupTestWidget* groupGroupWidget =  new ColourGroupGroupTestWidget();
+        iGroupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
 
-        iGroupWidget->selectOne(iGroupWidget->widgetAt(startPoint.y(), startPoint.x()));
+        iGroupWidget->selectOne(iGroupWidget->widgetAt(startPoint));
         iGroupWidget->setColour(startColour);
 
-        iGroupWidget->selectArea(iGroupWidget->widgetAt(endPoint.y(), endPoint.x()));
+        iGroupWidget->selectArea(iGroupWidget->widgetAt(endPoint), false);
 
         try {
             iGroupWidget->setupFade(endColour);
@@ -647,8 +652,8 @@ void ColourWidgetTests::fadeComplete() {
         QColor colour = iFadeData->fadeColours[i];
 
         for(int j = pointCounter; j < pointCounter + lineCount; j++) {
-            QPoint point = iFadeData->fadePoints[pointCounter];
-            QCOMPARE(static_cast<ColourWidget&>(iGroupWidget->widgetAt(point.y(), point.x())).colour(), colour);
+            Position point = iFadeData->fadePoints[pointCounter];
+            QCOMPARE(static_cast<ColourWidget&>(iGroupWidget->widgetAt(point)).colour(), colour);
         }
 
         pointCounter += lineCount;
@@ -667,28 +672,28 @@ void ColourWidgetTests::fadeTimeout() {
 void ColourWidgetTests::doubleClickOne_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("selectedPoint");
+    QTest::addColumn<Position>("selectedPoint");
 
     int maxRows = 2;
     int maxColumns = 3;
 
     QTest::newRow("double click one") << maxRows
                                     << maxColumns
-                                    << QPoint(0,0);
+                                    << Position(0,0);
 
 }
 
 void ColourWidgetTests::doubleClickOne() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, selectedPoint);
+    QFETCH(Position, selectedPoint);
 
-    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
+    ColourGroupGroupTestWidget* groupGroup = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroup, 0);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, selectedPoint);
 
-    QList<QPoint> selPoint;
+    QList<Position> selPoint;
     selPoint.append(selectedPoint);
 
     compareAreaPoints(groupWidget, selPoint);
@@ -699,41 +704,41 @@ void ColourWidgetTests::doubleClickOne() {
 void ColourWidgetTests::doubleClickOneClickOne_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("firstPoint");
-    QTest::addColumn<QPoint>("secondPoint");
-    QTest::addColumn<QPoint>("selectedPoint");
+    QTest::addColumn<Position>("firstPoint");
+    QTest::addColumn<Position>("secondPoint");
+    QTest::addColumn<Position>("selectedPoint");
 
     int maxRows = 2;
     int maxColumns = 3;
 
     QTest::newRow("double click one click same") << maxRows
                                 << maxColumns
-                                << QPoint(0,0)
-                                << QPoint(0,0)
-                                << QPoint(0,0);
+                                << Position(0,0)
+                                << Position(0,0)
+                                << Position(0,0);
 
     QTest::newRow("double click one click different") << maxRows
                                 << maxColumns
-                                << QPoint(0,0)
-                                << QPoint(0,1)
-                                << QPoint(0,1);
+                                << Position(0,0)
+                                << Position(0,1)
+                                << Position(0,1);
 }
 
 void ColourWidgetTests::doubleClickOneClickOne() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, firstPoint);
-    QFETCH(QPoint, secondPoint);
-    QFETCH(QPoint, selectedPoint);
+    QFETCH(Position, firstPoint);
+    QFETCH(Position, secondPoint);
+    QFETCH(Position, selectedPoint);
 
-    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
+    ColourGroupGroupTestWidget* groupGroup = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroup, 0);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, firstPoint);
 
-    QTest::mouseClick(&(groupWidget->widgetAt(secondPoint.y(), secondPoint.x())), Qt::LeftButton);
+    QTest::mouseClick(&(groupWidget->widgetAt(secondPoint)), Qt::LeftButton);
 
-    QList<QPoint> selPoint;
+    QList<Position> selPoint;
     selPoint.append(selectedPoint);
 
     compareAreaPoints(groupWidget, selPoint);
@@ -744,41 +749,41 @@ void ColourWidgetTests::doubleClickOneClickOne() {
 void ColourWidgetTests::clickOneDoubleClickOne_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("firstPoint");
-    QTest::addColumn<QPoint>("secondPoint");
-    QTest::addColumn<QPoint>("selectedPoint");
+    QTest::addColumn<Position>("firstPoint");
+    QTest::addColumn<Position>("secondPoint");
+    QTest::addColumn<Position>("selectedPoint");
 
     int maxRows = 2;
     int maxColumns = 3;
 
     QTest::newRow("click one double click same") << maxRows
                                 << maxColumns
-                                << QPoint(0,0)
-                                << QPoint(0,0)
-                                << QPoint(0,0);
+                                << Position(0,0)
+                                << Position(0,0)
+                                << Position(0,0);
 
     QTest::newRow("click one double click different") << maxRows
                                 << maxColumns
-                                << QPoint(0,0)
-                                << QPoint(0,1)
-                                << QPoint(0,1);
+                                << Position(0,0)
+                                << Position(0,1)
+                                << Position(0,1);
 }
 
 void ColourWidgetTests::clickOneDoubleClickOne() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, firstPoint);
-    QFETCH(QPoint, secondPoint);
-    QFETCH(QPoint, selectedPoint);
+    QFETCH(Position, firstPoint);
+    QFETCH(Position, secondPoint);
+    QFETCH(Position, selectedPoint);
 
-    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
+    ColourGroupGroupTestWidget* groupGroup = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroup, 0);
 
-    QTest::mouseClick(&(groupWidget->widgetAt(firstPoint.y(), firstPoint.x())), Qt::LeftButton);
+    QTest::mouseClick(&(groupWidget->widgetAt(firstPoint)), Qt::LeftButton);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, secondPoint);
 
-    QList<QPoint> selPoint;
+    QList<Position> selPoint;
     selPoint.append(selectedPoint);
 
     compareAreaPoints(groupWidget, selPoint);
@@ -789,9 +794,9 @@ void ColourWidgetTests::clickOneDoubleClickOne() {
 void ColourWidgetTests::doubleClickOneDoubleClickOne_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("firstPoint");
-    QTest::addColumn<QPoint>("secondPoint");
-    QTest::addColumn<QPoint>("selectedPoint");
+    QTest::addColumn<Position>("firstPoint");
+    QTest::addColumn<Position>("secondPoint");
+    QTest::addColumn<Position>("selectedPoint");
 
     int maxRows;
     int maxColumns;
@@ -801,31 +806,31 @@ void ColourWidgetTests::doubleClickOneDoubleClickOne_data() {
 
     QTest::newRow("double click one double click same") << maxRows
                                 << maxColumns
-                                << QPoint(0,0)
-                                << QPoint(0,0)
-                                << QPoint(0,0);
+                                << Position(0,0)
+                                << Position(0,0)
+                                << Position(0,0);
 
     QTest::newRow("double click one double click different") << maxRows
                                 << maxColumns
-                                << QPoint(0,0)
-                                << QPoint(0,1)
-                                << QPoint(0,1);
+                                << Position(0,0)
+                                << Position(0,1)
+                                << Position(0,1);
 }
 
 void ColourWidgetTests::doubleClickOneDoubleClickOne() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, firstPoint);
-    QFETCH(QPoint, secondPoint);
-    QFETCH(QPoint, selectedPoint);
+    QFETCH(Position, firstPoint);
+    QFETCH(Position, secondPoint);
+    QFETCH(Position, selectedPoint);
 
-    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
+    ColourGroupGroupTestWidget* groupGroup = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroup, 0);
 
     doubleClickWidgetAndDismissDialog(*groupWidget, firstPoint);
     doubleClickWidgetAndDismissDialog(*groupWidget, secondPoint);
 
-    QList<QPoint> selPoint;
+    QList<Position> selPoint;
     selPoint.append(selectedPoint);
 
     compareAreaPoints(groupWidget, selPoint);
@@ -836,8 +841,8 @@ void ColourWidgetTests::doubleClickOneDoubleClickOne() {
 void ColourWidgetTests::copyPasteOneInternal_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("copyPoint");
-    QTest::addColumn<QPoint>("pastePoint");
+    QTest::addColumn<Position>("copyPoint");
+    QTest::addColumn<Position>("pastePoint");
     QTest::addColumn<QColor>("copyColour");
 
     int maxRows = 3;
@@ -845,41 +850,41 @@ void ColourWidgetTests::copyPasteOneInternal_data() {
 
     QTest::newRow("copy one paste different") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(0,1)
+                                 << Position(0,0)
+                                 << Position(0,1)
                                  << QColor(Qt::magenta);
 
     QTest::newRow("copy one paste same") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(0,0)
+                                 << Position(0,0)
+                                 << Position(0,0)
                                  << QColor(Qt::magenta);
 }
 
 void ColourWidgetTests::copyPasteOneInternal() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, copyPoint);
-    QFETCH(QPoint, pastePoint);
+    QFETCH(Position, copyPoint);
+    QFETCH(Position, pastePoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
+    ColourGroupGroupTestWidget* groupGroup = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroup, 0);
 
-    ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget->widgetAt(copyPoint.y(), copyPoint.x());
+    ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget->widgetAt(copyPoint);
     copyWidget.setColour(copyColour);
 
     groupWidget->selectOne(copyWidget);
     QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
-    ColourTestWidget& pasteWidget = (ColourTestWidget&)groupWidget->widgetAt(pastePoint.y(), pastePoint.x());
+    ColourTestWidget& pasteWidget = (ColourTestWidget&)groupWidget->widgetAt(pastePoint);
 
     groupWidget->selectOne(pasteWidget);
     QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
 
     QCOMPARE(copyWidget.colour(), pasteWidget.colour());
 
-    QList<QPoint> selectedPoints;
+    QList<Position> selectedPoints;
     selectedPoints.append(pastePoint);
 
     compareAreaPoints(groupWidget, selectedPoints);
@@ -890,10 +895,10 @@ void ColourWidgetTests::copyPasteOneInternal() {
 void ColourWidgetTests::copyPasteManyInternal_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("copyFirstPoint");
-    QTest::addColumn<QPoint>("copySecondPoint");
-    QTest::addColumn<QPoint>("pastePoint");
-    QTest::addColumn<QPoint>("pasteSecondPoint");
+    QTest::addColumn<Position>("copyFirstPoint");
+    QTest::addColumn<Position>("copySecondPoint");
+    QTest::addColumn<Position>("pastePoint");
+    QTest::addColumn<Position>("pasteSecondPoint");
     QTest::addColumn<QColor>("copyColour");
 
     int maxRows = 4;
@@ -901,59 +906,59 @@ void ColourWidgetTests::copyPasteManyInternal_data() {
 
     QTest::newRow("copy many paste different") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(1,1)
-                                 << QPoint(2,2)
-                                 << QPoint(3,3)
+                                 << Position(0,0)
+                                 << Position(1,1)
+                                 << Position(2,2)
+                                 << Position(3,3)
                                  << QColor(Qt::magenta);
 
     QTest::newRow("copy many paste same") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(1,1)
-                                 << QPoint(0,0)
-                                 << QPoint(1,1)
+                                 << Position(0,0)
+                                 << Position(1,1)
+                                 << Position(0,0)
+                                 << Position(1,1)
                                  << QColor(Qt::magenta);
 
     QTest::newRow("copy many paste overlap") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(1,1)
-                                 << QPoint(1,1)
-                                 << QPoint(2,2)
+                                 << Position(0,0)
+                                 << Position(1,1)
+                                 << Position(1,1)
+                                 << Position(2,2)
                                  << QColor(Qt::magenta);
 }
 
 void ColourWidgetTests::copyPasteManyInternal() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, copyFirstPoint);
-    QFETCH(QPoint, copySecondPoint);
-    QFETCH(QPoint, pastePoint);
-    QFETCH(QPoint, pasteSecondPoint);
+    QFETCH(Position, copyFirstPoint);
+    QFETCH(Position, copySecondPoint);
+    QFETCH(Position, pastePoint);
+    QFETCH(Position, pasteSecondPoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupGroupWidget* groupGroup = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroup, 0);
+    ColourGroupGroupTestWidget* groupGroup = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroup, 0);
 
-    ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget->widgetAt(copyFirstPoint.y(), copyFirstPoint.x()));
+    ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget->widgetAt(copyFirstPoint));
 
     groupWidget->selectOne(copyFirstWidget);
-    groupWidget->selectArea(groupWidget->widgetAt(copySecondPoint.y(), copySecondPoint.x()));
+    groupWidget->selectArea(groupWidget->widgetAt(copySecondPoint), false);
     groupWidget->setColour(copyColour);
 
     QTest::keyPress(&copyFirstWidget, Qt::Key_C, Qt::ControlModifier);
 
-    ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget->widgetAt(pastePoint.y(), pastePoint.x()));
+    ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget->widgetAt(pastePoint));
 
     groupWidget->selectOne(pastePointWidget);
     QTest::keyPress(&pastePointWidget, Qt::Key_V, Qt::ControlModifier);
 
-    QList<QPoint> testPoints;
+    QList<Position> testPoints;
     calculateAreaPoints(testPoints, pastePoint, pasteSecondPoint);
 
     for(int i = 0; i < testPoints.count(); i++) {
-        QCOMPARE(static_cast<ColourWidget&>(groupWidget->widgetAt(testPoints[i].y(), testPoints[i].x())).colour(), copyColour);
+        QCOMPARE(static_cast<ColourWidget&>(groupWidget->widgetAt(testPoints[i])).colour(), copyColour);
     }
 
     compareAreaPoints(groupWidget, testPoints);
@@ -964,8 +969,8 @@ void ColourWidgetTests::copyPasteManyInternal() {
 void ColourWidgetTests::copyPasteOneExternal_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("copyPoint");
-    QTest::addColumn<QPoint>("pastePoint");
+    QTest::addColumn<Position>("copyPoint");
+    QTest::addColumn<Position>("pastePoint");
     QTest::addColumn<QColor>("copyColour");
 
     int maxRows = 3;
@@ -973,35 +978,35 @@ void ColourWidgetTests::copyPasteOneExternal_data() {
 
     QTest::newRow("copy one paste different") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(0,1)
+                                 << Position(0,0)
+                                 << Position(0,1)
                                  << QColor(Qt::magenta);
 
     QTest::newRow("copy one paste same") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(0,0)
+                                 << Position(0,0)
+                                 << Position(0,0)
                                  << QColor(Qt::magenta);
 }
 
 void ColourWidgetTests::copyPasteOneExternal() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, copyPoint);
-    QFETCH(QPoint, pastePoint);
+    QFETCH(Position, copyPoint);
+    QFETCH(Position, pastePoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupGroupWidget* groupGroupWidget = new ColourGroupGroupWidget(NULL);
-    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
-    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 1);
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
+    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 1);
 
-    ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget1->widgetAt(copyPoint.y(), copyPoint.x());
+    ColourTestWidget& copyWidget = (ColourTestWidget&)groupWidget1->widgetAt(copyPoint);
     copyWidget.setColour(copyColour);
 
     groupWidget1->selectOne(copyWidget);
     QTest::keyClick(&copyWidget, Qt::Key_C, Qt::ControlModifier);
 
-    ColourTestWidget& pasteWidget = (ColourTestWidget&)groupWidget2->widgetAt(pastePoint.y(), pastePoint.x());
+    ColourTestWidget& pasteWidget = (ColourTestWidget&)groupWidget2->widgetAt(pastePoint);
 
     groupWidget2->selectOne(pasteWidget);
     QTest::keyClick(&pasteWidget, Qt::Key_V, Qt::ControlModifier);
@@ -1015,10 +1020,10 @@ void ColourWidgetTests::copyPasteOneExternal() {
 void ColourWidgetTests::copyPasteManyExternal_data() {
     QTest::addColumn<int>("maxRow");
     QTest::addColumn<int>("maxColumn");
-    QTest::addColumn<QPoint>("copyFirstPoint");
-    QTest::addColumn<QPoint>("copySecondPoint");
-    QTest::addColumn<QPoint>("pastePoint");
-    QTest::addColumn<QPoint>("pasteSecondPoint");
+    QTest::addColumn<Position>("copyFirstPoint");
+    QTest::addColumn<Position>("copySecondPoint");
+    QTest::addColumn<Position>("pastePoint");
+    QTest::addColumn<Position>("pasteSecondPoint");
     QTest::addColumn<QColor>("copyColour");
 
     int maxRows = 4;
@@ -1026,46 +1031,44 @@ void ColourWidgetTests::copyPasteManyExternal_data() {
 
     QTest::newRow("copy many paste many") << maxRows
                                  << maxColumns
-                                 << QPoint(0,0)
-                                 << QPoint(1,1)
-                                 << QPoint(2,2)
-                                 << QPoint(3,3)
+                                 << Position(0,0)
+                                 << Position(1,1)
+                                 << Position(2,2)
+                                 << Position(3,3)
                                  << QColor(Qt::magenta);
 }
 
 void ColourWidgetTests::copyPasteManyExternal() {
     QFETCH(int, maxRow);
     QFETCH(int, maxColumn);
-    QFETCH(QPoint, copyFirstPoint);
-    QFETCH(QPoint, copySecondPoint);
-    QFETCH(QPoint, pastePoint);
-    QFETCH(QPoint, pasteSecondPoint);
+    QFETCH(Position, copyFirstPoint);
+    QFETCH(Position, copySecondPoint);
+    QFETCH(Position, pastePoint);
+    QFETCH(Position, pasteSecondPoint);
     QFETCH(QColor, copyColour);
 
-    ColourGroupGroupWidget* groupGroupWidget = new ColourGroupGroupWidget(NULL);
-
-    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 0);
-
-    ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget1->widgetAt(copyFirstPoint.y(), copyFirstPoint.x()));
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
+    ColourGroupTestWidget* groupWidget1 = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
+    ColourWidget& copyFirstWidget = static_cast<ColourWidget&>(groupWidget1->widgetAt(copyFirstPoint));
 
     groupWidget1->selectOne(copyFirstWidget);
-    groupWidget1->selectArea(groupWidget1->widgetAt(copySecondPoint.y(), copySecondPoint.x()));
+    groupWidget1->selectArea(groupWidget1->widgetAt(copySecondPoint), false);
     groupWidget1->setColour(copyColour);
 
     QTest::keyPress(&copyFirstWidget, Qt::Key_C, Qt::ControlModifier);
 
-    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, maxRow, maxColumn, *groupGroupWidget, 1);
+    ColourGroupTestWidget* groupWidget2 = new ColourGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 1);
 
-    ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget2->widgetAt(pastePoint.y(), pastePoint.x()));
+    ColourWidget& pastePointWidget = static_cast<ColourWidget&>(groupWidget2->widgetAt(pastePoint));
 
     groupWidget2->selectOne(pastePointWidget);
     QTest::keyPress(&pastePointWidget, Qt::Key_V, Qt::ControlModifier);
 
-    QList<QPoint> selectedPoints;
+    QList<Position> selectedPoints;
     calculateAreaPoints(selectedPoints, pastePoint, pasteSecondPoint);
 
     for(int i = 0; i < selectedPoints.count(); i++) {
-        QCOMPARE(static_cast<ColourWidget&>(groupWidget2->widgetAt(selectedPoints[i].y(), selectedPoints[i].x())).colour(), copyColour);
+        QCOMPARE(static_cast<ColourWidget&>(groupWidget2->widgetAt(selectedPoints[i])).colour(), copyColour);
     }
 
     compareAreaPoints(groupWidget2, selectedPoints);
@@ -1074,8 +1077,8 @@ void ColourWidgetTests::copyPasteManyExternal() {
     delete groupWidget2;
 }
 
-void ColourWidgetTests::doubleClickWidgetAndDismissDialog(ColourGroupTestWidget& groupWidget, QPoint widgetPoint) {
-    ColourTestWidget& widget = (ColourTestWidget&)(groupWidget.widgetAt(widgetPoint.y(), widgetPoint.x()));
+void ColourWidgetTests::doubleClickWidgetAndDismissDialog(ColourGroupTestWidget& groupWidget, Position widgetPoint) {
+    ColourTestWidget& widget = (ColourTestWidget&)(groupWidget.widgetAt(widgetPoint));
 
     iColourDialog = &(groupWidget.colourDialog());
 

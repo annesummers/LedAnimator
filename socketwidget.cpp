@@ -15,6 +15,7 @@ SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item
     iAddLedAction(NULL) {
 
     setObjectName("SocketWidget");
+    setAcceptDrops(false);
 
     iAddLedAction = new QAction(tr("&Add led"), this);
     iAddLedAction->setStatusTip(tr("Add a new led"));

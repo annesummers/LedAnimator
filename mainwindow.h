@@ -26,7 +26,7 @@ public:
     void readSettings();
     void writeSettings();
 
-public slots:
+    inline QUndoStack& undoStack() { return *iUndoStack; }
 
 protected:
     void closeEvent(QCloseEvent *event);

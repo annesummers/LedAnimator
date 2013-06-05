@@ -83,7 +83,9 @@ HEADERS += \
     colourgroupgroupwidget.h \
     ledanimatoractionbase.h \
     leddetails.h \
-    framedetails.h
+    framedetails.h \
+    renumberleddialog.h \
+    ledgridgroupwidget.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -113,13 +115,16 @@ SOURCES += \
     colourgroupgroupwidget.cpp \
     ledanimatoractionbase.cpp \
     leddetails.cpp \
-    framedetails.cpp
+    framedetails.cpp \
+    renumberleddialog.cpp \
+    ledgridgroupwidget.cpp
 
 FORMS += \
     newanimation.ui \
     gridlistwidget.ui \
     leddetails.ui \
-    framedetails.ui
+    framedetails.ui \
+    renumberleddialog.ui
 
 RESOURCES += \
     LedAnimator.qrc

@@ -72,7 +72,8 @@ void Engine::setupUI() {
         iMainWindow = NULL;
     }
 
-    iMainWindow = new MainWindow(*this);
+    iMainWindow = new MainWindow(*this);    
+    iAnimation->setUndoStack(iMainWindow->undoStack());
 }
 
 void Engine::setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency) {
@@ -96,7 +97,6 @@ bool Engine::doLoad(QString fileName) {
 
         QSettings settings;
         settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
-
         iMainWindow->show();
 
         return true;

@@ -177,13 +177,13 @@ void AnimationTests::setupNewPopulated_data() {
     int numRows = DEFAULT_NUM_ROWS;
     int numColumns = DEFAULT_NUM_COLUMNS;
 
-    QList<QPoint> gridPositions;
+    QList<Position> gridPositions;
 
-    gridPositions.append(QPoint(0, 0));
-    gridPositions.append(QPoint(0, 1));
-    gridPositions.append(QPoint(1, 1));
-    gridPositions.append(QPoint(1, 2));
-    gridPositions.append(QPoint(2, 2));
+    gridPositions.append(Position(0, 0));
+    gridPositions.append(Position(1, 0));
+    gridPositions.append(Position(1, 1));
+    gridPositions.append(Position(2, 1));
+    gridPositions.append(Position(2, 2));
 
     int numLeds = gridPositions.count();
 
@@ -194,7 +194,7 @@ void AnimationTests::setupNewPopulated_data() {
     }
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
     }
 
     QTest::newRow("partial") << numRows
@@ -208,7 +208,7 @@ void AnimationTests::setupNewPopulated_data() {
 
     for(int i = 0; i < numColumns; i++) {
         for(int j = 0; j < numRows; j++) {
-            gridPositions.append(QPoint(i, j));
+            gridPositions.append(Position(i, j));
         }
     }
 
@@ -221,7 +221,7 @@ void AnimationTests::setupNewPopulated_data() {
     }
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
     }
 
     QTest::newRow("all") << numRows
@@ -256,7 +256,7 @@ void AnimationTests::setupNewPopulated() {
 
 
 void AnimationTests::play() {
-    iAnimation->play();
+    iAnimation->play(false);
 
     QCOMPARE(iAnimation->isPlaying(), true);
 
@@ -293,38 +293,31 @@ void AnimationTests::setCurrentFrame() {
 }
 
 void AnimationTests::ledAt_data() {
-    QTest::addColumn<int>("row");
-    QTest::addColumn<int>("column");
+    QTest::addColumn<Position>("position");
     QTest::addColumn<QString>("errorString");
 
-    QTest::newRow("zero row") << 0
-                              << iAnimation->numColumns() - 1
+    QTest::newRow("zero row") << Position(0, iAnimation->numColumns() - 1)
                               << "Animation::ledAt : Row is negative";
 
-    QTest::newRow("zero column") << iAnimation->numRows() - 1
-                                 << 0
+    QTest::newRow("zero column") << Position(iAnimation->numRows() - 1, 0)
                                  << "Animation::ledAt : Column is negative";
 
-    QTest::newRow("row too big") << iAnimation->numRows()
-                                 << iAnimation->numColumns() - 1
+    QTest::newRow("row too big") << Position(iAnimation->numRows(), iAnimation->numColumns() - 1)
                                  << "Animation::ledAt : Row is greater than number of rows";
 
-    QTest::newRow("column too big") << iAnimation->numRows() - 1
-                                    << iAnimation->numColumns()
+    QTest::newRow("column too big") << Position(iAnimation->numRows() - 1, iAnimation->numColumns())
                                     << "Animation::ledAt : Column is greater than number of columns";
 
-    QTest::newRow("valid") << iAnimation->numRows() - 1
-                           << iAnimation->numColumns() - 1
+    QTest::newRow("valid") << Position(iAnimation->numRows() - 1, iAnimation->numColumns() - 1)
                             << "";
 }
 
 void AnimationTests::ledAt() {
-    QFETCH(int, row);
-    QFETCH(int, column);
+    QFETCH(Position, position);
     QFETCH(QString, errorString);
 
     try {
-        iAnimation->ledAt(row, column);
+        iAnimation->ledAt(position);
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);

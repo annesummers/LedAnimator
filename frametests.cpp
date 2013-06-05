@@ -24,7 +24,7 @@ FrameTests::FrameTests(QObject *parent) :
 void FrameTests::initTestCase() {
     iAnimation = new Animation(*(new Engine(this)));
 
-    QList<QPoint> gridPositions;
+    QList<Position> gridPositions;
     QList<int> positions;
 
     int numRows = DEFAULT_NUM_ROWS;
@@ -32,7 +32,7 @@ void FrameTests::initTestCase() {
 
     for(int i = 0; i < numColumns; i++) {
         for(int j = 0; j < numRows; j++) {
-            gridPositions.append(QPoint(i, j));
+            gridPositions.append(Position(i, j));
         }
     }
 
@@ -44,7 +44,7 @@ void FrameTests::initTestCase() {
     int numLeds = gridPositions.count();
 
     for(int i = 0; i < numLeds; i++) {
-        positions.replace((gridPositions.at(i).y()*numColumns) + gridPositions.at(i).x(), i + INITIAL_LED);
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
     }
 
     iAnimation->setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
@@ -65,7 +65,7 @@ void FrameTests::setColour() {
     QFETCH(QColor, colour);
     QFETCH(QString, errorString);
 
-    Led* led = iAnimation->ledAt(0, 0);
+    Led* led = iAnimation->ledAt(Position(0, 0));
 
     try {
         Frame& frame = led->frameAt(INITIAL_FRAME);

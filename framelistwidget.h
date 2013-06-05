@@ -4,6 +4,7 @@
 #include <QtGui>
 
 #include "colourgroupwidget.h"
+#include "constants.h"
 
 namespace AnimatorModel {
 class Led;
@@ -39,18 +40,17 @@ protected:
     bool validKeyPress(Qt::Key key);
     void resizeEvent(QResizeEvent *);
 
-    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void cloneItem(int fromGroup, Position fromPosition, Position toPosition);
 
-    inline void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
-    inline void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    inline void moveItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
+    inline void pasteItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
 
-    SelectableWidget& widgetAt(int row, int column);
+    SelectableWidget& widgetAt(Position position);
     Position widgetPosition(SelectableWidget &widget);
 
 private:
-
     QList<FrameWidget*> iFramesList;
 
     const Led& iLed;

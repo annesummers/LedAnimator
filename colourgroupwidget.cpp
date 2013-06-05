@@ -43,7 +43,7 @@ void ColourGroupWidget::doSetColour(QColor colour) {
 // fading ----------------------------
 
 void ColourGroupWidget::fade() {
-    //fadeTo(static_cast<ColourWidget&>(widgetAt(lastSelectedRow(), lastSelectedColumn())).colour());
+    fadeTo(static_cast<ColourWidget&>(widgetAt(lastSelectedPosition())).colour());
 }
 
 void ColourGroupWidget::fadeTo(QColor fadeToColour) {
@@ -61,21 +61,21 @@ void ColourGroupWidget::setupFade(QColor fadeToColour) {
     int rowSpan;
     int columnSpan;
 
-    /*if(firstSelectedRow() > lastSelectedRow()) {
-        rowSpan = firstSelectedRow() - lastSelectedRow() + 1;
+    if(firstSelectedPosition().row() > lastSelectedPosition().row()) {
+        rowSpan = firstSelectedPosition().row() - lastSelectedPosition().row() + 1;
         iFadeParameters->rowIncrement = false;
     } else {
-        rowSpan = lastSelectedRow() - firstSelectedRow() + 1;
+        rowSpan = lastSelectedPosition().row() - firstSelectedPosition().row() + 1;
         iFadeParameters->rowIncrement = true;
     }
 
-    if(firstSelectedColumn() > lastSelectedColumn()) {
-        columnSpan =  firstSelectedColumn() - lastSelectedColumn() + 1;
+    if(firstSelectedPosition().column() > lastSelectedPosition().column()) {
+        columnSpan =  firstSelectedPosition().column() - lastSelectedPosition().column() + 1;
         iFadeParameters->columnIncrement = false;
     } else {
-        columnSpan = lastSelectedColumn() - firstSelectedColumn() + 1;
+        columnSpan = lastSelectedPosition().column() - firstSelectedPosition().column() + 1;
         iFadeParameters->columnIncrement = true;
-    }*/
+    }
 
     iFadeParameters->maxWidgets = qMin(rowSpan, columnSpan);
     iFadeParameters->increments = rowSpan + columnSpan - 2;  // TODO why -2?
@@ -92,11 +92,8 @@ void ColourGroupWidget::setupFade(QColor fadeToColour) {
         iFadeParameters->nextRow = iFadeParameters->increments;
     }
 
-    /*iFadeParameters->firstRow = firstSelectedRow();
-    iFadeParameters->firstColumn = firstSelectedColumn();
-
-    iFadeParameters->lastRow = lastSelectedRow();
-    iFadeParameters->lastColumn = lastSelectedColumn();*/
+    iFadeParameters->firstPosition = firstSelectedPosition();
+    iFadeParameters->lastPosition = lastSelectedPosition();
 
     iFadeParameters->maxWidgetsLineCount = 0;
 
@@ -110,13 +107,13 @@ void ColourGroupWidget::setupFade(QColor fadeToColour) {
 
     iFadeParameters->numWidgets = 0;
 
-   // ColourWidget& fromWidget = static_cast<ColourWidget&>(widgetAt(firstSelectedRow(), firstSelectedColumn()));
-   // QColor fromColour = fromWidget.colour();
+    ColourWidget& fromWidget = static_cast<ColourWidget&>(widgetAt(firstSelectedPosition()));
+    QColor fromColour = fromWidget.colour();
 
-   /* iFadeCalculator = new FadeCalculator(reinterpret_cast<QObject*>(this),
+    iFadeCalculator = new FadeCalculator(reinterpret_cast<QObject*>(this),
                                 fromColour,
                                 fadeToColour,
-                                iFadeParameters->increments);*/
+                                iFadeParameters->increments);
 
     connect(iFadeCalculator, SIGNAL(colourCalculated(QColor)), this, SLOT(colourCalculated(QColor)));
     connect(iFadeCalculator, SIGNAL(fadeComplete()), this, SLOT(fadeComplete()));
@@ -148,7 +145,7 @@ void ColourGroupWidget::colourCalculated(QColor colour) {
         columnIncrement ? column++ : column--) {
 
        // qDebug("widget at %d,%d", row, column);
-        static_cast<ColourWidget&>(widgetAt(row, column)).setColour(colour);
+        static_cast<ColourWidget&>(widgetAt(Position(row, column))).setColour(colour);
     }
 
     if(iFadeParameters->columnIncrement) {
@@ -189,18 +186,18 @@ void ColourGroupWidget::calculateRowStartAndEnd(int* rowStart, int* rowEnd) {
     int end;
 
     if(iFadeParameters->rowIncrement) {
-        start = iFadeParameters->nextRow + iFadeParameters->firstRow;
-        if(start > iFadeParameters->lastRow) {
-            start = iFadeParameters->lastRow;
+        start = iFadeParameters->nextRow + iFadeParameters->firstPosition.row();
+        if(start > iFadeParameters->lastPosition.row()) {
+            start = iFadeParameters->lastPosition.row();
         }
       //  qDebug("rowStart is %d", start);
 
         end = start - iFadeParameters->numWidgets + 1;
       //  qDebug("rowEnd is %d", end);
     } else {
-        end = iFadeParameters->nextRow + iFadeParameters->lastRow;
-        if(end > iFadeParameters->firstRow) {
-            end = iFadeParameters->firstRow;
+        end = iFadeParameters->nextRow + iFadeParameters->lastPosition.row();
+        if(end > iFadeParameters->firstPosition.row()) {
+            end = iFadeParameters->firstPosition.row();
         }
      //   qDebug("rowEnd is %d", end);
 
@@ -217,18 +214,18 @@ void ColourGroupWidget::calculateColumnStartAndEnd(int* columnStart, int* column
     int end;
 
     if(iFadeParameters->columnIncrement) {
-        end = iFadeParameters->nextColumn + iFadeParameters->firstColumn;
-        if(end > iFadeParameters->lastColumn) {
-            end = iFadeParameters->lastColumn;
+        end = iFadeParameters->nextColumn + iFadeParameters->firstPosition.column();
+        if(end > iFadeParameters->lastPosition.column()) {
+            end = iFadeParameters->lastPosition.column();
         }
        // qDebug("columnEnd is %d", end);
 
         start = end - iFadeParameters->numWidgets + 1;
       //  qDebug("columnStart is %d", start);
     } else {
-        start = iFadeParameters->nextColumn + iFadeParameters->lastColumn;
-        if(start > iFadeParameters->firstColumn) {
-            start = iFadeParameters->firstColumn;
+        start = iFadeParameters->nextColumn + iFadeParameters->lastPosition.column();
+        if(start > iFadeParameters->firstPosition.column()) {
+            start = iFadeParameters->firstPosition.column();
         }
        // qDebug("columnStart is %d", start);
 

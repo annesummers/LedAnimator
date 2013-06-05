@@ -57,6 +57,8 @@ private:
 
     bool handleDragDropEvent(QDropEvent* event);
 
+    inline QString mimeType() const { return FRAME_MIME_TYPE; }
+
     Animation&              iAnimation;
 
     int iFramesListX;
@@ -68,9 +70,7 @@ private:
     QToolButton*            iCloseAll;
 
     QHash<int, LedDetails*> iLedDetails;
-    QHash<int, Led*>        iShownLeds;
 
-    bool iClosed;
     int iResize;
 };
 

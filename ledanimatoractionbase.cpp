@@ -18,166 +18,282 @@ LedAnimatorCommandBase::LedAnimatorCommandBase(Animation &animation, QUndoComman
 {
 }
 
-AddLedCommand::AddLedCommand(Animation &animation, int row, int column) :
+AddLedCommand::AddLedCommand(Animation &animation, Position position) :
     LedAnimatorCommandBase(animation),
-    iRow(row),
-    iColumn(column) {
+    iPosition(position) {
 }
 
 void AddLedCommand::redo() {
-    iAnimation.addNewLed(iRow, iColumn);
+    iAnimation.doAddNewLed(iPosition);
 
-    setText(QObject::tr("Add led %1,%2").arg(iRow).arg(iColumn));
+    setText(QObject::tr("Add led %1,%2").arg(iPosition.row()).arg(iPosition.column()));
 }
 
 void AddLedCommand::undo() {
-    iAnimation.deleteLed(iRow, iColumn);
+    iAnimation.doDeleteLed(iPosition, true);
 
-    setText(QObject::tr("Add led %1,%2").arg(iRow).arg(iColumn));
+    setText(QObject::tr("Add led %1,%2").arg(iPosition.row()).arg(iPosition.column()));
 }
 
 //bool AddLedCommand::mergeWith(const QUndoCommand *command) {
 
 //}
 
-DeleteLedCommand::DeleteLedCommand(Animation &animation, int row, int column, int number)  :
+DeleteLedCommand::DeleteLedCommand(Animation &animation, Led& led, bool deleteObject)  :
     LedAnimatorCommandBase(animation),
-    iRow(row),
-    iColumn(column),
-    iNumber(number) {
+    iOldLed(led),
+    iDeleteObject(deleteObject){
 }
 
 void DeleteLedCommand::redo() {
-    Led* led = iAnimation.ledAt(iNumber);
+    iAnimation.doDeleteLed(iOldLed.position(), iDeleteObject);
 
-    for(int i = INITIAL_FRAME; i <= iAnimation.numFrames(); i++) {
-        iFrames.append(led->frameAt(INITIAL_FRAME).colour());
-    }
-
-    iAnimation.deleteLed(iRow, iColumn);
-
-    setText(QObject::tr("Delete led %1,%2").arg(iRow).arg(iColumn));
+    setText(QObject::tr("Delete led %1,%2").arg(iOldLed.position().row()).arg(iOldLed.position().column()));
 }
 
 void DeleteLedCommand::undo() {
-    iAnimation.addNewLed(iRow, iColumn, iNumber);
-    Led* led = iAnimation.ledAt(iNumber);
-
-    for(int i = INITIAL_FRAME; i <= iAnimation.numFrames(); i++) {
-        led->frameAt(i).setColour(iFrames.at(i-INITIAL_FRAME));
+    if(!iDeleteObject) {
+        iAnimation.deleteLedFromClipboard(iOldLed.number());
     }
 
-    setText(QObject::tr("Delete led %1,%2").arg(iRow).arg(iColumn));
+    iAnimation.doAddNewLed(iOldLed.position(), iOldLed.number());
+
+    Led* led = iAnimation.ledAt(iOldLed.number());
+
+    led->copyFrames(iOldLed);
+
+    setText(QObject::tr("Delete led %1,%2").arg(iOldLed.position().row()).arg(iOldLed.position().column()));
 }
 
 //bool DeleteLedCommand::mergeWith(const QUndoCommand *command) {
 
 //}
 
-CloneLedCommand::CloneLedCommand(Animation &animation, int oldRow, int oldColumn, int newRow, int newColumn) :
+CloneLedCommand::CloneLedCommand(Animation &animation, Position fromPosition, Position toPosition) :
     LedAnimatorCommandBase(animation),
-    iOldRow(oldRow),
-    iOldColumn(oldColumn),
-    iNewRow(newRow),
-    iNewColumn(newColumn) {
+    iFromPosition(fromPosition),
+    iToPosition(toPosition),
+    iOldLed(NULL) {
 }
 
 void CloneLedCommand::redo() {
-    iAnimation.cloneLed(iOldRow, iOldColumn, iNewRow, iNewColumn);
+    iOldLed = iAnimation.doCloneLed(iFromPosition, iToPosition);
 
-    setText(QObject::tr("Copy led %1,%2 to %3, %4").arg(iOldRow).arg(iOldColumn).arg(iNewRow).arg(iNewColumn));
+    setText();
 }
 
 void CloneLedCommand::undo() {
-    iAnimation.deleteLed(iNewRow, iNewColumn);
+    iAnimation.doDeleteLed(iToPosition, true);
 
-    setText(QObject::tr("Copy led %1,%2 to %3, %4").arg(iOldRow).arg(iOldColumn).arg(iNewRow).arg(iNewColumn));
+    if(iOldLed != NULL) {
+        iAnimation.doAddNewLed(iToPosition, iOldLed->number());
+        Led* led = iAnimation.ledAt(iOldLed->number());
+
+        led->copyFrames(*iOldLed);
+        delete iOldLed;
+    }
+
+    setText();
+}
+
+void CloneLedCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Copy led %1,%2 to %3, %4").arg(iFromPosition.row()).arg(iFromPosition.column()).arg(iToPosition.row()).arg(iToPosition.column()));
 }
 
 //bool CloneLedCommand::mergeWith(const QUndoCommand *command) {
 
 //}
 
-MoveLedCommand::MoveLedCommand(Animation &animation, int oldRow, int oldColumn, int newRow, int newColumn) :
+PasteLedCommand::PasteLedCommand(Animation &animation, Position fromPosition, Position toPosition) :
     LedAnimatorCommandBase(animation),
-    iOldRow(oldRow),
-    iOldColumn(oldColumn),
-    iNewRow(newRow),
-    iNewColumn(newColumn) {
+    iFromPosition(fromPosition),
+    iToPosition(toPosition),
+    iFromLed(NULL),
+    iToLed(NULL){
+}
+
+void PasteLedCommand::redo() {
+    iAnimation.doPasteLed(iFromPosition, iToPosition, &iFromLed, &iToLed);
+
+    setText();
+}
+
+void PasteLedCommand::undo() {
+    iFromLed->move(iFromPosition);
+    iAnimation.addLedToClipboard(iFromLed);
+    iAnimation.doDeleteLed(iToPosition, true);
+
+    if(iToLed != NULL) {
+        iAnimation.doAddNewLed(iToPosition, iToLed->number());
+        Led* led = iAnimation.ledAt(iToLed->number());
+
+        led->copyFrames(*iToLed);
+        delete iToLed;
+    }
+
+    setText();
+}
+
+void PasteLedCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Paste led %1,%2").arg(iToPosition.row()).arg(iToPosition.column()));
+}
+
+RenumberLedCommand::RenumberLedCommand(Animation &animation, Position position, int oldNumber, int newNumber) :
+    LedAnimatorCommandBase(animation),
+    iPosition(position),
+    iOldNumber(oldNumber),
+    iNewNumber(newNumber) {
+}
+
+void RenumberLedCommand::redo() {
+    iAnimation.doRenumberLed(iPosition, iNewNumber);
+
+    setText();
+}
+
+void RenumberLedCommand::undo() {
+    iAnimation.doRenumberLed(iPosition, iOldNumber);
+
+    setText();
+}
+
+void RenumberLedCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Renumber led %1,%2 from %3 to %4").arg(iPosition.row()).arg(iPosition.column()).arg(iOldNumber).arg(iNewNumber));
+}
+
+SetFrameColourCommand::SetFrameColourCommand(Animation &animation, Frame& frame, QColor oldColour, QColor newColour) :
+    LedAnimatorCommandBase(animation),
+    iFrame(frame),
+    iOldColour(oldColour),
+    iNewColour(newColour) {
+}
+
+void SetFrameColourCommand::redo() {
+    iFrame.doSetColour(iNewColour);
+
+    setText();
+}
+
+void SetFrameColourCommand::undo() {
+    iFrame.doSetColour(iOldColour);
+
+    setText();
+}
+
+void SetFrameColourCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Set frame colour"));
+}
+
+
+FadeCommand::FadeCommand(Animation &animation) :
+    LedAnimatorCommandBase(animation) {
+}
+
+void FadeCommand::redo() {
+    setText();
+}
+
+void FadeCommand::undo() {
+
+    setText();
+}
+
+void FadeCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Fade"));
+}
+
+FadeToCommand::FadeToCommand(Animation &animation) :
+    LedAnimatorCommandBase(animation) {
+}
+
+void FadeToCommand::redo() {
+
+    setText();
+}
+
+void FadeToCommand::undo() {
+    setText();
+}
+
+void FadeToCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Fade to"));
+}
+
+
+/*MoveLedCommand::MoveLedCommand(Animation &animation, Position fromPosition, Position toPosition) :
+    LedAnimatorCommandBase(animation),
+    iFromPosition(fromPosition),
+    iToPosition(toPosition) {
 }
 
 void MoveLedCommand::redo() {
-    iAnimation.moveLed(iOldRow, iOldColumn, iNewRow, iNewColumn);
+    iAnimation.moveLed(iFromPosition, iToPosition);
 
-    setText(QObject::tr("Move led %1,%2 to %3, %4").arg(iOldRow).arg(iOldColumn).arg(iNewRow).arg(iNewColumn));
+    setText();
 }
 
 void MoveLedCommand::undo() {
-    iAnimation.moveLed(iNewRow, iNewColumn, iOldRow, iOldColumn);
+    iAnimation.moveLed(iToPosition, iFromPosition);
 
-    setText(QObject::tr("Move led %1,%2 to %3, %4").arg(iOldRow).arg(iOldColumn).arg(iNewRow).arg(iNewColumn));
+    setText();
+}
+
+void MoveLedCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Move led %1,%2 to %3, %4").arg(iFromPosition.row()).arg(iFromPosition.column()).arg(iToPosition.row()).arg(iToPosition.column()));
 }
 
 //bool MoveLedCommand::mergeWith(const QUndoCommand *command) {
 
 //}
 
-CutLedCommand::CutLedCommand(Animation &animation, int row, int column) :
+CutLedCommand::CutLedCommand(Animation &animation, Led& cutLed) :
     LedAnimatorCommandBase(animation),
-    iRow(row),
-    iColumn(column){
+    iCutLed(cutLed){
 }
 
 void CutLedCommand::redo() {
-    iAnimation.moveLedToClipboard(iRow, iColumn);
+    iAnimation.moveLedToClipboard(iCutLed.position());
 
-    setText(QObject::tr("Cut led %1,%2").arg(iRow).arg(iColumn));
+    setText();
 }
 
 void CutLedCommand::undo() {
-   // iAnimation.moveLedToClipboard(iNewRow, iNewColumn);
+   // iAnimation.addLedToClipboard(Led& newLed);
+    Led* newLed = new Led(&iAnimation, iAnimation, iCutLed.number(), iCutLed.position());
+    newLed->copyFrames(iCutLed);
 
-    setText(QObject::tr("Cut led %1,%2").arg(iRow).arg(iColumn));
+    iAnimation.addLed(*newLed, newLed->number());
+    setText();
+}
+
+void CutLedCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Cut led %1,%2").arg(iCutLed.position().row()).arg(iCutLed.position().column()));
 }
 
 //bool CutLedCommand::mergeWith(const QUndoCommand *command) {
 
 //}
 
-CopyLedCommand::CopyLedCommand(Animation &animation, int row, int column) :
+CopyLedCommand::CopyLedCommand(Animation &animation, Led& led) :
     LedAnimatorCommandBase(animation),
-    iRow(row),
-    iColumn(column){
+    iCopyLed(led){
 }
 
 void CopyLedCommand::redo() {
-    iAnimation.moveLedToClipboard(iRow, iColumn);
+    iAnimation.moveLedToClipboard(iCopyLed.position());
 
-    setText(QObject::tr("Copy led %1,%2").arg(iRow).arg(iColumn));
+    setText();
 }
 
 void CopyLedCommand::undo() {
    // iAnimation.moveLedToClipboard(iNewRow, iNewColumn);
 
-    setText(QObject::tr("Copy led %1,%2").arg(iRow).arg(iColumn));
+    setText();
+}
+
+void CopyLedCommand::setText() {
+    QUndoCommand::setText(QObject::tr("Copy led %1,%2").arg(iCopyLed.position().row()).arg(iCopyLed.position().column()));
 }
 
 //bool CopyLedCommand::mergeWith(const QUndoCommand *command) {
-
-//}
-
-RenumberLedCommand::RenumberLedCommand(Animation &animation) :
-    LedAnimatorCommandBase(animation) {
-}
-
-SetFrameColourCommand::SetFrameColourCommand(Animation &animation) :
-    LedAnimatorCommandBase(animation) {
-}
-
-FadeCommand::FadeCommand(Animation &animation) :
-    LedAnimatorCommandBase(animation) {
-}
-
-FadeToCommand::FadeToCommand(Animation &animation) :
-    LedAnimatorCommandBase(animation) {
-}
+*/

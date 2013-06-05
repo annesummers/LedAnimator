@@ -24,8 +24,8 @@ class ColourTestObject : public Selectable {
     Q_OBJECT
 
 public :
-    explicit ColourTestObject(QObject* parent, int number) :
-        Selectable(parent, number) { }
+    explicit ColourTestObject(QObject* parent, Animation& animation, int number) :
+        Selectable(parent, animation, number) { }
 
     QColor iColour;
 };
@@ -44,7 +44,7 @@ public:
     Qt::DropAction  defaultDropAction() const { return Qt::IgnoreAction; }
     Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
-    inline QMimeData* mimeData(bool cut)  { return SelectableWidget::mimeData(cut); }
+    //inline QMimeData* mimeData(bool cut)  { return SelectableWidget::mimeData(cut); }
 
     inline const QColor colour() const { return static_cast<ColourTestObject&>(iItem).iColour; }
     inline void setColour(QColor colour) { static_cast<ColourTestObject&>(iItem).iColour = colour; }
@@ -54,18 +54,20 @@ class ColourGroupTestWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    ColourGroupTestWidget(QWidget *parent, int numRows, int numColumns, ColourGroupGroupWidget& groupGroupWidget, int groupNumber);
+    ColourGroupTestWidget(QWidget *parent, Animation &animation, int numRows, int numColumns,
+                          ColourGroupGroupWidget& groupGroupWidget, int groupNumber);
 
-    SelectableWidget& widgetAt(int row, int column);
-    void widgetPosition(SelectableWidget& widget, int* row, int* column);
+    SelectableWidget& widgetAt(Position position);
+    Position widgetPosition(SelectableWidget& widget);
+
     bool validKeyPress(Qt::Key key);
 
-    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
-    void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    void moveItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
+    void pasteItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
 
-    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void cloneItem(int fromGroup, Position fromPosition, Position toPosition);
 
     QVector<WidgetVector*>*  iWidgetArray;
 
@@ -74,9 +76,18 @@ public:
     inline void startFade() { ColourGroupWidget::startFade(); }
 };
 
+class ColourGroupGroupTestWidget : public ColourGroupGroupWidget {
+    Q_OBJECT
+
+public:
+    ColourGroupGroupTestWidget() {}
+
+    inline QString mimeType() const { return TEST_MIME_TYPE; }
+};
+
 struct FadeData {
     IntList     fadeSpread;
-    PointList   fadePoints;
+    PositionList   fadePoints;
     QList<QColor> fadeColours;
 };
 
@@ -122,13 +133,15 @@ private slots:
     void copyPasteManyExternal();
 
 private:
-    void doubleClickWidgetAndDismissDialog(ColourGroupTestWidget &groupWidget, QPoint widgetPoint);
+    void doubleClickWidgetAndDismissDialog(ColourGroupTestWidget &groupWidget, Position widgetPoint);
 
     bool waitForSignal(QObject *sender,
                        const char *signal,
                        const char* slot,
                        const char* timeoutSlot,
                        int timeout = 1000);
+
+    Animation* iAnimation;
 
     QColorDialog* iColourDialog;
     ColourGroupTestWidget* iGroupWidget;

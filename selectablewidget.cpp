@@ -41,40 +41,21 @@ SelectableWidget::~SelectableWidget() {
    // qDebug("delete widget");
 }
 
-QMimeData* SelectableWidget::mimeData(bool cut) {
-    QMimeData *data = new QMimeData;
-    data->setData(mimeType(), iSelectableGroup.writeMimeData(cut));
-
-    return data;
-}
-
-void SelectableWidget::cut() {
-    clearClipboard();
-
-    QApplication::clipboard()->setMimeData(mimeData(true));
+void SelectableWidget::cut() {   
+    iSelectableGroup.cutSelected();
 }
 
 void SelectableWidget::copy() {
-    clearClipboard();
-
-    QApplication::clipboard()->setMimeData(mimeData(false));
+    iSelectableGroup.copySelected();
 }
 
 void SelectableWidget::paste(bool wrap) {
-    const QClipboard *clipboard = QApplication::clipboard();
-
-    if(clipboard->mimeData()->hasFormat(mimeType())) {
-        bool wasCut = iSelectableGroup.handleMimeData(clipboard->mimeData()->data(mimeType()), *this, wrap);//, move);
-
-        if(wasCut) {
-            QApplication::clipboard()->setMimeData(mimeData(false));
-        }
-    }
+    iSelectableGroup.paste(*this, wrap);
 }
 
 Qt::DropAction SelectableWidget::handleDragDropEvent(QDropEvent* event) {
     Qt::DropAction action = Qt::IgnoreAction;
-    if (event->mimeData()->hasFormat(mimeType())) {
+    if (event->mimeData()->hasFormat(iSelectableGroup.mimeType())) {
         if (event->source() !=  NULL &&
             event->source() != this) {
             Qt::KeyboardModifiers modifiers = QApplication::keyboardModifiers();
@@ -104,17 +85,9 @@ void SelectableWidget::addCutAction(QMenu* menu) {
 
 void SelectableWidget::addPasteActions(QMenu* menu) {
     const QClipboard *clipboard = QApplication::clipboard();
-    if(clipboard->mimeData()->hasFormat(mimeType())) {
+    if(clipboard->mimeData()->hasFormat(iSelectableGroup.mimeType())) {
         menu->addAction(iPasteWrapAction);
         menu->addAction(iPasteTruncateAction);
-    }
-}
-
-void SelectableWidget::clearClipboard() {
-    const QClipboard *clipboard = QApplication::clipboard();
-
-    if(clipboard->mimeData()->hasFormat(mimeType())) {
-        QApplication::clipboard()->clear();
     }
 }
 
@@ -239,7 +212,7 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
     }
 
     QDrag *drag = new QDrag(this);
-    drag->setMimeData(mimeData(false));
+    drag->setMimeData(iSelectableGroup.mimeData(false));
     drag->setHotSpot(pos());
 
     drag->exec(dragActions());
@@ -269,7 +242,7 @@ void SelectableWidget::dropEvent(QDropEvent *event) {
    // qDebug("singleWidget drop");
     Qt::DropAction action = handleDragDropEvent(event);
     if(action != Qt::IgnoreAction) {
-        iSelectableGroup.handleMimeData(event->mimeData()->data(mimeType()), *this, false, action == Qt::MoveAction);
+        iSelectableGroup.handleMimeData(event->mimeData()->data(iSelectableGroup.mimeType()), *this, false, action == Qt::MoveAction);
 
         update();
     }
@@ -292,11 +265,11 @@ void SelectableWidget::contextMenuEvent(QContextMenuEvent *event) {
 
     if(canCopy()) {
         menu.addAction(iCopyAction);
+    }
 
-        if(QApplication::clipboard()->mimeData()->hasFormat(mimeType())) {
-            menu.addAction(iPasteTruncateAction);
-            menu.addAction(iPasteWrapAction);
-        }
+    if(QApplication::clipboard()->mimeData()->hasFormat(iSelectableGroup.mimeType())) {
+        menu.addAction(iPasteTruncateAction);
+        menu.addAction(iPasteWrapAction);
     }
 
     addExtraActions(&menu);

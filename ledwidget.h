@@ -21,8 +21,6 @@ class LedWidget : public ColourWidget {
 public:
     explicit LedWidget(QWidget* parent, Animation &animation, ColourGroupWidget& ledGroup, Led& led);
 
-   // void hideLed();
-
     inline Led &led() const { return static_cast<Led&>(iItem); }
 
     void setColour(QColor colour) {led().setCurrentColour(colour); }
@@ -32,12 +30,11 @@ private slots:
     void renumber();
     void setGroup();
     void deleteLed();
+    void ledUpdated();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
-
-    inline QString mimeType() const { return LED_MIME_TYPE; }
 
     inline Qt::DropActions dropActions() const { return Qt::CopyAction | Qt::MoveAction; }
     inline Qt::DropActions dragActions() const { return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction; }

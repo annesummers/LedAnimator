@@ -6,6 +6,8 @@
 
 #include "selectablewidgettestbase.h"
 
+#include "testconstants.h"
+
 using namespace AnimatorUi;
 
 namespace AnimatorTest {
@@ -25,7 +27,7 @@ public:
     inline Qt::DropAction  defaultDropAction() const { return Qt::IgnoreAction; }
     inline Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
-    inline QMimeData* mimeData(bool cut)  { return SelectableWidget::mimeData(cut); }
+  //  inline QMimeData* mimeData(bool cut)  { return SelectableWidget::mimeData(cut); }
 };
 
 class SelectableTestWidget1 : public SelectableTestWidget {
@@ -52,24 +54,34 @@ class SelectableGroupTestWidget : public SelectableGroupWidget {
     Q_OBJECT
 
 public:
-    SelectableGroupTestWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget &groupGroupWidget, int groupNumber);
+    SelectableGroupTestWidget(QWidget *parent, Animation &animation, int numRows, int numColumns,
+                              SelectableGroupGroupWidget &groupGroupWidget, int groupNumber);
 
-    SelectableWidget& widgetAt(int row, int column);
-    virtual void widgetPosition(SelectableWidget& widget, int* row, int* column);
+    SelectableWidget& widgetAt(Position position);
+    virtual Position widgetPosition(SelectableWidget& widget);
 
     bool validKeyPress(Qt::Key key);
 
-    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
-    void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
-    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn)
-        { Q_UNUSED(fromGroup); Q_UNUSED(fromRow); Q_UNUSED(fromColumn); Q_UNUSED(toRow); Q_UNUSED(toColumn); }
+    void moveItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
+    void pasteItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
+    void cloneItem(int fromGroup, Position fromPosition, Position toPosition)
+        { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
 
     QVector<WidgetVector*>*  iWidgetArray;
 
     inline void selectDirection(Qt::Key direction) { SelectableGroupWidget::selectDirection(direction); }
     inline const QList<SelectableWidget*> selectedItems() const { return SelectableGroupWidget::selectedItems(); }
+};
+
+class SelectableGroupGroupTestWidget : public SelectableGroupGroupWidget {
+    Q_OBJECT
+
+public:
+    SelectableGroupGroupTestWidget() : SelectableGroupGroupWidget(NULL) {}
+
+    inline QString mimeType() const { return TEST_MIME_TYPE; }
 };
 
 class SelectableWidgetTests : public SelectableWidgetTestBase {
@@ -139,6 +151,8 @@ private slots:
 private:
     void areaData();
     void directionData();
+
+    Animation* iAnimation;
 };
 }
 

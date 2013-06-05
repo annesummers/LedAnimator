@@ -24,7 +24,6 @@ AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &anima
     iFramesListWidth(0),
     iFrameSlider(NULL),
     iGridLayout(NULL),
-    iClosed(false),
     iResize(false){
 
     QHBoxLayout* horizontalLayout = new QHBoxLayout(this);
@@ -174,7 +173,7 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
 }
 
 void AnimationDetailsWidget::addLed(int row, int column) {
-    Led* led = iAnimation.ledAt(row, column);
+    Led* led = iAnimation.ledAt(Position(row, column));
 
     if(led == NULL) {
         throw IllegalArgumentException("AnimationDetailsWidget::addLed : NULL led");
@@ -219,7 +218,7 @@ void AnimationDetailsWidget::ledDeleted(int row, int column, int ledNumber) {
 
 void AnimationDetailsWidget::ledRenumbered(int row, int column, int oldNumber) {
     if(iLedDetails.contains(oldNumber)) {
-        Led* led = iAnimation.ledAt(row, column);
+        Led* led = iAnimation.ledAt(Position(row, column));
 
         if(led == NULL) {
             throw IllegalArgumentException("AnimationDetailsWidget::addLed : NULL led");

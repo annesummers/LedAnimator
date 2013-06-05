@@ -8,8 +8,9 @@
 
 using namespace AnimatorModel;
 
-Selectable::Selectable(QObject *parent, int number) :
+Selectable::Selectable(QObject *parent, Animation& animation, int number) :
     QObject(parent),
+    iAnimation(animation),
     iIsSelected(false),
     iNumber(number) {
 }

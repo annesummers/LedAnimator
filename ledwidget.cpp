@@ -20,8 +20,9 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
 
     setObjectName("LedWidget");
     setMouseTracking(true);
+    setAcceptDrops(false);
 
-    connect(&led, SIGNAL(ledUpdated()), this, SLOT(updated()));
+    connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
     connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
 
     iRenumberAction = new QAction(tr("&Renumber..."), this);
@@ -50,6 +51,12 @@ void LedWidget::setGroup() {
 
 void LedWidget::deleteLed() {
     gridWidget().deleteSelectedLeds();
+}
+
+void LedWidget::ledUpdated() {
+    updated();
+
+    gridWidget().setCurrentLed(led());
 }
 
 // from SelectableWidget -----------------------

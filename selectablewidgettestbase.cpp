@@ -8,47 +8,47 @@
 
 using namespace AnimatorTest;
 
-SelectableWidgetTestBase::SelectableWidgetTestBase(QObject *parent) :
+SelectableWidgetTestBase::SelectableWidgetTestBase(QObject* parent) :
     QObject(parent)
 {
 }
 
-void SelectableWidgetTestBase::calculateAreaPoints(QList<QPoint>& selectedPoints, QPoint firstSelected, QPoint secondSelected) {
+void SelectableWidgetTestBase::calculateAreaPoints(QList<Position>& selectedPoints, Position firstSelected, Position secondSelected) {
     int leftColumn;
     int rightColumn;
     int topRow;
     int bottomRow;
 
-    if(firstSelected.y() > secondSelected.y()) {
-        topRow = secondSelected.y();
-        bottomRow = firstSelected.y();
+    if(firstSelected.row() > secondSelected.row()) {
+        topRow = secondSelected.row();
+        bottomRow = firstSelected.row();
     } else {
-        topRow = firstSelected.y();
-        bottomRow = secondSelected.y();
+        topRow = firstSelected.row();
+        bottomRow = secondSelected.row();
     }
 
-    if(firstSelected.x() > secondSelected.x()) {
-        leftColumn = secondSelected.x();
-        rightColumn = firstSelected.x();
+    if(firstSelected.column() > secondSelected.column()) {
+        leftColumn = secondSelected.column();
+        rightColumn = firstSelected.column();
     } else {
-        leftColumn = firstSelected.x();
-        rightColumn = secondSelected.x();
+        leftColumn = firstSelected.column();
+        rightColumn = secondSelected.column();
     }
 
     for(int i = topRow; i < bottomRow + 1; i++) {
         for(int j = leftColumn; j < rightColumn + 1; j++) {
-            selectedPoints.append(QPoint(j, i));
+            selectedPoints.append(Position(i, j));
         }
     }
 }
 
-void SelectableWidgetTestBase::compareAreaPoints(SelectableGroupWidget* groupWidget, QList<QPoint> selectedPoints) {
+void SelectableWidgetTestBase::compareAreaPoints(SelectableGroupWidget* groupWidget, QList<Position> selectedPoints) {
     QList<SelectableWidget*> selectedList = groupWidget->selectedItems();
 
     QCOMPARE(selectedList.count(), selectedPoints.count());
 
     for(int i = 0; i < selectedPoints.count(); i++) {
-        SelectableWidget& widget = groupWidget->widgetAt(selectedPoints.at(i).y(), selectedPoints.at(i).x());
+        SelectableWidget& widget = groupWidget->widgetAt(selectedPoints.at(i));
 
         bool contains = selectedList.contains(&widget);
         QCOMPARE(contains, true);

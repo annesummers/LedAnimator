@@ -9,7 +9,6 @@
 
 #include <QWidget>
 #include <QGridLayout>
-#include <QPoint>
 #include <QRect>
 #include <QUndoStack>
 
@@ -30,7 +29,7 @@ class LedGridWidget : public ColourGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedGridWidget(QWidget* parent, Animation &animation, QUndoStack &undoStack, ColourGroupGroupWidget& groupGroup);
+    explicit LedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget& groupGroup);
 
     inline bool ledNumbersShown() const { return iLedNumbersShown; }
 
@@ -59,7 +58,6 @@ private slots:
     void ledDeleted(int row, int column, int ledNumber);
     void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
 
-    void toggleLedNumbers();
 
 protected:
     void mousePressEvent(QMouseEvent* event);
@@ -69,27 +67,25 @@ protected:
     void paintEvent(QPaintEvent*);
 
     Position widgetPosition(SelectableWidget& widget);
-    SelectableWidget& widgetAt(int row, int column);
+    SelectableWidget& widgetAt(Position position);
 
     bool validKeyPress(Qt::Key key);
 
 private:
-    void moveItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
-    void cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
-    void pasteItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn);
+    void moveItem(int fromGroup, Position fromPosition, Position toPosition);
+    void cloneItem(int fromGroup, Position fromPosition, Position toPosition);
+    void pasteItem(int fromGroup, Position fromPosition, Position toPosition);
 
-    void moveToClipboard(int group, int row, int column);
+    void moveToClipboard(int group, Position position);
 
     int gridWidth();
     int gridHeight();
 
-    void addWidget(SelectableWidget *widget, int row, int column);
+    void addWidget(SelectableWidget *widget, Position position);
 
-    Led& getLed(int row, int column);
+    Led& getLed(Position position);
 
     Animation&      iAnimation;
-
-    QUndoStack&     iUndoStack;
 
     QGridLayout*    iLedGridLayout;
     QWidget*        iContainerWidget;

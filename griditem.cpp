@@ -8,8 +8,7 @@
 
 using namespace AnimatorModel;
 
-GridItem::GridItem(QObject *parent, int number, int row, int column) :
-    Selectable(parent, number),
-    iRow(row),
-    iColumn(column) {
+GridItem::GridItem(QObject *parent, Animation& animation, int number, Position position) :
+    Selectable(parent, animation, number),
+    iPosition(position) {
 }

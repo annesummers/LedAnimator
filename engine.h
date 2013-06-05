@@ -8,8 +8,7 @@
 #define ENGINE_H
 
 #include <QObject>
-
-//#include "mainwindow.h"
+#include <QUndoStack>
 
 namespace AnimatorModel {
 class Animation;
@@ -58,6 +57,7 @@ private:
 
     MainWindow* iMainWindow;
     Animation* iAnimation;
+    QUndoStack*  iUndoStack;
 
     NewAnimationDialog* iNewAnimationDialog;
 };

@@ -9,24 +9,23 @@
 
 #include "selectable.h"
 
+#include "constants.h"
+
 namespace AnimatorModel {
 
 class GridItem : public Selectable {
     Q_OBJECT
 
 public:
-    explicit GridItem(QObject *parent, int number, int row, int column);
+    explicit GridItem(QObject *parent, Animation& animation, int number, Position position);
 
-    inline const int row() const { return iRow; }
-    inline const int column() const {return iColumn; }
+    inline const Position position() const { return iPosition; }
 
 protected:
-    inline void setRow(int row) { iRow = row; }
-    inline void setColumn(int column) { iColumn = column; }
+    inline void setPosition(Position position) { iPosition = position; }
 
 private:
-    int     iRow;
-    int     iColumn;   
+    Position iPosition;
 };
 }
 

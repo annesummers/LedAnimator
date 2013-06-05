@@ -31,8 +31,6 @@ protected:
    void paintEvent(QPaintEvent *);
    void keyPressEvent(QKeyEvent *event);
 
-   inline QString mimeType() const { return LED_MIME_TYPE; }
-
    inline Qt::DropActions dropActions() const { return Qt::CopyAction | Qt::MoveAction; }
    inline Qt::DropActions dragActions() const { return Qt::IgnoreAction; }
    inline Qt::DropAction  defaultDropAction() const { return Qt::MoveAction; }

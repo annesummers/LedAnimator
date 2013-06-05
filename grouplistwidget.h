@@ -12,6 +12,8 @@
 
 #include "animation.h"
 
+namespace AnimatorUi {
+
 class GroupListWidget : public QWidget {
     Q_OBJECT
     
@@ -28,5 +30,6 @@ private:
     Animation& iAnimation;
     QComboBox* iComboBox;
 };
+}
 
 #endif // GROUPLISTWIDGET_H

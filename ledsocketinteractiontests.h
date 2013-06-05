@@ -23,6 +23,8 @@ class SelectableWidget;
 using namespace AnimatorModel;
 using namespace AnimatorUi;
 
+namespace AnimatorTest {
+
 class TestLedGridWidget : public LedGridWidget {
     Q_OBJECT
 
@@ -30,7 +32,7 @@ public:
     explicit TestLedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget& colourGroupGroup) :
         LedGridWidget(parent, animation, colourGroupGroup) {}
 
-    SelectableWidget& widgetAt(int row, int column) { return LedGridWidget::widgetAt(row, column); }
+    SelectableWidget& widgetAt(Position position) { return LedGridWidget::widgetAt(position); }
 };
 
 class LedSocketInteractionTests : public QObject {
@@ -62,7 +64,7 @@ private slots:
     void copyPasteManyLedToMixed();
 
 private:
-    void setupAnimation(Animation& animation, QList<QPoint> gridPositions);
+    void setupAnimation(Animation& animation, QList<Position> gridPositions);
 };
-
+}
 #endif // LEDSOCKETINTERACTIONTESTS_H

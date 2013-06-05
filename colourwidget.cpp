@@ -68,10 +68,15 @@ void ColourWidget::colourDialogAccepted(int number) {
 }
 
 void ColourWidget::updated() {
+    int hue = colour().hue();
+    if(hue == -1) {
+        hue = 0;
+    }
     setToolTip(QString("h: %1\ns: %2\nv: %3")
-               .arg(colour().hue())
+               .arg(hue)
                .arg(colour().saturation())
                .arg(colour().value()));
+
     update();
 }
 

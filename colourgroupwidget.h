@@ -31,11 +31,8 @@ struct FadeParameters {
     bool rowIncrement;
     bool columnIncrement;
 
-    int firstRow;
-    int firstColumn;
-
-    int lastRow;
-    int lastColumn;
+    Position firstPosition;
+    Position lastPosition;
 
     int rowSpan;
     int columnSpan;

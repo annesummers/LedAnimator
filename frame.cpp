@@ -8,16 +8,18 @@
 
 #include "exceptions.h"
 
+#include "ledanimatoractionbase.h"
+
 using namespace Exception;
 using namespace AnimatorModel;
 
-Frame::Frame(QObject *parent, int number) :
-    Selectable(parent, number),
+Frame::Frame(QObject *parent, Animation& animation, int number) :
+    Selectable(parent, animation, number),
     iColour(Qt::black) {
 }
 
-Frame::Frame(QObject* parent, QColor colour, int number) :
-    Selectable(parent, number),
+Frame::Frame(QObject* parent, Animation& animation, QColor colour, int number) :
+    Selectable(parent, animation, number),
     iColour(colour) {}
 
 const QColor Frame::colour() const {
@@ -29,6 +31,10 @@ void Frame::setColour(QColor colour) {
         throw IllegalColourException();
     }
 
+    iAnimation.setFrameColour(*this, iColour, colour);
+}
+
+void Frame::doSetColour(QColor colour) {
     iColour = colour;
 
     emit colourChanged();

@@ -54,14 +54,14 @@ void FrameListWidget::numFramesChanged(int numFrames) {
 
 // from SelectableWidget -----------------------------
 
-SelectableWidget &FrameListWidget::widgetAt(int row, int column) {
-    ColourGroupWidget::widgetAt(row, column);
+SelectableWidget &FrameListWidget::widgetAt(Position position) {
+    ColourGroupWidget::widgetAt(position);
 
-    if(row != 0) {
+    if(position.row() != 0) {
         throw IllegalArgumentException("FrameListWidget::widgetAt : Row should be zero");
     }
 
-    return *iFramesList.at(column);
+    return *iFramesList.at(position.column());
 }
 
 Position FrameListWidget::widgetPosition(SelectableWidget& widget) {
@@ -73,17 +73,17 @@ bool FrameListWidget::validKeyPress(Qt::Key key) {
            (key & Qt::Key_Left) == Qt::Key_Left;
 }
 
-void FrameListWidget::cloneItem(int fromGroup, int fromRow, int fromColumn, int toRow, int toColumn) {
+void FrameListWidget::cloneItem(int fromGroup, Position fromPosition, Position toPosition) {
     FrameWidget* fromWidget;
 
     if(fromGroup == iGroupNumber) {
-        fromWidget = static_cast<FrameWidget*>(&widgetAt(fromRow, fromColumn));
+        fromWidget = static_cast<FrameWidget*>(&widgetAt(fromPosition));
     } else {
         FrameListWidget& group = static_cast<FrameListWidget&>(iGroupGroup.group(fromGroup));
-        fromWidget = static_cast<FrameWidget*>(&group.widgetAt(fromRow, fromColumn));
+        fromWidget = static_cast<FrameWidget*>(&group.widgetAt(fromPosition));
     }
 
-    FrameWidget& toWidget = static_cast<FrameWidget&>(widgetAt(toRow, toColumn));
+    FrameWidget& toWidget = static_cast<FrameWidget&>(widgetAt(toPosition));
 
     toWidget.frame().setColour(fromWidget->frame().colour());
 }
