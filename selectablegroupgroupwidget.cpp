@@ -10,6 +10,7 @@
 #include <QClipboard>
 
 #include "selectablegroupwidget.h"
+#include "mainwindow.h"
 
 #include "constants.h"
 #include "exceptions.h"
@@ -153,17 +154,24 @@ void GroupSetIterator::toFront() {
 }
 
 GroupSetIterator& GroupSetIterator::operator= (const GroupSetIterator &set) {
-
+    throw NotImplementedException("GroupSetIterator::operator=");
 }
 
-SelectableGroupGroupWidget::SelectableGroupGroupWidget(QWidget *parent) :
-    QWidget(parent) {
+SelectableGroupGroupWidget::SelectableGroupGroupWidget(QWidget *parent, MainWindow& mainWindow) :
+    QWidget(parent),
+    iMainWindow(mainWindow) {
+}
+
+bool SelectableGroupGroupWidget::isGroupGroupSelected() {
+    return iMainWindow.isSelectedGroupGroup(this);
 }
 
 void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, bool singleSelect) {
     if(!isSelected) {
         iSelectedGroups.remove(groupNumber);
         iLastSelectedGroups.removeAt(iLastSelectedGroups.lastIndexOf(groupNumber));
+
+        iMainWindow.setSelectedGroupGroup(NULL);
     } else {
         if(singleSelect) {
             selectSingleGroup(*iGroups.value(groupNumber));
@@ -174,6 +182,8 @@ void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, b
 
             iLastSelectedGroups.append(groupNumber);
         }
+
+        iMainWindow.setSelectedGroupGroup(this);
     }
 }
 
@@ -187,6 +197,8 @@ void SelectableGroupGroupWidget::selectSingleGroup(SelectableGroupWidget& select
 
     iSelectedGroups.clear();
     iSelectedGroups.insert(selectedWidget.groupNumber(), &selectedWidget);
+
+    iMainWindow.setSelectedGroupGroup(this);
 
     iLastSelectedGroups.clear();
     iLastSelectedGroups.append(selectedWidget.groupNumber());
@@ -281,31 +293,31 @@ int SelectableGroupGroupWidget::lastSelectedGroupNumber() {
 }
 
 void SelectableGroupGroupWidget::cutSelected() {
-  //  if(hasFocus()) {
+    if(isGroupGroupSelected()) {
         clearClipboard();
 
         QApplication::clipboard()->setMimeData(mimeData(true));
-   // }
+    }
 }
 
 void SelectableGroupGroupWidget::copySelected() {
-    //if(hasFocus()) {
+    if(isGroupGroupSelected()) {
         clearClipboard();
 
         QApplication::clipboard()->setMimeData(mimeData(false));
-  //  }
+    }
 }
 
 void SelectableGroupGroupWidget::paste() {
-   // if(hasFocus()) {
+    if(isGroupGroupSelected()) {
         iSelectedGroups.value(lastSelectedGroupNumber())->paste(false);
-   // }
+    }
 }
 
 void SelectableGroupGroupWidget::pasteWrap() {
-   // if(hasFocus()) {
+    if(isGroupGroupSelected()) {
         iSelectedGroups.value(lastSelectedGroupNumber())->paste(true);
-   // }
+    }
 }
 
 void SelectableGroupGroupWidget::clearClipboard() {

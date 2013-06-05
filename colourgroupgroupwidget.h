@@ -11,7 +11,7 @@ class ColourGroupGroupWidget : public SelectableGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit ColourGroupGroupWidget(QWidget *parent = 0);
+    explicit ColourGroupGroupWidget(QWidget *parent, MainWindow& mainWindow);
 
     void setColour(QColor colour);
     

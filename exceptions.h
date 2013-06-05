@@ -65,6 +65,13 @@ public:
     inline IllegalStateException(QString errorMessage) : AnimatorException (errorMessage) {}
 
 };
+
+class NotImplementedException : public AnimatorException {
+
+public:
+    inline NotImplementedException(QString errorMessage) : AnimatorException (errorMessage) {}
+
+};
 }
 
 #endif // EXCEPTIONS_H

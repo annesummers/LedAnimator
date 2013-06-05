@@ -16,6 +16,8 @@ class Engine;
 
 namespace AnimatorUi {
 
+class SelectableGroupGroupWidget;
+
 class MainWindow : public QMainWindow {
     Q_OBJECT    
 
@@ -26,6 +28,11 @@ public:
     void readSettings();
     void writeSettings();
 
+    void setSelectedGroupGroup(SelectableGroupGroupWidget *groupGroup);
+    inline bool isSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) { return groupGroup == iSelectedGroupGroup; }
+
+    void setEnabledPasteActions(bool enabled);
+
     inline QUndoStack& undoStack() { return *iUndoStack; }
 
 protected:
@@ -34,7 +41,14 @@ protected:
 private:
     Engine&         iEngine;
 
+    QAction*        iCutAction;
+    QAction*        iCopyAction;
+    QAction*        iPasteAction;
+    QAction*        iPasteWrapAction;
+
     QUndoStack*     iUndoStack;
+
+    SelectableGroupGroupWidget* iSelectedGroupGroup;
 };
 }
 #endif // MAINWINDOW_H

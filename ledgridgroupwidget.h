@@ -11,10 +11,11 @@ class LedGridGroupWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedGridGroupWidget(QWidget *parent = 0);
+    explicit LedGridGroupWidget(QWidget *parent, MainWindow& mainWindow);
     
 private:
     inline QString mimeType() const { return LED_MIME_TYPE; }
+    inline bool canCut() const { return true; }
     
 };
 }

@@ -17,8 +17,8 @@
 using namespace AnimatorUi;
 using namespace Exception;
 
-AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation) :
-    ColourGroupGroupWidget(parent),
+AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation, MainWindow& mainWindow) :
+    ColourGroupGroupWidget(parent, mainWindow),
     iAnimation(animation),
     iFramesListX(0),
     iFramesListWidth(0),

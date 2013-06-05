@@ -4,8 +4,8 @@
 
 using namespace AnimatorUi;
 
-ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent) :
-    SelectableGroupGroupWidget(parent)
+ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent, MainWindow& mainWindow) :
+    SelectableGroupGroupWidget(parent, mainWindow)
 {
 }
 

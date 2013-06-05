@@ -2,7 +2,7 @@
 
 using namespace AnimatorUi;
 
-LedGridGroupWidget::LedGridGroupWidget(QWidget *parent) :
-    ColourGroupGroupWidget(parent)
+LedGridGroupWidget::LedGridGroupWidget(QWidget *parent, MainWindow &mainWindow) :
+    ColourGroupGroupWidget(parent, mainWindow)
 {
 }

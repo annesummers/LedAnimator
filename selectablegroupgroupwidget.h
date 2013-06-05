@@ -17,6 +17,7 @@ namespace AnimatorUi {
 
 class SelectableGroupWidget;
 class GroupSetIterator;
+class MainWindow;
 
 class GroupSet : public QHash<int, SelectableGroupWidget*> {
 public:
@@ -60,7 +61,7 @@ class SelectableGroupGroupWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SelectableGroupGroupWidget(QWidget *parent);
+    explicit SelectableGroupGroupWidget(QWidget *parent, MainWindow &mainWindow);
 
     void selectGroup(int groupNumber, bool isSelected, bool selectSingleGroup = false);
 
@@ -74,7 +75,11 @@ public:
     bool isOtherSelected(int groupNumber);
     bool isAnySelected();
 
+    bool isGroupGroupSelected();
+
     int lastSelectedGroupNumber();
+
+    virtual bool canCut() const = 0;
 
     const QByteArray writeMimeData(bool cut);
     bool handleMimeData(QByteArray itemData,
@@ -97,6 +102,8 @@ protected:
 
 private:
     void clearClipboard();
+
+    MainWindow& iMainWindow;
 
     GroupSet  iGroups;
     QList<int>  iLastSelectedGroups;

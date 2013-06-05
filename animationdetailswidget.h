@@ -29,10 +29,12 @@ class AnimationDetailsWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit AnimationDetailsWidget(QWidget* parent, Animation &animation);
+    explicit AnimationDetailsWidget(QWidget* parent, Animation &animation, MainWindow& mainWindow);
 
     void frameListPosition(int x, int width);
     void deleteLed(LedDetails &details);
+
+    inline bool canCut() const { return false; }
 
 private slots:
     void currentFrameChanged(int currentFrame);

@@ -39,7 +39,7 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
-    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(centralWidget);
+    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(centralWidget, *this);
     LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
@@ -73,7 +73,7 @@ MainWindow::MainWindow(Engine& engine) :
     QWidget* widget1 = new QWidget(centralWidget);
     gridLayout->addWidget(widget1, 0, 3, 2, 1);
 
-    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation());
+    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation(), *this);
     animationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
 
     connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), animationDetailsWidget, SLOT(ledDeleted(int, int, int)));
@@ -112,22 +112,26 @@ MainWindow::MainWindow(Engine& engine) :
     menuBar()->addMenu(fileMenu);
 
     QMenu* editMenu = new QMenu("&Edit", this);
-    QAction* cutAction = editMenu->addAction("&Cut");
-    cutAction->setShortcuts(QKeySequence::Cut);
-    QAction* copyAction = editMenu->addAction("C&opy");
-    copyAction->setShortcuts(QKeySequence::Copy);
-    QAction* pasteAction = editMenu->addAction("&Paste");
-    pasteAction->setShortcuts(QKeySequence::Paste);
-    editMenu->addAction("Paste &wrap");
+    iCutAction = editMenu->addAction("&Cut");
+    iCutAction->setShortcuts(QKeySequence::Cut);
+    iCopyAction = editMenu->addAction("C&opy");
+    iCopyAction->setShortcuts(QKeySequence::Copy);
+    iPasteAction = editMenu->addAction("&Paste");
+    iPasteAction->setShortcuts(QKeySequence::Paste);
+    iPasteWrapAction = editMenu->addAction("Paste &wrap");
 
-    connect(cutAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(cutSelected()));
-    connect(cutAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(cut()));
-    connect(copyAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(copySelected()));
-    connect(copyAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(copy()));
-    connect(pasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(paste()));
-    connect(pasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
-    connect(pasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(pasteWrap()));
-    connect(pasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
+    connect(iCutAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(cutSelected()));
+    connect(iCutAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(cutSelected()));
+    connect(iCopyAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(copySelected()));
+    connect(iCopyAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(copySelected()));
+    connect(iPasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(paste()));
+    connect(iPasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
+    connect(iPasteWrapAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(pasteWrap()));
+    connect(iPasteWrapAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(pasteWrap()));
+
+    iCutAction->setEnabled(false);
+    iCopyAction->setEnabled(false);
+    setEnabledPasteActions(false);
 
     editMenu->addSeparator();
 
@@ -174,6 +178,35 @@ void MainWindow::readSettings() {
     resize(settings.value("size", QSize(600, 300)).toSize());
     move(settings.value("pos", QPoint(200, 200)).toPoint());
     settings.endGroup();
+}
+
+void MainWindow::setSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) {
+    iSelectedGroupGroup = groupGroup;
+
+    if(iSelectedGroupGroup == NULL) {
+        iCutAction->setEnabled(false);
+        iCopyAction->setEnabled(false);
+        setEnabledPasteActions(false);
+    } else {
+        if(groupGroup->canCut()) {
+            iCutAction->setEnabled(true);
+        } else {
+            iCutAction->setEnabled(false);
+        }
+
+        iCopyAction->setEnabled(true);
+
+        if(QApplication::clipboard()->mimeData()->hasFormat(groupGroup->mimeType())) {
+            setEnabledPasteActions(true);
+        } else {
+            setEnabledPasteActions(false);
+        }
+    }
+}
+
+void MainWindow::setEnabledPasteActions(bool enabled) {
+    iPasteAction->setEnabled(enabled);
+    iPasteWrapAction->setEnabled(enabled);
 }
 
 // events --------------------------------------
