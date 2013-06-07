@@ -64,7 +64,7 @@ private slots:
     void copyPasteManyLedToMixed();
 
 private:
-    void setupAnimation(Animation& animation, QList<Position> gridPositions);
+    void setupAnimation(Animation& animation, TestLedGridWidget &gridWidget, QList<Position> gridPositions);
 };
 }
 #endif // LEDSOCKETINTERACTIONTESTS_H

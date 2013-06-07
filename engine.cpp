@@ -18,6 +18,7 @@
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QClipboard>
 
 using namespace ImportExport;
 
@@ -199,4 +200,20 @@ void Engine::setFrameFrequency() {
 
 void Engine::importBitmap() {
 
+}
+
+void Engine::setSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) {
+    iSelectedGroupGroup = groupGroup;
+
+    if(iMainWindow != NULL) {
+        if(iSelectedGroupGroup == NULL) {
+            iMainWindow->setEnabledCutAction(false);
+            iMainWindow->setEnabledCopyAction(false);
+            iMainWindow->setEnabledPasteActions(false);
+        } else {
+            iMainWindow->setEnabledCutAction(groupGroup->canCut());
+            iMainWindow->setEnabledCopyAction(true);
+            iMainWindow->setEnabledPasteActions(QApplication::clipboard()->mimeData()->hasFormat(groupGroup->mimeType()));
+        }
+    }
 }

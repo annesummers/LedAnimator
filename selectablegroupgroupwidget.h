@@ -13,6 +13,8 @@
 
 #include "constants.h"
 
+class Engine;
+
 namespace AnimatorUi {
 
 class SelectableGroupWidget;
@@ -61,7 +63,7 @@ class SelectableGroupGroupWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit SelectableGroupGroupWidget(QWidget *parent, MainWindow &mainWindow);
+    explicit SelectableGroupGroupWidget(QWidget *parent, Engine& engine);
 
     void selectGroup(int groupNumber, bool isSelected, bool selectSingleGroup = false);
 
@@ -103,7 +105,7 @@ protected:
 private:
     void clearClipboard();
 
-    MainWindow& iMainWindow;
+    Engine& iEngine;
 
     GroupSet  iGroups;
     QList<int>  iLastSelectedGroups;

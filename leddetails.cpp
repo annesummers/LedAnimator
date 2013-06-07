@@ -5,13 +5,11 @@ using namespace AnimatorUi;
 
 LedDetailsWidget::LedDetailsWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::LedDetailsWidget)
-{
+    ui(new Ui::LedDetailsWidget) {
     ui->setupUi(this);
 }
 
-LedDetailsWidget::~LedDetailsWidget()
-{
+LedDetailsWidget::~LedDetailsWidget() {
     delete ui;
 }
 

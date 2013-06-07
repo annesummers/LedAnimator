@@ -1,11 +1,12 @@
 #include "colourgroupgroupwidget.h"
 
 #include "colourgroupwidget.h"
+#include "engine.h"
 
 using namespace AnimatorUi;
 
-ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent, MainWindow& mainWindow) :
-    SelectableGroupGroupWidget(parent, mainWindow)
+ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent, Engine& engine) :
+    SelectableGroupGroupWidget(parent, engine)
 {
 }
 

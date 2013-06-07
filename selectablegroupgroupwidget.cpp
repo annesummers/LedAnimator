@@ -10,7 +10,7 @@
 #include <QClipboard>
 
 #include "selectablegroupwidget.h"
-#include "mainwindow.h"
+#include "engine.h"
 
 #include "constants.h"
 #include "exceptions.h"
@@ -157,13 +157,13 @@ GroupSetIterator& GroupSetIterator::operator= (const GroupSetIterator &set) {
     throw NotImplementedException("GroupSetIterator::operator=");
 }
 
-SelectableGroupGroupWidget::SelectableGroupGroupWidget(QWidget *parent, MainWindow& mainWindow) :
+SelectableGroupGroupWidget::SelectableGroupGroupWidget(QWidget *parent, Engine &engine) :
     QWidget(parent),
-    iMainWindow(mainWindow) {
+    iEngine(engine) {
 }
 
 bool SelectableGroupGroupWidget::isGroupGroupSelected() {
-    return iMainWindow.isSelectedGroupGroup(this);
+    return iEngine.isSelectedGroupGroup(this);
 }
 
 void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, bool singleSelect) {
@@ -171,7 +171,7 @@ void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, b
         iSelectedGroups.remove(groupNumber);
         iLastSelectedGroups.removeAt(iLastSelectedGroups.lastIndexOf(groupNumber));
 
-        iMainWindow.setSelectedGroupGroup(NULL);
+        iEngine.setSelectedGroupGroup(NULL);
     } else {
         if(singleSelect) {
             selectSingleGroup(*iGroups.value(groupNumber));
@@ -183,7 +183,7 @@ void SelectableGroupGroupWidget::selectGroup(int groupNumber, bool isSelected, b
             iLastSelectedGroups.append(groupNumber);
         }
 
-        iMainWindow.setSelectedGroupGroup(this);
+        iEngine.setSelectedGroupGroup(this);
     }
 }
 
@@ -198,7 +198,7 @@ void SelectableGroupGroupWidget::selectSingleGroup(SelectableGroupWidget& select
     iSelectedGroups.clear();
     iSelectedGroups.insert(selectedWidget.groupNumber(), &selectedWidget);
 
-    iMainWindow.setSelectedGroupGroup(this);
+    iEngine.setSelectedGroupGroup(this);
 
     iLastSelectedGroups.clear();
     iLastSelectedGroups.append(selectedWidget.groupNumber());
@@ -233,7 +233,7 @@ void SelectableGroupGroupWidget::selectArea(int startGroupNumber, Position end, 
     iterator.previous();
 
     const SelectableGroupWidget& group = iterator.next();
-    start = group.lastSelected();
+    start = group.lastSelectedPosition();
     endGroupNumber = group.groupNumber();
 
     int numGroups;
@@ -341,7 +341,7 @@ const QByteArray SelectableGroupGroupWidget::writeMimeData(bool cut) {
 
     dataStream << iSelectedGroups.count();
 
-    qDebug("Selected group count is %d", iSelectedGroups.count());
+   // qDebug("Selected group count is %d", iSelectedGroups.count());
 
     SelectableGroupWidget* group;
     foreach(group, iSelectedGroups) {

@@ -10,6 +10,8 @@
 #include <QObject>
 #include <QUndoStack>
 
+#include "selectablegroupgroupwidget.h"
+
 namespace AnimatorModel {
 class Animation;
 }
@@ -35,8 +37,9 @@ public:
     bool askSaveAnimation();  
     void setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency);
 
-public slots:
-    
+    void setSelectedGroupGroup(SelectableGroupGroupWidget *groupGroup);
+    inline bool isSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) { return groupGroup == iSelectedGroupGroup; }
+
 private slots:
     void saveAnimation();
     void saveAnimationAs();
@@ -59,9 +62,10 @@ private:
 
     MainWindow* iMainWindow;
     Animation* iAnimation;
-    QUndoStack*  iUndoStack;
 
     NewAnimationDialog* iNewAnimationDialog;
+
+    SelectableGroupGroupWidget* iSelectedGroupGroup;
 };
 
 #endif // ENGINE_H

@@ -80,9 +80,10 @@ class ColourGroupGroupTestWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    ColourGroupGroupTestWidget() {}
+    ColourGroupGroupTestWidget(QWidget* parent, Engine& engine) : ColourGroupGroupWidget(parent, engine) {}
 
     inline QString mimeType() const { return TEST_MIME_TYPE; }
+    inline bool canCut() const { return true; }
 };
 
 struct FadeData {
@@ -142,6 +143,7 @@ private:
                        int timeout = 1000);
 
     Animation* iAnimation;
+    Engine* iEngine;
 
     QColorDialog* iColourDialog;
     ColourGroupTestWidget* iGroupWidget;

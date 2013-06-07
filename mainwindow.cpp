@@ -39,7 +39,7 @@ MainWindow::MainWindow(Engine& engine) :
     gridLayout->setContentsMargins(11, 11, 11, 11);
     gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
 
-    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(centralWidget, *this);
+    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(centralWidget, engine);
     LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
@@ -73,7 +73,7 @@ MainWindow::MainWindow(Engine& engine) :
     QWidget* widget1 = new QWidget(centralWidget);
     gridLayout->addWidget(widget1, 0, 3, 2, 1);
 
-    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation(), *this);
+    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation(), engine);
     animationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
 
     connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), animationDetailsWidget, SLOT(ledDeleted(int, int, int)));
@@ -180,33 +180,17 @@ void MainWindow::readSettings() {
     settings.endGroup();
 }
 
-void MainWindow::setSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) {
-    iSelectedGroupGroup = groupGroup;
-
-    if(iSelectedGroupGroup == NULL) {
-        iCutAction->setEnabled(false);
-        iCopyAction->setEnabled(false);
-        setEnabledPasteActions(false);
-    } else {
-        if(groupGroup->canCut()) {
-            iCutAction->setEnabled(true);
-        } else {
-            iCutAction->setEnabled(false);
-        }
-
-        iCopyAction->setEnabled(true);
-
-        if(QApplication::clipboard()->mimeData()->hasFormat(groupGroup->mimeType())) {
-            setEnabledPasteActions(true);
-        } else {
-            setEnabledPasteActions(false);
-        }
-    }
-}
-
 void MainWindow::setEnabledPasteActions(bool enabled) {
     iPasteAction->setEnabled(enabled);
     iPasteWrapAction->setEnabled(enabled);
+}
+
+void MainWindow::setEnabledCutAction(bool enabled) {
+    iCutAction->setEnabled(enabled);
+}
+
+void MainWindow::setEnabledCopyAction(bool enabled) {
+    iCopyAction->setEnabled(enabled);
 }
 
 // events --------------------------------------

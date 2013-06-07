@@ -6,7 +6,7 @@
 
 #include "animationdetailswidget.h"
 
-#include "mainwindow.h"
+#include "engine.h"
 #include "led.h"
 #include "animation.h"
 #include "framelistwidget.h"
@@ -17,8 +17,8 @@
 using namespace AnimatorUi;
 using namespace Exception;
 
-AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation, MainWindow& mainWindow) :
-    ColourGroupGroupWidget(parent, mainWindow),
+AnimationDetailsWidget::AnimationDetailsWidget(QWidget* parent, Animation &animation, Engine& engine) :
+    ColourGroupGroupWidget(parent, engine),
     iAnimation(animation),
     iFramesListX(0),
     iFramesListWidth(0),

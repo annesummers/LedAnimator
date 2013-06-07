@@ -125,7 +125,11 @@ void Animation::setupNew(int numRows, int numColumns, int numFrames, int frameFr
 }
 
 void Animation::addNewLed(Position position) {
-    iUndoStack->push(new AddLedCommand(*this, position));
+    if(iUndoStack == NULL) {
+        doAddNewLed(position);
+    } else {
+        iUndoStack->push(new AddLedCommand(*this, position));
+    }
 }
 
 void Animation::doAddNewLed(Position position, int ledNum) {
@@ -158,7 +162,11 @@ void Animation::addLed(Led& led, Position position) {
 }
 
 void Animation::deleteLed(Led& led, bool deleteObject) {
-    iUndoStack->push(new DeleteLedCommand(*this, led, deleteObject));
+    if(iUndoStack == NULL) {
+        doDeleteLed(led.position(), deleteObject);
+    } else {
+        iUndoStack->push(new DeleteLedCommand(*this, led, deleteObject));
+    }
 }
 
 void Animation::doDeleteLed(Position position, bool deleteObject) {
@@ -246,7 +254,11 @@ void Animation::doPasteLed(Position fromPosition, Position toPosition, Led **fro
 }
 
 void Animation::cloneLed(Position fromPosition, Position toPosition) {
-    iUndoStack->push(new CloneLedCommand(*this, fromPosition, toPosition));
+    if(iUndoStack == NULL) {
+        doCloneLed(fromPosition, toPosition);
+    } else {
+        iUndoStack->push(new CloneLedCommand(*this, fromPosition, toPosition));
+    }
 }
 
 void Animation::moveLedToClipboard(Position position) {
@@ -268,15 +280,29 @@ void Animation::deleteLedFromClipboard(int ledNumber) {
 }
 
 void Animation::pasteLed(Position fromPosition, Position toPosition) {
-    iUndoStack->push(new PasteLedCommand(*this, fromPosition, toPosition));
+    if(iUndoStack == NULL) {
+        Led* fromLed;
+        Led* toLed;
+        doPasteLed(fromPosition, toPosition, &fromLed, &toLed);
+    } else {
+        iUndoStack->push(new PasteLedCommand(*this, fromPosition, toPosition));
+    }
 }
 
 void Animation::setFrameColour(Frame& frame, QColor oldColour, QColor newColour) {
-    iUndoStack->push(new SetFrameColourCommand(*this, frame, oldColour, newColour));
+    if(iUndoStack == NULL) {
+        frame.doSetColour(newColour);
+    } else {
+        iUndoStack->push(new SetFrameColourCommand(*this, frame, oldColour, newColour));
+    }
 }
 
 void Animation::renumberLed(Position position, int oldNumber, int newNumber) {
-    iUndoStack->push(new RenumberLedCommand(*this, position, oldNumber, newNumber));
+    if(iUndoStack == NULL) {
+        doRenumberLed(position, newNumber);
+    } else {
+        iUndoStack->push(new RenumberLedCommand(*this, position, oldNumber, newNumber));
+    }
 }
 
 void Animation::doRenumberLed(Position position, int newNumber) {
@@ -296,15 +322,6 @@ int Animation::nextLedNumber() const {
 }
 
 void Animation::selectGroup(int groupNumber) {
-    /*Led* led;
-    foreach(led, iLeds) {
-        if(led->groupNumber() == groupNumber) {
-            led->select(true);
-        } else {
-            led->select(false);
-        }
-    }*/
-
     LedSetIterator& iterator = iLeds.iterator();
 
     while(iterator.hasNext()) {

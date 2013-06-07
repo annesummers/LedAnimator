@@ -87,7 +87,7 @@ public:
     void doSelectArea(Position start, Position end, bool multipleAreas);
     void doSelectDirection(Qt::Key direction);
 
-    Position lastSelected() const;
+    Position lastSelectedPosition() const;
 
     inline const int groupNumber() const { return iGroupNumber; }
 
@@ -112,9 +112,9 @@ protected:
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }
 
-    inline const Position firstSelectedPosition() const { if(iAreas.count() == 1) {
+    inline const Position firstSelectedAreaPosition() const { if(iAreas.count() == 1) {
             return iAreas.first().firstSelected(); }  else { return Position();}}
-    inline const Position lastSelectedPosition() const { if(iAreas.count() == 1) {
+    inline const Position lastSelectedAreaPosition() const { if(iAreas.count() == 1) {
             return iAreas.first().lastSelected(); } else { return Position();} }
 
     SelectableGroupGroupWidget& iGroupGroup;

@@ -29,7 +29,7 @@ class AnimationDetailsWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit AnimationDetailsWidget(QWidget* parent, Animation &animation, MainWindow& mainWindow);
+    explicit AnimationDetailsWidget(QWidget* parent, Animation &animation, Engine& engine);
 
     void frameListPosition(int x, int width);
     void deleteLed(LedDetails &details);

@@ -11,7 +11,7 @@ class LedGridGroupWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit LedGridGroupWidget(QWidget *parent, MainWindow& mainWindow);
+    explicit LedGridGroupWidget(QWidget *parent, Engine &engine);
     
 private:
     inline QString mimeType() const { return LED_MIME_TYPE; }

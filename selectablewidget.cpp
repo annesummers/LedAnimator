@@ -94,14 +94,14 @@ void SelectableWidget::addPasteActions(QMenu* menu) {
 // events ----------------------------------------
 
 void SelectableWidget::mousePressEvent(QMouseEvent* event) {
-    qDebug("singleWidget mousePress");
+    //qDebug("singleWidget mousePress");
     if (event->button() != Qt::LeftButton) {
         return;
     }
 
     iDragStartPosition = event->pos();
 
-    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+   /* if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
         qDebug("mousepress : control modifier");
     }
 
@@ -111,7 +111,7 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
 
     if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
         qDebug("mousepress : meta modifier");
-    }
+    }*/
 
    /* if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
         (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
@@ -148,13 +148,13 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
-    qDebug("singleWidget mouseRelease");
+   // qDebug("singleWidget mouseRelease");
     if (event->button() == Qt::RightButton) {
         return;
     }
 
     if(event->button() == Qt::LeftButton) {
-        if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+      /*  if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
             qDebug("mouseRelease : control modifier");
         }
 
@@ -164,7 +164,7 @@ void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
 
         if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
             qDebug("mouseRelease : meta modifier");
-        }
+        }*/
 
         if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
             iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
@@ -202,14 +202,14 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
     if(!group &&
        !multiple) {
         iSelectableGroup.selectOne(*this);
-        qDebug("select one on drag");
-    } else {
+      //  qDebug("select one on drag");
+    }/* else {
         if(group) {
             qDebug("group selected on drag");
         } else if(multiple) {
             qDebug("multiple selected on drag");
         }
-    }
+    }*/
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(iSelectableGroup.mimeData(false));
@@ -219,7 +219,7 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-    qDebug("singleWidget mouseDoubleClick");
+   // qDebug("singleWidget mouseDoubleClick");
     if (event->buttons() != Qt::LeftButton) {
         return;
     }
@@ -249,7 +249,7 @@ void SelectableWidget::dropEvent(QDropEvent *event) {
 }
 
 void SelectableWidget::contextMenuEvent(QContextMenuEvent *event) {
-    qDebug("contextMenuevent");
+   // qDebug("contextMenuevent");
 
     if(!isSelected()) {
         iSelectableGroup.selectOne(*this);

@@ -28,12 +28,11 @@ public:
     void readSettings();
     void writeSettings();
 
-    void setSelectedGroupGroup(SelectableGroupGroupWidget *groupGroup);
-    inline bool isSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) { return groupGroup == iSelectedGroupGroup; }
+    inline QUndoStack& undoStack() { return *iUndoStack; }
 
     void setEnabledPasteActions(bool enabled);
-
-    inline QUndoStack& undoStack() { return *iUndoStack; }
+    void setEnabledCutAction(bool enabled);
+    void setEnabledCopyAction(bool enabled);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -47,8 +46,6 @@ private:
     QAction*        iPasteWrapAction;
 
     QUndoStack*     iUndoStack;
-
-    SelectableGroupGroupWidget* iSelectedGroupGroup;
 };
 }
 #endif // MAINWINDOW_H

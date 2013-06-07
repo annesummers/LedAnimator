@@ -79,9 +79,10 @@ class SelectableGroupGroupTestWidget : public SelectableGroupGroupWidget {
     Q_OBJECT
 
 public:
-    SelectableGroupGroupTestWidget() : SelectableGroupGroupWidget(NULL) {}
+    SelectableGroupGroupTestWidget(QWidget* parent, Engine& engine) : SelectableGroupGroupWidget(parent, engine) {}
 
     inline QString mimeType() const { return TEST_MIME_TYPE; }
+    inline bool canCut() const { return true; }
 };
 
 class SelectableWidgetTests : public SelectableWidgetTestBase {
@@ -152,6 +153,7 @@ private:
     void areaData();
     void directionData();
 
+    Engine* iEngine;
     Animation* iAnimation;
 };
 }

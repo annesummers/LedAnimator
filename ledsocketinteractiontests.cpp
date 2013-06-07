@@ -29,9 +29,7 @@ void LedSocketInteractionTests::copyPasteOneLedToOneSocket() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
 
-
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
-
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -42,7 +40,7 @@ void LedSocketInteractionTests::copyPasteOneLedToOneSocket() {
     gridPositions.append(Position(1, 2));
     gridPositions.append(Position(2, 2));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -69,8 +67,8 @@ void LedSocketInteractionTests::copyPasteOneLedToOneLed_data() {
 void LedSocketInteractionTests::copyPasteOneLedToOneLed() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
 
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -81,7 +79,7 @@ void LedSocketInteractionTests::copyPasteOneLedToOneLed() {
     gridPositions.append(Position(1, 2));
     gridPositions.append(Position(2, 2));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -109,8 +107,8 @@ void LedSocketInteractionTests::copyPasteOneLedToManySockets_data() {
 void LedSocketInteractionTests::copyPasteOneLedToManySockets() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
 
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -121,7 +119,7 @@ void LedSocketInteractionTests::copyPasteOneLedToManySockets() {
     gridPositions.append(Position(1, 2));
     gridPositions.append(Position(2, 2));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -158,8 +156,8 @@ void LedSocketInteractionTests::copyPasteOneLedToManyLeds_data() {
 void LedSocketInteractionTests::copyPasteOneLedToManyLeds() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
 
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -170,7 +168,7 @@ void LedSocketInteractionTests::copyPasteOneLedToManyLeds() {
     gridPositions.append(Position(1, 2));
     gridPositions.append(Position(2, 2));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -207,8 +205,8 @@ void LedSocketInteractionTests::copyPasteManyLedToSocket_data() {
 void LedSocketInteractionTests::copyPasteManyLedToSocket() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
 
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -218,7 +216,7 @@ void LedSocketInteractionTests::copyPasteManyLedToSocket() {
     gridPositions.append(Position(1, 0));
     gridPositions.append(Position(1, 1));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -275,8 +273,8 @@ void LedSocketInteractionTests::copyPasteManyLedToLed_data() {
 void LedSocketInteractionTests::copyPasteManyLedToLed() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
 
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -290,7 +288,7 @@ void LedSocketInteractionTests::copyPasteManyLedToLed() {
     gridPositions.append(Position(2, 3));
     gridPositions.append(Position(3, 3));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -347,8 +345,8 @@ void LedSocketInteractionTests::copyPasteManyLedToMixed_data() {
 void LedSocketInteractionTests::copyPasteManyLedToMixed() {
     Engine* engine = new Engine(this);
     Animation* animation = new Animation(*engine);
-    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget();
 
+    ColourGroupGroupTestWidget* groupGroupWidget = new ColourGroupGroupTestWidget(NULL, *engine);
     TestLedGridWidget* gridWidget = new TestLedGridWidget(groupGroupWidget, *animation, *groupGroupWidget);
 
     QList<Position> gridPositions;
@@ -360,7 +358,7 @@ void LedSocketInteractionTests::copyPasteManyLedToMixed() {
     gridPositions.append(Position(2, 3));
     gridPositions.append(Position(3, 3));
 
-    setupAnimation(*animation, gridPositions);
+    setupAnimation(*animation, *gridWidget, gridPositions);
 
     LedWidget& copyWidget = static_cast<LedWidget&>(gridWidget->widgetAt(Position(0,0)));
     copyWidget.setColour(Qt::magenta);
@@ -410,7 +408,7 @@ void LedSocketInteractionTests::copyPasteManyLedToMixed() {
     delete engine;
 }
 
-void LedSocketInteractionTests::setupAnimation(Animation& animation, QList<Position> gridPositions) {
+void LedSocketInteractionTests::setupAnimation(Animation& animation, TestLedGridWidget& gridWidget, QList<Position> gridPositions) {
     QList<int> positions;
 
     int numRows = DEFAULT_NUM_ROWS;
@@ -425,6 +423,11 @@ void LedSocketInteractionTests::setupAnimation(Animation& animation, QList<Posit
     for(int i = 0; i < numLeds; i++) {
         positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
     }
+
+    connect(&animation, SIGNAL(newLed(int, int)), &gridWidget, SLOT(addLed(int, int)));
+    connect(&animation, SIGNAL(newSocket(int, int)), &gridWidget, SLOT(addSocket(int, int)));
+    connect(&animation, SIGNAL(ledDeleted(int, int, int)), &gridWidget, SLOT(ledDeleted(int, int, int)));
+    connect(&animation, SIGNAL(ledMoved(int, int, int, int)), &gridWidget, SLOT(ledMoved(int, int, int, int)));
 
     animation.setupNew(numRows, numColumns, DEFAULT_NUM_FRAMES, DEFAULT_FRAME_FREQUENCY, numLeds, positions);
 }

@@ -41,7 +41,7 @@ FadeCalculator::FadeCalculator(QObject *parent,
 }
 
 void FadeCalculator::start() {
-    qDebug("start fade");
+   // qDebug("start fade");
     if(iTimer != NULL) {
         delete iTimer;
         iTimer = NULL;
@@ -61,10 +61,7 @@ void FadeCalculator::nextColour() {
     iCurrentGreenValue -= iGreenIncrement;
     iCurrentBlueValue -= iBlueIncrement;
 
-  /*  iCurrentHueValue -= iHueIncrement;
-    iCurrentSatValue -= iSatIncrement;
-    iCurrentValValue -= iValIncrement;*/
-    qDebug("red : %f green : %f blue %f", iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
+    //qDebug("red : %f green : %f blue %f", iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
 
     if(iCurrentRedValue > 1) {
         iCurrentRedValue = 1;
