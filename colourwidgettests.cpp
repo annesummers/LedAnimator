@@ -715,7 +715,7 @@ void ColourWidgetTests::doubleClickOneClickOne_data() {
                                 << maxColumns
                                 << Position(0,0)
                                 << Position(0,0)
-                                << Position();
+                                << Position(0,0);
 
     QTest::newRow("double click one click different") << maxRows
                                 << maxColumns
