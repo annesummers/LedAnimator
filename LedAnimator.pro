@@ -85,7 +85,8 @@ HEADERS += \
     leddetails.h \
     framedetails.h \
     renumberleddialog.h \
-    ledgridgroupwidget.h
+    ledgridgroupwidget.h \
+    importbitmap.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -117,7 +118,8 @@ SOURCES += \
     leddetails.cpp \
     framedetails.cpp \
     renumberleddialog.cpp \
-    ledgridgroupwidget.cpp
+    ledgridgroupwidget.cpp \
+    importbitmap.cpp
 
 FORMS += \
     newanimation.ui \

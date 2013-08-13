@@ -26,6 +26,7 @@ FrameListWidget::FrameListWidget(QWidget *parent,
     setFocusPolicy(Qt::ClickFocus);
 
     connect(&(animation), SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+    connect(&(animation), SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
 }
 
 // slots --------------------
@@ -50,6 +51,10 @@ void FrameListWidget::numFramesChanged(int numFrames) {
     if(oldNumFrames != numFrames) {
         doResize();
     }
+}
+
+void FrameListWidget::framesInserted(int numFrames, int framesAdded) {
+
 }
 
 // from SelectableWidget -----------------------------

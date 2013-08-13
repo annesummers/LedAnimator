@@ -371,6 +371,12 @@ Position Animation::ledPosition(int number) const {
 
 // slots -------------------------
 
+void Animation::addFrames(int numFrames) {
+    iNumFrames = iNumFrames + numFrames;
+
+    emit framesInserted(iNumFrames, numFrames);
+}
+
 void Animation::setCurrentFrame(int frame) {
     if(frame < INITIAL_FRAME) {
         throw IllegalArgumentException("Animation::setCurrentFrame : Frame number is smaller than first frame");
@@ -535,7 +541,7 @@ Position LedSet::ledPosition(int ledNumber) const {
         return Position();
     }
 
-    return Position(index/iNumRows, index%iNumRows);
+    return Position(index/iNumColumns, index%iNumColumns);
 }
 
 void LedSet::setPositionNumber(Position position, int number) {

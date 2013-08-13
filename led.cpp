@@ -36,6 +36,7 @@ Led::Led(QObject* parent, Animation &animation, int number, Position position) :
     iSignalMapper = new QSignalMapper(this);
 
     connect(&animation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+    connect(&(animation), SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
 }
 
 Led::~Led() {
@@ -53,6 +54,7 @@ Led::Led(const Led& copyLed) :
     copyFrames(copyLed);
 
     connect(&iAnimation, SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
+    connect(&iAnimation, SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
 }
 
 Led& Led::operator=(const Led& led) {
@@ -125,6 +127,10 @@ void Led::numFramesChanged(int numFrames) {
         // do I have to reconnect?
         connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
     }
+}
+
+void Led::framesInserted(int numFrames, int numFramesAdded) {
+
 }
 
 void Led::colourChanged(int frameNum) {

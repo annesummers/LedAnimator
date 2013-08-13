@@ -172,6 +172,10 @@ void AnimationDetailsWidget::numFramesChanged(int numFrames) {
     iFrameSlider->setTickInterval(numFrames);
 }
 
+void AnimationDetailsWidget::framesInserted(int numFrames, int framesAdded) {
+    numFramesChanged(numFrames);
+}
+
 void AnimationDetailsWidget::addLed(int row, int column) {
     Led* led = iAnimation.ledAt(Position(row, column));
 

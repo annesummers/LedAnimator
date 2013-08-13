@@ -22,3 +22,7 @@ void FrameDetailsWidget::currentFrameChanged(int currentFrame) {
 void FrameDetailsWidget::numFramesChanged(int numFrames) {
     ui->numFrames->setText(QString("%1").arg(numFrames));
 }
+
+void FrameDetailsWidget::framesInserted(int numFrames, int numFramesAdded) {
+    numFramesChanged(numFrames);
+}

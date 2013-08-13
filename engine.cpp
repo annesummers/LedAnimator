@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "ledanimcodec.h"
 #include "newanimationdialog.h"
+#include "importbitmap.h"
 
 #include <QFile>
 #include <QFileDialog>
@@ -180,26 +181,45 @@ void Engine::saveAnimationAs() {
     }
 }
 
-void Engine::setNumFrames() {
+void Engine::addFrames() {
     bool ok;
-    int i = QInputDialog::getInt(iMainWindow, tr("Choose animation number of frames"),
+    int numFrames = QInputDialog::getInt(iMainWindow, tr("Add how many frames?"),
                                   tr("Number of frames:"), 1, 1, 1000, 1, &ok);
     if (ok) {
-        iAnimation->setNumFrames(i);
+        iAnimation->addFrames(numFrames);
+    }
+}
+
+void Engine::setNumFrames() {
+    bool ok;
+    int numFrames = QInputDialog::getInt(iMainWindow, tr("Choose animation number of frames"),
+                                  tr("Number of frames:"), 1, 1, 1000, 1, &ok);
+    if (ok) {
+        iAnimation->setNumFrames(numFrames);
     }
 }
 
 void Engine::setFrameFrequency() {
     bool ok;
-    int i = QInputDialog::getInt(iMainWindow, tr("Choose animation frame frequency"),
+    int frequency = QInputDialog::getInt(iMainWindow, tr("Choose animation frame frequency"),
                                   tr("Frame frequency (ms):"), 1000, 1, 10000, 1, &ok);
     if (ok) {
-        iAnimation->setFrameFrequency(i);
+        iAnimation->setFrameFrequency(frequency);
     }
 }
 
 void Engine::importBitmap() {
+    QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Import bitmap", "~", "PNG (*.png)");
 
+    if(fileName != "") {
+        setupUI();
+
+        ImportBitmap import(fileName, *iAnimation);
+
+        import.doImport();
+
+        iMainWindow->show();
+    }
 }
 
 void Engine::setSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) {

@@ -49,6 +49,7 @@ private slots:
 
     void exportAnimation();
 
+    void addFrames();
     void setNumFrames();
     void setFrameFrequency();
 

@@ -39,6 +39,7 @@ public:
 private slots:
     void currentFrameChanged(int currentFrame);
     void numFramesChanged(int numFrames);
+    void framesInserted(int numFrames, int framesAdded);
 
     void ledDeleted(int row, int column, int ledNumber);
     void ledRenumbered(int row, int column, int oldNumber);

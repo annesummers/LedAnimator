@@ -35,6 +35,7 @@ signals:
 
 private slots:
     void numFramesChanged(int numFrames);
+    void framesInserted(int numFrames, int framesAdded);
 
 protected:
     bool validKeyPress(Qt::Key key);

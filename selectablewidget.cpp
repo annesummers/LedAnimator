@@ -94,7 +94,7 @@ void SelectableWidget::addPasteActions(QMenu* menu) {
 // events ----------------------------------------
 
 void SelectableWidget::mousePressEvent(QMouseEvent* event) {
-    qDebug("singleWidget mousePress");
+    //qDebug("singleWidget mousePress");
     if (event->button() != Qt::LeftButton) {
         return;
     }
@@ -103,7 +103,7 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
 }
 
 void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
-    qDebug("singleWidget mouseRelease");
+    //qDebug("singleWidget mouseRelease");
     if (event->button() == Qt::RightButton) {
         return;
     }
@@ -174,7 +174,7 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
-    qDebug("singleWidget mouseDoubleClick");
+    //qDebug("singleWidget mouseDoubleClick");
     if (event->buttons() != Qt::LeftButton) {
         return;
     }

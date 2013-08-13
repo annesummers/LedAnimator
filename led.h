@@ -55,6 +55,7 @@ signals:
 
 public slots:
     void numFramesChanged(int numFrames);
+    void framesInserted(int numFrames, int numFramesAdded);
     void colourChanged(int frameNum);
 
 private:

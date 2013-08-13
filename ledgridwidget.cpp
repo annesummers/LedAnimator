@@ -121,16 +121,16 @@ void LedGridWidget::moveItem(int fromGroup, Position fromPosition, Position toPo
 
 void LedGridWidget::cloneItem(int fromGroup, Position fromPosition, Position toPosition) {
     Q_UNUSED(fromGroup);// there is only one group
-    qDebug("LedGridWidget::copyItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
-                                                            toPosition.row(), toPosition.column());
+    //qDebug("LedGridWidget::copyItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
+    //                                                        toPosition.row(), toPosition.column());
 
     iAnimation.cloneLed(fromPosition, toPosition);
 }
 
 void LedGridWidget::pasteItem(int fromGroup, Position fromPosition, Position toPosition) {
     Q_UNUSED(fromGroup);// there is only one group
-    qDebug("LedGridWidget::pasteItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
-                                                            toPosition.row(), toPosition.column());
+    //qDebug("LedGridWidget::pasteItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
+    //                                                        toPosition.row(), toPosition.column());
 
     iAnimation.pasteLed(fromPosition, toPosition);
 }

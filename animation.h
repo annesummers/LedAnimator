@@ -169,6 +169,7 @@ public:
     
 signals:
     void currentFrameChanged(int currentFrame);
+    void framesInserted(int numFrames, int numFramesAdded);
     void numFramesChanged(int numFrames);
 
     void groupAdded(int groupNumber);
@@ -190,6 +191,8 @@ public slots:
 
     void setCurrentFrame(int frame);
     void setFrameFrequency(int frameFrequency);
+
+    void addFrames(int numFrames);
     inline void setNumFrames(int numFrames) { iNumFrames = numFrames; emit numFramesChanged(iNumFrames); }
     
 private slots:

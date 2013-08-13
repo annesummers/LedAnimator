@@ -62,6 +62,7 @@ MainWindow::MainWindow(Engine& engine) :
 
     connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
     connect(&engine.animation(), SIGNAL(numFramesChanged(int)), frameDetailsWidget, SLOT(numFramesChanged(int)));
+    connect(&engine.animation(), SIGNAL(framesInserted(int,int)), frameDetailsWidget, SLOT(framesInserted(int, int)));
 
     gridLayout->addWidget(frameDetailsWidget, 0, 2, 1, 1);
 
@@ -79,6 +80,7 @@ MainWindow::MainWindow(Engine& engine) :
     connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), animationDetailsWidget, SLOT(ledDeleted(int, int, int)));
     connect(&engine.animation(), SIGNAL(ledRenumbered(int,int,int)), animationDetailsWidget, SLOT(ledRenumbered(int, int, int)));
     connect(&engine.animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
+    connect(&engine.animation(), SIGNAL(framesInserted(int,int)), animationDetailsWidget, SLOT(framesInserted(int, int)));
     connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), animationDetailsWidget, SLOT(currentFrameChanged(int)));
 
     gridLayout->addWidget(animationDetailsWidget, 2, 0, 1, 4);
@@ -148,10 +150,14 @@ MainWindow::MainWindow(Engine& engine) :
 
     QMenu* animationMenu = new QMenu("&Animation", this);
     QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");
+    animationMenu->addSeparator();
+    QAction* addFramesAction = animationMenu->addAction("&Add frames");
     QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
+    animationMenu->addSeparator();
     QAction* setFrameFrequencyAction = animationMenu->addAction("Set &frame frequency");
 
     connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
+    connect(addFramesAction, SIGNAL(triggered()), &iEngine, SLOT(addFrames()));
     connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
     connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
 
