@@ -11,32 +11,33 @@
 #include <QColor>
 #include <QSignalMapper>
 
-#include "animation.h"
-#include "frame.h"
+#include "Frame.h"
 #include "griditem.h"
-
+#include "Axis.h"
+#include "TimeAxis.h"
+#include "ValueAxis.h"
 #include "constants.h"
 
 namespace AnimatorModel {
+
+class Animation;
 
 class Led : public GridItem {
     Q_OBJECT
 
 public:
-    explicit Led(QObject* parent, Animation& animation, int number, Position position);
+    explicit Led(QObject* parent, Animation& animation, int number, Position position, QUndoStack& undoStack);
     Led(const Led &copyLed);
     virtual ~Led();
 
-    inline const QColor currentColour() const { return frameAt(iAnimation.currentFrame()).colour(); }
+    const QColor currentColour() const;
 
-    Frame& frameAt(int frameNum) const;
+    inline TimeAxisData* timeAxis() const { return iTimeAxisData; }
+    ValueAxisData& axisAt(int axisNum) const;
 
-    void setCurrentColour(QColor colour);
+    //void setCurrentColour(QColor colour);
 
     inline void setNumber(int newNumber) { Selectable::setNumber(newNumber); emit ledUpdated(); }
-
-    inline const int groupNumber() const { return iGroupNumber; }
-    void setGroupNumber(int groupNumber);
 
     inline void setHidden(bool isHidden) { iHidden = isHidden; }
     inline bool isHidden() const { return iHidden; }
@@ -44,7 +45,7 @@ public:
     void move(Position newPosition);
     void paste(Led &copyLed);
 
-    void copyFrames(const Led& copyLed);
+    void copyAxes(const Led& led);
 
     inline Animation& animation() { return iAnimation; }
 
@@ -54,15 +55,18 @@ signals:
     void ledUpdated();
 
 public slots:
-    void numFramesChanged(int numFrames);
-    void framesInserted(int numFrames, int numFramesAdded);
-    void colourChanged(int frameNum);
+    void addTimeAxis();
+    void addValueAxis(int axisNumber);
+   // void framesInserted(int numFrames, int numFramesAdded);
+    //void colourChanged(int frameNum);
 
 private:
-    QList<Frame*> iFrames;
+
+    QList<ValueAxisData*> iAxesData;
+    TimeAxisData* iTimeAxisData;
     QSignalMapper* iSignalMapper;
 
-    int iGroupNumber;
+    QUndoStack& iUndoStack;
 
     bool iHidden;
 };

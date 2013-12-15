@@ -6,6 +6,7 @@
 
 #include "ledgridwidget.h"
 
+#include "Animation.h"
 #include "ledwidget.h"
 #include "mainwindow.h"
 #include "socketwidget.h"
@@ -163,7 +164,7 @@ void LedGridWidget::addSelectedLeds() {
 }
 
 void LedGridWidget::setSelectedLedsGroupNumber() {
-    bool ok;
+  /*  bool ok;
     int i = QInputDialog::getInt(this, tr("Set led group"),
                                  tr("Group number:"), 1, 1, iAnimation.numGroups() + 1, 1, &ok);
     if (ok) {
@@ -171,7 +172,7 @@ void LedGridWidget::setSelectedLedsGroupNumber() {
         foreach(widget, selectedItems()) {
             static_cast<LedWidget*>(widget)->led().setGroupNumber(i);
         }
-    }
+    }*/
 }
 
 void LedGridWidget::deleteSelectedLeds() {

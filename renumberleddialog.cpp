@@ -1,7 +1,7 @@
 #include "renumberleddialog.h"
 #include "ui_renumberleddialog.h"
 
-#include "animation.h"
+#include "Animation.h"
 
 using namespace AnimatorUi;
 using namespace AnimatorModel;

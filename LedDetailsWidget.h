@@ -9,8 +9,7 @@ class LedDetailsWidget;
 
 namespace AnimatorUi {
 
-class LedDetailsWidget : public QWidget
-{
+class LedDetailsWidget : public QWidget {
     Q_OBJECT
     
 public:

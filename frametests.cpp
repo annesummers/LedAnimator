@@ -6,9 +6,9 @@
 
 #include "frametests.h"
 
-#include "animation.h"
-#include "led.h"
-#include "frame.h"
+#include "Animation.h"
+#include "Led.h"
+#include "Frame.h"
 
 #include "exceptions.h"
 #include "constants.h"

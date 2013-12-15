@@ -1,4 +1,4 @@
-#include "leddetails.h"
+#include "LedDetailsWidget.h"
 #include "ui_leddetails.h"
 
 using namespace AnimatorUi;

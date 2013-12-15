@@ -8,7 +8,7 @@
 
 #include "colourwidgettests.h"
 
-#include "animation.h"
+#include "Animation.h"
 #include "ledwidget.h"
 #include "socketwidget.h"
 

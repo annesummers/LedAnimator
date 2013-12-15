@@ -10,7 +10,7 @@
 #include <QString>
 
 #include "fadecalculator.h"
-#include "animation.h"
+#include "Animation.h"
 
 #include "exceptions.h"
 #include "constants.h"

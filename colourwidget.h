@@ -29,13 +29,13 @@ public:
     ColourWidget(QWidget* parent, ColourGroupWidget& groupWidget, Selectable& item);
 
     virtual const QColor colour() const = 0;
-    virtual void setColour(QColor colour) = 0;
+    virtual void setValue(FrameValue& value) = 0;
 
 protected slots:
     void updated();
+    void chooseColour();
 
 private slots:
-    void chooseColour();
     void colourDialogAccepted(int number);
 
     void fade();
@@ -47,9 +47,10 @@ protected:
     void addDefaultAction(QMenu* menu);
     virtual void addExtraActions(QMenu* menu);
 
-private:
     ColourGroupWidget& colourGroup() { return static_cast<ColourGroupWidget&>(iSelectableGroup); }
+    bool iFunctionFading;
 
+private:
     QSignalMapper* iSignalMapper;
 
     QAction* iSetColourAction;

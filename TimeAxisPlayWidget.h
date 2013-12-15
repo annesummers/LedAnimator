@@ -14,17 +14,18 @@
 
 namespace AnimatorModel {
 class Animation;
+class TimeAxis;
 }
 
 using namespace AnimatorModel;
 
 namespace AnimatorUi {
 
-class PlayInfoWidget : public QWidget {
+class TimeAxisPlayWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit PlayInfoWidget(QWidget* parent, Animation &animation);
+    explicit TimeAxisPlayWidget(QWidget* parent, Animation &animation, AnimatorModel::TimeAxis &timeAxis);
 
 private slots:
     void playClicked();
@@ -40,6 +41,7 @@ private slots:
 
 private:
     Animation&      iAnimation;
+    TimeAxis&       iTimeAxis;
 
     QToolButton*    iFirstButton;
     QToolButton*    iPreviousButton;

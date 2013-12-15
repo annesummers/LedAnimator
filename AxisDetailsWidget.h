@@ -10,7 +10,7 @@
 #include <QHash>
 
 #include "colourgroupgroupwidget.h"
-#include "led.h"
+#include "Led.h"
 #include "framelistwidget.h"
 
 namespace AnimatorModel {
@@ -25,11 +25,11 @@ namespace AnimatorUi {
 class LedDetails;
 class ScrollContentsWidget;
 
-class AnimationDetailsWidget : public ColourGroupGroupWidget {
+class AxisDetailsWidget : public ColourGroupGroupWidget {
     Q_OBJECT
 
 public:
-    explicit AnimationDetailsWidget(QWidget* parent, Animation &animation, Engine& engine);
+    explicit AxisDetailsWidget(QWidget* parent, Animation &animation, Axis& axis, Engine& engine);
 
     void frameListPosition(int x, int width);
     void deleteLed(LedDetails &details);
@@ -53,6 +53,10 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event);
     void dropEvent(QDropEvent* event);
 
+    virtual AxisData& axisData(Led& led) = 0;
+
+    Axis&  iAxis;
+
 private:
     void addLed(int row, int column);
 
@@ -62,7 +66,7 @@ private:
 
     inline QString mimeType() const { return FRAME_MIME_TYPE; }
 
-    Animation&              iAnimation;
+    Animation& iAnimation;
 
     int iFramesListX;
     int iFramesListWidth;
@@ -81,7 +85,7 @@ class ScrollContentsWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit ScrollContentsWidget(QWidget* parent, Animation &animation);
+    explicit ScrollContentsWidget(QWidget* parent, Animation &animation, Axis &axis);
 
     inline void setFramesSize(QSize size) { iFramesSize = size; }
     inline void setFramesPos(QPoint pos) { iFramesPos = pos; }
@@ -93,6 +97,8 @@ protected:
 
 private:
     Animation& iAnimation;
+    Axis&  iAxis;
+
     QSize iFramesSize;
     QPoint iFramesPos;
 
@@ -103,7 +109,7 @@ class LedDetails : public QObject {
     Q_OBJECT
 
 public:
-    explicit LedDetails(AnimationDetailsWidget &parent, Led& led, QLabel& label, FrameListWidget& framesListWidget, QToolButton& closeButton);
+    explicit LedDetails(AxisDetailsWidget &parent, Led& led, QLabel& label, FrameListWidget& framesListWidget, QToolButton& closeButton);
 
     inline int ledNumber() { return iLed.number(); }
     inline FrameListWidget& frameList() { return iFramesListWidget; }
@@ -119,7 +125,7 @@ private:
     FrameListWidget&    iFramesListWidget;
     QToolButton&        iCloseButton;
 
-    AnimationDetailsWidget& iDetailsWidget;
+    AxisDetailsWidget& iDetailsWidget;
 };
 
 }

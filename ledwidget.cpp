@@ -6,10 +6,10 @@
 
 #include "ledwidget.h"
 
-#include "led.h"
+#include "Led.h"
 #include "ledgridwidget.h"
 #include "mainwindow.h"
-#include "animation.h"
+#include "Animation.h"
 
 #include "constants.h"
 

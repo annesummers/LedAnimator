@@ -6,7 +6,7 @@
 
 #include "enginetests.h"
 
-#include "animation.h"
+#include "Animation.h"
 #include "engine.h"
 #include "mainwindow.h"
 

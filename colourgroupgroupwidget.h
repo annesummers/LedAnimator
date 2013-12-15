@@ -5,6 +5,10 @@
 
 #include "selectablegroupgroupwidget.h"
 
+namespace AnimatorModel {
+class FrameValue;
+}
+
 namespace AnimatorUi {
 
 class ColourGroupGroupWidget : public SelectableGroupGroupWidget {
@@ -13,7 +17,7 @@ class ColourGroupGroupWidget : public SelectableGroupGroupWidget {
 public:
     explicit ColourGroupGroupWidget(QWidget *parent, Engine &engine);
 
-    void setColour(QColor colour);
+    void setValue(FrameValue& value);
     
 signals:
     

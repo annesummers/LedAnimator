@@ -14,6 +14,7 @@
 
 namespace AnimatorModel {
 class Animation;
+class FrameValue;
 }
 
 class FadeCalculator;
@@ -44,6 +45,9 @@ struct FadeParameters {
     int maxWidgets;
 
     int increments;
+
+    QColor startColour;
+    QColor endColour;
 };
 
 class ColourGroupWidget : public SelectableGroupWidget {
@@ -59,10 +63,12 @@ public:
 
     void fade();
     void fadeTo(QColor fadeToColour);
-    void doSetColour(QColor colour);
+    void functionFade();
+    void functionFadeTo(QColor fadeToColour);
+    void doSetValue(FrameValue& value);
 
 public slots:
-    void setColour(QColor colour);
+    void setValue(FrameValue& value);
 
 private slots:
     void colourCalculated(QColor colour);
@@ -70,8 +76,9 @@ private slots:
     void deleteFader();
 
 protected:
-    void setupFade(QColor fadeToColor);
-    void startFade();
+    FadeParameters & setupFade(QColor fadeToColor);
+    FadeParameters & setupFunctionFade(QColor fadeToColor);
+    void startFade(FadeParameters &parameters);
 
     FadeCalculator* iFadeCalculator;
 

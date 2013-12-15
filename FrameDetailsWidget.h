@@ -17,9 +17,11 @@ public:
     explicit FrameDetailsWidget(QWidget *parent = 0);
     ~FrameDetailsWidget();
 
+public slots:
+    void highValueChanged(int highValue);
+
 private slots:
     void currentFrameChanged(int currentFrame);
-    void numFramesChanged(int numFrames);
     void framesInserted(int numFrames, int framesAdded);
     
 private:

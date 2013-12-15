@@ -6,9 +6,9 @@
 
 #include "framewidget.h"
 
-#include "frame.h"
-#include "led.h"
-#include "animation.h"
+#include "Frame.h"
+#include "Led.h"
+#include "Animation.h"
 #include "colourgroupwidget.h"
 #include "colourwidget.h"
 #include "framelistwidget.h"
@@ -21,12 +21,52 @@ using namespace AnimatorUi;
 using namespace Exception;
 
 FrameWidget::FrameWidget(QWidget* parent, ColourGroupWidget& frameGroup, Frame& frame) :
-    ColourWidget(parent, frameGroup, frame) {
+    ColourWidget(parent, frameGroup, frame),
+    iFunctionFadeAction(NULL),
+    iFunctionFadeToAction(NULL) {
+
+    iFunctionFadeAction = new QAction(tr("F&unction fade"), this);
+    iFunctionFadeAction->setStatusTip("Function fade to last selected colour");
+
+    connect(iFunctionFadeAction, SIGNAL(triggered()), this, SLOT(functionFade()));
+
+    iFunctionFadeToAction = new QAction(tr("Fu&nction fade to..."), this);
+    iFunctionFadeToAction->setStatusTip("Function fade to chosen colour");
+
+    connect(iFunctionFadeToAction, SIGNAL(triggered()), this, SLOT(functionFadeTo()));
 
     connect(&frame, SIGNAL(colourChanged()), this, SLOT(updated()));
 
     updated();
 }
+
+void FrameWidget::addExtraActions(QMenu *menu) {
+    ColourWidget::addExtraActions(menu);
+    if(colourGroup().isAreaSelected()) {
+        menu->addSeparator();
+        menu->addAction(iFunctionFadeAction);
+        menu->addAction(iFunctionFadeToAction);
+    }
+}
+
+void FrameWidget::functionFade() {
+    if(!colourGroup().isAreaSelected()) {
+        return;
+    }
+
+    colourGroup().fade();
+}
+
+void FrameWidget::functionFadeTo() {
+    if(!colourGroup().isAreaSelected()) {
+        return;
+    }
+
+    iFunctionFading = true;
+
+    chooseColour();
+}
+
 
 // events -----------------------------
 
@@ -40,11 +80,15 @@ void FrameWidget::paintEvent(QPaintEvent *) {
         painter.setPen(Qt::black);
     }
 
-    QRect rect(0, 0, width(), height());
+    if(frame().value().type() == kColour) {
+        QRect rect(0, 0, width(), height());
 
-    painter.drawRect(rect);
+        painter.drawRect(rect);
 
-    painter.setBrush(Qt::NoBrush);
-    painter.drawRect(0, 0, width() - 1, height() - 1);
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRect(0, 0, width() - 1, height() - 1);
+    } else if(frame().value().type() == kFunction) {
+
+    }
 }
 

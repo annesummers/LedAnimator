@@ -8,7 +8,7 @@
 
 namespace AnimatorModel {
 class Led;
-class Animation;
+class AxisData;
 }
 
 using namespace AnimatorModel;
@@ -22,19 +22,19 @@ class FrameListWidget : public ColourGroupWidget {
 
 public:
     explicit FrameListWidget(QWidget *parent,
-                             const Animation& animation,
-                             const Led& led,
+                             const AxisData& axisData,
                              ColourGroupGroupWidget &framesListGroup,
                              int groupNumber);
 
-    const Led& led() { return iLed; }
+  //  const Led& led() { return iLed; }
     void doResize();
 
 signals:
     void resized();
 
 private slots:
-    void numFramesChanged(int numFrames);
+    void lowValueChanged(int lowValue);
+    void highValueChanged(int highValue);
     void framesInserted(int numFrames, int framesAdded);
 
 protected:
@@ -52,9 +52,11 @@ protected:
     Position widgetPosition(SelectableWidget &widget);
 
 private:
+    void setSize();
+
     QList<FrameWidget*> iFramesList;
 
-    const Led& iLed;
+    const AxisData& iAxis;
 
     bool iResized;
 };

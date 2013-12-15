@@ -12,9 +12,12 @@
 #include <QColor>
 #include <QSize>
 
+#include "Function.h"
+
 namespace AnimatorModel {
 class Animation;
 class Led;
+class Frame;
 }
 
 using namespace AnimatorModel;
@@ -68,8 +71,11 @@ protected:
     virtual void writeColourData() = 0;
     virtual void readColourData() = 0;
 
-    void writeColour(QColor colour);
+    void writeColour(Frame& frame);
     const QColor readColour() const;
+
+    void writeFunction(Frame& frame);
+    const Function readFunction() const;
 
     Animation& iAnimation;
     bool iWriteLedNumber;

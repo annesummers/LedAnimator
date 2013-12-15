@@ -6,8 +6,8 @@
 
 #include "animationtests.h"
 
-#include "animation.h"
-#include "led.h"
+#include "Animation.h"
+#include "Led.h"
 
 #include "exceptions.h"
 #include "constants.h"

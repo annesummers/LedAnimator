@@ -25,5 +25,5 @@ void GroupListWidget::removeGroup(int groupNumber) {
 }
 
 void GroupListWidget::comboChanged(int index) {
-    iAnimation.selectGroup(iComboBox->itemText(index).toInt());
+    //iAnimation.selectGroup(iComboBox->itemText(index).toInt());
 }

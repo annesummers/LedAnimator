@@ -10,7 +10,7 @@
 #include <QtGui>
 
 #include "colourwidget.h"
-#include "frame.h"
+#include "Frame.h"
 
 #include "constants.h"
 
@@ -26,7 +26,9 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
-    void setColour(QColor colour) { frame().setColour(colour); }
+    void addExtraActions(QMenu *menu);
+
+    void setValue(FrameValue &value) { frame().setValue(value); }
     const QColor colour() const { return frame().colour(); }
 
     inline Qt::DropActions dropActions() const { return Qt::CopyAction; }
@@ -34,7 +36,12 @@ protected:
     inline Qt::DropAction  defaultDropAction() const { return Qt::CopyAction; }
     inline Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
-private:
+    QAction* iFunctionFadeAction;
+    QAction* iFunctionFadeToAction;
+
+private slots:
+    void functionFade();
+    void functionFadeTo();
 };
 }
 

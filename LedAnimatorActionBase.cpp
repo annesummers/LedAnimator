@@ -6,11 +6,12 @@
 
 #include "ledanimatoractionbase.h"
 
-#include "animation.h"
-#include "frame.h"
-#include "led.h"
+#include "Animation.h"
+#include "Led.h"
+#include "FrameValue.h"
 
 using namespace AnimatorModel;
+using namespace UndoCommands;
 
 LedAnimatorCommandBase::LedAnimatorCommandBase(Animation &animation, QUndoCommand* parent) :
     QUndoCommand(parent),
@@ -60,7 +61,7 @@ void DeleteLedCommand::undo() {
 
     Led* led = iAnimation.ledAt(iOldLed.number());
 
-    led->copyFrames(iOldLed);
+    led->copyAxes(iOldLed);
 
     setText(QObject::tr("Delete led %1,%2").arg(iOldLed.position().row()).arg(iOldLed.position().column()));
 }
@@ -89,7 +90,7 @@ void CloneLedCommand::undo() {
         iAnimation.doAddNewLed(iToPosition, iOldLed->number());
         Led* led = iAnimation.ledAt(iOldLed->number());
 
-        led->copyFrames(*iOldLed);
+        led->copyAxes(*iOldLed);
         delete iOldLed;
     }
 
@@ -127,7 +128,7 @@ void PasteLedCommand::undo() {
         iAnimation.doAddNewLed(iToPosition, iToLed->number());
         Led* led = iAnimation.ledAt(iToLed->number());
 
-        led->copyFrames(*iToLed);
+        led->copyAxes(*iToLed);
         delete iToLed;
     }
 
@@ -161,21 +162,21 @@ void RenumberLedCommand::setText() {
     QUndoCommand::setText(QObject::tr("Renumber led %1,%2 from %3 to %4").arg(iPosition.row()).arg(iPosition.column()).arg(iOldNumber).arg(iNewNumber));
 }
 
-SetFrameColourCommand::SetFrameColourCommand(Animation &animation, Frame& frame, QColor oldColour, QColor newColour) :
+SetFrameColourCommand::SetFrameColourCommand(Animation& animation, Frame &frame, const FrameValue& newValue) :
     LedAnimatorCommandBase(animation),
     iFrame(frame),
-    iOldColour(oldColour),
-    iNewColour(newColour) {
+    iOldValue(frame.value()),
+    iNewValue(newValue) {
 }
 
 void SetFrameColourCommand::redo() {
-    iFrame.doSetColour(iNewColour);
+    iFrame.doSetValue(iNewValue);
 
     setText();
 }
 
 void SetFrameColourCommand::undo() {
-    iFrame.doSetColour(iOldColour);
+    iFrame.doSetValue(iOldValue);
 
     setText();
 }

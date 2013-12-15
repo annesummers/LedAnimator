@@ -10,13 +10,13 @@ ColourGroupGroupWidget::ColourGroupGroupWidget(QWidget *parent, Engine& engine) 
 {
 }
 
-void ColourGroupGroupWidget::setColour(QColor colour) {
+void ColourGroupGroupWidget::setValue(FrameValue& value) {
     int groupNum = 0;
     for(int i = 0; i < iSelectedGroups.count(); i++) {
         while(!iSelectedGroups.contains(groupNum)) {
             groupNum++;
         }
 
-        static_cast<ColourGroupWidget&>(*iSelectedGroups.value(groupNum++)).doSetColour(colour);
+        static_cast<ColourGroupWidget&>(*iSelectedGroups.value(groupNum++)).doSetValue(value);
     }
 }

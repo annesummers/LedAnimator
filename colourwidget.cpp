@@ -11,6 +11,7 @@
 
 #include "selectable.h"
 #include "colourgroupwidget.h"
+#include "ColourValue.h"
 
 using namespace AnimatorUi;
 
@@ -58,8 +59,12 @@ void ColourWidget::colourDialogAccepted(int number) {
                 colourGroup().fadeTo(newColour);
 
                 iFading = false;
+            } else if(iFunctionFading) {
+                colourGroup().functionFadeTo(newColour);
+
+                iFunctionFading = false;
             } else {
-                colourGroup().setColour(newColour);
+                colourGroup().setValue(*(new ColourValue(this, newColour)));
             }
         }
     }

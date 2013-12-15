@@ -9,7 +9,7 @@
 
 #include <QtGui>
 
-#include "led.h"
+#include "Led.h"
 #include "colourwidget.h"
 #include "ledgridwidget.h"
 
@@ -23,7 +23,7 @@ public:
 
     inline Led &led() const { return static_cast<Led&>(iItem); }
 
-    void setColour(QColor colour) {led().setCurrentColour(colour); }
+    void setValue(FrameValue &value) {/*led().setCurrentColour(colour);*/}
     const QColor colour() const {return led().currentColour(); }
 
 private slots:

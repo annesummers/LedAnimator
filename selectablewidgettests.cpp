@@ -7,7 +7,7 @@
 #include "selectablewidgettests.h"
 
 #include "selectablegroupgroupwidget.h"
-#include "animation.h"
+#include "Animation.h"
 
 #include "constants.h"
 #include "testconstants.h"

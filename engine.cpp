@@ -6,10 +6,10 @@
 
 #include "engine.h"
 
-#include "animation.h"
+#include "Animation.h"
 #include "mainwindow.h"
 #include "constants.h"
-#include "ledanimcodec.h"
+#include "Codec.h"
 #include "newanimationdialog.h"
 #include "importbitmap.h"
 
@@ -33,6 +33,8 @@ void Engine::start() {
     QCoreApplication::setOrganizationName(COMPANY_NAME);
     QCoreApplication::setOrganizationDomain(COMPANY_DOMAIN);
     QCoreApplication::setApplicationName(APP_NAME);
+
+    connect(this, SIGNAL(doQuit()), qApp, SLOT(quit()));
 
     iAnimation = new Animation(*this);
 
@@ -78,8 +80,8 @@ void Engine::setupUI() {
     iAnimation->setUndoStack(iMainWindow->undoStack());
 }
 
-void Engine::setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency) {
-    iAnimation->setupNew(numRows, numColumns, numFrames, frameFrequency);
+void Engine::setupNewAnimation(int numRows, int numColumns ) {
+    iAnimation->newAnimation(numRows, numColumns);
     iMainWindow->show();
 }
 
@@ -130,9 +132,7 @@ void Engine::newAnimation(bool askSaveOld) {
             setupUI();
 
             setupNewAnimation(newAnimationDialog.iNumRows,
-                                 newAnimationDialog.iNumColumns,
-                                 newAnimationDialog.iNumFrames,
-                                 newAnimationDialog.iFrameFrequency);
+                                 newAnimationDialog.iNumColumns);
         }
     }
 }
@@ -181,12 +181,17 @@ void Engine::saveAnimationAs() {
     }
 }
 
-void Engine::addFrames() {
+void Engine::quit() {
+    iMainWindow->close();
+    emit doQuit();
+}
+
+/*void Engine::addFrames() {
     bool ok;
     int numFrames = QInputDialog::getInt(iMainWindow, tr("Add how many frames?"),
                                   tr("Number of frames:"), 1, 1, 1000, 1, &ok);
     if (ok) {
-        iAnimation->addFrames(numFrames);
+        //iAnimation->addFrames(numFrames);
     }
 }
 
@@ -195,7 +200,7 @@ void Engine::setNumFrames() {
     int numFrames = QInputDialog::getInt(iMainWindow, tr("Choose animation number of frames"),
                                   tr("Number of frames:"), 1, 1, 1000, 1, &ok);
     if (ok) {
-        iAnimation->setNumFrames(numFrames);
+        //iAnimation->setNumFrames(numFrames);
     }
 }
 
@@ -204,8 +209,16 @@ void Engine::setFrameFrequency() {
     int frequency = QInputDialog::getInt(iMainWindow, tr("Choose animation frame frequency"),
                                   tr("Frame frequency (ms):"), 1000, 1, 10000, 1, &ok);
     if (ok) {
-        iAnimation->setFrameFrequency(frequency);
+        //iAnimation->setFrameFrequency(frequency);
     }
+}*/
+
+void Engine::addTimeAxis() {
+    iAnimation->addTimeAxis(0, 100, 100);
+}
+
+void Engine::addValueAxis() {
+    iAnimation->addValueAxis(-100, 100, 0);
 }
 
 void Engine::importBitmap() {

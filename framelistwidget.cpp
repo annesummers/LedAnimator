@@ -1,7 +1,7 @@
 #include "framelistwidget.h"
 
-#include "animation.h"
-#include "led.h"
+#include "Animation.h"
+#include "Led.h"
 #include "framewidget.h"
 #include "selectablegroupgroupwidget.h"
 
@@ -13,34 +13,36 @@ using namespace Exception;
 using namespace AnimatorUi;
 
 FrameListWidget::FrameListWidget(QWidget *parent,
-                                 const Animation& animation,
-                                 const Led &led,
+                                 const AxisData &axisData,
                                  ColourGroupGroupWidget &framesListGroup,
                                  int groupNumber) :
-    ColourGroupWidget(parent, 0, animation.numFrames(), framesListGroup, groupNumber),
-    iLed(led),
-    iResized(false){
+    ColourGroupWidget(parent, 0, axisData.numFrames(), framesListGroup, groupNumber),
+    iAxis(axisData),
+    iResized(false) {
 
-    numFramesChanged(animation.numFrames());
+    //numFramesChanged(axis.numFrames());
+    //lowValueChanged(axisData.axis().lowValue());
+    highValueChanged(axisData.axis().highValue());
 
     setFocusPolicy(Qt::ClickFocus);
 
-    connect(&(animation), SIGNAL(numFramesChanged(int)), this, SLOT(numFramesChanged(int)));
-    connect(&(animation), SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
+    connect(&axisData.axis(), SIGNAL(lowValueChanged(int)), this, SLOT(lowValueChanged(int)));
+    connect(&axisData.axis(), SIGNAL(highValueChanged(int)), this, SLOT(highValueChanged(int)));
+    connect(&axisData.axis(), SIGNAL(framesInserted(int, int)), this, SLOT(framesInserted(int, int)));
 }
 
 // slots --------------------
 
-void FrameListWidget::numFramesChanged(int numFrames) {
+void FrameListWidget::lowValueChanged(int lowValue) {
     int oldNumFrames = iFramesList.count();
 
-    if(numFrames > oldNumFrames) {  // we need to add more frames
-        for(int i = oldNumFrames; i < numFrames; i++) {
-            FrameWidget* frame = new FrameWidget(this, *this, iLed.frameAt(i + INITIAL_FRAME));
+    if(iAxis.numFrames() > oldNumFrames) {  // we need to add more frames
+        for(int i = oldNumFrames; i < iAxis.numFrames(); i++) {
+            FrameWidget* frame = new FrameWidget(this, *this, iAxis.frameAt(iAxis.axis().lowValue() + i));
             iFramesList.append(frame);
         }
-    } else if (numFrames < oldNumFrames ) {  // we need to remove some frames; take them from the end
-        for(int i = oldNumFrames; i >= numFrames; i--) {
+    } else if (iAxis.numFrames() < oldNumFrames ) {  // we need to remove some frames; take them from the start
+        for(int i = 0; i < oldNumFrames - iAxis.numFrames(); i++) {
             FrameWidget* frame = iFramesList.at(i);
 
             iFramesList.removeAt(i);
@@ -48,9 +50,34 @@ void FrameListWidget::numFramesChanged(int numFrames) {
         }
     }
 
-    if(oldNumFrames != numFrames) {
-        doResize();
+    setSize();
+}
+
+void FrameListWidget::setSize() {
+    setMinimumWidth(iAxis.numFrames() * 7);
+    setMaximumWidth(iAxis.numFrames() * 7);
+
+    doResize();
+}
+
+void FrameListWidget::highValueChanged(int highValue) {
+    int oldNumFrames = iFramesList.count();
+
+    if(iAxis.numFrames() > oldNumFrames) {  // we need to add more frames
+        for(int i = iAxis.numFrames() - oldNumFrames; i > 0; i--) {
+            FrameWidget* frame = new FrameWidget(this, *this, iAxis.frameAt(iAxis.axis().highValue() - i));
+            iFramesList.append(frame);
+        }
+    } else if (iAxis.numFrames() < oldNumFrames ) {  // we need to remove some frames; take them from the end
+        for(int i = oldNumFrames; i >= iAxis.numFrames(); i--) {
+            FrameWidget* frame = iFramesList.at(i);
+
+            iFramesList.removeAt(i);
+            delete frame;
+        }
     }
+
+    setSize();
 }
 
 void FrameListWidget::framesInserted(int numFrames, int framesAdded) {
@@ -90,7 +117,7 @@ void FrameListWidget::cloneItem(int fromGroup, Position fromPosition, Position t
 
     FrameWidget& toWidget = static_cast<FrameWidget&>(widgetAt(toPosition));
 
-    toWidget.frame().setColour(fromWidget->frame().colour());
+    toWidget.frame().setValue(fromWidget->frame().value());
 }
 
 // events ------------------------------------

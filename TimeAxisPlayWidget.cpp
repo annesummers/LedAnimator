@@ -4,10 +4,11 @@
 **                                      **
 *****************************************/
 
-#include "playinfowidget.h"
+#include "TimeAxisPlayWidget.h"
 #include "ui_playinfowidget.h"
 
-#include "animation.h"
+#include "Animation.h"
+#include "TimeAxis.h"
 
 #include "constants.h"
 
@@ -15,9 +16,10 @@
 
 using namespace AnimatorUi;
 
-PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
+TimeAxisPlayWidget::TimeAxisPlayWidget(QWidget* parent, Animation& animation, TimeAxis& timeAxis) :
     QWidget(parent),
     iAnimation(animation),
+    iTimeAxis(timeAxis),
     iFirstButton(NULL),
     iPreviousButton(NULL),
     iPlayButton(NULL),
@@ -94,61 +96,61 @@ PlayInfoWidget::PlayInfoWidget(QWidget* parent, Animation& animation) :
 
 // slots ---------------------------------
 
-void PlayInfoWidget::currentFrameChanged(int currentFrame) {
+void TimeAxisPlayWidget::currentFrameChanged(int currentFrame) {
     //iFrameNumberLabel->setText(QString("%1").arg(currentFrame));
-    if(currentFrame == INITIAL_FRAME) {
+    if(currentFrame == iTimeAxis.lowValue()) {
         iFirstButton->setEnabled(false);
     } else if(!iFirstButton->isEnabled()){
         iFirstButton->setEnabled(true);
     }
 
-    if(currentFrame == iAnimation.numFrames()) {
+    if(currentFrame == iTimeAxis.highValue()) {
         iLastButton->setEnabled(false);
     } else if (!iLastButton->isEnabled()) {
         iLastButton->setEnabled(true);
     }
 }
 
-void PlayInfoWidget::playClicked() {
+void TimeAxisPlayWidget::playClicked() {
     // TODO can we use a state machine here?
-    if(!iAnimation.isPlaying()) {
-        iAnimation.play(iRepeatButton->isChecked());
+    if(!iTimeAxis.isPlaying()) {
+        iTimeAxis.play(iRepeatButton->isChecked());
         iPlayButton->setIcon(QIcon(":/images/pause.png"));
     } else {
-        iAnimation.stop();
+        iTimeAxis.stop();
     }
 }
 
-void PlayInfoWidget::lastClicked() {
-    iAnimation.setCurrentFrame(iAnimation.numFrames());
+void TimeAxisPlayWidget::lastClicked() {
+    iTimeAxis.setCurrentFrame(iTimeAxis.numFrames());
 }
 
-void PlayInfoWidget::nextClicked() {
-    int frame = iAnimation.currentFrame() + 1;
-    if(frame > iAnimation.numFrames()) {
-        frame = iAnimation.numFrames();
+void TimeAxisPlayWidget::nextClicked() {
+    int frame = iTimeAxis.currentFrame() + 1;
+    if(frame > iTimeAxis.highValue()) {
+        frame = iTimeAxis.highValue();
     }
 
-    iAnimation.setCurrentFrame(frame);
+    iTimeAxis.setCurrentFrame(frame);
 }
 
-void PlayInfoWidget::previousClicked() {
-    int frame = iAnimation.currentFrame() - 1;
-    if(frame < INITIAL_FRAME) {
-        frame = INITIAL_FRAME;
+void TimeAxisPlayWidget::previousClicked() {
+    int frame = iTimeAxis.currentFrame() - 1;
+    if(frame < iTimeAxis.lowValue()) {
+        frame = iTimeAxis.lowValue();
     }
 
-    iAnimation.setCurrentFrame(frame);
+    iTimeAxis.setCurrentFrame(frame);
 }
 
-void PlayInfoWidget::firstClicked() {
-    iAnimation.setCurrentFrame(INITIAL_FRAME);
+void TimeAxisPlayWidget::firstClicked() {
+    iTimeAxis.setCurrentFrame(iTimeAxis.lowValue());
 }
 
-void PlayInfoWidget::repeatClicked() {
-
+void TimeAxisPlayWidget::repeatClicked() {
+    iTimeAxis.setRepeating(iTimeAxis.isRepeating());
 }
 
-void PlayInfoWidget::stopped() {
+void TimeAxisPlayWidget::stopped() {
     iPlayButton->setIcon(QIcon(":/images/play.png"));
 }

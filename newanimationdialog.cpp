@@ -5,9 +5,9 @@
 *****************************************/
 
 #include "newanimationdialog.h"
-#include "ui_newanimation.h"
+#include "ui_newAnimation.h"
 
-#include "animation.h"
+#include "Animation.h"
 
 NewAnimationDialog::NewAnimationDialog(QWidget *parent, Engine &engine) :
     QDialog(parent),

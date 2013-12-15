@@ -10,7 +10,7 @@
 #include <QWidget>
 #include <QComboBox>
 
-#include "animation.h"
+#include "Animation.h"
 
 namespace AnimatorUi {
 

@@ -2,8 +2,9 @@
 
 #include <QImage>
 
-#include "animation.h"
-#include "led.h"
+#include "Animation.h"
+#include "Led.h"
+#include "ColourValue.h"
 
 using namespace ImportExport;
 
@@ -37,12 +38,14 @@ void ImportBitmap::doImport() {
         }
     }
 
-    iAnimation.setupNew(rows, columns, 100, 100, ledNum, positions);
+    iAnimation.newAnimation(rows, columns, ledNum, positions);
+    iAnimation.addTimeAxis(0, 1, 100);
 
     ledNum = INITIAL_LED;
     for(int i = 0; i < iAnimation.numLeds(); i++) {
-        for(int j = 0; j < iAnimation.numFrames(); j++) {
-            iAnimation.ledAt(ledNum)->frameAt(j + INITIAL_FRAME).doSetColour(QColor(colours[i]));
+        for(int j = iAnimation.timeAxis()->lowValue(); j < iAnimation.timeAxis()->highValue(); j++) {
+            Frame& frame = iAnimation.ledAt(ledNum)->timeAxis()->frameAt(j);
+            frame.doSetValue(*(new ColourValue(iAnimation.ledAt(ledNum), QColor(colours[i]))));
         }
 
         ledNum++;

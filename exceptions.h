@@ -59,6 +59,14 @@ public:
 
 };
 
+
+class IllegalAxisNumberException : public AnimatorException {
+
+public:
+    inline IllegalAxisNumberException(QString errorMessage) : AnimatorException (errorMessage) {}
+
+};
+
 class IllegalStateException : public AnimatorException {
 
 public:

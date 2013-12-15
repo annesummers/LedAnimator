@@ -6,17 +6,18 @@
 
 #include "mainwindow.h"
 
-#include "led.h"
+#include "Led.h"
 #include "ledwidget.h"
 #include "ledgridgroupwidget.h"
 #include "ledgridwidget.h"
-#include "playinfowidget.h"
+#include "TimeAxisPlayWidget.h"
 #include "engine.h"
-#include "animation.h"
-#include "animationdetailswidget.h"
+#include "Animation.h"
+#include "TimeAxisDetailsWidget.h"
+#include "ValueAxisDetailsWidget.h"
 #include "grouplistwidget.h"
-#include "leddetails.h"
-#include "framedetails.h"
+#include "LedDetailsWidget.h"
+#include "FrameDetailsWidget.h"
 
 #include "constants.h"
 
@@ -31,16 +32,8 @@ MainWindow::MainWindow(Engine& engine) :
 
     iUndoStack = new QUndoStack(this);
 
-    QWidget* centralWidget = new QWidget(this);
-    centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
-
-    QGridLayout* gridLayout = new QGridLayout(centralWidget);
-    gridLayout->setSpacing(6);
-    gridLayout->setContentsMargins(11, 11, 11, 11);
-    gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-
-    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(centralWidget, engine);
-    LedGridWidget* ledGridWidget = new LedGridWidget(centralWidget, engine.animation(), *ledGridGroupWidget);
+    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(this, engine);
+    LedGridWidget* ledGridWidget = new LedGridWidget(this, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
     connect(&engine.animation(), SIGNAL(newLed(int, int)), ledGridWidget, SLOT(addLed(int, int)));
@@ -48,44 +41,15 @@ MainWindow::MainWindow(Engine& engine) :
     connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), ledGridWidget, SLOT(ledDeleted(int, int, int)));
     connect(&engine.animation(), SIGNAL(ledMoved(int, int, int, int)), ledGridWidget, SLOT(ledMoved(int, int, int, int)));
 
-    gridLayout->addWidget(ledGridWidget, 0, 0, 2, 1);
-
-    LedDetailsWidget* ledDetailsWidget = new LedDetailsWidget(centralWidget);
+    LedDetailsWidget* ledDetailsWidget = new LedDetailsWidget(NULL);
     ledDetailsWidget->setObjectName(QString::fromUtf8("ledDetailsWidget"));
-
+    ledDetailsWidget->show();
     connect(ledGridWidget, SIGNAL(currentLedDetails(int, int, int, QColor)), ledDetailsWidget, SLOT(currentLedDetails(int, int, int, QColor)));
 
-    gridLayout->addWidget(ledDetailsWidget, 0, 1, 2, 1);
+    setCentralWidget(ledGridGroupWidget);
 
-    FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(centralWidget);
-    frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
-
-    connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
-    connect(&engine.animation(), SIGNAL(numFramesChanged(int)), frameDetailsWidget, SLOT(numFramesChanged(int)));
-    connect(&engine.animation(), SIGNAL(framesInserted(int,int)), frameDetailsWidget, SLOT(framesInserted(int, int)));
-
-    gridLayout->addWidget(frameDetailsWidget, 0, 2, 1, 1);
-
-    PlayInfoWidget* playInfoWidget = new PlayInfoWidget(centralWidget, engine.animation());
-    playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
-
-    gridLayout->addWidget(playInfoWidget, 1, 2, 1, 1);
-
-    QWidget* widget1 = new QWidget(centralWidget);
-    gridLayout->addWidget(widget1, 0, 3, 2, 1);
-
-    AnimationDetailsWidget* animationDetailsWidget = new AnimationDetailsWidget(centralWidget, engine.animation(), engine);
-    animationDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
-
-    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), animationDetailsWidget, SLOT(ledDeleted(int, int, int)));
-    connect(&engine.animation(), SIGNAL(ledRenumbered(int,int,int)), animationDetailsWidget, SLOT(ledRenumbered(int, int, int)));
-    connect(&engine.animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
-    connect(&engine.animation(), SIGNAL(framesInserted(int,int)), animationDetailsWidget, SLOT(framesInserted(int, int)));
-    connect(&engine.animation(), SIGNAL(currentFrameChanged(int)), animationDetailsWidget, SLOT(currentFrameChanged(int)));
-
-    gridLayout->addWidget(animationDetailsWidget, 2, 0, 1, 4);
-
-    setCentralWidget(centralWidget);
+    connect(&engine.animation(), SIGNAL(timeAxisAdded()), this, SLOT(showTimeAxisDetails()));
+    connect(&engine.animation(), SIGNAL(valueAxisAdded(int)), this, SLOT(showValueAxisDetails(int)));
 
     QMenu* fileMenu = new QMenu("&File", this);
     QAction* newAction = fileMenu->addAction("&New animation...");
@@ -109,7 +73,7 @@ MainWindow::MainWindow(Engine& engine) :
     connect(saveAsAction, SIGNAL(triggered()), &iEngine, SLOT(saveAnimationAs()));
     connect(importAction, SIGNAL(triggered()), &iEngine, SLOT(importBitmap()));
     connect(exportAction, SIGNAL(triggered()), &iEngine, SLOT(exportAnimation()));
-    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(quitAction, SIGNAL(triggered()), &iEngine, SLOT(quit()));
 
     menuBar()->addMenu(fileMenu);
 
@@ -123,13 +87,13 @@ MainWindow::MainWindow(Engine& engine) :
     iPasteWrapAction = editMenu->addAction("Paste &wrap");
 
     connect(iCutAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(cutSelected()));
-    connect(iCutAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(cutSelected()));
+    //connect(iCutAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(cutSelected()));
     connect(iCopyAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(copySelected()));
-    connect(iCopyAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(copySelected()));
+   // connect(iCopyAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(copySelected()));
     connect(iPasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(paste()));
-    connect(iPasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
+  //  connect(iPasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
     connect(iPasteWrapAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(pasteWrap()));
-    connect(iPasteWrapAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(pasteWrap()));
+ //   connect(iPasteWrapAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(pasteWrap()));
 
     iCutAction->setEnabled(false);
     iCopyAction->setEnabled(false);
@@ -151,21 +115,78 @@ MainWindow::MainWindow(Engine& engine) :
     QMenu* animationMenu = new QMenu("&Animation", this);
     QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");
     animationMenu->addSeparator();
-    QAction* addFramesAction = animationMenu->addAction("&Add frames");
-    QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
-    animationMenu->addSeparator();
-    QAction* setFrameFrequencyAction = animationMenu->addAction("Set &frame frequency");
+    iAddTimeAxisAction = animationMenu->addAction("Add &time axis");
+    iAddValueAxisAction = animationMenu->addAction("Add &value axis");
+    //QAction* addFramesAction = animationMenu->addAction("&Add frames");
+    //QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
+    //animationMenu->addSeparator();
+    //QAction* setFrameFrequencyAction = animationMenu->addAction("Set &frame frequency");
 
     connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
-    connect(addFramesAction, SIGNAL(triggered()), &iEngine, SLOT(addFrames()));
-    connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
-    connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
+    connect(iAddTimeAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addTimeAxis()));
+    connect(iAddValueAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addValueAxis()));
+    iAddTimeAxisAction->setEnabled(false);
+    iAddValueAxisAction->setEnabled(true);
+    //connect(addFramesAction, SIGNAL(triggered()), &iEngine, SLOT(addFrames()));
+    //connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
+    //connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
 
     menuBar()->addMenu(animationMenu);
 }
 
 MainWindow::~MainWindow() {
     writeSettings();
+}
+
+void MainWindow::showTimeAxisDetails() {
+    // TODO store so we can delete
+    QWidget* widget1 = new QWidget(NULL);
+
+    FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(widget1);
+    frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
+
+    connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
+    connect(iEngine.animation().timeAxis(), SIGNAL(highValueChanged(int)), frameDetailsWidget, SLOT(highValueChanged(int)));
+    //connect(&engine.animation(), SIGNAL(framesInserted(int,int)), frameDetailsWidget, SLOT(framesInserted(int, int)));
+
+    frameDetailsWidget->highValueChanged(iEngine.animation().timeAxis()->highValue());
+
+    TimeAxisPlayWidget* playInfoWidget = new TimeAxisPlayWidget(widget1, iEngine.animation(), *iEngine.animation().timeAxis());
+    playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
+
+    TimeAxisDetailsWidget* axisDetailsWidget = new TimeAxisDetailsWidget(widget1, iEngine.animation(), *iEngine.animation().timeAxis(), iEngine);
+    axisDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
+   // animationDetailsWidget->show();
+
+    QGridLayout* gridLayout = new QGridLayout();
+    gridLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+
+    gridLayout->addWidget(playInfoWidget, 0, 0, 1, 1);
+    gridLayout->addWidget(frameDetailsWidget, 0, 1, 1, 1);
+    gridLayout->addWidget(axisDetailsWidget, 1, 0, 1, 2);
+
+    QHBoxLayout* mainLayout = new QHBoxLayout(widget1);
+    mainLayout->setObjectName(QString::fromUtf8("mainLayout"));
+
+    mainLayout->addLayout(gridLayout);
+
+    connect(&iEngine.animation(), SIGNAL(ledDeleted(int, int, int)), axisDetailsWidget, SLOT(ledDeleted(int, int, int)));
+    connect(&iEngine.animation(), SIGNAL(ledRenumbered(int,int,int)), axisDetailsWidget, SLOT(ledRenumbered(int, int, int)));
+    connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), axisDetailsWidget, SLOT(currentFrameChanged(int)));
+   // connect(&engine.animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
+   // connect(&engine.animation(), SIGNAL(framesInserted(int,int)), animationDetailsWidget, SLOT(framesInserted(int, int)));
+
+    widget1->show();
+}
+
+void MainWindow::showValueAxisDetails(int axisNumber) {
+    // TODO store so we can delete
+    ValueAxisDetailsWidget* axisDetailsWidget = new ValueAxisDetailsWidget(NULL, iEngine.animation(), iEngine.animation().axisAt(axisNumber), iEngine);
+    axisDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
+    axisDetailsWidget->show();
+
+    connect(&iEngine.animation(), SIGNAL(ledDeleted(int, int, int)), axisDetailsWidget, SLOT(ledDeleted(int, int, int)));
+    connect(&iEngine.animation(), SIGNAL(ledRenumbered(int,int,int)), axisDetailsWidget, SLOT(ledRenumbered(int, int, int)));
 }
 
 void MainWindow::writeSettings() {
@@ -204,6 +225,7 @@ void MainWindow::setEnabledCopyAction(bool enabled) {
 void MainWindow::closeEvent(QCloseEvent *event) {
     if (iEngine.askSaveAnimation()) {
         event->accept();
+        delete this;
     } else {
         event->ignore();
     }

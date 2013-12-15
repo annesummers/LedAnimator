@@ -11,6 +11,7 @@
 #include <QUndoStack>
 
 #include "selectablegroupgroupwidget.h"
+//#include "Animation.h"
 
 namespace AnimatorModel {
 class Animation;
@@ -35,10 +36,13 @@ public:
     inline AnimatorModel::Animation& animation() const { return *iAnimation; }
 
     bool askSaveAnimation();  
-    void setupNewAnimation(int numRows, int numColumns, int numFrames, int frameFrequency);
+    void setupNewAnimation(int numRows, int numColumns);
 
     void setSelectedGroupGroup(SelectableGroupGroupWidget *groupGroup);
     inline bool isSelectedGroupGroup(SelectableGroupGroupWidget* groupGroup) { return groupGroup == iSelectedGroupGroup; }
+
+signals:
+    void doQuit();
 
 private slots:
     void saveAnimation();
@@ -49,11 +53,15 @@ private slots:
 
     void exportAnimation();
 
-    void addFrames();
-    void setNumFrames();
-    void setFrameFrequency();
+    //void addFrames();
+    //void setNumFrames();
+    //void setFrameFrequency();
+    void addTimeAxis();
+    void addValueAxis();
 
     void importBitmap();
+
+    void quit();
 
 private:
     void doSave(QString fileName, bool withPositions = true);
