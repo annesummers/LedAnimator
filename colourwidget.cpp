@@ -21,7 +21,8 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
     iSetColourAction(NULL),
     iFadeAction(NULL),
     iFadeToAction(NULL),
-    iFading(false) {
+    iFading(false),
+    iFunctionFading(false){
 
     iSetColourAction = new QAction(tr("&Set colour..."), this);
     iSetColourAction->setStatusTip(tr("Choose a colour"));

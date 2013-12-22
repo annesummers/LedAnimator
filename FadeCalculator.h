@@ -11,6 +11,10 @@
 #include <QColor>
 #include <QTimer>
 
+#include "Function.h"
+
+using namespace AnimatorModel;
+
 class FadeCalculator : public QObject {
     Q_OBJECT
 
@@ -21,6 +25,8 @@ public:
                             const int iterations);
 
     void start();
+
+    inline const Function function() const { return Function(iRedIncrement, iBlueIncrement, iGreenIncrement); }
 
 signals:
     void colourCalculated(QColor colour);

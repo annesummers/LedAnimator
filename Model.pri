@@ -1,23 +1,42 @@
 INCLUDEPATH += Model
 
 SOURCES +=  \
-    animation.cpp \
-    led.cpp \
-    frame.cpp \
-    fadecalculator.cpp \
-    selectable.cpp \
-    griditem.cpp \
-    importbitmap.cpp \
-    ledanimcodec.cpp \
-    ledanimatoractionbase.cpp
+    LedSetIterator.cpp \
+    LedSet.cpp \
+    Animation.cpp \
+    FadeCalculator.cpp \
+    Frame.cpp \
+    GridItem.cpp \
+    ImportBitmap.cpp \
+    Led.cpp \
+    LedAnimatorActionBase.cpp \
+    Codec.cpp \
+    Selectable.cpp \
+    Axis.cpp \
+    TimeAxis.cpp \
+    ColourValue.cpp \
+    ValueAxis.cpp \
+    FunctionValue.cpp \
+    Function.cpp \
+    NoValue.cpp
 
 HEADERS += \
-    animation.h \
-    frame.h \
-    led.h \
-    fadecalculator.h \
-    selectable.h \
-    griditem.h \
-    importbitmap.h \
-    ledanimcodec.h \
-    ledanimatoractionbase.h
+    LedSet.h \
+    LedSetIterator.h \
+    Animation.h \
+    FadeCalculator.h \
+    Frame.h \
+    GridItem.h \
+    ImportBitmap.h \
+    Led.h \
+    LedAnimatorActionBase.h \
+    Codec.h \
+    Selectable.h \
+    Axis.h \
+    TimeAxis.h \
+    ColourValue.h \
+    ValueAxis.h \
+    FunctionValue.h \
+    FrameValue.h \
+    Function.h \
+    NoValue.h

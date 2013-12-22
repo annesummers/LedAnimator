@@ -12,6 +12,7 @@
 #include "Animation.h"
 #include "ColourValue.h"
 #include "FunctionValue.h"
+#include "NoValue.h"
 
 using namespace AnimatorModel;
 using namespace UndoCommands;
@@ -35,18 +36,19 @@ Frame::Frame(QObject *parent,
              QUndoStack& undoStack) :
     Selectable(parent, animation, number),
     iUndoStack(undoStack),
-    iValue(NULL),
+    iValue(NULL),//*new NoValue(parent)),
     iPrevious(previous) {
 }
 
 void Frame::setValue(const FrameValue& value) {
-
     iUndoStack.push(new SetFrameColourCommand(iAnimation, *this, value));
     //doSetValue(value);
 }
 
 const QColor Frame::colour() const {
     switch(value().type()) {
+    case kNoValue:
+        return QColor();
     case kColour:
         return static_cast<const ColourValue&>(value()).colour();
     case kFunction: {

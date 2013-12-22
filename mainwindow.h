@@ -34,6 +34,10 @@ public:
     void setEnabledCutAction(bool enabled);
     void setEnabledCopyAction(bool enabled);
 
+public slots:
+    void showTimeAxisDetails();
+    void showValueAxisDetails(int);
+
 protected:
     void closeEvent(QCloseEvent *event);
     
@@ -44,6 +48,9 @@ private:
     QAction*        iCopyAction;
     QAction*        iPasteAction;
     QAction*        iPasteWrapAction;
+
+    QAction*        iAddTimeAxisAction;
+    QAction*        iAddValueAxisAction;
 
     QUndoStack*     iUndoStack;
 };

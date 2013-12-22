@@ -1,9 +1,7 @@
 INCLUDEPATH +=UI
 
 SOURCES += \
-    mainwindow.cpp \
     ledgridwidget.cpp \
-    playinfowidget.cpp \
     ledwidget.cpp \
     framewidget.cpp \
     framelistwidget.cpp \
@@ -13,14 +11,19 @@ SOURCES += \
     selectablegroupwidget.cpp \
     selectablewidget.cpp \
     newanimationdialog.cpp \
-    animationdetailswidget.cpp \
     selectablegroupgroupwidget.cpp \
     grouplistwidget.cpp \
     colourgroupgroupwidget.cpp \
     renumberleddialog.cpp \
     ledgridgroupwidget.cpp \
-    framedetailswidget.cpp \
-    leddetailswidget.cpp
+    leddetailswidget.cpp \
+    MainWindow.cpp \
+    form.cpp \
+    TimeAxisPlayWidget.cpp \
+    AxisDetailsWidget.cpp \
+    TimeAxisDetailsWidget.cpp \
+    ValueAxisDetailsWidget.cpp \
+    FrameDetailsWidget.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -29,7 +32,6 @@ HEADERS += \
     framelistwidget.h \
     renumberleddialog.h \
     ledgridgroupwidget.h \
-    animationdetailswidget.h \
     selectablegroupgroupwidget.h \
     grouplistwidget.h \
     colourgroupwidget.h \
@@ -38,18 +40,22 @@ HEADERS += \
     socketwidget.h \
     selectablegroupwidget.h \
     selectablewidget.h \
-    animationdetailswidget.h \
     ledgridwidget.h \
-    playinfowidget.h \
-    leddetails.h \
-    framedetails.h \
-    colourgroupgroupwidget.h
+    colourgroupgroupwidget.h \
+    LedDetailsWidget.h \
+    form.h \
+    TimeAxisPlayWidget.h \
+    AxisDetailsWidget.h \
+    TimeAxisDetailsWidget.h \
+    ValueAxisDetailsWidget.h \
+    FrameDetailsWidget.h
 
 
 
 FORMS += \
     newanimation.ui \
     gridlistwidget.ui \
-    leddetails.ui \
     framedetails.ui \
-    renumberleddialog.ui
+    renumberleddialog.ui \
+    LedDetails.ui \
+    form.ui

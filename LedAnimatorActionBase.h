@@ -11,12 +11,14 @@
 #include <QColor>
 
 #include "constants.h"
-#include "led.h"
+#include "Led.h"
 
 namespace AnimatorModel {
-
 class Animation;
-class Frame;
+class ColourFrame;
+
+namespace UndoCommands {
+
 
 class LedAnimatorCommandBase : public QUndoCommand {
 
@@ -116,7 +118,8 @@ private:
 class SetFrameColourCommand : public LedAnimatorCommandBase {
 
 public:
-    explicit SetFrameColourCommand(Animation& animation, Frame& frame, QColor oldColour, QColor newColour);
+    explicit SetFrameColourCommand(Animation &animation,
+                                   Frame& frame, const FrameValue &newValue);
 
     void undo();
     void redo();
@@ -126,8 +129,8 @@ private:
     void setText();
 
     Frame& iFrame;
-    QColor iOldColour;
-    QColor iNewColour;
+    const FrameValue& iOldValue;
+    const FrameValue& iNewValue;
 };
 
 class FadeCommand : public LedAnimatorCommandBase {
@@ -200,7 +203,7 @@ private:
     Led iCopyLed;
 };
 */
-
+}
 
 }
 

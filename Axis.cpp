@@ -39,12 +39,25 @@ void Axis::setCurrentFrame(int frame) {
 
 AxisData::AxisData(QObject *parent,
                    Animation &animation,
-                      Axis& axis,
+                   Axis& axis,
                    QUndoStack &undoStack) :
     QObject(parent),
     iAxis(axis),
     iAnimation(animation),
-    iUndoStack(undoStack){
+    iUndoStack(undoStack) {
 
+    Frame* newFrame = new Frame(this, animation, axis.lowValue(), NULL, undoStack);
+    for(int i = axis.lowValue() + 1; i < axis.highValue(); i++) {
+        iFrames.insert(newFrame->number(), newFrame);
+        newFrame = new Frame(this, animation, i, newFrame, undoStack);
+    }
+
+    iFrames.insert(newFrame->number(), newFrame);
+}
+
+void AxisData::copyFrames(const AxisData &copyAxis) {
+    for(int i = iAxis.lowValue(); i < iAxis.highValue(); i++) {
+        frameAt(i).doSetValue(copyAxis.frameAt(i).value());
+    }
 }
 

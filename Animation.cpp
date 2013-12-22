@@ -141,7 +141,7 @@ const void Animation::addTimeAxis(int lowValue,
 const int Animation::addValueAxis(int lowValue,
                  int highValue,
                  int zeroValue) {
-    int axisNumber = iAxes.count() + 1;
+    int axisNumber = iAxes.count();
     ValueAxis* axis = new ValueAxis(this, *this, axisNumber, lowValue, highValue, zeroValue);
     iAxes.append(axis);
 

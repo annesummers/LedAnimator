@@ -1,4 +1,4 @@
-#include "framedetails.h"
+#include "FrameDetailsWidget.h"
 #include "ui_framedetails.h"
 
 using namespace AnimatorUi;
@@ -19,10 +19,10 @@ void FrameDetailsWidget::currentFrameChanged(int currentFrame) {
     ui->currentFrame->setText(QString("%1").arg(currentFrame));
 }
 
-void FrameDetailsWidget::numFramesChanged(int numFrames) {
-    ui->numFrames->setText(QString("%1").arg(numFrames));
+void FrameDetailsWidget::highValueChanged(int highValue) {
+    ui->numFrames->setText(QString("%1").arg(highValue));
 }
 
 void FrameDetailsWidget::framesInserted(int numFrames, int numFramesAdded) {
-    numFramesChanged(numFrames);
+  //  numFramesChanged(numFrames);
 }

@@ -54,7 +54,7 @@ void FrameWidget::functionFade() {
         return;
     }
 
-    colourGroup().fade();
+    colourGroup().functionFade();
 }
 
 void FrameWidget::functionFadeTo() {
@@ -74,19 +74,29 @@ void FrameWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);
     painter.setBrush(frame().colour());
 
+
+    painter.setPen(Qt::NoPen);
+
+    QRect rect(0, 0, width(), height());
+    painter.drawRect(rect);
+
     if(frame().isSelected() ){
         painter.setPen(Qt::white);
     } else {
         painter.setPen(Qt::black);
     }
 
+    painter.setBrush(Qt::NoBrush);
+    painter.drawLine(0, 0, width() - 1, 0);
+    painter.drawLine(0, height() - 1, width() - 1, height() - 1);
+
     if(frame().value().type() == kColour) {
-        QRect rect(0, 0, width(), height());
+        if(frame().previous() == NULL ||
+           frame().previous()->value().type() == kFunction) {
+            painter.drawLine(0, 0, 0, height() - 1);
+        }
 
-        painter.drawRect(rect);
-
-        painter.setBrush(Qt::NoBrush);
-        painter.drawRect(0, 0, width() - 1, height() - 1);
+        painter.drawLine(width() - 1, 0, width() - 1, height() - 1);
     } else if(frame().value().type() == kFunction) {
 
     }

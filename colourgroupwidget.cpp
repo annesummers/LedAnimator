@@ -49,41 +49,43 @@ void ColourGroupWidget::doSetValue(FrameValue &value) {
 FadeParameters& ColourGroupWidget::setupFunctionFade(QColor fadeToColour) {
     FadeParameters* fadeParameters = new FadeParameters();
 
-    int rowSpan;
+    int columnSpan;
 
-    if(firstSelectedAreaPosition().row() > lastSelectedAreaPosition().row()) {
-        rowSpan = firstSelectedAreaPosition().row() - lastSelectedAreaPosition().row() + 1;
-        fadeParameters->rowIncrement = false;
+    if(firstSelectedAreaPosition().column() > lastSelectedAreaPosition().column()) {
+        columnSpan = firstSelectedAreaPosition().column() - lastSelectedAreaPosition().column() + 1;
+        fadeParameters->columnIncrement = false;
     } else {
-        rowSpan = lastSelectedAreaPosition().row() - firstSelectedAreaPosition().row() + 1;
-        fadeParameters->rowIncrement = true;
+        columnSpan = lastSelectedAreaPosition().column() - firstSelectedAreaPosition().column() + 1;
+        fadeParameters->columnIncrement = true;
     }
 
-    if(firstSelectedAreaPosition().column() != lastSelectedAreaPosition().column()) {
+    if(firstSelectedAreaPosition().row() != lastSelectedAreaPosition().row()) {
         throw IllegalStateException("ColourGroupWidget::functionFade : can only function fade over a single row");
     }
 
-    fadeParameters->maxWidgets = rowSpan;
-    fadeParameters->increments = rowSpan - 2;  // TODO why -2?
+    //fadeParameters->maxWidgets = columnSpan;
+    fadeParameters->increments = columnSpan - 2;  // TODO why -2?
 
     ColourWidget& fromWidget = static_cast<ColourWidget&>(widgetAt(firstSelectedAreaPosition()));
     QColor fromColour = fromWidget.colour();
 
-    if(fadeParameters->rowIncrement) {
+    if(fadeParameters->columnIncrement) {
         fadeParameters->startColour = fromColour;
-        fadeParameters->nextRow = 0;
+        fadeParameters->endColour = fadeToColour;
+        //fadeParameters->nextColumn = 0;
         fadeParameters->firstPosition = firstSelectedAreaPosition();
         fadeParameters->lastPosition = lastSelectedAreaPosition();
     } else {
         fadeParameters->startColour = fadeToColour;
-        fadeParameters->nextRow = 0;//iFadeParameters->increments;
+        fadeParameters->endColour = fromColour;
+        //fadeParameters->nextColumn = 0;//iFadeParameters->increments;
         fadeParameters->firstPosition = lastSelectedAreaPosition();
         fadeParameters->lastPosition = firstSelectedAreaPosition();
-        fadeParameters->rowIncrement = true;
+        //fadeParameters->columnIncrement = true;
     }
 
-    fadeParameters->maxWidgetsLineCount = 0;
-    fadeParameters->numWidgets = 0;
+    //fadeParameters->maxWidgetsLineCount = 0;
+    //fadeParameters->numWidgets = 0;
 
     return *fadeParameters;
 }
@@ -110,8 +112,8 @@ void ColourGroupWidget::functionFadeTo(QColor fadeToColour) {
                                 parameters.endColour,
                                 parameters.increments);
 
-    for(int i = parameters.firstPosition.row() + 1; i <= parameters.lastPosition.row(); i++) {
-        static_cast<ColourWidget&>(widgetAt(Position(i, 0))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
+    for(int i = parameters.firstPosition.column() + 1; i <= parameters.lastPosition.column(); i++) {
+        static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
     }
 }
 

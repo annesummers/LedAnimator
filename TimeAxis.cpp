@@ -70,21 +70,6 @@ TimeAxisData::TimeAxisData(QObject *parent,
                             TimeAxis& axis,
                            QUndoStack& undoStack) :
     AxisData(parent, animation, axis, undoStack) {
-
-    Frame* newFrame = new Frame(this, animation, axis.lowValue(), NULL, undoStack);
-    for(int i = axis.lowValue() + 1; i < axis.highValue(); i++) {
-        iFrames.insert(newFrame->number(), newFrame);
-        newFrame = new Frame(this, animation, i, newFrame, undoStack);
-    }
-}
-
-void TimeAxisData::copyFrames(const AxisData &copyAxis) {
-    for(int i = iAxis.lowValue(); i < iAxis.highValue(); i++) {
-       // ColourFrame& frame = (ColourFrame&)(frameAt(i));
-       // ColourFrame& copyFrame = (ColourFrame&)(copyAxis.frameAt(i));
-       // frame.doSetValue(*(new ColourValue(this, copyFrame.colour())));
-        frameAt(i).doSetValue(copyAxis.frameAt(i).value());
-    }
 }
 
 void TimeAxisData::lowValueChanged(const int lowValue) {

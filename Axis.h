@@ -72,7 +72,7 @@ public:
     inline const int numFrames() const { return iAxis.numFrames(); }
     inline const int currentFrame() const { return iAxis.currentFrame(); }
 
-    virtual void copyFrames(const AxisData &copyAxis) = 0;
+    virtual void copyFrames(const AxisData &copyAxis);
 
     virtual void lowValueChanged(const int lowValue) = 0;
     virtual void highValueChanged(const int highValue) = 0;

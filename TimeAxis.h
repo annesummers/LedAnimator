@@ -57,7 +57,7 @@ public:
                             TimeAxis& axis,
                           QUndoStack& undoStack);
 
-    void copyFrames(const AxisData &copyAxis);
+    //void copyFrames(const AxisData &copyAxis);
 
     virtual void lowValueChanged(const int lowValue);
     virtual void highValueChanged(const int highValue);

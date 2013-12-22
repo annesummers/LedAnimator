@@ -38,7 +38,7 @@ public:
     inline const FrameValue& value() const { return *iValue; }
     void setValue(const FrameValue &value);
 
-    inline void doSetValue(const FrameValue& value) { iValue = (FrameValue*)&value; emit valueChanged(); }
+    inline void doSetValue(const FrameValue& value) { iValue = (FrameValue*)(&value); emit valueChanged(); }
 
 protected:
     QUndoStack& iUndoStack;

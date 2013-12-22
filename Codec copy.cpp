@@ -94,14 +94,15 @@ void LedAnimCodec::readAnimation() {
     /*int numSubAnimations = */readCharacter().intValue();
     int lowValue = readCharacter().intValue();
 
+    //int lowValue = 0;///readCharacter().intValue();
     int highValue = readCharacter().intValue();
-    int speed = readCharacter().intValue();
+    int frameFrequency = readCharacter().intValue();
 
     iAnimation.newAnimation(numRows,
                         numColumns ,
                         numLeds,
                         positions);
-    iAnimation.addTimeAxis(lowValue, highValue, speed);
+    iAnimation.addTimeAxis(lowValue, highValue, frameFrequency);
 
     readColourData();
 
@@ -144,43 +145,39 @@ const QColor LedAnimCodec::readColour() const {
 void LedAnimCodec::writeFunction(Frame& frame) {
     const FunctionValue& value = static_cast<const FunctionValue&>(frame.value());
 
-    float redIncrement = (float)value.function().redIncrement();
-    unsigned char *p = reinterpret_cast<unsigned char *>(&redIncrement);
-    for (std::size_t i = 0; i != sizeof(float); ++i) {
-        writeCharacter(p[i]);
-    }
+    int redIncrement = (int)(value.function().redIncrement() * sizeof(int));
+    int greenIncrement = (int)(value.function().greenIncrement() * sizeof(int));
+    int blueIncrement = (int)(value.function().blueIncrement() * sizeof(int));
 
-    float greenIncrement = (float)value.function().greenIncrement();
-    p = reinterpret_cast<unsigned char *>(&greenIncrement);
-    for (std::size_t i = 0; i != sizeof(float); ++i) {
-        writeCharacter(p[i]);
-    }
-
-    float blueIncrement = (float)value.function().blueIncrement();
-    p = reinterpret_cast<unsigned char *>(&blueIncrement);
-    for (std::size_t i = 0; i != sizeof(float); ++i) {
-        writeCharacter(p[i]);
-    }
+    writeCharacter((char) redIncrement);
+    writeCharacter((char) redIncrement >> 8);
+    writeCharacter((char) greenIncrement);
+    writeCharacter((char) greenIncrement >> 8);
+    writeCharacter((char) blueIncrement);
+    writeCharacter((char) blueIncrement >> 8);
 }
 
 const Function LedAnimCodec::readFunction() const {
-    float redIncrement = 0;
-    unsigned char *p = reinterpret_cast<unsigned char *>(&redIncrement);
-    for (std::size_t i = 0; i != sizeof(float); ++i) {
-        *(p+i) = readCharacter().charValue();
-    }
+    unsigned char redHigh = readCharacter().charValue();
+    char redLow = readCharacter().charValue();
 
-    float greenIncrement = 0;
-    p = reinterpret_cast<unsigned char *>(&greenIncrement);
-    for (std::size_t i = 0; i != sizeof(float); ++i) {
-        *(p+i) = readCharacter().charValue();
-    }
+    int intRedIncrement = redHigh;
+    intRedIncrement |= redLow << 8;
+    float redIncrement = ((float)intRedIncrement)/sizeof(int);
 
-    float blueIncrement = 0;
-    p = reinterpret_cast<unsigned char *>(&blueIncrement);
-    for (std::size_t i = 0; i != sizeof(float); ++i) {
-        *(p+i) = readCharacter().charValue();
-    }
+    unsigned char greenHigh = readCharacter().charValue();
+    char greenLow = readCharacter().charValue();
+
+    int intGreenIncrement = greenHigh;
+    intGreenIncrement |= greenLow << 8;
+    float greenIncrement = ((float)intGreenIncrement)/sizeof(int);
+
+    unsigned char blueHigh = readCharacter().charValue();
+    char blueLow = readCharacter().charValue();
+
+    int intBlueIncrement = blueHigh;
+    intBlueIncrement |= blueLow << 8;
+    float blueIncrement = ((float)intBlueIncrement)/sizeof(int);
 
     return Function(redIncrement,
                     blueIncrement,
@@ -384,7 +381,9 @@ QList<int> LedAnimByteArrayCodec::readPositionData(int* numRows, int* numColumns
 }
 
 void LedAnimByteArrayCodec::writeColourData() {
-    for (int frame = iAnimation.timeAxis()->lowValue(); frame < iAnimation.timeAxis()->highValue(); frame++) {
+    for (int frame = iAnimation.timeAxis()->lowValue();
+         frame < iAnimation.timeAxis()->highValue();
+         frame++) {
         int ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
             while(iAnimation.isMissing(ledNum)) {
@@ -393,7 +392,7 @@ void LedAnimByteArrayCodec::writeColourData() {
             }
 
             if(iWriteLedNumber) {
-                writeCharacter(ledNum);
+                writeCharacter(ledNum++);
             }
 
             writeCharacter(iAnimation.ledAt(ledNum)->timeAxis()->frameAt(frame).value().type());
@@ -406,14 +405,14 @@ void LedAnimByteArrayCodec::writeColourData() {
                 writeFunction(iAnimation.ledAt(ledNum)->timeAxis()->frameAt(frame));
                 break;
             }
-
-            ledNum++;
         }
     }
 }
 
 void LedAnimByteArrayCodec::readColourData() {
-    for(int frame = iAnimation.timeAxis()->lowValue(); frame < iAnimation.timeAxis()->highValue(); frame++) {
+    for(int frame = iAnimation.timeAxis()->lowValue();
+        frame < iAnimation.timeAxis()->highValue();
+        frame++) {
         int ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
             readCharacter();
@@ -426,14 +425,12 @@ void LedAnimByteArrayCodec::readColourData() {
             char frameType = readCharacter().charValue();
 
             switch(frameType) {
-            case kColour: {
-               // Frame& newFrame = ;
+            case kColour:
                 led->timeAxis()->frameAt(frame).doSetValue(*(new ColourValue(led, readColour())));
-            } break;
-            case kFunction: {
-                Frame& newFrame = led->timeAxis()->frameAt(frame);
-                newFrame.doSetValue(*(new FunctionValue(&newFrame, readFunction())));
-              }  break;
+                break;
+            case kFunction:
+                led->timeAxis()->frameAt(frame).doSetValue(*(new FunctionValue(led, readFunction())));
+                break;
             }
 
 

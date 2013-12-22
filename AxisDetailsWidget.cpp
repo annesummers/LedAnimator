@@ -61,6 +61,7 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     iFrameSlider->setObjectName(QString::fromUtf8("horizontalSlider"));
     iFrameSlider->setOrientation(Qt::Horizontal);
     iFrameSlider->setMinimum(iAxis.lowValue());
+    iFrameSlider->setMaximum(iAxis.highValue());
     iFrameSlider->setTickPosition(QSlider::TicksBelow);
     iFrameSlider->setPageStep(1);
     iFrameSlider->setSingleStep(1);

@@ -10,7 +10,8 @@ SOURCES += \
         colourwidgettests.cpp \
         selectablewidgettests.cpp \
         selectablewidgettestbase.cpp \
-        ledsocketinteractiontests.cpp
+        ledsocketinteractiontests.cpp \
+    Function.cpp
 
     HEADERS += \
         animationtests.h\
@@ -22,4 +23,5 @@ SOURCES += \
         selectablewidgettests.h \
         selectablewidgettestbase.h \
         ledsocketinteractiontests.h \
-        testconstants.h
+        testconstants.h \
+    Function.h

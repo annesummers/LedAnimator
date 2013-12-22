@@ -37,11 +37,13 @@ HEADERS += \
     animatorapplication.h \
     gammacorrect.h \
     constants.h \
-    exceptions.h
+    exceptions.h \
+    AnimationDetails.h
 
 SOURCES += \
     engine.cpp \
-    animatorapplication.cpp
+    animatorapplication.cpp \
+    AnimationDetails.cpp
 
 RESOURCES += \
     LedAnimator.qrc
