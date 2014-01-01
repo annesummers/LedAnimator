@@ -35,18 +35,41 @@ FrameWidget::FrameWidget(QWidget* parent, ColourGroupWidget& frameGroup, Frame& 
 
     connect(iFunctionFadeToAction, SIGNAL(triggered()), this, SLOT(functionFadeTo()));
 
-    connect(&frame, SIGNAL(colourChanged()), this, SLOT(updated()));
+    connect(&frame, SIGNAL(valueChanged()), this, SLOT(updated()));
 
     updated();
 }
 
-void FrameWidget::addExtraActions(QMenu *menu) {
-    ColourWidget::addExtraActions(menu);
-    if(colourGroup().isAreaSelected()) {
-        menu->addSeparator();
-        menu->addAction(iFunctionFadeAction);
-        menu->addAction(iFunctionFadeToAction);
+void FrameWidget::addDefaultAction(QMenu* menu) {
+    if(frame().value().type() == kColour) {
+        ColourWidget::addDefaultAction(menu);
     }
+}
+
+void FrameWidget::addExtraActions(QMenu *menu) {
+    if(frame().value().type() == kColour) {
+        ColourWidget::addExtraActions(menu);
+    }
+
+    if(colourGroup().isAreaSelected()) {
+        FrameWidget& first = static_cast<FrameWidget&>(colourGroup().widgetAt(colourGroup().firstSelectedAreaPosition()));
+        FrameWidget& last = static_cast<FrameWidget&>(colourGroup().widgetAt(colourGroup().lastSelectedAreaPosition()));
+
+        if(((first.frame().value().type() == kLinked) &&
+                last.frame().value().type() == kFunction) ||
+            (((last.frame().value().type() == kLinked) &&
+                first.frame().value().type() == kFunction))    ) {
+            menu->addSeparator();
+            menu->addAction(iFunctionFadeToAction);
+        }
+
+        /*if((first.frame().value().type() == kColour &&
+           last.frame().value().type() == kColour)) {
+
+            menu->addSeparator();
+            menu->addAction(iFunctionFadeAction);
+        }*/  // AS TODO colour to colour fade
+    }  
 }
 
 void FrameWidget::functionFade() {
@@ -90,7 +113,8 @@ void FrameWidget::paintEvent(QPaintEvent *) {
     painter.drawLine(0, 0, width() - 1, 0);
     painter.drawLine(0, height() - 1, width() - 1, height() - 1);
 
-    if(frame().value().type() == kColour) {
+    if(frame().value().type() == kColour ||
+            frame().value().type() == kLinked) {
         if(frame().previous() == NULL ||
            frame().previous()->value().type() == kFunction) {
             painter.drawLine(0, 0, 0, height() - 1);

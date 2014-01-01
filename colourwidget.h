@@ -44,7 +44,7 @@ private slots:
 protected:
     void mouseDoubleClickEvent(QMouseEvent* event);
 
-    void addDefaultAction(QMenu* menu);
+    virtual void addDefaultAction(QMenu* menu);
     virtual void addExtraActions(QMenu* menu);
 
     ColourGroupWidget& colourGroup() { return static_cast<ColourGroupWidget&>(iSelectableGroup); }

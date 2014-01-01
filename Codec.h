@@ -18,6 +18,7 @@ namespace AnimatorModel {
 class Animation;
 class Led;
 class Frame;
+class Axis;
 }
 
 using namespace AnimatorModel;
@@ -32,10 +33,12 @@ public:
     AnimChar();
 
     const int intValue() const;
-    const unsigned char charValue() const;
+    //const unsigned int unsignedIntValue() const;
+    const unsigned char unsignedCharValue() const;
+    const bool boolValue() const;
 
 private:
-    const unsigned char iValue;
+    const char iValue;
 };
 
 class AnimStringChar : public AnimChar {
@@ -68,8 +71,8 @@ protected:
     virtual void writePositionData() { }
     virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); QList<int> positions; return positions; }
 
-    virtual void writeColourData() = 0;
-    virtual void readColourData() = 0;
+    virtual void writeAxisData(int iAxisNum) = 0;
+    virtual void readAxisData(int iAxisNum) = 0;
 
     void writeColour(Frame& frame);
     const QColor readColour() const;
@@ -97,8 +100,8 @@ protected:
 
     const QByteArray &asByteArray() const;
 
-    void writeColourData();
-    void readColourData();
+    void writeAxisData(int axisNum);
+    void readAxisData(int iAxisNum);
 
 private:
     QString iString;
@@ -127,8 +130,8 @@ protected:
     void writePositionData();
     QList<int> readPositionData(int *numRows, int *numColumns, int numLeds);
 
-    void writeColourData();
-    void readColourData();
+    void writeAxisData(int iAxisNum);
+    void readAxisData(int iAxisNum);
 
 private:
     QByteArray  iByteArray;

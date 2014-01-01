@@ -55,6 +55,7 @@ public:
     explicit TimeAxisData(QObject *parent,
                           Animation& animation,
                             TimeAxis& axis,
+                          Led &led,
                           QUndoStack& undoStack);
 
     //void copyFrames(const AxisData &copyAxis);

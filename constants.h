@@ -48,9 +48,15 @@ const QString SETTINGS_MAIN_WINDOW = "MainWindow";
 const QString LED_MIME_TYPE = "ledanimator/x-leditemdata";
 const QString FRAME_MIME_TYPE = "ledanimator/x-frameitemdata";
 
-const static int kNoValue = 0;
-const static int kColour = 1;
-const static int kFunction = 2;
+const int kNoValue = 0;
+const int kColour = 1;
+const int kFunction = 2;
+const int kLinked = 3;
+
+const int kTimeAxis = 0;
+const int kValueAxis = 1;
+
+const int kTimeAxisNum = -1;
 
 namespace AnimatorModel {
 

@@ -1,5 +1,6 @@
 #include "Axis.h"
 #include "exceptions.h"
+#include "Led.h"
 
 using namespace AnimatorModel;
 using namespace Exception;
@@ -21,7 +22,7 @@ Axis::Axis(QObject *parent,
 }
 
 const int Axis::numFrames() const {
-    return iHighValue - iLowValue;
+    return iHighValue - iLowValue + 1;
 }
 
 void Axis::setCurrentFrame(int frame) {
@@ -37,22 +38,39 @@ void Axis::setCurrentFrame(int frame) {
     emit currentFrameChanged(iCurrentFrame);
 }
 
+/*const Frame& Axis::currentFrame() const {
+    return frameAt(iCurrentFrame);
+}*/
+
 AxisData::AxisData(QObject *parent,
                    Animation &animation,
                    Axis& axis,
+                   Led &led,
                    QUndoStack &undoStack) :
     QObject(parent),
     iAxis(axis),
     iAnimation(animation),
-    iUndoStack(undoStack) {
+    iUndoStack(undoStack),
+    iSignalMapper(NULL) {
+
+    iSignalMapper = new QSignalMapper(this);
 
     Frame* newFrame = new Frame(this, animation, axis.lowValue(), NULL, undoStack);
-    for(int i = axis.lowValue() + 1; i < axis.highValue(); i++) {
+    Frame* previousFrame = NULL;
+    for(int i = axis.lowValue() + 1; i <= axis.highValue(); i++) {
         iFrames.insert(newFrame->number(), newFrame);
-        newFrame = new Frame(this, animation, i, newFrame, undoStack);
+
+        iSignalMapper->setMapping(newFrame, newFrame->number());
+        connect(newFrame, SIGNAL(valueChanged()), iSignalMapper, SLOT(map()));
+
+        previousFrame = newFrame;
+        newFrame = new Frame(this, animation, i, previousFrame, undoStack);
+        previousFrame->setNext(*newFrame);
     }
 
     iFrames.insert(newFrame->number(), newFrame);
+
+    connect(iSignalMapper, SIGNAL(mapped(int)), &led, SLOT(colourChanged(int)));
 }
 
 void AxisData::copyFrames(const AxisData &copyAxis) {

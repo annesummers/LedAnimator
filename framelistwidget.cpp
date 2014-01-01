@@ -1,5 +1,7 @@
 #include "framelistwidget.h"
 
+#include <QtCore/qmath.h>
+
 #include "Animation.h"
 #include "Led.h"
 #include "framewidget.h"
@@ -16,13 +18,13 @@ FrameListWidget::FrameListWidget(QWidget *parent,
                                  const AxisData &axisData,
                                  ColourGroupGroupWidget &framesListGroup,
                                  int groupNumber) :
-    ColourGroupWidget(parent, 0, axisData.numFrames(), framesListGroup, groupNumber),
-    iAxis(axisData),
+    ColourGroupWidget(parent, 0, axisData.axis().numFrames(), framesListGroup, groupNumber),
+    iAxisData(axisData),
     iResized(false) {
 
     //numFramesChanged(axis.numFrames());
-    //lowValueChanged(axisData.axis().lowValue());
-    highValueChanged(axisData.axis().highValue());
+    lowValueChanged(0, axisData.axis().lowValue());
+    highValueChanged(0, axisData.axis().highValue());
 
     setFocusPolicy(Qt::ClickFocus);
 
@@ -33,19 +35,18 @@ FrameListWidget::FrameListWidget(QWidget *parent,
 
 // slots --------------------
 
-void FrameListWidget::lowValueChanged(int lowValue) {
-    int oldNumFrames = iFramesList.count();
-
-    if(iAxis.numFrames() > oldNumFrames) {  // we need to add more frames
-        for(int i = oldNumFrames; i < iAxis.numFrames(); i++) {
-            FrameWidget* frame = new FrameWidget(this, *this, iAxis.frameAt(iAxis.axis().lowValue() + i));
-            iFramesList.append(frame);
+void FrameListWidget::lowValueChanged(int oldLowValue, int lowValue) {
+    if(lowValue < oldLowValue) {  // we need to add more frames
+        for(int i = 0; i <  qAbs(lowValue - oldLowValue); i++) {
+            FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().lowValue() + i));
+            iFramesList.insert(i, frame);
+            connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
         }
-    } else if (iAxis.numFrames() < oldNumFrames ) {  // we need to remove some frames; take them from the start
-        for(int i = 0; i < oldNumFrames - iAxis.numFrames(); i++) {
-            FrameWidget* frame = iFramesList.at(i);
+    } else if (lowValue > oldLowValue ) {  // we need to remove some frames; take them from the start
+        for(int i = 0; i <  qAbs(oldLowValue - lowValue); i++) {
+            FrameWidget* frame = iFramesList.at(0);
 
-            iFramesList.removeAt(i);
+            iFramesList.removeAt(0);
             delete frame;
         }
     }
@@ -54,30 +55,33 @@ void FrameListWidget::lowValueChanged(int lowValue) {
 }
 
 void FrameListWidget::setSize() {
-    setMinimumWidth(iAxis.numFrames() * 7);
-    setMaximumWidth(iAxis.numFrames() * 7);
+    setMinimumWidth(iAxisData.axis().numFrames() * 7);
+    setMaximumWidth(iAxisData.axis().numFrames() * 7);
 
     doResize();
 }
 
-void FrameListWidget::highValueChanged(int highValue) {
-    int oldNumFrames = iFramesList.count();
-
-    if(iAxis.numFrames() > oldNumFrames) {  // we need to add more frames
-        for(int i = iAxis.numFrames() - oldNumFrames; i > 0; i--) {
-            FrameWidget* frame = new FrameWidget(this, *this, iAxis.frameAt(iAxis.axis().highValue() - i));
+void FrameListWidget::highValueChanged(int oldHighValue, int highValue) {
+    if(highValue > oldHighValue) {  // we need to add more frames
+        for(int i = qAbs(highValue - oldHighValue); i >= 0; i--) {
+            FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().highValue() - i));
             iFramesList.append(frame);
+            connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
         }
-    } else if (iAxis.numFrames() < oldNumFrames ) {  // we need to remove some frames; take them from the end
-        for(int i = oldNumFrames; i >= iAxis.numFrames(); i--) {
-            FrameWidget* frame = iFramesList.at(i);
+    } else if (highValue < oldHighValue ) {  // we need to remove some frames; take them from the end
+        for(int i = qAbs(oldHighValue - highValue); i >= 0; i--) {
+            FrameWidget* frame = iFramesList.at(iFramesList.count() - 1);
 
-            iFramesList.removeAt(i);
+            iFramesList.removeAt(iFramesList.count() - 1);
             delete frame;
         }
     }
 
     setSize();
+}
+
+void FrameListWidget::updateAll() {
+    update();
 }
 
 void FrameListWidget::framesInserted(int numFrames, int framesAdded) {

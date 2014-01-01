@@ -78,6 +78,7 @@ void ColourWidget::updated() {
     if(hue == -1) {
         hue = 0;
     }
+
     setToolTip(QString("h: %1\ns: %2\nv: %3")
                .arg(hue)
                .arg(colour().saturation())

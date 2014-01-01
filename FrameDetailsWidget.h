@@ -22,7 +22,7 @@ public slots:
 
 private slots:
     void currentFrameChanged(int currentFrame);
-    void framesInserted(int numFrames, int framesAdded);
+ //   void framesInserted(int numFrames, int framesAdded);
     
 private:
     Ui::FrameDetailsWidget *ui;

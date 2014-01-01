@@ -18,7 +18,8 @@ SOURCES +=  \
     ValueAxis.cpp \
     FunctionValue.cpp \
     Function.cpp \
-    NoValue.cpp
+    NoValue.cpp \
+    LinkedValue.cpp
 
 HEADERS += \
     LedSet.h \
@@ -39,4 +40,5 @@ HEADERS += \
     FunctionValue.h \
     FrameValue.h \
     Function.h \
-    NoValue.h
+    NoValue.h \
+    LinkedValue.h

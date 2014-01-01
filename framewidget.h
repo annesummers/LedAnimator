@@ -23,13 +23,15 @@ public:
     explicit FrameWidget(QWidget* parent, ColourGroupWidget &frameGroup, Frame& frame);
     inline Frame& frame() const { return static_cast<Frame&>(iItem); }
 
+    const QColor colour() const { return frame().colour(); }
+
 protected:
     void paintEvent(QPaintEvent *event);
 
+    void addDefaultAction(QMenu* menu);
     void addExtraActions(QMenu *menu);
 
     void setValue(FrameValue &value) { frame().setValue(value); }
-    const QColor colour() const { return frame().colour(); }
 
     inline Qt::DropActions dropActions() const { return Qt::CopyAction; }
     inline Qt::DropActions dragActions() const { return Qt::CopyAction; }

@@ -1,4 +1,8 @@
 #include "ValueAxis.h"
+#include "TimeAxis.h"
+
+#include "FunctionValue.h"
+#include "LinkedValue.h"
 
 using namespace AnimatorModel;
 
@@ -15,9 +19,25 @@ ValueAxis::ValueAxis(QObject *parent,
 ValueAxisData::ValueAxisData(QObject *parent,
                             Animation& animation,
                             ValueAxis& axis,
+                            TimeAxis& timeAxis, Led &led,
                             QUndoStack &undoStack) :
-  AxisData(parent, animation, axis, undoStack) {
+    AxisData(parent, animation, axis, led, undoStack),
+    iAnchorAxis(timeAxis) {
 
+    for(int i = axis.lowValue(); i < axis.zeroValue(); i++) {
+        frameAt(i).setValue(*(new FunctionValue(parent, Function())));
+    }
+
+    frameAt(iAxis.zeroValue()).setValue(*(new LinkedValue(parent, QColor())));
+
+    for(int i = axis.zeroValue() + 1; i < axis.highValue(); i++) {
+        frameAt(i).setValue(*(new FunctionValue(parent, Function())));
+    }
+}
+
+
+void ValueAxisData::setLinkedValue(LinkedValue& linkedValue) {
+    frameAt(iAxis.zeroValue()).setValue(linkedValue);
 }
 
 

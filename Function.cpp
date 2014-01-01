@@ -14,7 +14,7 @@ Function::Function(float redIncrement,
 Function::Function()  :
     iRedIncrement(0),
     iGreenIncrement(0),
-    iBlueIncrement(0){
+    iBlueIncrement(0) {
 }
 
 Function::Function(const Function& function) :
@@ -27,5 +27,14 @@ Function& Function::operator=(const Function& function) {
     iRedIncrement = function.iRedIncrement;
     iGreenIncrement = function.iGreenIncrement;
     iBlueIncrement = function.iBlueIncrement;
+
+    return *this;
+}
+
+Function& Function::operator+=(const Function& function) {
+    iRedIncrement += function.iRedIncrement;
+    iGreenIncrement += function.iGreenIncrement;
+    iBlueIncrement += function.iBlueIncrement;
+
     return *this;
 }

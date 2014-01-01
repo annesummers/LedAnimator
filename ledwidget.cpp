@@ -23,7 +23,7 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
     setAcceptDrops(false);
 
     connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
-    connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(updated()));
+    connect(&led, SIGNAL(updated()), this, SLOT(updated()));
 
     iRenumberAction = new QAction(tr("&Renumber..."), this);
     iRenumberAction->setStatusTip(tr("Renumber this led"));

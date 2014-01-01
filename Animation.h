@@ -81,7 +81,7 @@ public:
     ValueAxis& axisAt(int number) const;
     inline TimeAxis* timeAxis() const { return iTimeAxis; }
 
-    inline const int numAxes() const { return iAxes.count(); }
+    inline const int numValueAxes() const { return iAxes.count(); }
 
     inline bool isMissing(int ledNumber) { return iLeds->isMissing(ledNumber); }
     inline bool ledsMissing() { return iLeds->ledsMissing(); }

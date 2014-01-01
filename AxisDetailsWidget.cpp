@@ -132,7 +132,7 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
 
     setAcceptDrops(true);
 
-    connect(iFrameSlider, SIGNAL(valueChanged(int)), &animation, SLOT(setCurrentFrame(int)));
+    connect(iFrameSlider, SIGNAL(valueChanged(int)), &axis, SLOT(setCurrentFrame(int)));
 }
 
 bool AxisDetailsWidget::handleDragDropEvent(QDropEvent* event) {
@@ -211,9 +211,9 @@ void AxisDetailsWidget::numFramesChanged(int numFrames) {
     iFrameSlider->setTickInterval(numFrames);
 }
 
-void AxisDetailsWidget::framesInserted(int numFrames, int framesAdded) {
-    numFramesChanged(numFrames);
-}
+//void AxisDetailsWidget::framesInserted(int numFrames, int framesAdded) {
+ //   numFramesChanged(numFrames);
+//}
 
 void AxisDetailsWidget::addLed(int row, int column) {
     Led* led = iAnimation.ledAt(Position(row, column));
@@ -353,7 +353,7 @@ ScrollContentsWidget::ScrollContentsWidget(QWidget* parent, Animation& animation
 void ScrollContentsWidget::paintEvent(QPaintEvent *) {
     if(iShowLine) {
         int frameWidth = iFramesSize.width()/(iAxis.numFrames());
-        int currentFramePosition = (iAxis.currentFrame())*frameWidth;
+        int currentFramePosition = (iAxis.currentFrameNum())*frameWidth;
 
         QPainter painter(this);
         painter.setPen(Qt::black);

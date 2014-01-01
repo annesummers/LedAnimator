@@ -20,7 +20,7 @@ public:
 
     FrameValue& operator=(const FrameValue& copyValue);
 
-    inline int type() const { return kColour; }
+    inline virtual int type() const { return kColour; }
 
 signals:
 

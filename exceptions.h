@@ -34,6 +34,13 @@ public:
     inline InvalidStateException(QString errorMessage) : AnimatorException (errorMessage) {}
 };
 
+
+class InvalidFrameException : public AnimatorException {
+
+public:
+    inline InvalidFrameException(QString errorMessage) : AnimatorException (errorMessage) {}
+};
+
 class InvalidAnimationException  : public AnimatorException {
 
 public:
@@ -58,7 +65,6 @@ public:
     inline IllegalFrameNumberException(QString errorMessage) : AnimatorException (errorMessage) {}
 
 };
-
 
 class IllegalAxisNumberException : public AnimatorException {
 

@@ -11,6 +11,7 @@
 #include "Animation.h"
 #include "ColourValue.h"
 #include "FunctionValue.h"
+#include "LinkedValue.h"
 
 #include "constants.h"
 #include "exceptions.h"
@@ -19,7 +20,7 @@ using namespace Exception;
 
 Led::Led(QObject* parent, Animation &animation, int number, Position position, QUndoStack &undoStack) :
     GridItem(parent, animation, number, position),
-    iSignalMapper(NULL),
+    iTimeAxisData(NULL),
     iUndoStack(undoStack),
     iHidden(false) {
 
@@ -35,10 +36,9 @@ Led::Led(QObject* parent, Animation &animation, int number, Position position, Q
     }
 #endif
 
-    iSignalMapper = new QSignalMapper(this);
-
     connect(&animation, SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxis()));
     connect(&animation, SIGNAL(valueAxisAdded(int)), this, SLOT(addValueAxis(int)));
+
 
    // connect(&(animation), SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
 }
@@ -48,11 +48,9 @@ Led::~Led() {
 
 Led::Led(const Led& copyLed) :
     GridItem(copyLed.parent(), copyLed.iAnimation, copyLed.number(), copyLed.position()),
-    iSignalMapper(NULL),
+    iTimeAxisData(NULL),
     iUndoStack(copyLed.iUndoStack),
     iHidden(false) {
-
-    iSignalMapper = new QSignalMapper(this);
 
     copyAxes(copyLed);
 
@@ -71,74 +69,76 @@ Led& Led::operator=(const Led& led) {
 }
 
 void Led::addTimeAxis() {
-    iTimeAxisData = new TimeAxisData(this, iAnimation, *iAnimation.timeAxis(), iUndoStack);
+    iTimeAxisData = new TimeAxisData(this,
+                                     iAnimation,
+                                     *iAnimation.timeAxis(),
+                                     *this,
+                                     iUndoStack);
+
+    connect(&iTimeAxisData->axis(), SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
 }
 
 void Led::addValueAxis(int axisNumber) {
-    iAxesData.append(new ValueAxisData(this, iAnimation, iAnimation.axisAt(axisNumber), iUndoStack));
+    iAxesData.append(new ValueAxisData(this,
+                                       iAnimation,
+                                       iAnimation.axisAt(axisNumber),
+                                       *iAnimation.timeAxis(),
+                                       *this,
+                                       iUndoStack));
+
+    currentFrameChanged(iTimeAxisData->currentFrameNum());
 }
 
 const QColor Led::currentColour() const {
-    Frame& frame = iTimeAxisData->frameAt(iTimeAxisData->currentFrame());
+    const Frame& frame = iTimeAxisData->currentFrame();
 
-    return frame.colour();
-    /*switch(frame.value().type()) {
-    case kColour:
-    return static_cast<const ColourValue&>(frame.value()).colour();
-    case kFunction: {
-        if(iTimeAxisData->currentFrame() > 0) {
-            Frame& current = iTimeAxisData->frameAt(iTimeAxisData->currentFrame());
-            const FunctionValue& functionValue = static_cast<const FunctionValue&>(current.value());
-            Frame* previous = &current;
-            int counter = 1;
+    Function combinedFunction;
 
-            while(previous->value().type() == kFunction) {
-                previous = &(iTimeAxisData->frameAt(iTimeAxisData->currentFrame() - counter));
-                counter++;
+    for(int i = 0; i < iAnimation.numValueAxes(); i++) {
+        if(i < iAxesData.count()) {
+            Function function = axisAt(i).currentFrame().function();
+
+            if(!function.isNull()) {
+                combinedFunction += function;
             }
-
-            const ColourValue& colourValue = static_cast<const ColourValue&>(previous->value());
-            float currentRedValue = colourValue.colour().redF();
-            float currentBlueValue = colourValue.colour().blueF();
-            float currentGreenValue = colourValue.colour().greenF();
-
-            for(int i = 0; i < counter; i++) {
-                currentRedValue -= functionValue.function().redIncrement();
-                currentBlueValue -= functionValue.function().greenIncrement();
-                currentGreenValue -= functionValue.function().blueIncrement();
-
-                //qDebug("red : %f green : %f blue %f", iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
-
-                if(currentRedValue > 1) {
-                    currentRedValue = 1;
-                }
-
-                if(currentBlueValue > 1) {
-                    currentBlueValue = 1;
-                }
-
-                if(currentGreenValue > 1) {
-                    currentGreenValue = 1;
-                }
-
-                if(currentRedValue < 0) {
-                    currentRedValue = 0;
-                }
-
-                if(currentBlueValue < 0) {
-                    currentBlueValue = 0;
-                }
-
-                if(currentGreenValue < 0) {
-                    currentGreenValue = 0;
-                }
-            }
-
-            return QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
         }
     }
 
-    }*/
+    float currentRedValue = frame.colour().redF();
+    float currentGreenValue = frame.colour().greenF();
+    float currentBlueValue = frame.colour().blueF();
+
+    currentRedValue += combinedFunction.redIncrement();
+    currentGreenValue += combinedFunction.greenIncrement();
+    currentBlueValue += combinedFunction.blueIncrement();
+
+    if(currentRedValue > 1) {
+        currentRedValue = 1;
+    }
+
+    if(currentBlueValue > 1) {
+        currentBlueValue = 1;
+    }
+
+    if(currentGreenValue > 1) {
+        currentGreenValue = 1;
+    }
+
+    if(currentRedValue < 0) {
+        currentRedValue = 0;
+    }
+
+    if(currentBlueValue < 0) {
+        currentBlueValue = 0;
+    }
+
+    if(currentGreenValue < 0) {
+        currentGreenValue = 0;
+    }
+
+    QColor colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
+
+    return colour;
 }
 
 ValueAxisData &Led::axisAt(int axisNum) const {
@@ -156,7 +156,7 @@ ValueAxisData &Led::axisAt(int axisNum) const {
 }
 
 void Led::copyAxes(const Led &copyLed) {
-    for(int i = 0; i < iAnimation.numAxes(); i++) {
+    for(int i = 0; i < iAnimation.numValueAxes(); i++) {
         axisAt(i).copyFrames(copyLed.axisAt(i));
     }
 
@@ -164,14 +164,25 @@ void Led::copyAxes(const Led &copyLed) {
 }
 
 
-/*void Led::colourChanged(int frameNum) {
+void Led::colourChanged(int frameNum) {
     iAnimation.setSaved(false);
 
-    if(frameNum == iAnimation.currentFrame()) {
+    if(frameNum == iTimeAxisData->axis().currentFrameNum()) {
         emit ledUpdated();
     }
 }
 
+void Led::currentFrameChanged(int currentFrame) {
+    for(int i = 0; i < iAnimation.numValueAxes(); i++) {
+        if(i < iAxesData.count()) {
+            axisAt(i).setLinkedValue(*(new LinkedValue(&axisAt(i), iTimeAxisData->frameAt(currentFrame).colour())));
+        }
+    }
+
+    emit updated();
+}
+
+/*
 void Led::setCurrentColour(QColor colour) {    
     frameAt(iAnimation.currentFrame()).setColour(colour);
 }*/

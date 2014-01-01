@@ -90,8 +90,8 @@ TimeAxisPlayWidget::TimeAxisPlayWidget(QWidget* parent, Animation& animation, Ti
     QObject::connect(iLastButton, SIGNAL(clicked()), this, SLOT(lastClicked()));
     QObject::connect(iRepeatButton, SIGNAL(clicked()), this, SLOT(repeatClicked()));
 
-    QObject::connect(&animation, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
-    QObject::connect(&animation, SIGNAL(stopped()), this, SLOT(stopped()));
+    QObject::connect(&iTimeAxis, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
+    QObject::connect(&iTimeAxis, SIGNAL(stopped()), this, SLOT(stopped()));
 }
 
 // slots ---------------------------------
@@ -122,11 +122,11 @@ void TimeAxisPlayWidget::playClicked() {
 }
 
 void TimeAxisPlayWidget::lastClicked() {
-    iTimeAxis.setCurrentFrame(iTimeAxis.numFrames());
+    iTimeAxis.setCurrentFrame(iTimeAxis.highValue());
 }
 
 void TimeAxisPlayWidget::nextClicked() {
-    int frame = iTimeAxis.currentFrame() + 1;
+    int frame = iTimeAxis.currentFrameNum() + 1;
     if(frame > iTimeAxis.highValue()) {
         frame = iTimeAxis.highValue();
     }
@@ -135,7 +135,7 @@ void TimeAxisPlayWidget::nextClicked() {
 }
 
 void TimeAxisPlayWidget::previousClicked() {
-    int frame = iTimeAxis.currentFrame() - 1;
+    int frame = iTimeAxis.currentFrameNum() - 1;
     if(frame < iTimeAxis.lowValue()) {
         frame = iTimeAxis.lowValue();
     }

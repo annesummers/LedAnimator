@@ -33,9 +33,11 @@ signals:
     void resized();
 
 private slots:
-    void lowValueChanged(int lowValue);
-    void highValueChanged(int highValue);
+    void lowValueChanged(int oldLowValue, int lowValue);
+    void highValueChanged(int oldHighValue, int highValue);
     void framesInserted(int numFrames, int framesAdded);
+
+    void updateAll();
 
 protected:
     bool validKeyPress(Qt::Key key);
@@ -56,7 +58,7 @@ private:
 
     QList<FrameWidget*> iFramesList;
 
-    const AxisData& iAxis;
+    const AxisData& iAxisData;
 
     bool iResized;
 };

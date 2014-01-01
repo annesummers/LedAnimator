@@ -9,7 +9,6 @@
 
 #include <QObject>
 #include <QColor>
-#include <QSignalMapper>
 
 #include "Frame.h"
 #include "griditem.h"
@@ -53,18 +52,19 @@ public:
 
 signals:
     void ledUpdated();
+    void updated();
 
 public slots:
     void addTimeAxis();
     void addValueAxis(int axisNumber);
+    void currentFrameChanged(int currentFrame);
    // void framesInserted(int numFrames, int numFramesAdded);
-    //void colourChanged(int frameNum);
+    void colourChanged(int frameNum);
 
 private:
 
     QList<ValueAxisData*> iAxesData;
     TimeAxisData* iTimeAxisData;
-    QSignalMapper* iSignalMapper;
 
     QUndoStack& iUndoStack;
 

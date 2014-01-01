@@ -23,6 +23,6 @@ void FrameDetailsWidget::highValueChanged(int highValue) {
     ui->numFrames->setText(QString("%1").arg(highValue));
 }
 
-void FrameDetailsWidget::framesInserted(int numFrames, int numFramesAdded) {
+//void FrameDetailsWidget::framesInserted(int numFrames, int numFramesAdded) {
   //  numFramesChanged(numFrames);
-}
+//}

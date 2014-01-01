@@ -93,6 +93,11 @@ public:
 
     inline const QList<SelectableWidget*> selectedItems() const { return iSelected; }
 
+    inline const Position firstSelectedAreaPosition() const { if(iAreas.count() == 1) {
+            return iAreas.first().firstSelected(); }  else { return Position();}}
+    inline const Position lastSelectedAreaPosition() const { if(iAreas.count() == 1) {
+            return iAreas.first().lastSelected(); } else { return Position();} }
+
 protected:
     void keyPressEvent(QKeyEvent *event);
 
@@ -111,11 +116,6 @@ protected:
 
     inline int numRows() const { return iNumRows; }
     inline int numColumns () const { return iNumColumns; }
-
-    inline const Position firstSelectedAreaPosition() const { if(iAreas.count() == 1) {
-            return iAreas.first().firstSelected(); }  else { return Position();}}
-    inline const Position lastSelectedAreaPosition() const { if(iAreas.count() == 1) {
-            return iAreas.first().lastSelected(); } else { return Position();} }
 
     SelectableGroupGroupWidget& iGroupGroup;
     int iGroupNumber;

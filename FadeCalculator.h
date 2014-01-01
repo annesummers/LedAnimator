@@ -26,7 +26,7 @@ public:
 
     void start();
 
-    inline const Function function() const { return Function(iRedIncrement, iBlueIncrement, iGreenIncrement); }
+    inline const Function function() const { return Function(iRedIncrement, iGreenIncrement, iBlueIncrement); }
 
 signals:
     void colourCalculated(QColor colour);

@@ -20,9 +20,9 @@ FadeCalculator::FadeCalculator(QObject *parent,
     iStartColour(startColour),
     iEndColour(endColour),
     iIterations(iterations),
-    iRedIncrement((startColour.redF() - endColour.redF()) / iIterations),
-    iGreenIncrement((startColour.greenF() - endColour.greenF()) / iIterations),
-    iBlueIncrement((startColour.blueF() - endColour.blueF()) / iIterations),
+    iRedIncrement((endColour.redF() - startColour.redF()) / iIterations),
+    iGreenIncrement((endColour.greenF() - startColour.greenF()) / iIterations),
+    iBlueIncrement((endColour.blueF() - startColour.blueF()) / iIterations),
     iTimer(NULL){
 
    /* iCurrentHueValue = startColour.hueF();

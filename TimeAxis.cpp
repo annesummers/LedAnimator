@@ -54,22 +54,23 @@ void TimeAxis::stop() {
 }
 
 void TimeAxis::nextFrame() {
-    if(iRepeat) {
-        setCurrentFrame((currentFrame()%numFrames()) + 1);
-    } else {
-        if(currentFrame() == numFrames()) {
-            stop();
+    if(currentFrameNum() == highValue()) {
+        if(iRepeat) {
+            setCurrentFrame(lowValue());
         } else {
-            setCurrentFrame(currentFrame() + 1);
+            stop();
         }
+    } else {
+        setCurrentFrame(currentFrameNum() + 1);
     }
 }
 
 TimeAxisData::TimeAxisData(QObject *parent,
                             Animation& animation,
                             TimeAxis& axis,
+                           Led& led,
                            QUndoStack& undoStack) :
-    AxisData(parent, animation, axis, undoStack) {
+    AxisData(parent, animation, axis, led, undoStack) {
 }
 
 void TimeAxisData::lowValueChanged(const int lowValue) {

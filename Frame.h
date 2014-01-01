@@ -13,6 +13,9 @@
 
 #include "selectable.h"
 #include "FrameValue.h"
+#include "Function.h"
+#include "constants.h"
+
 
 namespace AnimatorModel {
 
@@ -35,19 +38,31 @@ public:
     const QColor colour() const;
     const inline Frame* previous() const { return iPrevious; }
 
+    const inline Frame* next() const { return iNext; }
+    inline void setNext(Frame& next) { iNext = &next; }
+
     inline const FrameValue& value() const { return *iValue; }
     void setValue(const FrameValue &value);
 
-    inline void doSetValue(const FrameValue& value) { iValue = (FrameValue*)(&value); emit valueChanged(); }
+    const Function function() const;
+
+    inline void doSetValue(const FrameValue& value) { iValue = (FrameValue*)(&value);
+                                                      if(value.type() == kLinked) {
+                                                          emit updateAll();
+                                                      } else {
+                                                          emit valueChanged();
+                                                      }}
 
 protected:
     QUndoStack& iUndoStack;
 
     FrameValue* iValue;
-    Frame* iPrevious;
+    const Frame* iPrevious;
+    const Frame* iNext;
+
 signals:
     void valueChanged();
-
+    void updateAll();
 };
 }
 

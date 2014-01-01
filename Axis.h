@@ -3,10 +3,13 @@
 
 #include <QObject>
 #include <QMap>
+#include <QSignalMapper>
 
 #include "Frame.h"
 
 namespace AnimatorModel {
+
+class Led;
 
 class Axis : public QObject {
     Q_OBJECT
@@ -32,17 +35,20 @@ public:
    // inline const void setZeroValue(const int zeroValue) { iZeroValue = zeroValue; }
 
     const int numFrames() const;
-    inline const int currentFrame() const { return iCurrentFrame; }
-    void setCurrentFrame(int frame);
+    inline const int currentFrameNum() const { return iCurrentFrame; }
+
+    //const Frame& currentFrame() const;
 
 signals:
-    void currentFrameChanged(int currentFrame);
+    void currentFrameChanged(int currentFrameNum);
     void lowValueChanged(const int lowValue);
     void highValueChanged(const int highValue);
 
 public slots:
+    void setCurrentFrame(int frame);
 
 protected:
+
     int iLowValue;
     int iHighValue;
 
@@ -64,13 +70,16 @@ public:
     explicit AxisData(QObject *parent,
                       Animation& animation,
                       Axis& axis,
+                      Led& led,
                       QUndoStack& undoStack);
 
     inline Axis& axis() const { return iAxis; }
 
     inline Frame& frameAt(int frameNum) const { return *iFrames.find(frameNum).value(); }
-    inline const int numFrames() const { return iAxis.numFrames(); }
-    inline const int currentFrame() const { return iAxis.currentFrame(); }
+   // inline const int numFrames() const { return iAxis.numFrames(); }
+    inline const int currentFrameNum() const { return iAxis.currentFrameNum(); }
+
+    inline const Frame& currentFrame() const { return frameAt(iAxis.currentFrameNum()); }
 
     virtual void copyFrames(const AxisData &copyAxis);
 
@@ -86,6 +95,7 @@ protected:
     Animation& iAnimation;
 
     QUndoStack &iUndoStack;
+    QSignalMapper* iSignalMapper;
 };
 
 }
