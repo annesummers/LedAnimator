@@ -16,7 +16,9 @@ public:
                       Animation &animation,
                       int lowValue,
                       int highValue,
-                      int speed);
+                      int speed,
+                      int priority,
+                      bool isOpaque);
 
     void setSpeed(const int speed);
     void setLowValue(const int lowValue);

@@ -20,6 +20,7 @@ using namespace UndoCommands;
 using namespace Exception;
 
 Frame::Frame(QObject *parent,
+             AxisData &axisData,
              Animation& animation,
              int number,
              FrameValue& value,
@@ -28,11 +29,13 @@ Frame::Frame(QObject *parent,
     Selectable(parent, animation, number),
     iUndoStack(undoStack),
     iValue(&value),
+    iAxisData(axisData),
     iPrevious(previous),
     iNext(NULL) {
 }
 
 Frame::Frame(QObject *parent,
+             AxisData &axisData,
              Animation &animation,
              int number,
              Frame *previous,
@@ -40,6 +43,7 @@ Frame::Frame(QObject *parent,
     Selectable(parent, animation, number),
     iUndoStack(undoStack),
     iValue(new NoValue(parent)),
+    iAxisData(axisData),
     iPrevious(previous),
     iNext(NULL) {
 }
@@ -49,6 +53,31 @@ void Frame::setValue(const FrameValue& value) {
     //doSetValue(value);
 }
 
+void Frame::doSetValue(const FrameValue& value) {
+    iValue = (FrameValue*)(&value);
+
+    if(value.type() == kLinked) {
+        emit updateAll();
+    } else {
+        if(value.type() == kFunction) {
+
+        }
+        emit valueChanged();
+    }
+}
+
+void Frame::setFirstInRange() {
+    iAxisData.setFirstInRange(number());
+}
+
+void Frame::setLastInRange(Function function) {
+    iAxisData.setLastInRange(number(), function);
+}
+
+void Frame::setAnchorInRange() {
+    iAxisData.setAnchorInRange(number());
+}
+
 const Function Frame::function() const {
     switch(value().type()) {
     case kNoValue:
@@ -56,49 +85,6 @@ const Function Frame::function() const {
     case kLinked:
         return Function();
     case kFunction: {
-        /*const FunctionValue& functionValue = static_cast<const FunctionValue&>(value());
-        float combinedRedIncrement = 0;
-        float combinedGreenIncrement = 0;
-        float combinedBlueIncrement = 0;
-
-        if(number() < 0) {  // zero value TODO AS!!!
-            if(next() != NULL) {
-                const Frame* nextFrame = next();
-                int counter = 1;
-
-                while(nextFrame->value().type() == kFunction) {
-                    const FunctionValue& functionValue = static_cast<const FunctionValue&>(nextFrame->value());
-
-                    combinedRedIncrement -= functionValue.function().redIncrement();
-                    combinedGreenIncrement -= functionValue.function().greenIncrement();
-                    combinedBlueIncrement -= functionValue.function().blueIncrement();
-
-                    nextFrame = nextFrame->next();
-                    counter++;
-                }
-            }
-        }
-
-        if(number() > 0) {// zero value TODO AS!!!
-            if(previous() != NULL) {
-                const Frame* nextFrame = previous();
-                int counter = 1;
-
-                while(nextFrame->value().type() == kFunction) {
-                    const FunctionValue& functionValue = static_cast<const FunctionValue&>(nextFrame->value());
-
-                    combinedRedIncrement -= functionValue.function().redIncrement();
-                    combinedGreenIncrement -= functionValue.function().greenIncrement();
-                    combinedBlueIncrement -= functionValue.function().blueIncrement();
-
-                    nextFrame = nextFrame->previous();
-                    counter++;
-                }
-            }
-        }
-
-        return Function(combinedRedIncrement, combinedGreenIncrement, combinedBlueIncrement);*/
-
         const Frame* nextFrame = NULL;
 
         Function combinedFunction;
@@ -240,123 +226,6 @@ const QColor Frame::colour() const {
        colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
 
        return colour;
-
-     /* if(number() > 0 && previous() != NULL) {
-          const FunctionValue& functionValue = static_cast<const FunctionValue&>(value());
-          const Frame* previousFrame = previous();
-          int counter = 1;
-
-          if(!previousFrame) {
-              throw InvalidFrameException("No previous frame");
-          }
-
-          while(previousFrame->value().type() == kFunction) {
-              previousFrame = previousFrame->previous();
-              counter++;
-          }
-
-          const ColourValue& colourValue = static_cast<const ColourValue&>(previousFrame->value());
-          float currentRedValue = colourValue.colour().redF();
-          float currentBlueValue = colourValue.colour().blueF();
-          float currentGreenValue = colourValue.colour().greenF();
-
-          for(int i = 0; i < counter; i++) {
-              currentRedValue -= functionValue.function().redIncrement();
-              currentBlueValue -= functionValue.function().greenIncrement();
-              currentGreenValue -= functionValue.function().blueIncrement();
-
-              //qDebug("red : %f green : %f blue %f", iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
-
-              if(currentRedValue > 1) {
-                  currentRedValue = 1;
-              }
-
-              if(currentBlueValue > 1) {
-                  currentBlueValue = 1;
-              }
-
-              if(currentGreenValue > 1) {
-                  currentGreenValue = 1;
-              }
-
-              if(currentRedValue < 0) {
-                  currentRedValue = 0;
-              }
-
-              if(currentBlueValue < 0) {
-                  currentBlueValue = 0;
-              }
-
-              if(currentGreenValue < 0) {
-                  currentGreenValue = 0;
-              }
-
-          }
-
-         colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
-
-          return colour;
-
-        }
-
-      if(number() < 0 && next() != NULL) {
-          const FunctionValue& functionValue = static_cast<const FunctionValue&>(value());
-          const Frame* nextFrame = next();
-          int counter = 1;
-
-          if(!nextFrame) {
-              throw InvalidFrameException("No next frame");
-          }
-
-          while(nextFrame->value().type() == kFunction) {
-              nextFrame = nextFrame->next();
-              counter++;
-          }
-
-          const ColourValue& colourValue = static_cast<const ColourValue&>(nextFrame->value());
-          float currentRedValue = colourValue.colour().redF();
-          float currentBlueValue = colourValue.colour().blueF();
-          float currentGreenValue = colourValue.colour().greenF();
-
-          for(int i = 0; i < counter; i++) {
-              currentRedValue -= functionValue.function().redIncrement();
-              currentBlueValue -= functionValue.function().greenIncrement();
-              currentGreenValue -= functionValue.function().blueIncrement();
-
-           //   qDebug("red : %f green : %f blue %f", currentRedValue, currentGreenValue, currentBlueValue);
-
-              if(currentRedValue > 1) {
-                  currentRedValue = 1;
-              }
-
-              if(currentBlueValue > 1) {
-                  currentBlueValue = 1;
-              }
-
-              if(currentGreenValue > 1) {
-                  currentGreenValue = 1;
-              }
-
-              if(currentRedValue < 0) {
-                  currentRedValue = 0;
-              }
-
-              if(currentBlueValue < 0) {
-                  currentBlueValue = 0;
-              }
-
-              if(currentGreenValue < 0) {
-                  currentGreenValue = 0;
-              }
-
-          }
-
-          colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
-
-          return colour;
-
-        }*/
-
     }
     }
 }

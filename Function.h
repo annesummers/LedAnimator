@@ -17,6 +17,8 @@ public:
     Function& operator=(const Function& function);
     Function& operator+=(const Function& function);
 
+    bool operator==(const Function& function);
+
     const float redIncrement() const { return iRedIncrement; }
     const float greenIncrement() const { return iGreenIncrement; }
     const float blueIncrement() const { return iBlueIncrement; }

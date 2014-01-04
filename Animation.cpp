@@ -117,6 +117,8 @@ void Animation::newAnimation(int numRows,
 
     iLeds->setHighestNumber(ledNum - 1);
 
+    iFunctions.clear();
+    iFunctions.append(Function());
 }
 
 void Animation::newAnimation(int numRows,
@@ -126,8 +128,10 @@ void Animation::newAnimation(int numRows,
 
 const void Animation::addTimeAxis(int lowValue,
                  int highValue,
-                 int speed) {
-    iTimeAxis = new TimeAxis(this, *this, lowValue, highValue, speed);
+                 int speed,
+                  int priority,
+                  bool isOpaque) {
+    iTimeAxis = new TimeAxis(this, *this, lowValue, highValue, speed, priority, isOpaque);
 
   /*  LedSetIterator& iterator = iLeds->iterator();
 
@@ -140,9 +144,11 @@ const void Animation::addTimeAxis(int lowValue,
 
 const int Animation::addValueAxis(int lowValue,
                  int highValue,
-                 int zeroValue) {
+                 int zeroValue,
+                  int priority,
+                  bool isOpaque) {
     int axisNumber = iAxes.count();
-    ValueAxis* axis = new ValueAxis(this, *this, axisNumber, lowValue, highValue, zeroValue);
+    ValueAxis* axis = new ValueAxis(this, *this, axisNumber, lowValue, highValue, zeroValue, priority, isOpaque);
     iAxes.append(axis);
 
   /*  LedSetIterator& iterator = iLeds->iterator();
@@ -158,6 +164,17 @@ const int Animation::addValueAxis(int lowValue,
 
 ValueAxis &Animation::axisAt(int number) const {
     return *(iAxes.at(number));
+}
+
+int Animation::addFunction(Function function) {
+    for(int i = 0; i < iFunctions.size(); i++) {
+        if(function == iFunctions.at(i)) {
+            return i;
+        }
+    }
+
+    iFunctions.append(function);
+    return iFunctions.size() - 1;
 }
 
 void Animation::addNewLed(Position position) {

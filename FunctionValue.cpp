@@ -2,9 +2,10 @@
 
 using namespace AnimatorModel;
 
-FunctionValue::FunctionValue(QObject *parent, Function function) :
+FunctionValue::FunctionValue(QObject *parent, Function function, int number) :
     FrameValue(parent),
-    iFunction(function)
+    iFunction(function),
+    iNumber(number)
 {
 }
 

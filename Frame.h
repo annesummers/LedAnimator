@@ -16,20 +16,23 @@
 #include "Function.h"
 #include "constants.h"
 
-
 namespace AnimatorModel {
+
+class AxisData;
 
 class Frame : public Selectable {
     Q_OBJECT
 
 public:
     explicit Frame(QObject *parent,
+                   AxisData& axisData,
                    Animation &animation,
                    int number,
                    FrameValue &value,
                    Frame *previous,
                    QUndoStack& undoStack);
     explicit Frame(QObject *parent,
+                   AxisData &axisData,
                    Animation &animation,
                    int number,
                    Frame *previous,
@@ -44,25 +47,28 @@ public:
     inline const FrameValue& value() const { return *iValue; }
     void setValue(const FrameValue &value);
 
+    void setFirstInRange();
+    void setLastInRange(Function function);
+    void setAnchorInRange();
+
     const Function function() const;
 
-    inline void doSetValue(const FrameValue& value) { iValue = (FrameValue*)(&value);
-                                                      if(value.type() == kLinked) {
-                                                          emit updateAll();
-                                                      } else {
-                                                          emit valueChanged();
-                                                      }}
+    void doSetValue(const FrameValue& value);
 
 protected:
     QUndoStack& iUndoStack;
 
     FrameValue* iValue;
+    AxisData& iAxisData;
+
     const Frame* iPrevious;
     const Frame* iNext;
 
 signals:
     void valueChanged();
     void updateAll();
+
+private:
 };
 }
 

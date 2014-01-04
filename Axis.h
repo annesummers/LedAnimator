@@ -24,7 +24,9 @@ public:
                   Animation &animation,
                   int lowValue,
                   int highValue,
-                  int zeroValue);
+                  int zeroValue,
+                  int priority,
+                  bool isOpaque);
 
     inline const int lowValue() const { return iLowValue; }
     inline const int highValue() const { return iHighValue; }
@@ -39,6 +41,9 @@ public:
 
     //const Frame& currentFrame() const;
 
+    inline bool isOpaque() const { return iOpaque; }
+    inline int priority() const { return iPriority; }
+
 signals:
     void currentFrameChanged(int currentFrameNum);
     void lowValueChanged(const int lowValue);
@@ -48,7 +53,6 @@ public slots:
     void setCurrentFrame(int frame);
 
 protected:
-
     int iLowValue;
     int iHighValue;
 
@@ -61,6 +65,48 @@ private:
 
     const QList<Axis*> iSubAxes;
 
+    bool iOpaque;
+    int iPriority;
+
+};
+
+
+class Range {
+public:
+    inline Range(int anchorValue,
+                 int startValue,
+                 int endValue,
+                 int function) :
+        iRange(startValue, endValue),
+        iFunction(function),
+        iAnchorValue(anchorValue){}
+
+    inline Range(const Range& range) :
+        iRange(range.iRange),
+        iFunction(range.iFunction),
+        iAnchorValue (range.iAnchorValue){}
+
+    inline Range& operator=(const Range& range) {
+        iRange = range.iRange;
+        iFunction = range.iFunction;
+        iAnchorValue = range.iAnchorValue;
+
+        return *this;
+    }
+
+    inline const int lowValue() const { return iRange.first; }
+    inline const int highValue() const { return iRange.second; }
+
+    inline void setFunction(int function) { iFunction = function; }
+    inline int function() const { return iFunction; }
+
+    inline void setAnchor(int anchor) { iAnchorValue = anchor; }
+    inline int anchor() const { return iAnchorValue; }
+
+private:
+    QPair<int, int>  iRange;
+    int iFunction;
+    int iAnchorValue;
 };
 
 class AxisData : public QObject {
@@ -81,6 +127,10 @@ public:
 
     inline const Frame& currentFrame() const { return frameAt(iAxis.currentFrameNum()); }
 
+    void setFirstInRange(int number);
+    void setLastInRange(int number, Function function);
+    void setAnchorInRange(int number);
+
     virtual void copyFrames(const AxisData &copyAxis);
 
     virtual void lowValueChanged(const int lowValue) = 0;
@@ -96,6 +146,12 @@ protected:
 
     QUndoStack &iUndoStack;
     QSignalMapper* iSignalMapper;
+
+    QList<Range> iFunctionRanges;
+
+    int iNewAnchor;
+    int iNewFirst;
+    bool iHasNewAnchor;
 };
 
 }

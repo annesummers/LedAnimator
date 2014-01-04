@@ -19,6 +19,7 @@ class Animation;
 class Led;
 class Frame;
 class Axis;
+class FunctionValue;
 }
 
 using namespace AnimatorModel;
@@ -71,14 +72,20 @@ protected:
     virtual void writePositionData() { }
     virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); QList<int> positions; return positions; }
 
-    virtual void writeAxisData(int iAxisNum) = 0;
-    virtual void readAxisData(int iAxisNum) = 0;
+    void writeAxisData(int iAxisNum);
+    void readAxisData(int iAxisNum);
+
+    void writeAxis(int iAxisNum);
+    void readAxis(int iAxisNum);
 
     void writeColour(Frame& frame);
     const QColor readColour() const;
 
-    void writeFunction(Frame& frame);
-    const Function readFunction() const;
+    virtual void writeFunction(Frame& frame) = 0;
+    virtual const FunctionValue& readFunction(Frame& frame) const = 0;
+
+    void writeFunctionData(Function function);
+    Function readFunctionData() const;
 
     Animation& iAnimation;
     bool iWriteLedNumber;
@@ -100,8 +107,11 @@ protected:
 
     const QByteArray &asByteArray() const;
 
-    void writeAxisData(int axisNum);
-    void readAxisData(int iAxisNum);
+    //void writeAxisData(int axisNum);
+    //void readAxisData(int iAxisNum);
+
+    void writeFunction(Frame& frame);
+    const FunctionValue& readFunction(Frame& frame) const;
 
 private:
     QString iString;
@@ -130,13 +140,24 @@ protected:
     void writePositionData();
     QList<int> readPositionData(int *numRows, int *numColumns, int numLeds);
 
-    void writeAxisData(int iAxisNum);
-    void readAxisData(int iAxisNum);
+    virtual void writeFunction(Frame& frame);
+    virtual const FunctionValue& readFunction(Frame& frame) const;
 
 private:
     QByteArray  iByteArray;
     mutable int iPosition;
 };
+
+class LedAnimSimpleByteArrayCodec: public LedAnimByteArrayCodec {
+    Q_OBJECT
+public:
+    explicit LedAnimSimpleByteArrayCodec(Animation& animation);
+    LedAnimSimpleByteArrayCodec(Animation& animation, QByteArray bytes);
+
+    virtual void writeFunction(Frame& frame);
+    virtual const FunctionValue& readFunction(Frame& frame) const;
+};
+
 }
 
 #endif // LEDANIMCODEC_H

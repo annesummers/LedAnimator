@@ -31,6 +31,12 @@ Function& Function::operator=(const Function& function) {
     return *this;
 }
 
+bool Function::operator==(const Function& function) {
+    return iRedIncrement == function.iRedIncrement &&
+            iGreenIncrement == function.iGreenIncrement &&
+            iBlueIncrement == function.iBlueIncrement;
+}
+
 Function& Function::operator+=(const Function& function) {
     iRedIncrement += function.iRedIncrement;
     iGreenIncrement += function.iGreenIncrement;

@@ -25,6 +25,10 @@ public:
 
     const QColor colour() const { return frame().colour(); }
 
+    void setFirstInRange() { frame().setFirstInRange(); }
+    void setAnchorInRange() { frame().setAnchorInRange(); }
+    void setLastInRange(Function function) { frame().setLastInRange(function); }
+
 protected:
     void paintEvent(QPaintEvent *event);
 

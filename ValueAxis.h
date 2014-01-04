@@ -10,6 +10,7 @@ namespace AnimatorModel {
 class TimeAxis;
 class LinkedValue;
 
+
 class ValueAxis : public Axis {
     Q_OBJECT
 public:
@@ -18,7 +19,9 @@ public:
                        int number,
                        int lowValue,
                        int highValue,
-                       int zeroValue);
+                       int zeroValue,
+                       int priority,
+                       bool isOpaque);
 
     inline const int number() const { return iNumber; }
 

@@ -13,10 +13,12 @@ class FunctionValue : public FrameValue {
     Q_OBJECT
 
 public:
-    explicit FunctionValue(QObject *parent, Function function);
+    explicit FunctionValue(QObject *parent, Function function, int number);
 
     void setFunction(Function function);
     inline const Function function() const { return iFunction; }
+
+    inline int number() const { return iNumber; }
 
     FrameValue& operator=(const FrameValue& copyValue);
 
@@ -28,7 +30,7 @@ public slots:
 
 private:
     Function iFunction;
-
+    int iNumber;
 };
 
 }

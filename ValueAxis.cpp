@@ -11,8 +11,10 @@ ValueAxis::ValueAxis(QObject *parent,
                      int number,
                      int lowValue,
                      int highValue,
-                     int zeroValue) :
-      Axis(parent, animation, lowValue, highValue, zeroValue),
+                     int zeroValue,
+                     int priority,
+                     bool isOpaque) :
+      Axis(parent, animation, lowValue, highValue, zeroValue, priority, isOpaque),
       iNumber(number) {
   }
 
@@ -24,14 +26,17 @@ ValueAxisData::ValueAxisData(QObject *parent,
     AxisData(parent, animation, axis, led, undoStack),
     iAnchorAxis(timeAxis) {
 
+    iFunctionRanges.append(Range(axis.zeroValue(), axis.lowValue(), axis.zeroValue(), 0));
+    iFunctionRanges.append(Range(axis.zeroValue(), axis.zeroValue(), axis.highValue(), 0));
+
     for(int i = axis.lowValue(); i < axis.zeroValue(); i++) {
-        frameAt(i).setValue(*(new FunctionValue(parent, Function())));
+        frameAt(i).setValue(*(new FunctionValue(parent, Function(), 0)));
     }
 
     frameAt(iAxis.zeroValue()).setValue(*(new LinkedValue(parent, QColor())));
 
     for(int i = axis.zeroValue() + 1; i < axis.highValue(); i++) {
-        frameAt(i).setValue(*(new FunctionValue(parent, Function())));
+        frameAt(i).setValue(*(new FunctionValue(parent, Function(), 0)));
     }
 }
 

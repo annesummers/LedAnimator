@@ -58,6 +58,10 @@ const int kValueAxis = 1;
 
 const int kTimeAxisNum = -1;
 
+const int kPriorityLow = -100;
+const int kPriorityMed = -50;
+const int kPriorityHigh = -10;
+
 namespace AnimatorModel {
 
 class Position : public QPair<int, int> {

@@ -46,11 +46,15 @@ public:
 
     const void addTimeAxis(int lowValue,
                      int highValue,
-                     int speed);
+                     int speed,
+                   int priority,
+                   bool isOpaque);
 
     const int addValueAxis(int lowValue,
                      int highValue,
-                     int zeroValue);
+                     int zeroValue,
+                       int priority,
+                       bool isOpaque);
 
     void moveLed(Position fromPosition, Position toPosition);
     void cloneLed(Position fromPosition, Position toPosition);
@@ -97,6 +101,10 @@ public:
     inline const int numLeds() const { return iLeds->count(); }
 
     int nextLedNumber() const ;
+
+    int addFunction(Function function);
+    inline Function functionAt(int number) { return iFunctions.at(number); }
+    inline int numFunctions() { return iFunctions.size(); }
     
 signals:
    // void framesInserted(int numFrames, int numFramesAdded);
@@ -147,6 +155,8 @@ private:
 
     QList<ValueAxis*> iAxes;
     TimeAxis* iTimeAxis;
+
+    QList<Function> iFunctions;
 
     QString iFileName;
     bool    iIsSaved;

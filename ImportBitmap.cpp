@@ -39,7 +39,7 @@ void ImportBitmap::doImport() {
     }
 
     iAnimation.newAnimation(rows, columns, ledNum, positions);
-    iAnimation.addTimeAxis(0, 1, 100);
+    iAnimation.addTimeAxis(0, 1, 100, kPriorityLow, false);
 
     ledNum = INITIAL_LED;
     for(int i = 0; i < iAnimation.numLeds(); i++) {

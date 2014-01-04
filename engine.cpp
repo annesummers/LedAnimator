@@ -214,11 +214,11 @@ void Engine::setFrameFrequency() {
 }*/
 
 void Engine::addTimeAxis() {
-    iAnimation->addTimeAxis(0, 100, 100);
+    iAnimation->addTimeAxis(0, 100, 100, kPriorityLow, false);
 }
 
 void Engine::addValueAxis() {
-    iAnimation->addValueAxis(-100, 100, 0);
+    iAnimation->addValueAxis(-100, 100, 0, kPriorityLow, false);
 }
 
 void Engine::importBitmap() {

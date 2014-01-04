@@ -134,20 +134,28 @@ void ColourGroupWidget::functionFade() {
 void ColourGroupWidget::functionFadeTo(QColor fadeToColour) {
     FadeParameters& parameters = setupFunctionFade(fadeToColour);
 
-
     FadeCalculator* fadeCalculator = new FadeCalculator(reinterpret_cast<QObject*>(this),
                                 parameters.startColour,
                                 parameters.endColour,
                                 parameters.increments);
 
     if(parameters.columnIncrement) {
-        for(int i = parameters.firstPosition.column() + 1; i <= parameters.lastPosition.column(); i++) {
-            static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
-        }
+
+        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setAnchorInRange();
+        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setFirstInRange();
+        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.lastPosition.column()))).setLastInRange(fadeCalculator->function());
+
+    //    for(int i = parameters.firstPosition.column() + 1; i <= parameters.lastPosition.column(); i++) {
+    //        static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
+    //    }
     } else {
-        for(int i = parameters.firstPosition.column() - 1; i >= parameters.lastPosition.column(); i--) {
-            static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
-        }
+     //   for(int i = parameters.firstPosition.column() - 1; i >= parameters.lastPosition.column(); i--) {
+     //       static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
+     //   }
+
+        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setAnchorInRange();
+        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.lastPosition.column()))).setFirstInRange();
+        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setLastInRange(fadeCalculator->function());
     }
 }
 

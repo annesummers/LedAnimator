@@ -9,8 +9,10 @@ TimeAxis::TimeAxis(QObject *parent,
                    Animation& animation,
                    int lowValue,
                    int highValue,
-                   int speed) :
-    Axis(parent, animation, lowValue, highValue, lowValue),
+                   int speed,
+                   int priority,
+                   bool isOpaque) :
+    Axis(parent, animation, lowValue, highValue, lowValue, priority, isOpaque),
     iSpeed(speed),
     iIsPlaying(false),
     iRepeat(false),
@@ -84,45 +86,3 @@ void TimeAxisData::highValueChanged(const int highValue){
 void TimeAxisData::zeroValueChanged(const int zeroValue){
 
 }
-
-/*void TimeAxisData::numFramesChanged(int numFrames) {
-#ifndef NDEBUG
-    if(numFrames <= 0) {
-        throw IllegalArgumentException("Led::numFramesChanged : numFrames is zero or negative");
-    }
-
-    if(numFrames > iAxis.numFrames()) {
-        throw IllegalArgumentException("Led::numFramesChanged : numFrames is too big");
-    }
-#endif
-
-    int oldNumFrames = iFrames.count();
-
-    if(numFrames > oldNumFrames) {  // we need to add some frames
-        for(int i = oldNumFrames; i < numFrames; i++) {
-            Frame* frame = new Frame(this, iAnimation, i + INITIAL_FRAME);
-            iFrames.append(frame);
-
-            iSignalMapper->setMapping(frame, i + INITIAL_FRAME);
-
-            connect(frame, SIGNAL(colourChanged()), iSignalMapper, SLOT(map()));
-        }
-    } else if(numFrames < iFrames.count()) { // we need to remove some frames; take them from the end
-        for(int i = oldNumFrames; i <= numFrames; i--) {
-            Frame* frame = iFrames.at(i);
-
-            iFrames.removeAt(i);
-            delete frame;
-        }
-    }
-
-    if(oldNumFrames != numFrames) {
-        // do I have to reconnect?
-        connect(iSignalMapper, SIGNAL(mapped(int)), this, SLOT(colourChanged(int)));
-    }
-}*/
-
-//void Led::framesInserted(int numFrames, int numFramesAdded) {
-
-//}
-
