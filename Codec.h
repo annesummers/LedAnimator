@@ -34,7 +34,7 @@ public:
     AnimChar();
 
     const int intValue() const;
-    //const unsigned int unsignedIntValue() const;
+    const unsigned int unsignedIntValue() const;
     const unsigned char unsignedCharValue() const;
     const bool boolValue() const;
 
@@ -78,14 +78,14 @@ protected:
     void writeAxis(int iAxisNum);
     void readAxis(int iAxisNum);
 
-    void writeColour(Frame& frame);
-    const QColor readColour() const;
+    virtual void writeColour(Frame& frame) = 0;
+    virtual const QColor readColour() const = 0;
 
     virtual void writeFunction(Frame& frame) = 0;
     virtual const FunctionValue& readFunction(Frame& frame) const = 0;
 
-    void writeFunctionData(Function function);
-    Function readFunctionData() const;
+    virtual void writeFunctionData(Function function) = 0;
+    virtual Function readFunctionData() const = 0;
 
     Animation& iAnimation;
     bool iWriteLedNumber;
@@ -110,8 +110,14 @@ protected:
     //void writeAxisData(int axisNum);
     //void readAxisData(int iAxisNum);
 
+    virtual void writeColour(Frame& frame);
+    virtual const QColor readColour() const;
+
     void writeFunction(Frame& frame);
     const FunctionValue& readFunction(Frame& frame) const;
+
+    virtual void writeFunctionData(Function function);
+    virtual Function readFunctionData() const;
 
 private:
     QString iString;
@@ -143,6 +149,12 @@ protected:
     virtual void writeFunction(Frame& frame);
     virtual const FunctionValue& readFunction(Frame& frame) const;
 
+    virtual void writeFunctionData(Function function);
+    virtual Function readFunctionData() const;
+
+    virtual void writeColour(Frame& frame);
+    virtual const QColor readColour() const;
+
 private:
     QByteArray  iByteArray;
     mutable int iPosition;
@@ -156,6 +168,12 @@ public:
 
     virtual void writeFunction(Frame& frame);
     virtual const FunctionValue& readFunction(Frame& frame) const;
+
+    virtual void writeFunctionData(Function function);
+    virtual Function readFunctionData() const;
+
+    virtual void writeColour(Frame& frame);
+    virtual const QColor readColour() const;
 };
 
 }
