@@ -9,7 +9,7 @@
 #include "Led.h"
 #include "mainwindow.h"
 #include "ledwidget.h"
-#include "Codec.h"
+#include "StringCodec.h"
 #include "ledanimatoractionbase.h"
 #include "TimeAxis.h"
 #include "ValueAxis.h"

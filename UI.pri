@@ -10,23 +10,23 @@ SOURCES += \
     socketwidget.cpp \
     selectablegroupwidget.cpp \
     selectablewidget.cpp \
-    newanimationdialog.cpp \
     selectablegroupgroupwidget.cpp \
     grouplistwidget.cpp \
     colourgroupgroupwidget.cpp \
     renumberleddialog.cpp \
     ledgridgroupwidget.cpp \
-    leddetailswidget.cpp \
     MainWindow.cpp \
-    form.cpp \
     TimeAxisPlayWidget.cpp \
     AxisDetailsWidget.cpp \
     TimeAxisDetailsWidget.cpp \
     ValueAxisDetailsWidget.cpp \
-    FrameDetailsWidget.cpp
+    FrameDetailsWidget.cpp \
+    NewAnimationDialog.cpp \
+    NewValueAxisDialog.cpp \
+    NewTimeAxisDialog.cpp \
+    LedDetailsWidget.cpp
 
 HEADERS += \
-    mainwindow.h \
     ledwidget.h \
     framewidget.h \
     framelistwidget.h \
@@ -36,26 +36,29 @@ HEADERS += \
     grouplistwidget.h \
     colourgroupwidget.h \
     colourwidget.h \
-    newanimationdialog.h \
     socketwidget.h \
     selectablegroupwidget.h \
     selectablewidget.h \
     ledgridwidget.h \
     colourgroupgroupwidget.h \
     LedDetailsWidget.h \
-    form.h \
     TimeAxisPlayWidget.h \
     AxisDetailsWidget.h \
     TimeAxisDetailsWidget.h \
     ValueAxisDetailsWidget.h \
-    FrameDetailsWidget.h
+    FrameDetailsWidget.h \
+    NewAnimationDialog.h \
+    NewValueAxisDialog.h \
+    MainWindow.h \
+    NewTimeAxisDialog.h
 
 
 
 FORMS += \
-    newanimation.ui \
     gridlistwidget.ui \
     framedetails.ui \
     renumberleddialog.ui \
-    LedDetails.ui \
-    form.ui
+    NewValueAxisDialog.ui \
+    NewTimeAxisDialog.ui \
+    NewAnimationDialog.ui \
+    LedDetailsWidget.ui

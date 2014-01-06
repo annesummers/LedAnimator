@@ -9,7 +9,7 @@
 #include "Animation.h"
 #include "MainWindow.h"
 #include "constants.h"
-#include "Codec.h"
+#include "ByteArrayCodec.h"
 #include "NewAnimationDialog.h"
 #include "NewValueAxisDialog.h"
 #include "NewTimeAxisDialog.h"

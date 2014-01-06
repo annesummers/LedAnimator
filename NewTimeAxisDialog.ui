@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NewAnimation</class>
- <widget class="QDialog" name="NewAnimation">
+ <class>NewTimeAxisDialog</class>
+ <widget class="QDialog" name="NewTimeAxisDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>280</width>
-    <height>267</height>
+    <width>278</width>
+    <height>156</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -17,7 +23,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Frame Information</string>
+      <string>Timeline values :</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
@@ -61,7 +67,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="iFrameFrequencyLabel">
+         <widget class="QLabel" name="iSpeedLabel">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -69,12 +75,12 @@
            </size>
           </property>
           <property name="text">
-           <string>Frame frequency (ms) :</string>
+           <string>Speed (ms) :</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QSpinBox" name="iFrameFrequencySpin">
+         <widget class="QSpinBox" name="iSpeedSpin">
           <property name="minimumSize">
            <size>
             <width>71</width>
@@ -107,95 +113,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="title">
-      <string>Led Information</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="1">
-         <widget class="QSpinBox" name="iNumRowsSpin">
-          <property name="minimumSize">
-           <size>
-            <width>57</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>57</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="value">
-           <number>8</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QSpinBox" name="iNumColumnsSpin">
-          <property name="minimumSize">
-           <size>
-            <width>57</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>57</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="minimum">
-           <number>1</number>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="value">
-           <number>8</number>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="iNumColumnsLabel">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Number of columns :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="iNumRowsLabel">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>25</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Number of rows :</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -206,16 +123,13 @@
     </widget>
    </item>
   </layout>
-  <zorder>groupBox</zorder>
-  <zorder>buttonBox</zorder>
-  <zorder>groupBox_2</zorder>
  </widget>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>NewAnimation</receiver>
+   <receiver>NewTimeAxisDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -231,7 +145,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>NewAnimation</receiver>
+   <receiver>NewTimeAxisDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

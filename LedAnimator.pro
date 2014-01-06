@@ -33,17 +33,17 @@ include(Model.pri)
 include(UI.pri)
 
 HEADERS += \
-    engine.h \
-    animatorapplication.h \
     gammacorrect.h \
     constants.h \
     exceptions.h \
-    AnimationDetails.h
+    AnimationDetails.h \
+    AnimatorApplication.h \
+    Engine.h
 
 SOURCES += \
-    engine.cpp \
-    animatorapplication.cpp \
-    AnimationDetails.cpp
+    AnimationDetails.cpp \
+    AnimatorApplication.cpp \
+    Engine.cpp
 
 RESOURCES += \
     LedAnimator.qrc

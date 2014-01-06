@@ -19,7 +19,9 @@ SOURCES +=  \
     FunctionValue.cpp \
     Function.cpp \
     NoValue.cpp \
-    LinkedValue.cpp
+    LinkedValue.cpp \
+    ByteArrayCodec.cpp \
+    StringCodec.cpp
 
 HEADERS += \
     LedSet.h \
@@ -41,4 +43,6 @@ HEADERS += \
     FrameValue.h \
     Function.h \
     NoValue.h \
-    LinkedValue.h
+    LinkedValue.h \
+    ByteArrayCodec.h \
+    StringCodec.h
