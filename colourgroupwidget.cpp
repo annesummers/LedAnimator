@@ -24,9 +24,9 @@ using namespace AnimatorUi;
 ColourGroupWidget::ColourGroupWidget(QWidget *parent,
                                      int maxRow,
                                      int maxColumn,
-                                     ColourGroupGroupWidget &groupGroup,
-                                     int groupNumber) :
-    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroup, groupNumber),
+                                     ColourGroupGroupWidget &groupGroup//,
+                                     /*int groupNumber*/) :
+    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroup),//, groupNumber),
     iFadeCalculator(NULL),
     iFadeParameters(NULL) {
 }
@@ -97,7 +97,7 @@ FadeParameters& ColourGroupWidget::setupFunctionFade(QColor fadeToColour) {
     }
 
     //fadeParameters->maxWidgets = columnSpan;
-    fadeParameters->increments = columnSpan - 2;  // TODO why -2?
+    fadeParameters->increments = columnSpan - 1;  // TODO why -2?
 
    // QColor fromColour = fromWidget.colour();
 

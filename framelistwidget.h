@@ -23,8 +23,7 @@ class FrameListWidget : public ColourGroupWidget {
 public:
     explicit FrameListWidget(QWidget *parent,
                              const AxisData& axisData,
-                             ColourGroupGroupWidget &framesListGroup,
-                             int groupNumber);
+                             ColourGroupGroupWidget &framesListGroup);
 
   //  const Led& led() { return iLed; }
     void doResize();

@@ -17,7 +17,11 @@
 using namespace AnimatorUi;
 using namespace Exception;
 
-SelectableGroupWidget::SelectableGroupWidget(QWidget *parent, int numRows, int numColumns, SelectableGroupGroupWidget &groupGroupWidget, int groupNumber) :
+SelectableGroupWidget::SelectableGroupWidget(QWidget *parent,
+                                             int numRows,
+                                             int numColumns,
+                                             SelectableGroupGroupWidget &groupGroupWidget//,
+                                             /*int groupNumber*/) :
     QWidget(parent),
     iGroupGroup(groupGroupWidget),
     iGroupNumber(iGroupGroup.addGroup(*this)),
@@ -154,7 +158,7 @@ void SelectableGroupWidget::selectDirection(Qt::Key direction, bool singleSelect
 }
 
 void SelectableGroupWidget::doSelectDirection(Qt::Key direction){
-
+    Q_UNUSED(direction);
 }
 
 void SelectableGroupWidget::clearAllSelection() {

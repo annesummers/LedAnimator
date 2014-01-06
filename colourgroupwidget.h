@@ -57,8 +57,7 @@ public:
     explicit ColourGroupWidget(QWidget *parent,
                                int numRows,
                                int numColumns,
-                               ColourGroupGroupWidget &groupGroupWidget,
-                               int groupNumber);
+                               ColourGroupGroupWidget &groupGroupWidget);
 
 
     void fade();

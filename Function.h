@@ -5,7 +5,7 @@
 
 namespace AnimatorModel {
 
-class Function : public QObject {
+class Function {
 public:
     Function(float redIncrement,
              float greenIncrement,
@@ -24,8 +24,8 @@ public:
     const float blueIncrement() const { return iBlueIncrement; }
 
     inline bool isNull() const { return iRedIncrement == 0 &&
-                                        iBlueIncrement == 0 &&
-                                        iGreenIncrement == 0; }
+                                        iGreenIncrement == 0 &&
+                                        iBlueIncrement == 0; }
 
 signals:
 

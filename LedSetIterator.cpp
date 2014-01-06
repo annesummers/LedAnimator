@@ -16,6 +16,7 @@ LedSetIterator::LedSetIterator (QObject *parent, const LedSet& set) :
 }
 
 bool LedSetIterator::findNext (const int group) {
+    Q_UNUSED(group);
   /*  while(hasNext()) {
         if(next().groupNumber() == group) {
             return true;
@@ -26,6 +27,7 @@ bool LedSetIterator::findNext (const int group) {
 }
 
 bool LedSetIterator::findPrevious (const int group) {
+    Q_UNUSED(group);
   /*  while(hasPrevious()) {
         if(previous().groupNumber() == group) {
             return true;

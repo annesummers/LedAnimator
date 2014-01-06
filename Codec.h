@@ -79,6 +79,7 @@ protected:
     void readAxis(int iAxisNum);
 
     virtual void writeColour(Frame& frame) = 0;
+    virtual void writeColour(QColor colour) = 0;
     virtual const QColor readColour() const = 0;
 
     virtual void writeFunction(Frame& frame) = 0;
@@ -111,6 +112,7 @@ protected:
     //void readAxisData(int iAxisNum);
 
     virtual void writeColour(Frame& frame);
+    virtual void writeColour(QColor colour);
     virtual const QColor readColour() const;
 
     void writeFunction(Frame& frame);
@@ -153,6 +155,7 @@ protected:
     virtual Function readFunctionData() const;
 
     virtual void writeColour(Frame& frame);
+    virtual void writeColour(QColor colour);
     virtual const QColor readColour() const;
 
 private:
@@ -173,6 +176,7 @@ public:
     virtual Function readFunctionData() const;
 
     virtual void writeColour(Frame& frame);
+    virtual void writeColour(QColor colour);
     virtual const QColor readColour() const;
 };
 

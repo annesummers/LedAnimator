@@ -14,4 +14,6 @@ void ColourValue::setColour(QColor colour) {
 
 FrameValue& ColourValue::operator=(const FrameValue& copyValue) {
     iColour = static_cast<const ColourValue&>(copyValue).colour();
+
+    return *this;
 }

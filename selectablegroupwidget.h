@@ -47,8 +47,7 @@ public:
     explicit SelectableGroupWidget(QWidget *parent,
                                    int numRows,
                                    int numColumns,
-                                   SelectableGroupGroupWidget &groupGroupWidget,
-                                   int groupNumber);
+                                   SelectableGroupGroupWidget &groupGroupWidget);
 
     void selectOne(SelectableWidget &selectable, bool singleSelect = true);
 

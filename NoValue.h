@@ -15,7 +15,7 @@ public:
     explicit NoValue(QObject *parent);
 
     int type() const { return kNoValue; }
-    inline FrameValue& operator=(const FrameValue& copyValue) { return *this; }
+    inline FrameValue& operator=(const FrameValue& copyValue) { Q_UNUSED(copyValue); return *this; }
 
 signals:
 

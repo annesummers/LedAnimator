@@ -154,6 +154,7 @@ void GroupSetIterator::toFront() {
 }
 
 GroupSetIterator& GroupSetIterator::operator= (const GroupSetIterator &set) {
+    Q_UNUSED(set);
     throw NotImplementedException("GroupSetIterator::operator=");
 }
 

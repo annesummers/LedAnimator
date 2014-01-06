@@ -15,4 +15,6 @@ void FunctionValue::setFunction(Function function) {
 
 FrameValue& FunctionValue::operator=(const FrameValue& copyValue) {
     iFunction = static_cast<const FunctionValue&>(copyValue).function();
+
+    return *this;
 }

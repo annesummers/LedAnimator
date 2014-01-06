@@ -89,54 +89,61 @@ void Led::addValueAxis(int axisNumber) {
     currentFrameChanged(iTimeAxisData->currentFrameNum());
 }
 
+void Led::setCurrentValue(FrameValue& value) {
+    iTimeAxisData->frameAt(iTimeAxisData->axis().currentFrameNum()).setValue(value);
+}
+
 const QColor Led::currentColour() const {
     const Frame& frame = iTimeAxisData->currentFrame();
+    QColor colour = frame.colour();
 
-    Function combinedFunction;
+    if(colour != static_cast<TimeAxis&>(iTimeAxisData->axis()).backgroundColour()) {
+        Function combinedFunction;
 
-    for(int i = 0; i < iAnimation.numValueAxes(); i++) {
-        if(i < iAxesData.count()) {
-            Function function = axisAt(i).currentFrame().function();
+        for(int i = 0; i < iAnimation.numValueAxes(); i++) {
+            if(i < iAxesData.count()) {
+                Function function = axisAt(i).currentFrame().function();
 
-            if(!function.isNull()) {
-                combinedFunction += function;
+                if(!function.isNull()) {
+                    combinedFunction += function;
+                }
             }
         }
+
+        float currentRedValue = frame.colour().redF();
+        float currentGreenValue = frame.colour().greenF();
+        float currentBlueValue = frame.colour().blueF();
+
+        currentRedValue += combinedFunction.redIncrement();
+        currentGreenValue += combinedFunction.greenIncrement();
+        currentBlueValue += combinedFunction.blueIncrement();
+
+        if(currentRedValue > 1) {
+            currentRedValue = 1;
+        }
+
+        if(currentBlueValue > 1) {
+            currentBlueValue = 1;
+        }
+
+        if(currentGreenValue > 1) {
+            currentGreenValue = 1;
+        }
+
+        if(currentRedValue < 0) {
+            currentRedValue = 0;
+        }
+
+        if(currentBlueValue < 0) {
+            currentBlueValue = 0;
+        }
+
+        if(currentGreenValue < 0) {
+            currentGreenValue = 0;
+        }
+
+        colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
     }
-
-    float currentRedValue = frame.colour().redF();
-    float currentGreenValue = frame.colour().greenF();
-    float currentBlueValue = frame.colour().blueF();
-
-    currentRedValue += combinedFunction.redIncrement();
-    currentGreenValue += combinedFunction.greenIncrement();
-    currentBlueValue += combinedFunction.blueIncrement();
-
-    if(currentRedValue > 1) {
-        currentRedValue = 1;
-    }
-
-    if(currentBlueValue > 1) {
-        currentBlueValue = 1;
-    }
-
-    if(currentGreenValue > 1) {
-        currentGreenValue = 1;
-    }
-
-    if(currentRedValue < 0) {
-        currentRedValue = 0;
-    }
-
-    if(currentBlueValue < 0) {
-        currentBlueValue = 0;
-    }
-
-    if(currentGreenValue < 0) {
-        currentGreenValue = 0;
-    }
-
-    QColor colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
 
     return colour;
 }
@@ -167,7 +174,8 @@ void Led::copyAxes(const Led &copyLed) {
 void Led::colourChanged(int frameNum) {
     iAnimation.setSaved(false);
 
-    if(frameNum == iTimeAxisData->axis().currentFrameNum()) {
+    if(iTimeAxisData != NULL &&
+       frameNum == iTimeAxisData->axis().currentFrameNum()) {
         emit ledUpdated();
     }
 }
@@ -182,15 +190,11 @@ void Led::currentFrameChanged(int currentFrame) {
     emit updated();
 }
 
-/*
-void Led::setCurrentColour(QColor colour) {    
-    frameAt(iAnimation.currentFrame()).setColour(colour);
-}*/
-
 void Led::move(Position newPosition) {
     setPosition(newPosition);
 }
 
 void Led::paste(Led& copyLed) {
+    Q_UNUSED(copyLed);
   //  setCurrentColour(copyLed.currentColour());
 }

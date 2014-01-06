@@ -26,6 +26,10 @@ public:
 
     inline const int speed() const { return iSpeed; }
 
+    inline bool usesBackgroundColour() const { return iBackgroundColour.isValid(); }
+    inline const QColor backgroundColour() const { return iBackgroundColour; }
+    inline void setBackgroundColour(QColor backgroundColour) { iBackgroundColour = backgroundColour; }
+
     inline void setRepeating(bool repeat) { iRepeat = repeat; }
     inline bool isRepeating() { return iRepeat; }
 
@@ -43,6 +47,7 @@ public slots:
 
 private:
     const int iSpeed;
+    QColor iBackgroundColour;
 
     bool iIsPlaying;
     bool iRepeat;

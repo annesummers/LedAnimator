@@ -19,11 +19,11 @@ class LedWidget : public ColourWidget {
     Q_OBJECT
 
 public:
-    explicit LedWidget(QWidget* parent, Animation &animation, ColourGroupWidget& ledGroup, Led& led);
+    explicit LedWidget(QWidget* parent, ColourGroupWidget& ledGroup, Led& led);
 
     inline Led &led() const { return static_cast<Led&>(iItem); }
 
-    void setValue(FrameValue &value) {/*led().setCurrentColour(colour);*/}
+    void setValue(FrameValue &value) { led().setCurrentValue(value); }
     const QColor colour() const {return led().currentColour(); }
 
 private slots:
@@ -31,6 +31,7 @@ private slots:
     void setGroup();
     void deleteLed();
     void ledUpdated();
+    void setAsBackgroundColour();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -49,7 +50,7 @@ private:
     LedGridWidget& gridWidget() { return static_cast<LedGridWidget&>(iSelectableGroup); }
 
     QAction* iRenumberAction;
-    QAction* iSetGroupAction;
+    QAction* iSetAsBackgroundColourAction;
     QAction* iDeleteLedAction;
 };
 }

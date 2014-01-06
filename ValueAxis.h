@@ -37,7 +37,7 @@ public:
                             Animation& animation,
                             ValueAxis& axis,
                             TimeAxis& timeAxis,
-                           Led& led,
+                            Led& led,
                             QUndoStack &undoStack);
 
     void copyFrames(const AxisData &copyAxis);

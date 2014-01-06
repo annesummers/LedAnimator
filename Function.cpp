@@ -19,8 +19,8 @@ Function::Function()  :
 
 Function::Function(const Function& function) :
     iRedIncrement(function.iRedIncrement),
-    iBlueIncrement(function.iBlueIncrement),
-    iGreenIncrement(function.iGreenIncrement) {
+    iGreenIncrement(function.iGreenIncrement),
+    iBlueIncrement(function.iBlueIncrement) {
 }
 
 Function& Function::operator=(const Function& function) {

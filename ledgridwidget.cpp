@@ -20,7 +20,7 @@ using namespace Exception;
 using namespace AnimatorUi;
 
 LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, ColourGroupGroupWidget &groupGroup) :
-    ColourGroupWidget(parent, 0, 0, groupGroup, 0),
+    ColourGroupWidget(parent, 0, 0, groupGroup),
     iAnimation(animation),
     iLedGridLayout(NULL),
     iCurrentLed(NULL),
@@ -215,7 +215,7 @@ void LedGridWidget::addLed(int row, int column, Led* led) {
         led = iAnimation.ledAt(Position(row, column));
     }
 
-    LedWidget* widget = new LedWidget(this, iAnimation, *this, *led);
+    LedWidget* widget = new LedWidget(this, *this, *led);
 
     addWidget(widget, Position(row, column));
 }

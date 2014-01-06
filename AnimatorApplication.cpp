@@ -4,7 +4,7 @@
 **                                      **
 *****************************************/
 
-#include "animatorapplication.h"
+#include "AnimatorApplication.h"
 
 #include <QMessageBox>
 

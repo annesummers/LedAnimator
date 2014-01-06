@@ -22,8 +22,8 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
                                      Axis &axis,
                                      Engine& engine) :
     ColourGroupGroupWidget(parent, engine),
-    iAnimation(animation),
     iAxis(axis),
+    iAnimation(animation),
     iFramesListX(0),
     iFramesListWidth(0),
     iFrameSlider(NULL),
@@ -228,7 +228,7 @@ void AxisDetailsWidget::addLed(int row, int column) {
 
         QLabel* ledNumberLabel = new QLabel(this);
 
-        FrameListWidget* framesListWidget = new FrameListWidget(this, axisData(*led), *this, count);
+        FrameListWidget* framesListWidget = new FrameListWidget(this, axisData(*led), *this);//, count);
         QToolButton* closeButton = new QToolButton(this);
         closeButton->setObjectName(QString::fromUtf8("detailsClose"));
         closeButton->setIcon(QIcon(":/images/delete.png"));

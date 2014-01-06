@@ -1,6 +1,7 @@
 #include "TimeAxis.h"
 
 #include "exceptions.h"
+#include "ColourValue.h"
 
 using namespace AnimatorModel;
 using namespace Exception;
@@ -14,6 +15,7 @@ TimeAxis::TimeAxis(QObject *parent,
                    bool isOpaque) :
     Axis(parent, animation, lowValue, highValue, lowValue, priority, isOpaque),
     iSpeed(speed),
+    iBackgroundColour(QColor(-1, -1, -1)),
     iIsPlaying(false),
     iRepeat(false),
     iPlayTimer(NULL) {
@@ -73,16 +75,21 @@ TimeAxisData::TimeAxisData(QObject *parent,
                            Led& led,
                            QUndoStack& undoStack) :
     AxisData(parent, animation, axis, led, undoStack) {
+
+    for(int i = axis.lowValue(); i <= axis.highValue(); i++) {
+        frameAt(i).setValue(*(new ColourValue(parent,
+                                              QColor())));
+    }
 }
 
 void TimeAxisData::lowValueChanged(const int lowValue) {
-
+    Q_UNUSED(lowValue);
 }
 
 void TimeAxisData::highValueChanged(const int highValue){
-
+    Q_UNUSED(highValue);
 }
 
 void TimeAxisData::zeroValueChanged(const int zeroValue){
-
+    Q_UNUSED(zeroValue);
 }

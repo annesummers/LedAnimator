@@ -18,6 +18,7 @@ GroupListWidget::GroupListWidget(QWidget *parent, Animation& animation) :
 
 void GroupListWidget::addGroup(int groupNumber) {
    // iComboBox->addItem(QString("%1").arg(groupNumber));
+    Q_UNUSED(groupNumber);
 }
 
 void GroupListWidget::removeGroup(int groupNumber) {
@@ -25,5 +26,6 @@ void GroupListWidget::removeGroup(int groupNumber) {
 }
 
 void GroupListWidget::comboChanged(int index) {
+    Q_UNUSED(index);
     //iAnimation.selectGroup(iComboBox->itemText(index).toInt());
 }

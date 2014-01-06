@@ -15,7 +15,7 @@
 
 using namespace AnimatorUi;
 
-LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& ledGroup, Led& led)  :
+LedWidget::LedWidget(QWidget *parent, /*Animation& animation,*/ ColourGroupWidget& ledGroup, Led& led)  :
     ColourWidget(parent, ledGroup, led) {
 
     setObjectName("LedWidget");
@@ -35,10 +35,15 @@ LedWidget::LedWidget(QWidget *parent, Animation& animation, ColourGroupWidget& l
 
     connect(iDeleteLedAction, SIGNAL(triggered()), this, SLOT(deleteLed()));
 
-    iSetGroupAction = new QAction(tr("&Set group..."), this);
-    iSetGroupAction->setStatusTip(tr("Set selected led's group"));
+   // iSetGroupAction = new QAction(tr("&Set group..."), this);
+  //  iSetGroupAction->setStatusTip(tr("Set selected led's group"));
+//
+   // connect(iSetGroupAction, SIGNAL(triggered()), this, SLOT(setGroup()));
 
-    connect(iSetGroupAction, SIGNAL(triggered()), this, SLOT(setGroup()));
+    iSetAsBackgroundColourAction = new QAction(tr("Set as &background colour"), this);
+    iSetAsBackgroundColourAction->setStatusTip(tr("Set this colour to be the background colour for the current timeline"));
+
+    connect(iSetAsBackgroundColourAction, SIGNAL(triggered()), this, SLOT(setAsBackgroundColour()));
 }
 
 void LedWidget::renumber() {
@@ -51,6 +56,10 @@ void LedWidget::setGroup() {
 
 void LedWidget::deleteLed() {
     gridWidget().deleteSelectedLeds();
+}
+
+void LedWidget::setAsBackgroundColour() {
+    static_cast<TimeAxis&>(led().timeAxis()->axis()).setBackgroundColour(led().currentColour());
 }
 
 void LedWidget::ledUpdated() {
@@ -71,7 +80,8 @@ void LedWidget::addExtraActions(QMenu* menu) {
     }
 
     menu->addAction(iDeleteLedAction);
-    menu->addAction(iSetGroupAction);
+   // menu->addAction(iSetGroupAction);
+    menu->addAction(iSetAsBackgroundColourAction);
 }
 
 // events ------------------------------------

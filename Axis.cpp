@@ -44,10 +44,6 @@ void Axis::setCurrentFrame(int frame) {
     emit currentFrameChanged(iCurrentFrame);
 }
 
-/*const Frame& Axis::currentFrame() const {
-    return frameAt(iCurrentFrame);
-}*/
-
 AxisData::AxisData(QObject *parent,
                    Animation &animation,
                    Axis& axis,

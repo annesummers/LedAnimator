@@ -50,7 +50,6 @@ Frame::Frame(QObject *parent,
 
 void Frame::setValue(const FrameValue& value) {
     iUndoStack.push(new SetFrameColourCommand(iAnimation, *this, value));
-    //doSetValue(value);
 }
 
 void Frame::doSetValue(const FrameValue& value) {
@@ -131,6 +130,8 @@ const Function Frame::function() const {
 
         return combinedFunction;
     }
+    default:
+        return Function();
     }
 }
 
@@ -227,5 +228,7 @@ const QColor Frame::colour() const {
 
        return colour;
     }
+    default:
+        return QColor();
     }
 }

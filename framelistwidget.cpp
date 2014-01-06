@@ -16,13 +16,17 @@ using namespace AnimatorUi;
 
 FrameListWidget::FrameListWidget(QWidget *parent,
                                  const AxisData &axisData,
-                                 ColourGroupGroupWidget &framesListGroup,
-                                 int groupNumber) :
-    ColourGroupWidget(parent, 0, axisData.axis().numFrames(), framesListGroup, groupNumber),
+                                 ColourGroupGroupWidget &framesListGroup//,
+                                 /*int groupNumber*/) :
+    ColourGroupWidget(parent, 0, axisData.axis().numFrames(), framesListGroup),//, groupNumber),
     iAxisData(axisData),
     iResized(false) {
 
-    //numFramesChanged(axis.numFrames());
+    // create the zero widget
+    FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().zeroValue()));
+    iFramesList.insert(0, frame);
+    connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
+
     lowValueChanged(0, axisData.axis().lowValue());
     highValueChanged(0, axisData.axis().highValue());
 
@@ -55,15 +59,15 @@ void FrameListWidget::lowValueChanged(int oldLowValue, int lowValue) {
 }
 
 void FrameListWidget::setSize() {
-    setMinimumWidth(iAxisData.axis().numFrames() * 7);
-    setMaximumWidth(iAxisData.axis().numFrames() * 7);
+    setMinimumWidth((iAxisData.axis().numFrames() + 2) * 7);
+    setMaximumWidth((iAxisData.axis().numFrames() + 2) * 7);
 
     doResize();
 }
 
 void FrameListWidget::highValueChanged(int oldHighValue, int highValue) {
     if(highValue > oldHighValue) {  // we need to add more frames
-        for(int i = qAbs(highValue - oldHighValue); i >= 0; i--) {
+        for(int i = 0; i < qAbs(highValue - oldHighValue); i++) {
             FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().highValue() - i));
             iFramesList.append(frame);
             connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
@@ -85,7 +89,8 @@ void FrameListWidget::updateAll() {
 }
 
 void FrameListWidget::framesInserted(int numFrames, int framesAdded) {
-
+    Q_UNUSED(numFrames);
+    Q_UNUSED(framesAdded);
 }
 
 // from SelectableWidget -----------------------------
@@ -143,10 +148,10 @@ void FrameListWidget::doResize() {
 
             for(int i = 0; i < numFrames; i++) {
                 iFramesList.at(i)->resize(frameWidth, height());
-                iFramesList.at(i)->move(frameWidth*i + (10 - frameWidth/2), 0);
+                iFramesList.at(i)->move(frameWidth*(i), 0);
             }
 
-            resize(width() - extra + (20 - frameWidth), height());
+            resize(frameWidth * (numFrames+2), height());//width() - extra + (20 - frameWidth), height());
 
             emit resized();
         }

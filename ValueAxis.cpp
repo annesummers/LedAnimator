@@ -35,7 +35,7 @@ ValueAxisData::ValueAxisData(QObject *parent,
 
     frameAt(iAxis.zeroValue()).setValue(*(new LinkedValue(parent, QColor())));
 
-    for(int i = axis.zeroValue() + 1; i < axis.highValue(); i++) {
+    for(int i = axis.zeroValue() + 1; i <= axis.highValue(); i++) {
         frameAt(i).setValue(*(new FunctionValue(parent, Function(), 0)));
     }
 }
@@ -45,18 +45,18 @@ void ValueAxisData::setLinkedValue(LinkedValue& linkedValue) {
     frameAt(iAxis.zeroValue()).setValue(linkedValue);
 }
 
-
 void ValueAxisData::copyFrames(const AxisData &copyAxis) {
-
+    Q_UNUSED(copyAxis);
 }
 
 void ValueAxisData::lowValueChanged(const int lowValue) {
-
+    Q_UNUSED(lowValue);
 }
 
-void ValueAxisData::highValueChanged(const int highValue){
+void ValueAxisData::highValueChanged(const int highValue) {
+    Q_UNUSED(highValue);
 
 }
-void ValueAxisData::zeroValueChanged(const int zeroValue){
-
+void ValueAxisData::zeroValueChanged(const int zeroValue) {
+    Q_UNUSED(zeroValue);
 }

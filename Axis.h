@@ -122,7 +122,6 @@ public:
     inline Axis& axis() const { return iAxis; }
 
     inline Frame& frameAt(int frameNum) const { return *iFrames.find(frameNum).value(); }
-   // inline const int numFrames() const { return iAxis.numFrames(); }
     inline const int currentFrameNum() const { return iAxis.currentFrameNum(); }
 
     inline const Frame& currentFrame() const { return frameAt(iAxis.currentFrameNum()); }

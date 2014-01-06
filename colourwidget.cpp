@@ -17,12 +17,12 @@ using namespace AnimatorUi;
 
 ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Selectable& item) :
     SelectableWidget(parent, groupWidget, item),
+    iFunctionFading(false),
     iSignalMapper(NULL),
     iSetColourAction(NULL),
     iFadeAction(NULL),
     iFadeToAction(NULL),
-    iFading(false),
-    iFunctionFading(false){
+    iFading(false){
 
     iSetColourAction = new QAction(tr("&Set colour..."), this);
     iSetColourAction->setStatusTip(tr("Choose a colour"));

@@ -119,6 +119,18 @@ void Animation::newAnimation(int numRows,
 
     iFunctions.clear();
     iFunctions.append(Function());
+
+    if(iTimeAxis != NULL) {
+        delete iTimeAxis;
+        iTimeAxis = NULL;
+    }
+
+    Axis* axis;
+    foreach(axis, iAxes) {
+        delete axis;
+    }
+
+    iAxes.clear();
 }
 
 void Animation::newAnimation(int numRows,
@@ -131,13 +143,13 @@ const void Animation::addTimeAxis(int lowValue,
                  int speed,
                   int priority,
                   bool isOpaque) {
-    iTimeAxis = new TimeAxis(this, *this, lowValue, highValue, speed, priority, isOpaque);
-
-  /*  LedSetIterator& iterator = iLeds->iterator();
-
-    while(iterator.hasNext()) {
-        iterator.next().addTimeAxis(*iTimeAxis);
-    }*/
+    iTimeAxis = new TimeAxis(this,
+                             *this,
+                             lowValue,
+                             highValue,
+                             speed,
+                             priority,
+                             isOpaque);
 
     emit timeAxisAdded();
 }
@@ -148,14 +160,16 @@ const int Animation::addValueAxis(int lowValue,
                   int priority,
                   bool isOpaque) {
     int axisNumber = iAxes.count();
-    ValueAxis* axis = new ValueAxis(this, *this, axisNumber, lowValue, highValue, zeroValue, priority, isOpaque);
+    ValueAxis* axis = new ValueAxis(this,
+                                    *this,
+                                    axisNumber,
+                                    lowValue,
+                                    highValue,
+                                    zeroValue,
+                                    priority,
+                                    isOpaque);
+
     iAxes.append(axis);
-
-  /*  LedSetIterator& iterator = iLeds->iterator();
-
-    while(iterator.hasNext()) {
-        iterator.next().addValueAxis(*axis);
-    }*/
 
     emit valueAxisAdded(axisNumber);
 
@@ -209,7 +223,14 @@ void Animation::doAddNewLed(Position position, int ledNum) {
 
 void Animation::addLed(Led& led, Position position) {
     iLeds->addLed(led);
-    //led.numFramesChanged(iNumFrames);
+
+    if(iTimeAxis != NULL) {
+        led.addTimeAxis();
+    }
+
+    for(int i = 0; i < iAxes.size(); i++) {
+        led.addValueAxis(i);
+    }
 
     emit newLed(position.row(), position.column());
 }
@@ -377,26 +398,6 @@ Position Animation::ledPosition(int number) const {
 }
 
 // slots -------------------------
-
-/*void Animation::addFrames(int numFrames) {
-    iNumFrames = iNumFrames + numFrames;
-
-    emit framesInserted(iNumFrames, numFrames);
-}
-
-void Animation::setCurrentFrame(int frame) {
-    if(frame < INITIAL_FRAME) {
-        throw IllegalArgumentException("Animation::setCurrentFrame : Frame number is smaller than first frame");
-    }
-
-    if(frame > numFrames()) {
-        throw IllegalArgumentException("Animation::setCurrentFrame : Frame number is greater than last frame");
-    }
-
-    iCurrentFrame = frame;
-    emit currentFrameChanged(iCurrentFrame);
-}
-*/
 
 void Animation::copyToClipboard() {
     LedAnimStringCodec codec(*this);

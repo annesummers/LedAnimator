@@ -7,10 +7,12 @@
 #include "engine.h"
 
 #include "Animation.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "constants.h"
 #include "Codec.h"
-#include "newanimationdialog.h"
+#include "NewAnimationDialog.h"
+#include "NewValueAxisDialog.h"
+#include "NewTimeAxisDialog.h"
 #include "importbitmap.h"
 
 #include <QFile>
@@ -80,8 +82,11 @@ void Engine::setupUI() {
     iAnimation->setUndoStack(iMainWindow->undoStack());
 }
 
-void Engine::setupNewAnimation(int numRows, int numColumns ) {
+void Engine::setupNewAnimation(int numRows, int numColumns) {
     iAnimation->newAnimation(numRows, numColumns);
+
+    addTimeAxis();
+
     iMainWindow->show();
 }
 
@@ -132,7 +137,7 @@ void Engine::newAnimation(bool askSaveOld) {
             setupUI();
 
             setupNewAnimation(newAnimationDialog.iNumRows,
-                                 newAnimationDialog.iNumColumns);
+                              newAnimationDialog.iNumColumns);
         }
     }
 }
@@ -214,11 +219,25 @@ void Engine::setFrameFrequency() {
 }*/
 
 void Engine::addTimeAxis() {
-    iAnimation->addTimeAxis(0, 100, 100, kPriorityLow, false);
+    NewTimeAxisDialog newTimeAxisDialog(NULL, *this);
+    if(newTimeAxisDialog.exec() == QDialog::Accepted) {
+        iAnimation->addTimeAxis(0,
+                                newTimeAxisDialog.iNumFrames - 1,
+                                newTimeAxisDialog.iSpeed,
+                                newTimeAxisDialog.iPriority,
+                                newTimeAxisDialog.iOpaque);
+    }
 }
 
 void Engine::addValueAxis() {
-    iAnimation->addValueAxis(-100, 100, 0, kPriorityLow, false);
+    NewValueAxisDialog newValueAxisDialog(NULL, *this);
+    if(newValueAxisDialog.exec() == QDialog::Accepted) {
+        iAnimation->addValueAxis(newValueAxisDialog.iLowValue,
+                                 newValueAxisDialog.iHighValue,
+                                 newValueAxisDialog.iZeroValue,
+                                 newValueAxisDialog.iPriority,
+                                 newValueAxisDialog.iOpaque);
+    }
 }
 
 void Engine::importBitmap() {

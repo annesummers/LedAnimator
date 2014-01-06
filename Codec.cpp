@@ -92,8 +92,8 @@ void LedAnimCodec::readAnimation() {
         throw new InvalidAnimationException("No header byte");
     }
 
-    char numLedsHigh = readCharacter().unsignedCharValue();
-    char numLedsLow = readCharacter().unsignedCharValue();
+    unsigned char numLedsHigh = readCharacter().unsignedCharValue();
+    unsigned char numLedsLow = readCharacter().unsignedCharValue();
 
     int numLeds =  numLedsHigh |= numLedsLow << 8;
 
@@ -119,11 +119,10 @@ void LedAnimCodec::readAnimation() {
         readAxis(i);
     }
 
-
     readAxisData(kTimeAxisNum);
 
     if (readCharacter().unsignedCharValue() != TERMINATING_BYTE) {
-        throw new InvalidAnimationException("No terminating byte");
+        //throw new InvalidAnimationException("No terminating byte");
     }
 }
 
@@ -141,6 +140,10 @@ void LedAnimCodec::writeAxis(int axisNum) {
         writeCharacter(axis->lowValue());
         writeCharacter(axis->highValue());
         writeCharacter(iAnimation.timeAxis()->speed());
+        writeCharacter(iAnimation.timeAxis()->usesBackgroundColour());
+        if(iAnimation.timeAxis()->usesBackgroundColour()) {
+            writeColour(iAnimation.timeAxis()->backgroundColour());
+        }
     } else {
         axis = &iAnimation.axisAt(axisNum);
 
@@ -191,6 +194,7 @@ void LedAnimCodec::writeAxis(int axisNum) {
 }
 
 void LedAnimCodec::writeAxisData(int axisNum) {
+    Q_UNUSED(axisNum);
 
     Axis* axis = iAnimation.timeAxis();
 
@@ -243,7 +247,10 @@ void LedAnimCodec::readAxis(int axisNum) {
         int speed = readCharacter().intValue();
 
         iAnimation.addTimeAxis(lowValue, highValue, speed, priority, opaque);
-       // axis = iAnimation.timeAxis();
+
+        if(readCharacter().boolValue()) {
+            iAnimation.timeAxis()->setBackgroundColour(readColour());
+        }
     } else {
         int lowValue = readCharacter().intValue();
         int highValue = readCharacter().intValue();
@@ -289,7 +296,7 @@ void LedAnimCodec::readAxis(int axisNum) {
 }
 
 void LedAnimCodec::readAxisData(int axisNum) {
-
+    Q_UNUSED(axisNum);
 
     Axis* axis = iAnimation.timeAxis();
 
@@ -382,13 +389,17 @@ void LedAnimStringCodec::writeControlCharacter(AnimChar character) {
 void LedAnimStringCodec::writeColour(Frame &frame) {
     const ColourValue& colourValue = static_cast<const ColourValue&>(frame.value());
 
-    writeCharacter(colourValue.colour().red());
-    writeCharacter(colourValue.colour().green());
-    writeCharacter(colourValue.colour().blue());
+    writeColour(colourValue.colour());
+}
+
+void LedAnimStringCodec::writeColour(QColor colour) {
+    writeCharacter(colour.red());
+    writeCharacter(colour.green());
+    writeCharacter(colour.blue());
 }
 
 const QColor LedAnimStringCodec::readColour() const {
-
+    return QColor();
 }
 
 void LedAnimStringCodec::writeFunction(Frame& frame) {
@@ -398,7 +409,7 @@ void LedAnimStringCodec::writeFunction(Frame& frame) {
 }
 
 const FunctionValue& LedAnimStringCodec::readFunction(Frame& frame) const {
-
+    Q_UNUSED(frame);
 }
 
 void LedAnimStringCodec::writeFunctionData(Function function) {
@@ -407,7 +418,14 @@ void LedAnimStringCodec::writeFunctionData(Function function) {
     float redIncrementF = (float)function.redIncrement();
     double redIncrementD = (double)redIncrementF;
     redIncrementD *= multiplier;
-    redIncrementD = round(redIncrementD) - 1;
+    redIncrementD = round(redIncrementD);
+
+    if(redIncrementD > 0) {
+        redIncrementD--;
+    } else if(redIncrementD < 0) {
+        redIncrementD++;
+    }
+
     int redIncrement = (int)redIncrementD;
 
     unsigned char redIncrement1 = redIncrement;
@@ -422,7 +440,14 @@ void LedAnimStringCodec::writeFunctionData(Function function) {
     float greenIncrementF = (float)function.greenIncrement();
     double greenIncrementD = (double)greenIncrementF;
     greenIncrementD *= multiplier;
-    greenIncrementD = round(greenIncrementD) - 1;
+    greenIncrementD = round(greenIncrementD);
+
+    if(greenIncrementD > 0) {
+        greenIncrementD--;
+    } else if(greenIncrementD < 0) {
+        greenIncrementD++;
+    }
+
     int greenIncrement = (int)greenIncrementD;
 
     unsigned char greenIncrement1 = greenIncrement;
@@ -437,7 +462,14 @@ void LedAnimStringCodec::writeFunctionData(Function function) {
     float blueIncrementF = (float)function.blueIncrement();
     double blueIncrementD = (double)blueIncrementF;
     blueIncrementD *= multiplier;
-    blueIncrementD = round(blueIncrementD) - 1;
+    blueIncrementD = round(blueIncrementD);
+
+    if(blueIncrementD > 0) {
+        blueIncrementD--;
+    } else if(blueIncrementD < 0) {
+        blueIncrementD++;
+    }
+
     int blueIncrement = (int)blueIncrementD;
 
     unsigned char blueIncrement1 = blueIncrement;
@@ -585,13 +617,17 @@ QList<int> LedAnimByteArrayCodec::readPositionData(int* numRows, int* numColumns
 void LedAnimByteArrayCodec::writeColour(Frame &frame) {
     const ColourValue& colourValue = static_cast<const ColourValue&>(frame.value());
 
-    int hue = colourValue.colour().hue();
+    writeColour(colourValue.colour());
+}
+
+void LedAnimByteArrayCodec::writeColour(QColor colour) {
+    int hue = colour.hue();
     char hueHigh = hue;
     char hueLow = hue >> 8;
     writeCharacter(hueHigh);
     writeCharacter(hueLow);
-    writeCharacter(colourValue.colour().saturation());
-    writeCharacter(colourValue.colour().value());
+    writeCharacter(colour.saturation());
+    writeCharacter(colour.value());
 }
 
 const QColor LedAnimByteArrayCodec::readColour() const {
@@ -695,13 +731,17 @@ LedAnimSimpleByteArrayCodec::LedAnimSimpleByteArrayCodec(Animation& animation, Q
 void LedAnimSimpleByteArrayCodec::writeColour(Frame &frame) {
     const ColourValue& colourValue = static_cast<const ColourValue&>(frame.value());
 
-    writeCharacter(colourValue.colour().red());
-    writeCharacter(colourValue.colour().green());
-    writeCharacter(colourValue.colour().blue());
+    writeColour(colourValue.colour());
+}
+
+void LedAnimSimpleByteArrayCodec::writeColour(QColor colour) {
+    writeCharacter(colour.red());
+    writeCharacter(colour.green());
+    writeCharacter(colour.blue());
 }
 
 const QColor LedAnimSimpleByteArrayCodec::readColour() const {
-
+    return QColor();
 }
 
 void LedAnimSimpleByteArrayCodec::writeFunction(Frame& frame) {
@@ -711,7 +751,7 @@ void LedAnimSimpleByteArrayCodec::writeFunction(Frame& frame) {
 }
 
 const FunctionValue& LedAnimSimpleByteArrayCodec::readFunction(Frame& frame) const {
-
+    Q_UNUSED(frame);
 }
 
 void LedAnimSimpleByteArrayCodec::writeFunctionData(Function function) {   
