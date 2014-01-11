@@ -35,6 +35,18 @@ LedWidget::LedWidget(QWidget *parent, /*Animation& animation,*/ ColourGroupWidge
 
     connect(iDeleteLedAction, SIGNAL(triggered()), this, SLOT(deleteLed()));
 
+    iCopyMenu = new QMenu(this);
+
+    iCopyTimeAxisAction = new QAction(tr("&time axis"), this);
+    iCopyTimeAxisAction->setStatusTip(tr("Copy an entire time axis"));
+
+    connect(iCopyTimeAxisAction, SIGNAL(triggered()), this, SLOT(copyTimeAxis()));
+
+    iCopyFrameAction = new QAction(tr("&single frame"), this);
+    iCopyFrameAction->setStatusTip(tr("Copy the current frame"));
+
+    connect(iCopyFrameAction, SIGNAL(triggered()), this, SLOT(copyFrame()));
+
    // iSetGroupAction = new QAction(tr("&Set group..."), this);
   //  iSetGroupAction->setStatusTip(tr("Set selected led's group"));
 //
@@ -62,6 +74,18 @@ void LedWidget::setAsBackgroundColour() {
     static_cast<TimeAxis&>(led().timeAxis()->axis()).setBackgroundColour(led().currentColour());
 }
 
+void LedWidget::copyValueAxis() {
+    gridWidget().copySelectedLedsValueAxis(0);
+}
+
+void LedWidget::copyTimeAxis() {
+    gridWidget().copySelectedLedsTimeAxis();
+}
+
+void LedWidget::copyFrame() {
+    gridWidget().copySelectedLedsCurrentFrames();
+}
+
 void LedWidget::ledUpdated() {
     updated();
 
@@ -82,6 +106,18 @@ void LedWidget::addExtraActions(QMenu* menu) {
     menu->addAction(iDeleteLedAction);
    // menu->addAction(iSetGroupAction);
     menu->addAction(iSetAsBackgroundColourAction);
+
+    menu->addSeparator();
+
+   /* for(int i = 0; i < led().numTimeAxes(); i++) {
+        QAction* action = new QAction(QString(), this);
+        iCopyAxes.append(action);
+        copyMenu->addAction(action);
+    }*/
+    iCopyMenu->addAction(iCopyTimeAxisAction);
+    iCopyMenu->addAction(iCopyFrameAction);
+
+    menu->addMenu(iCopyMenu);
 }
 
 // events ------------------------------------

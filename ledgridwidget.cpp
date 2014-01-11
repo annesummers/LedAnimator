@@ -125,7 +125,20 @@ void LedGridWidget::cloneItem(int fromGroup, Position fromPosition, Position toP
     //qDebug("LedGridWidget::copyItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
     //                                                        toPosition.row(), toPosition.column());
 
-    iAnimation.cloneLed(fromPosition, toPosition);
+    switch(iCopyType) {
+    case EClone:
+        iAnimation.cloneLed(fromPosition, toPosition);
+        break;
+    case ETimeAxis:
+        iAnimation.copyLedTimeAxis(fromPosition, toPosition);
+        break;
+    case EValueAxis:
+        iAnimation.copyLedValueAxis(fromPosition, toPosition, iCopySubType);
+        break;
+    case EFrame:
+        iAnimation.copyLedCurrentFrame(fromPosition, toPosition, iCopySubType);
+        break;
+    }
 }
 
 void LedGridWidget::pasteItem(int fromGroup, Position fromPosition, Position toPosition) {
@@ -182,6 +195,34 @@ void LedGridWidget::deleteSelectedLeds() {
 
         iAnimation.deleteLed(ledWidget.led(), true);
     }
+}
+
+void LedGridWidget::copySelected() {
+    iCopyType = LedGridWidget::EClone;
+    iCopySubType = 0;
+
+    SelectableGroupWidget::copySelected();
+}
+
+void LedGridWidget::copySelectedLedsValueAxis(int axisNum) {
+    iCopyType = LedGridWidget::EValueAxis;
+    iCopySubType = axisNum;
+
+    SelectableGroupWidget::copySelected();
+}
+
+void LedGridWidget::copySelectedLedsTimeAxis() {
+    iCopyType = LedGridWidget::ETimeAxis;
+    iCopySubType = 0;
+
+    SelectableGroupWidget::copySelected();
+}
+
+void LedGridWidget::copySelectedLedsCurrentFrames() {
+    iCopyType = LedGridWidget::EFrame;
+    iCopySubType = iAnimation.timeAxis()->currentFrameNum();
+
+    SelectableGroupWidget::copySelected();
 }
 
 Led& LedGridWidget::getLed(Position position) {

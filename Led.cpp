@@ -164,10 +164,30 @@ ValueAxisData &Led::axisAt(int axisNum) const {
 
 void Led::copyAxes(const Led &copyLed) {
     for(int i = 0; i < iAnimation.numValueAxes(); i++) {
-        axisAt(i).copyFrames(copyLed.axisAt(i));
+        copyValueAxis(copyLed, i);
+    }
+
+    copyTimeAxis(copyLed);
+}
+
+void Led::copyTimeAxis(const Led& copyLed) {
+    if(iTimeAxisData == NULL) {
+        addTimeAxis();
     }
 
     timeAxis()->copyFrames(*copyLed.timeAxis());
+}
+
+void Led::copyCurrentFrame(const Led& copyLed, int frameNum) {
+
+}
+
+void Led::copyValueAxis(const Led& copyLed, int axisNum) {
+    if(iAxesData.size() < axisNum - 1) {
+        addValueAxis(axisNum);
+    }
+
+    axisAt(axisNum).copyFrames(copyLed.axisAt(axisNum));
 }
 
 

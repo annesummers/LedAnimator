@@ -29,9 +29,15 @@ public:
 private slots:
     void renumber();
     void setGroup();
+
     void deleteLed();
     void ledUpdated();
+
     void setAsBackgroundColour();
+
+    void copyTimeAxis();
+    void copyFrame();
+    void copyValueAxis();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -52,6 +58,12 @@ private:
     QAction* iRenumberAction;
     QAction* iSetAsBackgroundColourAction;
     QAction* iDeleteLedAction;
+
+    QMenu* iCopyMenu;
+
+    QAction* iCopyTimeAxisAction;
+    QAction* iCopyFrameAction;
+
 };
 }
 

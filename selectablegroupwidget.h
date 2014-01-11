@@ -64,7 +64,7 @@ public:
     void clearAllSelection();
 
     void cutSelected();
-    void copySelected();
+    virtual void copySelected();
     void paste(bool wrap);
     void paste(SelectableWidget& dropWidget, bool wrap);
 

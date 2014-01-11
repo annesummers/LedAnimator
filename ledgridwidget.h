@@ -38,8 +38,13 @@ public:
     void addSelectedLeds();
     void hideSelectedLeds();
     void setSelectedLedsGroupNumber();
+
     void deleteSelectedLeds();
     void moveSelectedLedsToClipboard();
+
+    void copySelectedLedsValueAxis(int axisNum);
+    void copySelectedLedsTimeAxis();
+    void copySelectedLedsCurrentFrames();
 
     bool shouldMoveLeds();
 
@@ -52,6 +57,7 @@ signals:
 
 public slots:
     void addLed(int row, int column, Led *led = NULL);
+    void copySelected();
 
 private slots:
     void addSocket(int row, int column);
@@ -72,6 +78,8 @@ protected:
     bool validKeyPress(Qt::Key key);
 
 private:
+    enum CopyType { EClone, ETimeAxis, EValueAxis, EFrame };
+
     void moveItem(int fromGroup, Position fromPosition, Position toPosition);
     void cloneItem(int fromGroup, Position fromPosition, Position toPosition);
     void pasteItem(int fromGroup, Position fromPosition, Position toPosition);
@@ -94,6 +102,9 @@ private:
     QRect           iDragArea;
 
     Led*            iCurrentLed;
+
+    CopyType        iCopyType;
+    int             iCopySubType;
 
     bool            iLedNumbersShown;
 };

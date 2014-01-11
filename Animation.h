@@ -36,9 +36,6 @@ public:
     void newAnimation(int numRows,
                       int numColumns);
 
-   // void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency, int numLeds, QList<int> ledPositions);
-  //  void setupNew(int numRows, int numColumns, int numFrames, int frameFrequency);
-
     inline void setUndoStack(QUndoStack& undoStack) { iUndoStack = &undoStack; }
 
     void addNewLed(Position position);
@@ -68,6 +65,14 @@ public:
     void doMoveLed(Position fromPosition, Position toPosition);
     Led* doCloneLed(Position fromPosition, Position toPosition);
     void doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
+
+    void copyLedTimeAxis(Position fromPosition, Position toPosition);
+    void copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
+    void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
+
+    Led* doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
+    Led* doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
+    Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
 
     void moveLedToClipboard(Position position);
     void addLedToClipboard(Led* led);

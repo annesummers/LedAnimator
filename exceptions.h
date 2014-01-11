@@ -47,6 +47,12 @@ public:
     inline InvalidAnimationException(QString errorMessage) : AnimatorException (errorMessage) {}
 };
 
+class InvalidPositionException  : public AnimatorException {
+
+public:
+    inline InvalidPositionException(QString errorMessage) : AnimatorException (errorMessage) {}
+};
+
 class IllegalArgumentException : public AnimatorException {
 
 public:

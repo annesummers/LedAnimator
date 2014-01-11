@@ -44,7 +44,10 @@ public:
     void move(Position newPosition);
     void paste(Led &copyLed);
 
-    void copyAxes(const Led& led);
+    void copyAxes(const Led& copyLed);
+    void copyTimeAxis(const Led& copyLed);
+    void copyCurrentFrame(const Led& copyLed, int frameNum);
+    void copyValueAxis(const Led& copyLed, int axisNum);
 
     inline Animation& animation() { return iAnimation; }
 
