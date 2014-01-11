@@ -35,6 +35,8 @@ protected:
     void addDefaultAction(QMenu* menu);
     void addExtraActions(QMenu *menu);
 
+    void mouseDoubleClickEvent(QMouseEvent* event);
+
     void setValue(FrameValue &value) { frame().setValue(value); }
 
     inline Qt::DropActions dropActions() const { return Qt::CopyAction; }

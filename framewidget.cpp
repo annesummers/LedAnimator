@@ -47,6 +47,12 @@ void FrameWidget::addDefaultAction(QMenu* menu) {
     }
 }
 
+void FrameWidget::mouseDoubleClickEvent(QMouseEvent* event) {
+    if(frame().value().type() == kColour) {
+        ColourWidget::mouseDoubleClickEvent(event);
+    }
+}
+
 void FrameWidget::addExtraActions(QMenu *menu) {
     if(frame().value().type() == kColour) {
         ColourWidget::addExtraActions(menu);
