@@ -67,7 +67,7 @@ void FrameListWidget::setSize() {
 
 void FrameListWidget::highValueChanged(int oldHighValue, int highValue) {
     if(highValue > oldHighValue) {  // we need to add more frames
-        for(int i = 0; i < qAbs(highValue - oldHighValue); i++) {
+        for(int i = qAbs(highValue - oldHighValue) - 1; i >= 0 ; i--) {
             FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().highValue() - i));
             iFramesList.append(frame);
             connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
