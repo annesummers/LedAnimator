@@ -9,6 +9,7 @@
 
 #include <QString>
 #include <QtCore>
+#include <QtConcurrent/QtConcurrent>
 
 namespace Exception {
 

@@ -1,7 +1,9 @@
 #include "LedDetailsWidget.h"
-#include "ui_leddetails.h"
+#include "ui_leddetailswidget.h"
 
 using namespace AnimatorUi;
+
+
 
 LedDetailsWidget::LedDetailsWidget(QWidget *parent) :
     QWidget(parent),

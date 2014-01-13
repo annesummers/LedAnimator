@@ -1,6 +1,7 @@
 #ifndef LEDDETAILS_H
 #define LEDDETAILS_H
 
+#include <QtWidgets>
 #include <QWidget>
 
 namespace Ui {

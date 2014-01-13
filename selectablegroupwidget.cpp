@@ -6,6 +6,7 @@
 
 #include "selectablegroupwidget.h"
 
+#include <QApplication>
 #include <QtGui>
 
 #include "selectablewidget.h"

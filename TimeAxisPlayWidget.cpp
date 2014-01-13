@@ -5,7 +5,7 @@
 *****************************************/
 
 #include "TimeAxisPlayWidget.h"
-#include "ui_playinfowidget.h"
+//#include "ui_playinfowidget.h"
 
 #include "Animation.h"
 #include "TimeAxis.h"
@@ -13,6 +13,7 @@
 #include "constants.h"
 
 #include <QtDebug>
+#include <QGridLayout>
 
 using namespace AnimatorUi;
 

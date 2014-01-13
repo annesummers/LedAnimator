@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QSignalMapper>
 #include <QLabel>
+#include <QToolButton>
 #include <QPushButton>
 #include <QHash>
 

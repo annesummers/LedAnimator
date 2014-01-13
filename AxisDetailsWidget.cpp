@@ -14,6 +14,11 @@
 #include "constants.h"
 #include "exceptions.h"
 
+#include <QScrollArea>
+#include <QObject>
+#include <QToolButton>
+
+
 using namespace AnimatorUi;
 using namespace Exception;
 

@@ -179,8 +179,6 @@
      <zorder>ledNumber</zorder>
      <zorder>colourGroupBox</zorder>
      <zorder>positionGroupBox</zorder>
-     <zorder>label_5</zorder>
-     <zorder>label_5</zorder>
     </widget>
    </item>
   </layout>
