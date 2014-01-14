@@ -82,6 +82,21 @@ void Animation::newAnimation(int numRows,
         iClipboardLeds = new LedSet(this);
     }
 
+    iFunctions.clear();
+    iFunctions.append(Function());
+
+    if(iTimeAxis != NULL) {
+        delete iTimeAxis;
+        iTimeAxis = NULL;
+    }
+
+    Axis* axis;
+    foreach(axis, iAxes) {
+        delete axis;
+    }
+
+    iAxes.clear();
+
     setNumRows(numRows);
     setNumColumns(numColumns);
 
@@ -116,21 +131,6 @@ void Animation::newAnimation(int numRows,
     }
 
     iLeds->setHighestNumber(ledNum - 1);
-
-    iFunctions.clear();
-    iFunctions.append(Function());
-
-    if(iTimeAxis != NULL) {
-        delete iTimeAxis;
-        iTimeAxis = NULL;
-    }
-
-    Axis* axis;
-    foreach(axis, iAxes) {
-        delete axis;
-    }
-
-    iAxes.clear();
 }
 
 void Animation::newAnimation(int numRows,
