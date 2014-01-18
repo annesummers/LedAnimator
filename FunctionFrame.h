@@ -25,7 +25,7 @@ public:
                            QUndoStack &undoStack);
 
     const QColor colour() const;
-    const int type() const { return kColour; }
+    inline int type() const { return kColour; }
 
     void setValue(FrameValue& value);
 

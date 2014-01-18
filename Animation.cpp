@@ -138,7 +138,7 @@ void Animation::newAnimation(int numRows,
     newAnimation(numRows, numColumns, 0, QList<int>() );
 }
 
-const void Animation::addTimeAxis(int lowValue,
+void Animation::addTimeAxis(int lowValue,
                  int highValue,
                  int speed,
                   int priority,
@@ -154,7 +154,7 @@ const void Animation::addTimeAxis(int lowValue,
     emit timeAxisAdded();
 }
 
-const int Animation::addValueAxis(int lowValue,
+int Animation::addValueAxis(int lowValue,
                  int highValue,
                  int zeroValue,
                   int priority,

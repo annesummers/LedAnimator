@@ -33,10 +33,10 @@ public:
     AnimChar(const unsigned char value);
     AnimChar();
 
-    const int intValue() const;
-    const unsigned int unsignedIntValue() const;
-    const unsigned char unsignedCharValue() const;
-    const bool boolValue() const;
+    int intValue() const;
+    unsigned int unsignedIntValue() const;
+    unsigned char unsignedCharValue() const;
+    bool boolValue() const;
 
 private:
     const char iValue;

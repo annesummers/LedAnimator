@@ -23,7 +23,7 @@ public:
                        int priority,
                        bool isOpaque);
 
-    inline const int number() const { return iNumber; }
+    inline int number() const { return iNumber; }
 
 private:
     int iNumber;

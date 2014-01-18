@@ -88,7 +88,7 @@ public:
 
     Position lastSelectedPosition() const;
 
-    inline const int groupNumber() const { return iGroupNumber; }
+    inline int groupNumber() const { return iGroupNumber; }
 
     inline const QList<SelectableWidget*> selectedItems() const { return iSelected; }
 

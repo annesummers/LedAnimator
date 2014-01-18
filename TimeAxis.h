@@ -24,7 +24,7 @@ public:
     void setLowValue(const int lowValue);
     void setHighValue(const int highValue);
 
-    inline const int speed() const { return iSpeed; }
+    inline int speed() const { return iSpeed; }
 
     inline bool usesBackgroundColour() const { return iBackgroundColour.isValid(); }
     inline const QColor backgroundColour() const { return iBackgroundColour; }
@@ -36,7 +36,7 @@ public:
     void play(bool repeat);
     void stop();
 
-    inline const bool isPlaying() const { return iIsPlaying; }
+    inline bool isPlaying() const { return iIsPlaying; }
     inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
 signals:

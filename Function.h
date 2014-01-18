@@ -19,9 +19,9 @@ public:
 
     bool operator==(const Function& function);
 
-    const float redIncrement() const { return iRedIncrement; }
-    const float greenIncrement() const { return iGreenIncrement; }
-    const float blueIncrement() const { return iBlueIncrement; }
+    float redIncrement() const { return iRedIncrement; }
+    float greenIncrement() const { return iGreenIncrement; }
+    float blueIncrement() const { return iBlueIncrement; }
 
     inline bool isNull() const { return iRedIncrement == 0 &&
                                         iGreenIncrement == 0 &&

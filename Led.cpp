@@ -86,6 +86,8 @@ void Led::addValueAxis(int axisNumber) {
                                        *this,
                                        iUndoStack));
 
+    qDebug() << number() << "Adding axis " << axisNumber;
+
     currentFrameChanged(iTimeAxisData->currentFrameNum());
 }
 

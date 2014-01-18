@@ -255,43 +255,6 @@ void AnimationTests::setupNewPopulated() {
 }
 
 
-void AnimationTests::play() {
-    iAnimation->play(false);
-
-    QCOMPARE(iAnimation->isPlaying(), true);
-
-    //Hmm how can we check the timer is firing correctly?
-}
-
-void AnimationTests::stop() {
-    iAnimation->stop();
-
-    QCOMPARE(iAnimation->isPlaying(), false);
-}
-
-void AnimationTests::setCurrentFrame_data() {
-    QTest::addColumn<int>("currentFrame");
-    QTest::addColumn<QString>("errorString");
-
-    QTest::newRow("frame number too small") << 0
-                                       << "Animation::setCurrentFrame : Frame number is smaller than first frame";
-    QTest::newRow("frame number too big") << iAnimation->numFrames() + 1
-                                          << "Animation::setCurrentFrame : Frame number is greater than last frame";
-    QTest::newRow("valid") << INITIAL_FRAME
-                           << "";
-}
-
-void AnimationTests::setCurrentFrame() {
-    QFETCH(int, currentFrame);
-    QFETCH(QString, errorString);
-
-    try {
-        iAnimation->setCurrentFrame(currentFrame);
-    } catch(IllegalArgumentException& e) {
-        QCOMPARE(e.errorMessage(), errorString);
-    }
-}
-
 void AnimationTests::ledAt_data() {
     QTest::addColumn<Position>("position");
     QTest::addColumn<QString>("errorString");
@@ -323,6 +286,15 @@ void AnimationTests::ledAt() {
         QCOMPARE(e.errorMessage(), errorString);
     }
 }
+
+void AnimationTests::axisAt_data() {
+
+}
+
+void AnimationTests::axisAt() {
+
+}
+
 
 void AnimationTests::cleanupTestCase() {
 

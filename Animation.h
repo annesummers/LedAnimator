@@ -41,13 +41,13 @@ public:
     void addNewLed(Position position);
     void deleteLed(Led &led, bool deleteObject);
 
-    const void addTimeAxis(int lowValue,
+    void addTimeAxis(int lowValue,
                      int highValue,
                      int speed,
                    int priority,
                    bool isOpaque);
 
-    const int addValueAxis(int lowValue,
+    int addValueAxis(int lowValue,
                      int highValue,
                      int zeroValue,
                        int priority,
@@ -90,7 +90,7 @@ public:
     ValueAxis& axisAt(int number) const;
     inline TimeAxis* timeAxis() const { return iTimeAxis; }
 
-    inline const int numValueAxes() const { return iAxes.count(); }
+    inline int numValueAxes() const { return iAxes.count(); }
 
     inline bool isMissing(int ledNumber) { return iLeds->isMissing(ledNumber); }
     inline bool ledsMissing() { return iLeds->ledsMissing(); }
@@ -99,11 +99,11 @@ public:
     Position ledPosition(int number) const;
 
     inline const QString fileName() const { return iFileName; }
-    inline const bool isSaved() const { return iIsSaved; }
+    inline bool isSaved() const { return iIsSaved; }
 
-    inline const int numRows() const { return iNumRows; }
-    inline const int numColumns() const { return iNumColumns; }
-    inline const int numLeds() const { return iLeds->count(); }
+    inline int numRows() const { return iNumRows; }
+    inline int numColumns() const { return iNumColumns; }
+    inline int numLeds() const { return iLeds->count(); }
 
     int nextLedNumber() const ;
 

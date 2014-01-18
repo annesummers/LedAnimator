@@ -28,16 +28,16 @@ public:
                   int priority,
                   bool isOpaque);
 
-    inline const int lowValue() const { return iLowValue; }
-    inline const int highValue() const { return iHighValue; }
-    inline const int zeroValue() const { return iZeroValue; }
+    inline int lowValue() const { return iLowValue; }
+    inline int highValue() const { return iHighValue; }
+    inline int zeroValue() const { return iZeroValue; }
 
     //inline const void setLowValue(const int lowValue) { iLowValue = lowValue; }
    // inline const void setHighValue(const int highValue) { iHighValue = highValue; }
    // inline const void setZeroValue(const int zeroValue) { iZeroValue = zeroValue; }
 
-    const int numFrames() const;
-    inline const int currentFrameNum() const { return iCurrentFrame; }
+    int numFrames() const;
+    inline int currentFrameNum() const { return iCurrentFrame; }
 
     //const Frame& currentFrame() const;
 
@@ -94,8 +94,8 @@ public:
         return *this;
     }
 
-    inline const int lowValue() const { return iRange.first; }
-    inline const int highValue() const { return iRange.second; }
+    inline int lowValue() const { return iRange.first; }
+    inline int highValue() const { return iRange.second; }
 
     inline void setFunction(int function) { iFunction = function; }
     inline int function() const { return iFunction; }
@@ -122,7 +122,7 @@ public:
     inline Axis& axis() const { return iAxis; }
 
     inline Frame& frameAt(int frameNum) const { return *iFrames.find(frameNum).value(); }
-    inline const int currentFrameNum() const { return iAxis.currentFrameNum(); }
+    inline int currentFrameNum() const { return iAxis.currentFrameNum(); }
 
     inline const Frame& currentFrame() const { return frameAt(iAxis.currentFrameNum()); }
 

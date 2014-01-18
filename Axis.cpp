@@ -27,7 +27,7 @@ Axis::Axis(QObject *parent,
     emit highValueChanged(iHighValue);
 }
 
-const int Axis::numFrames() const {
+int Axis::numFrames() const {
     return iHighValue - iLowValue + 1;
 }
 

@@ -30,19 +30,19 @@ AnimChar::AnimChar() :
 
 }
 
-const int AnimChar::intValue() const {
+int AnimChar::intValue() const {
     return static_cast<int>(iValue);
 }
 
-const unsigned int AnimChar::unsignedIntValue() const {
+unsigned int AnimChar::unsignedIntValue() const {
     return static_cast<unsigned int>(iValue);
 }
 
-const bool AnimChar::boolValue() const {
+bool AnimChar::boolValue() const {
     return static_cast<bool>(iValue);
 }
 
-const unsigned char AnimChar::unsignedCharValue() const {
+unsigned char AnimChar::unsignedCharValue() const {
     return static_cast<unsigned char>(iValue);
 }
 

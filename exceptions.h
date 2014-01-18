@@ -9,17 +9,17 @@
 
 #include <QString>
 #include <QtCore>
-#include <QtConcurrent/QtConcurrent>
+//#include <QtConcurrent/QtConcurrent>
 
 namespace Exception {
 
-class AnimatorException : public QtConcurrent::Exception {
+class AnimatorException : public QException {
 
 public:
     inline AnimatorException (QString errorMessage) { iErrorMessage = errorMessage; }
 
     void raise() const { throw *this; }
-    QtConcurrent::Exception *clone() const { return new AnimatorException(*this); }
+    QException *clone() const { return new AnimatorException(*this); }
 
     inline QString errorMessage() { return iErrorMessage; }
 

@@ -37,14 +37,11 @@ private slots:
      void setupNewPopulated();
      void setupNewPopulated_data();
 
-     void setCurrentFrame_data();
-     void setCurrentFrame();
-
      void ledAt_data();
      void ledAt();
 
-     void play();
-     void stop();
+     void axisAt_data();
+     void axisAt();
 
      void cleanupTestCase();
 
