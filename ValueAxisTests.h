@@ -1,8 +1,9 @@
 #ifndef VALUEAXISTESTS_H
 #define VALUEAXISTESTS_H
 
-#include <QObject>
 #include <QtTest/QtTest>
+
+#include "AxisTests.h"
 
 class Engine;
 
@@ -15,18 +16,17 @@ using namespace AnimatorModel;
 
 namespace AnimatorTest {
 
-class ValueAxisTests : public QObject {
+class ValueAxisTests : public AxisTests {
     Q_OBJECT
 
+public:
+    ValueAxisTests(QObject *parent = 0);
 
 private slots:
-     void initTestCase();
+    void initTestCase();
     void cleanupTestCase();
 
 private :
-    Engine*    iEngine;
-    Animation* iAnimation;
-    ValueAxis* iValueAxis;
 };
 
 }

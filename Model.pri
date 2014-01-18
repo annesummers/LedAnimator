@@ -21,7 +21,11 @@ SOURCES +=  \
     NoValue.cpp \
     LinkedValue.cpp \
     ByteArrayCodec.cpp \
-    StringCodec.cpp
+    StringCodec.cpp \
+    AxisData.cpp \
+    TimeAxisData.cpp \
+    ValueAxisData.cpp
+    Function.cpp \
 
 HEADERS += \
     LedSet.h \
@@ -45,4 +49,10 @@ HEADERS += \
     NoValue.h \
     LinkedValue.h \
     ByteArrayCodec.h \
-    StringCodec.h
+    StringCodec.h \
+    AxisData.h \
+    Position.h \
+    Range.h \
+    TimeAxisData.h \
+    ValueAxisData.h
+    Function.h \

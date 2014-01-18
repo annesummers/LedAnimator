@@ -37,7 +37,6 @@ public:
     void stop();
 
     inline bool isPlaying() const { return iIsPlaying; }
-    inline void setPlaying(bool isPlaying) { iIsPlaying = isPlaying; }
 
 signals:
     void stopped();
@@ -53,23 +52,6 @@ private:
     bool iRepeat;
 
     QTimer* iPlayTimer;
-};
-
-class TimeAxisData : public AxisData {
-    Q_OBJECT
-
-public:
-    explicit TimeAxisData(QObject *parent,
-                          Animation& animation,
-                            TimeAxis& axis,
-                          Led &led,
-                          QUndoStack& undoStack);
-
-    //void copyFrames(const AxisData &copyAxis);
-
-    virtual void lowValueChanged(const int lowValue);
-    virtual void highValueChanged(const int highValue);
-    virtual void zeroValueChanged(const int zeroValue);
 };
 
 }

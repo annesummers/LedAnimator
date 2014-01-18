@@ -26,150 +26,74 @@ void AnimationTests::initTestCase() {
     iAnimation = new Animation(*(iEngine));
 }
 
-void AnimationTests::setupNewEmpty_data() {
+void AnimationTests::newEmpty_data() {
     QTest::addColumn<int>("numRows");
     QTest::addColumn<int>("numColumns");
-    QTest::addColumn<int>("numFrames");
-    QTest::addColumn<int>("frameFrequency");
     QTest::addColumn<int>("socketCount");
-    QTest::addColumn<int>("currentFrame");
-    QTest::addColumn<int>("numFramesCount");
     QTest::addColumn<QString>("errorString");
 
     QTest::newRow("negative numRows") << INVALID
                                       << DEFAULT_NUM_COLUMNS
-                                      << DEFAULT_NUM_FRAMES
-                                      << DEFAULT_FRAME_FREQUENCY
-                                      << 0
-                                      << INVALID
                                       << 0
                                       << "Animation::setupNew : numRows is zero or negative";
 
     QTest::newRow("negative numColumns") << DEFAULT_NUM_ROWS
                                          << INVALID
-                                         << DEFAULT_NUM_FRAMES
-                                         << DEFAULT_FRAME_FREQUENCY
-                                         << 0
-                                         << INVALID
                                          << 0
                                          << "Animation::setupNew : numColumns is zero or negative";
 
-    QTest::newRow("negative numFrames") << DEFAULT_NUM_ROWS
-                                        << DEFAULT_NUM_COLUMNS
-                                        << INVALID
-                                        << DEFAULT_FRAME_FREQUENCY
-                                        << 0
-                                        << INVALID
-                                        << 0
-                                        << "Animation::setupNew : numFrames is zero or negative";
-
     QTest::newRow("zero numRows") << 0
                                   << DEFAULT_NUM_COLUMNS
-                                  << DEFAULT_NUM_FRAMES
-                                  << DEFAULT_FRAME_FREQUENCY
-                                  << 0
-                                  << INVALID
                                   << 0
                                   << "Animation::setupNew : numRows is zero or negative";
 
     QTest::newRow("zero numColumns") << DEFAULT_NUM_ROWS
                                      << 0
-                                     << DEFAULT_NUM_FRAMES
-                                     << DEFAULT_FRAME_FREQUENCY
-                                     << 0
-                                     << INVALID
                                      << 0
                                      << "Animation::setupNew : numColumns is zero or negative";
 
-    QTest::newRow("zero numFrames") << DEFAULT_NUM_ROWS
-                                    << DEFAULT_NUM_COLUMNS
-                                    << 0
-                                    << DEFAULT_FRAME_FREQUENCY
-                                    << 0
-                                    << INVALID
-                                    << 0
-                                    << "Animation::setupNew : numFrames is zero or negative";
-
-    QTest::newRow("too big numRows") << MAX_ROWS + 1
+   QTest::newRow("too big numRows") << MAX_ROWS + 1
                                      << DEFAULT_NUM_COLUMNS
-                                     << DEFAULT_NUM_FRAMES
-                                     << DEFAULT_FRAME_FREQUENCY
-                                     << 0
-                                     << INVALID
                                      << 0
                                      << "Animation::setupNew : numRows is too big";
 
     QTest::newRow("too big numColumns") << DEFAULT_NUM_ROWS
                                         << MAX_COLUMNS + 1
-                                        << DEFAULT_NUM_FRAMES
-                                        << DEFAULT_FRAME_FREQUENCY
-                                        << 0
-                                        << INVALID
                                         << 0
                                         << "Animation::setupNew : numColumns is too big";
 
-    QTest::newRow("too big numFrames") << DEFAULT_NUM_ROWS
-                                       << DEFAULT_NUM_COLUMNS
-                                       << MAX_FRAMES + 1
-                                       << DEFAULT_FRAME_FREQUENCY
-                                       << 0
-                                       << INVALID
-                                       << 0
-                                       << "Animation::setupNew : numFrames is too big";
-
     QTest::newRow("default") << DEFAULT_NUM_ROWS
                              << DEFAULT_NUM_COLUMNS
-                             << DEFAULT_NUM_FRAMES
-                             << DEFAULT_FRAME_FREQUENCY
                              << DEFAULT_NUM_ROWS*DEFAULT_NUM_COLUMNS
-                             << 1
-                             << DEFAULT_NUM_FRAMES
                              << "";
 
     QTest::newRow("maximum") << MAX_ROWS
                              << MAX_COLUMNS
-                             << MAX_FRAMES
-                             << DEFAULT_FRAME_FREQUENCY
                              << MAX_ROWS*MAX_COLUMNS
-                             << 1
-                             << MAX_FRAMES
                              << "";
 }
 
-void AnimationTests::setupNewEmpty() {
+void AnimationTests::newEmpty() {
     QFETCH(int, numRows);
     QFETCH(int, numColumns);
-    QFETCH(int, numFrames);
-    QFETCH(int, frameFrequency);
     QFETCH(int, socketCount);
-    QFETCH(int, currentFrame);
-    QFETCH(int, numFramesCount);
     QFETCH(QString, errorString);
 
     QSignalSpy newSocketSpy(iAnimation, SIGNAL(newSocket(int, int)));
-    QSignalSpy currentFrameSpy(iAnimation, SIGNAL(currentFrameChanged(int)));
-    QSignalSpy numFramesSpy(iAnimation, SIGNAL(numFramesChanged(int)));
 
     try {
-        iAnimation->setupNew(numRows, numColumns, numFrames, frameFrequency);
+        iAnimation->newAnimation(numRows, numColumns);
 
         QCOMPARE(newSocketSpy.count(), socketCount);
-        QCOMPARE(currentFrameSpy.count(), 1);
-        QCOMPARE(numFramesSpy.count(), 1);
-
-        QCOMPARE(currentFrameSpy.takeFirst().at(0).toInt(), currentFrame);
-        QCOMPARE(numFramesSpy.takeFirst().at(0).toInt(), numFramesCount);
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);
     }
 }
 
-void AnimationTests::setupNewPopulated_data() {
+void AnimationTests::newPopulated_data() {
     QTest::addColumn<int>("numRows");
     QTest::addColumn<int>("numColumns");
-    QTest::addColumn<int>("numFrames");
-    QTest::addColumn<int>("frameFrequency");
     QTest::addColumn<int>("ledCount");
     QTest::addColumn<IntList>("ledPositions");
     QTest::addColumn<QString>("errorString");
@@ -199,8 +123,6 @@ void AnimationTests::setupNewPopulated_data() {
 
     QTest::newRow("partial") << numRows
                              << numColumns
-                             << DEFAULT_NUM_FRAMES
-                             << DEFAULT_FRAME_FREQUENCY
                              << numLeds
                              << positions
                              << "";
@@ -226,18 +148,14 @@ void AnimationTests::setupNewPopulated_data() {
 
     QTest::newRow("all") << numRows
                          << numColumns
-                         << DEFAULT_NUM_FRAMES
-                         << DEFAULT_FRAME_FREQUENCY
                          << numLeds
                          << positions
                          << "";
 }
 
-void AnimationTests::setupNewPopulated() {
+void AnimationTests::newPopulated() {
     QFETCH(int, numRows);
     QFETCH(int, numColumns);
-    QFETCH(int, numFrames);
-    QFETCH(int, frameFrequency);
     QFETCH(int, ledCount);
     QFETCH(IntList, ledPositions);
     QFETCH(QString, errorString);
@@ -245,7 +163,7 @@ void AnimationTests::setupNewPopulated() {
     QSignalSpy newLedSpy(iAnimation, SIGNAL(newLed(int, int)));
 
     try {
-        iAnimation->setupNew(numRows, numColumns, numFrames, frameFrequency, ledCount, ledPositions);
+        iAnimation->newAnimation(numRows, numColumns, ledCount, ledPositions);
 
         QCOMPARE(newLedSpy.count(), ledCount);
 
@@ -254,6 +172,77 @@ void AnimationTests::setupNewPopulated() {
     }
 }
 
+void AnimationTests::addNewLed_data() {
+
+}
+
+void AnimationTests::addNewLed() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::deleteLed_data() {
+
+}
+
+void AnimationTests::deleteLed() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::moveLed_data() {
+
+}
+
+void AnimationTests::moveLed() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::cloneLed_data() {
+
+}
+
+void AnimationTests::cloneLed() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::pasteLed_data() {
+
+}
+
+void AnimationTests::pasteLed() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::copyLedTimeAxis_data() {
+
+}
+
+void AnimationTests::copyLedTimeAxis() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::copyLedValueAxis_data() {
+
+}
+
+void AnimationTests::copyLedValueAxis() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::copyLedCurrentFrame_data() {
+
+}
+
+void AnimationTests::copyLedCurrentFrame() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::renumberLed_data() {
+
+}
+
+void AnimationTests::renumberLed() {
+    QCOMPARE(true, true);
+}
 
 void AnimationTests::ledAt_data() {
     QTest::addColumn<Position>("position");
@@ -287,14 +276,69 @@ void AnimationTests::ledAt() {
     }
 }
 
+void AnimationTests::addValueAxis_data() {
+
+}
+
+void AnimationTests::addValueAxis() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::addTimeAxis_data() {
+
+}
+
+void AnimationTests::addTimeAxis() {
+    QCOMPARE(true, true);
+}
+
 void AnimationTests::axisAt_data() {
 
 }
 
 void AnimationTests::axisAt() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::timeAxisAt_data() {
 
 }
 
+void AnimationTests::timeAxisAt() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::currentTimeAxis_data() {
+
+}
+
+void AnimationTests::currentTimeAxis() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::switchTimeAxis_data() {
+
+}
+
+void AnimationTests::switchTimeAxis() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::addFunction_data() {
+
+}
+
+void AnimationTests::addFunction() {
+    QCOMPARE(true, true);
+}
+
+void AnimationTests::functionAt_data() {
+
+}
+
+void AnimationTests::functionAt() {
+    QCOMPARE(true, true);
+}
 
 void AnimationTests::cleanupTestCase() {
 

@@ -25,7 +25,7 @@ Frame::Frame(QObject *parent,
              int number,
              FrameValue& value,
              Frame *previous,
-             QUndoStack &undoStack) :
+             QUndoStack *undoStack) :
     Selectable(parent, animation, number),
     iUndoStack(undoStack),
     iValue(&value),
@@ -39,7 +39,7 @@ Frame::Frame(QObject *parent,
              Animation &animation,
              int number,
              Frame *previous,
-             QUndoStack& undoStack) :
+             QUndoStack *undoStack) :
     Selectable(parent, animation, number),
     iUndoStack(undoStack),
     iValue(new NoValue(parent)),
@@ -49,7 +49,11 @@ Frame::Frame(QObject *parent,
 }
 
 void Frame::setValue(const FrameValue& value) {
-    iUndoStack.push(new SetFrameColourCommand(iAnimation, *this, value));
+    if(iUndoStack == NULL) {
+        doSetValue(value);
+    } else {
+        iUndoStack->push(new SetFrameColourCommand(iAnimation, *this, value));
+    }
 }
 
 void Frame::doSetValue(const FrameValue& value) {

@@ -11,7 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG(testing) {
     TARGET = LedAnimatorTests # different app name for testing suite
     QT += testlib concurrent
-    CONFIG += qtestlib
     TEMPLATE = app
 
     include(Test.pri)

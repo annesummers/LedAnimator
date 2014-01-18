@@ -1,52 +1,96 @@
 #include "TimeAxisTests.h"
 
+#include "TimeAxis.h"
+#include "engine.h"
+#include "Animation.h"
+
 using namespace AnimatorTest;
 
-TimeAxisTests::TimeAxisTests()
+TimeAxisTests::TimeAxisTests(QObject *parent) :
+    AxisTests(parent)
 {
 }
 
-void TimeAxisTests::setupTestCase() {
+void TimeAxisTests::initTestCase() {
+    iAnimation = new Animation(*(new Engine(this)));
 
+    QList<Position> gridPositions;
+    QList<int> positions;
+
+    int numRows = DEFAULT_NUM_ROWS;
+    int numColumns = DEFAULT_NUM_COLUMNS;
+
+    for(int i = 0; i < numColumns; i++) {
+        for(int j = 0; j < numRows; j++) {
+            gridPositions.append(Position(i, j));
+        }
+    }
+
+    for(int i = 0; i < numRows * numColumns; i++) {
+        positions.append(INVALID);
+    }
+
+
+    int numLeds = gridPositions.count();
+
+    for(int i = 0; i < numLeds; i++) {
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    iAnimation->newAnimation(numRows,
+                             numColumns,
+                             numLeds,
+                             positions);
 }
 
 void TimeAxisTests::play() {
-    iTimeAxis->play(false);
+    iAnimation->addTimeAxis(0, 2, 1, kPriorityMed, false);
+    iAxis = iAnimation->timeAxis();
 
-    QCOMPARE(iTimeAxis->isPlaying(), true);
+    timeAxis()->play(false);
+
+    QCOMPARE(timeAxis()->isPlaying(), true);
 
     //Hmm how can we check the timer is firing correctly?
 }
 
 void TimeAxisTests::stop() {
-    iTimeAxis->stop();
+    iAnimation->addTimeAxis(0, 2, 1, kPriorityMed, false);
+    iAxis = iAnimation->timeAxis();
 
-    QCOMPARE(iAnimation->isPlaying(), false);
+    timeAxis()->stop();
+
+    QCOMPARE(timeAxis()->isPlaying(), false);
 }
 
-void TimeAxisTests::setCurrentFrame_data() {
-    QTest::addColumn<int>("currentFrame");
-    QTest::addColumn<QString>("errorString");
+void TimeAxisTests::setRepeating_data() {
 
-    QTest::newRow("frame number too small") << 0
-                                       << "Animation::setCurrentFrame : Frame number is smaller than first frame";
-    QTest::newRow("frame number too big") << iAnimation->numFrames() + 1
-                                          << "Animation::setCurrentFrame : Frame number is greater than last frame";
-    QTest::newRow("valid") << INITIAL_FRAME
-                           << "";
 }
 
-void TimeAxisTests::setCurrentFrame() {
-    QFETCH(int, currentFrame);
-    QFETCH(QString, errorString);
-
-    try {
-        iTimeAxis->setCurrentFrame(currentFrame);
-    } catch(IllegalArgumentException& e) {
-        QCOMPARE(e.errorMessage(), errorString);
-    }
+void TimeAxisTests::setRepeating() {
+    QCOMPARE(true, true);
 }
 
+void TimeAxisTests::setSpeed_data() {
+
+}
+void TimeAxisTests::setSpeed() {
+    QCOMPARE(true, true);
+}
+
+void TimeAxisTests::setLowValue_data() {
+
+}
+void TimeAxisTests::setLowValue() {
+    QCOMPARE(true, true);
+}
+
+void TimeAxisTests::setHighValue_data() {
+
+}
+void TimeAxisTests::setHighValue() {
+    QCOMPARE(true, true);
+}
 
 void TimeAxisTests::cleanupTestCase() {
 

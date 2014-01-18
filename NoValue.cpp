@@ -1,6 +1,6 @@
 #include "NoValue.h"
 
-using namespace AnimatorUi;
+using namespace AnimatorModel;
 
 NoValue::NoValue(QObject *parent) :
     FrameValue(parent)

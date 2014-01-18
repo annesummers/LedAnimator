@@ -6,11 +6,11 @@
 #include "FrameValue.h"
 #include "constants.h"
 
-namespace AnimatorUi {
+namespace AnimatorModel {
 
-class NoValue : public FrameValue
-{
+class NoValue : public FrameValue {
     Q_OBJECT
+
 public:
     explicit NoValue(QObject *parent);
 

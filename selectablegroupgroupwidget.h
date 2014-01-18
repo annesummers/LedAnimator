@@ -11,7 +11,7 @@
 #include <QHash>
 #include <QMimeData>
 
-#include "constants.h"
+#include "Position.h"
 
 class Engine;
 

@@ -30,22 +30,26 @@ public:
                    int number,
                    FrameValue &value,
                    Frame *previous,
-                   QUndoStack& undoStack);
+                   QUndoStack *undoStack);
+
     explicit Frame(QObject *parent,
                    AxisData &axisData,
                    Animation &animation,
                    int number,
                    Frame *previous,
-                   QUndoStack& undoStack);
+                   QUndoStack* undoStack);
 
     const QColor colour() const;
-    const inline Frame* previous() const { return iPrevious; }
 
+    const inline Frame* previous() const { return iPrevious; }
     const inline Frame* next() const { return iNext; }
+
     inline void setNext(Frame& next) { iNext = &next; }
 
     inline const FrameValue& value() const { return *iValue; }
     void setValue(const FrameValue &value);
+
+    void doSetValue(const FrameValue& value);
 
     void setFirstInRange();
     void setLastInRange(Function function);
@@ -53,10 +57,8 @@ public:
 
     const Function function() const;
 
-    void doSetValue(const FrameValue& value);
-
 protected:
-    QUndoStack& iUndoStack;
+    QUndoStack* iUndoStack;
 
     FrameValue* iValue;
     AxisData& iAxisData;

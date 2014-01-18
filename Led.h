@@ -13,9 +13,9 @@
 #include "Frame.h"
 #include "griditem.h"
 #include "Axis.h"
-#include "TimeAxis.h"
-#include "ValueAxis.h"
-#include "constants.h"
+#include "TimeAxisData.h"
+#include "ValueAxisData.h"
+#include "Position.h"
 
 namespace AnimatorModel {
 
@@ -25,7 +25,12 @@ class Led : public GridItem {
     Q_OBJECT
 
 public:
-    explicit Led(QObject* parent, Animation& animation, int number, Position position, QUndoStack& undoStack);
+    explicit Led(QObject* parent,
+                 Animation& animation,
+                 int number,
+                 Position position,
+                 QUndoStack *undoStack);
+
     Led(const Led &copyLed);
     virtual ~Led();
 
@@ -49,7 +54,7 @@ public:
     void copyCurrentFrame(const Led& copyLed, int frameNum);
     void copyValueAxis(const Led& copyLed, int axisNum);
 
-    inline Animation& animation() { return iAnimation; }
+   // inline Animation& animation() { return iAnimation; }
 
     Led& operator=(const Led& led);
 
@@ -65,11 +70,10 @@ public slots:
     void colourChanged(int frameNum);
 
 private:
-
     QList<ValueAxisData*> iAxesData;
     TimeAxisData* iTimeAxisData;
 
-    QUndoStack& iUndoStack;
+    QUndoStack* iUndoStack;
 
     bool iHidden;
 };

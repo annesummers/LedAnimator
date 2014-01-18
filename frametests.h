@@ -27,8 +27,11 @@ public:
 private slots:
     void initTestCase();
 
-    void setColour_data();
-    void setColour();
+    void setValue_data();
+    void setValue();
+
+    void colour_data();
+    void colour();
 
 private:
     Animation* iAnimation;

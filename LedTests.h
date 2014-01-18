@@ -37,17 +37,38 @@ private slots:
     void constructor_data();
     void constructor();
 
-    void numFramesChanged_data();
-    void numFramesChanged();
+    void setCurrentValue_data();
+    void setCurrentValue();
 
-    void setCurrentColour_data();
-    void setCurrentColour();
+    void addTimeAxis_data();
+    void addTimeAxis();
 
-    void select_data();
-    void select();
+    void addValueAxis_data();
+    void addValueAxis();
 
-    void copyFrames_data();
-    void copyFrames();
+    void move_data();
+    void move();
+
+    void paste_data();
+    void paste();
+
+    void copyAxes_data();
+    void copyAxes();
+
+    void copyTimeAxis_data();
+    void copyTimeAxis();
+
+    void copyValueAxis_data();
+    void copyValueAxis();
+
+    void copyCurrentFrame_data();
+    void copyCurrentFrame();
+
+    void assigment_data();
+    void assigment();
+
+    void currentColour_data();
+    void currentColour();
 
 private:
     Engine*    iEngine;

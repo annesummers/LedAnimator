@@ -216,7 +216,11 @@ void Animation::doAddNewLed(Position position, int ledNum) {
         throw IllegalArgumentException("Animation::addNewLed : column is bigger than num columns");
     }
 
-    Led* led = new Led(this, *this, ledNum != INVALID ? ledNum : nextLedNumber(), position, *iUndoStack);
+    Led* led = new Led(this,
+                       *this,
+                       ledNum != INVALID ? ledNum : nextLedNumber(),
+                       position,
+                       iUndoStack);
     addLed(*led, position);
 
 }
@@ -289,7 +293,11 @@ Led* Animation::doCloneLed(Position fromPosition, Position toPosition) {
     Led* oldLed = ledAt(toPosition);
     Led* newLed = NULL;
     if(oldLed == NULL) {
-        newLed = new Led(this, *this, nextLedNumber(), toPosition, *iUndoStack);
+        newLed = new Led(this,
+                         *this,
+                         nextLedNumber(),
+                         toPosition,
+                         iUndoStack);
         addLed(*newLed, toPosition);
     } else {
         newLed = oldLed;

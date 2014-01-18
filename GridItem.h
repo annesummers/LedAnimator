@@ -9,7 +9,7 @@
 
 #include "selectable.h"
 
-#include "constants.h"
+#include "Position.h"
 
 namespace AnimatorModel {
 

@@ -19,10 +19,10 @@ class Selectable : public QObject {
 public:
     explicit Selectable(QObject *parent, Animation& animation, int number);
 
-    inline const bool isSelected() const { return iIsSelected; }
+    inline bool isSelected() const { return iIsSelected; }
     void select(bool isSelected);
 
-    inline const int number() const { return iNumber; }
+    inline int number() const { return iNumber; }
 
 protected:
     inline void setNumber(int newNumber) { iNumber = newNumber; }

@@ -2,14 +2,15 @@
 
 using namespace AnimatorTest;
 
-ValueAxisTests::ValueAxisTests()
+ValueAxisTests::ValueAxisTests(QObject *parent) :
+    AxisTests(parent)
 {
 }
 
-
-void ValueAxisTests::setupTestCase() {
+void ValueAxisTests::initTestCase() {
 
 }
+
 void ValueAxisTests::cleanupTestCase() {
 
 }

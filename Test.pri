@@ -1,33 +1,38 @@
 INCLUDEPATH +=Test
 
 SOURCES += \
-        test.cpp \
-        animationtests.cpp\
-        ledtests.cpp \
-        enginetests.cpp \
-        frametests.cpp \
-        ledanimcodectests.cpp \
-        colourwidgettests.cpp \
-        selectablewidgettests.cpp \
-        selectablewidgettestbase.cpp \
-        ledsocketinteractiontests.cpp \
-    Function.cpp \
+    test.cpp \
     AxisTests.cpp \
     ValueAxisTests.cpp \
-    TimeAxisTests.cpp
+    TimeAxisTests.cpp \
+    AnimationTests.cpp \
+    LedTests.cpp \
+    AxisDataTests.cpp \
+    FrameTests.cpp \
+    enginetests.cpp
 
     HEADERS += \
-        animationtests.h\
-        ledtests.h \
-        enginetests.h \
-        frametests.h \
-        ledanimcodectests.h \
-        colourwidgettests.h \
-        selectablewidgettests.h \
-        selectablewidgettestbase.h \
-        ledsocketinteractiontests.h \
-        testconstants.h \
-    Function.h \
+    enginetests.h \
+    testconstants.h \
     AxisTests.h \
     ValueAxisTests.h \
-    TimeAxisTests.h
+    TimeAxisTests.h \
+    AnimationTests.h \
+    LedTests.h \
+    AxisDataTests.h \
+    FrameTests.h
+
+
+    #ledanimcodectests.h \
+    #colourwidgettests.h \
+    #selectablewidgettests.h \
+    #selectablewidgettestbase.h \
+    #ledsocketinteractiontests.h \
+
+
+    #enginetests.cpp \
+    #ledanimcodectests.cpp \
+    #colourwidgettests.cpp \
+    #selectablewidgettests.cpp \
+    #selectablewidgettestbase.cpp \
+    #ledsocketinteractiontests.cpp \

@@ -1,5 +1,7 @@
 #include "ValueAxisDetailsWidget.h"
 
+#include "ValueAxis.h"
+
 using namespace AnimatorUi;
 
 ValueAxisDetailsWidget::ValueAxisDetailsWidget(QWidget *parent,

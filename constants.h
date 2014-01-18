@@ -8,9 +8,6 @@
 #define CONSTANTS_H
 
 #include <QString>
-#include <QPair>
-
-#include <QMetaType>
 
 const int DEFAULT_FRAME_FREQUENCY = 500;
 const int DEFAULT_NUM_ROWS = 4;
@@ -61,29 +58,6 @@ const int kTimeAxisNum = -1;
 const int kPriorityLow = -100;
 const int kPriorityMed = -50;
 const int kPriorityHigh = -10;
-
-namespace AnimatorModel {
-
-class Position : public QPair<int, int> {
-public:
-    inline Position(int row, int column) : QPair<int, int> (row, column) {}
-    inline Position() : QPair<int, int> (INVALID, INVALID) {}
-    inline Position(const Position& position) : QPair<int, int> (position.first, position.second) {}
-
-    inline int row() const { return first; }
-    inline int column() const { return second; }
-    inline bool isValid() const { return first > INVALID && second > INVALID; }
-    inline bool operator==(const Position& position) { return first == position.row() && second == position.column(); }
-    inline bool operator<(const Position& position) { return (first < position.row() && second == position.column()) ||
-                                                        (first == position.row() && second < position.column()); }
-    inline Position& operator=(const Position& position) { first = position.first; second = position.second; return *this; }
-};
-}
-
-using namespace AnimatorModel;
-
-Q_DECLARE_METATYPE ( Position )
-
 
 
 #endif // CONSTANTS_H

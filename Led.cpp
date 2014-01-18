@@ -18,7 +18,11 @@
 
 using namespace Exception;
 
-Led::Led(QObject* parent, Animation &animation, int number, Position position, QUndoStack &undoStack) :
+Led::Led(QObject* parent,
+         Animation &animation,
+         int number,
+         Position position,
+         QUndoStack *undoStack) :
     GridItem(parent, animation, number, position),
     iTimeAxisData(NULL),
     iUndoStack(undoStack),

@@ -33,31 +33,31 @@ public:
                       int numColumns,
                       int numLeds,
                       QList<int> ledPositions);
+
     void newAnimation(int numRows,
                       int numColumns);
 
     inline void setUndoStack(QUndoStack& undoStack) { iUndoStack = &undoStack; }
 
+    //void play(bool repeat);
+   //void stop();
+
+    // calling through the undo stack
+
     void addNewLed(Position position);
     void deleteLed(Led &led, bool deleteObject);
-
-    void addTimeAxis(int lowValue,
-                     int highValue,
-                     int speed,
-                   int priority,
-                   bool isOpaque);
-
-    int addValueAxis(int lowValue,
-                     int highValue,
-                     int zeroValue,
-                       int priority,
-                       bool isOpaque);
 
     void moveLed(Position fromPosition, Position toPosition);
     void cloneLed(Position fromPosition, Position toPosition);
     void pasteLed(Position fromPosition, Position toPosition);
 
-   // void setFrameColour(Frame& frame, QColor oldColour, QColor newColour);
+    void copyLedTimeAxis(Position fromPosition, Position toPosition);
+    void copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
+    void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
+
+    void renumberLed(Position position, int oldNumber, int newNumber);
+
+    // led functions
 
     void doAddNewLed(Position position, int ledNum = INVALID);
     void doDeleteLed(Position position, bool deleteObject);
@@ -66,31 +66,49 @@ public:
     Led* doCloneLed(Position fromPosition, Position toPosition);
     void doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
 
-    void copyLedTimeAxis(Position fromPosition, Position toPosition);
-    void copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
-    void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
-
     Led* doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
     Led* doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
     Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
+
+    void doRenumberLed(Position position, int newNumber);
+
+    Led* ledAt(Position position) const;
+    Led* ledAt(int number) const;
+
+    // clipboard actions
 
     void moveLedToClipboard(Position position);
     void addLedToClipboard(Led* led);
     void deleteLedFromClipboard(int ledNumber);
 
-    void renumberLed(Position position, int oldNumber, int newNumber);
-    void doRenumberLed(Position position, int newNumber);
+    // axes
 
-    void play(bool repeat);
-    void stop();
+    void addTimeAxis(int lowValue,
+                     int highValue,
+                     int speed,
+                     int priority,
+                     bool isOpaque);
 
-    Led* ledAt(Position position) const;
-    Led *ledAt(int number) const;
+    int addValueAxis(int lowValue,
+                     int highValue,
+                     int zeroValue,
+                     int priority,
+                     bool isOpaque);
 
     ValueAxis& axisAt(int number) const;
     inline TimeAxis* timeAxis() const { return iTimeAxis; }
 
     inline int numValueAxes() const { return iAxes.count(); }
+
+    // functions
+
+    int addFunction(Function function);
+
+    inline Function functionAt(int number) { return iFunctions.at(number); }
+
+    inline int numFunctions() { return iFunctions.size(); }
+
+    // getters
 
     inline bool isMissing(int ledNumber) { return iLeds->isMissing(ledNumber); }
     inline bool ledsMissing() { return iLeds->ledsMissing(); }
@@ -105,11 +123,7 @@ public:
     inline int numColumns() const { return iNumColumns; }
     inline int numLeds() const { return iLeds->count(); }
 
-    int nextLedNumber() const ;
-
-    int addFunction(Function function);
-    inline Function functionAt(int number) { return iFunctions.at(number); }
-    inline int numFunctions() { return iFunctions.size(); }
+    int nextLedNumber() const;
     
 signals:
    // void framesInserted(int numFrames, int numFramesAdded);
@@ -130,10 +144,6 @@ public slots:
     inline void setSaved(bool saved) { iIsSaved = saved; }
 
     void copyToClipboard();
-
-    //void addFrames(int numFrames);
-    //inline void setNumFrames(int numFrames) { iNumFrames = numFrames; emit numFramesChanged(iNumFrames); }
-
 
 private:
     void addLed(Led &led, Position position);

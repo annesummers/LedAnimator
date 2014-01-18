@@ -1,41 +1,49 @@
 #ifndef TIMEAXISTESTS_H
 #define TIMEAXISTESTS_H
 
-#include <QObject>
 #include <QtTest/QtTest>
+
+#include "AxisTests.h"
+#include "TimeAxis.h"
 
 class Engine;
 
 namespace AnimatorModel {
 class Animation;
-class TimeAxis;
 }
 
 using namespace AnimatorModel;
 
 namespace AnimatorTest {
 
-class TimeAxisTests : public QObject {
+class TimeAxisTests : public AxisTests {
     Q_OBJECT
 
 public:
     TimeAxisTests(QObject *parent = 0);
 
 private slots:
-     void initTestCase();
-
-    void setCurrentFrame_data();
-    void setCurrentFrame();
+    void initTestCase();
 
     void play();
     void stop();
 
+    void setRepeating_data();
+    void setRepeating();
+
+    void setSpeed_data();
+    void setSpeed();
+
+    void setLowValue_data();
+    void setLowValue();
+
+    void setHighValue_data();
+    void setHighValue();
+
     void cleanupTestCase();
 
-private :
-    Engine*    iEngine;
-    Animation* iAnimation;
-    TimeAxis*  iTimeAxis;
+private:
+    inline TimeAxis* timeAxis() { return static_cast<TimeAxis*>(iAxis); }
 };
 }
 
