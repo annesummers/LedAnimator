@@ -60,8 +60,8 @@ private slots:
      void cloneLed_data();
      void cloneLed();
 
-     void pasteLed_data();
-     void pasteLed();
+     void cutAndPasteLed_data();
+     void cutAndPasteLed();
 
      void copyLedTimeAxis_data();
      void copyLedTimeAxis();

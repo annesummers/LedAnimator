@@ -427,6 +427,8 @@ void AnimationTests::newPopulatedReplace() {
         iAnimation->newAnimation(newNumRows, newNumColumns, newNumLeds, newLedPositions);
 
         QCOMPARE(iAnimation->numLeds(), newNumLeds);
+        QCOMPARE(iAnimation->numRows(), newNumRows);
+        QCOMPARE(iAnimation->numColumns(), newNumColumns);
 
         for(int i = INITIAL_LED; i < newNumLeds + INITIAL_LED; i++) {
             Position position = iAnimation->ledAt(i)->position();
@@ -438,12 +440,83 @@ void AnimationTests::newPopulatedReplace() {
     }
 }
 
-void AnimationTests::newEmptyReplace() {
+void AnimationTests::newEmptyReplace_data() {
+    QTest::addColumn<int>("numRows");
+    QTest::addColumn<int>("numColumns");
+    QTest::addColumn<int>("numLeds");
+    QTest::addColumn<PositionList>("ledGridPositions");
+    QTest::addColumn<IntList>("ledPositions");
+    QTest::addColumn<int>("newNumRows");
+    QTest::addColumn<int>("newNumColumns");
+    QTest::addColumn<QString>("errorString");
 
+    int numRows = 3;
+    int numColumns = 3;
+
+    PositionList gridPositions;
+
+    gridPositions.append(Position(0, 0));
+    gridPositions.append(Position(0, 1));
+    gridPositions.append(Position(1, 1));
+
+    int numLeds = gridPositions.count();
+
+    IntList positions;
+
+    for(int i = 0; i < numRows * numColumns; i++) {
+        positions.append(INVALID);
+    }
+
+    for(int i = 0; i < numLeds; i++) {
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    int newNumRows = 2;
+    int newNumColumns = 2;
+
+    QTest::newRow("smaller grid") << numRows
+                             << numColumns
+                             << numLeds
+                             << gridPositions
+                             << positions
+                             << newNumRows
+                              << newNumColumns
+                             << "";
+
+    newNumRows = 4;
+    newNumColumns = 4;
+
+    QTest::newRow("larger grid") << numRows
+                             << numColumns
+                             << numLeds
+                             << gridPositions
+                             << positions
+                             << newNumRows
+                              << newNumColumns
+                             << "";
 }
 
-void AnimationTests::newEmptyReplace_data() {
-    QCOMPARE(true, false);
+void AnimationTests::newEmptyReplace() {
+    QFETCH(int, numRows);
+    QFETCH(int, numColumns);
+    QFETCH(int, numLeds);
+    QFETCH(PositionList, ledGridPositions);
+    QFETCH(IntList, ledPositions);
+    QFETCH(int, newNumRows);
+    QFETCH(int, newNumColumns);
+    QFETCH(QString, errorString);
+
+    try {
+        iAnimation->newAnimation(numRows, numColumns, numLeds, ledPositions);
+        iAnimation->newAnimation(newNumRows, newNumColumns);
+
+        QCOMPARE(iAnimation->numLeds(), 0);
+        QCOMPARE(iAnimation->numRows(), newNumRows);
+        QCOMPARE(iAnimation->numColumns(), newNumColumns);
+
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
 }
 
 void AnimationTests::ledAt_data() {
@@ -544,7 +617,7 @@ void AnimationTests::deleteLed() {
 
         QCOMPARE(deleteLedSpy.count(), ledDeletePositions.count());
 
-    } catch(IllegalArgumentException& e) {
+    } catch(InvalidPositionException& e) {
         QCOMPARE(e.errorMessage(), errorString);
     }
 }
@@ -607,25 +680,151 @@ void AnimationTests::moveLed() {
 
         QCOMPARE(moveLedSpy.count(), 1);
 
-    } catch(IllegalArgumentException& e) {
+    } catch(InvalidPositionException& e) {
         QCOMPARE(e.errorMessage(), errorString);
     }
 }
 
 void AnimationTests::cloneLed_data() {
+    QTest::addColumn<PositionList>("ledAddPositions");
+    QTest::addColumn<Position>("ledFromPosition");
+    QTest::addColumn<Position>("ledToPosition");
+    QTest::addColumn<QString>("errorString");
 
+    PositionList addPositions;
+
+    addPositions.append(Position(0, 0));
+
+    QTest::newRow("to empty position") << addPositions
+                           << Position(0, 0)
+                           << Position(1, 0)
+                           << "";
+
+    addPositions.append(Position(1, 0));
+
+    QTest::newRow("to populated position") << addPositions
+                                       << Position(0, 0)
+                                       << Position(1, 0)
+                                       << "";
+
+    QTest::newRow("from doesn't exist") << addPositions
+                                       << Position(0, 1)
+                                       << Position(1, 0)
+                                       << "Animation::cloneLed : led does not exist";
 }
 
 void AnimationTests::cloneLed() {
-    QCOMPARE(true, false);
+    QFETCH(PositionList, ledAddPositions);
+    QFETCH(Position, ledFromPosition);
+    QFETCH(Position, ledToPosition);
+    QFETCH(QString, errorString);
+
+    try {
+        iAnimation->newAnimation(2, 2);
+
+        for(int i = 0; i < ledAddPositions.count(); i++) {
+            iAnimation->addNewLed(ledAddPositions.at(i));
+        }
+
+        int fromLedNum = INVALID;
+        Led* fromLed = iAnimation->ledAt(ledFromPosition);
+        if(fromLed != NULL) {
+            fromLedNum = fromLed->number();
+        }
+
+        int toLedNum = INVALID;
+        Led* toLed = iAnimation->ledAt(ledToPosition);
+        if(toLed != NULL) {
+            toLedNum = toLed->number();
+        }
+
+        iAnimation->cloneLed(ledFromPosition, ledToPosition);
+
+        Led* clonedLed = iAnimation->ledAt(ledToPosition);
+        QCOMPARE(clonedLed->position(), ledToPosition);
+
+        if(toLed == NULL) {
+            QCOMPARE(clonedLed->number(), iAnimation->numLeds());
+        } else {
+            QCOMPARE(clonedLed->number(), toLedNum);
+        }
+
+    } catch(InvalidPositionException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
 }
 
-void AnimationTests::pasteLed_data() {
+void AnimationTests::cutAndPasteLed_data() {
+    QTest::addColumn<PositionList>("ledAddPositions");
+    QTest::addColumn<Position>("ledFromPosition");
+    QTest::addColumn<Position>("ledToPosition");
+    QTest::addColumn<bool>("moveToClipboard");
+    QTest::addColumn<QString>("errorString");
 
+    PositionList addPositions;
+
+    addPositions.append(Position(0, 0));
+
+    QTest::newRow("to empty position") << addPositions
+                           << Position(0, 0)
+                           << Position(1, 0)
+                           << true
+                           << "";
+
+    addPositions.append(Position(1, 0));
+
+    QTest::newRow("to populated position") << addPositions
+                                       << Position(0, 0)
+                                       << Position(1, 0)
+                                       << true
+                                       << "";
+
+    QTest::newRow("from not on clipboard") << addPositions
+                                       << Position(0, 0)
+                                       << Position(1, 0)
+                                       << false
+                                       << "Animation::pasteLed : cannot find the led on the clipboard";
 }
 
-void AnimationTests::pasteLed() {
-    QCOMPARE(true, false);
+void AnimationTests::cutAndPasteLed() {
+    QFETCH(PositionList, ledAddPositions);
+    QFETCH(Position, ledFromPosition);
+    QFETCH(Position, ledToPosition);
+    QFETCH(bool, moveToClipboard);
+    QFETCH(QString, errorString);
+
+    try {
+        iAnimation->newAnimation(2, 2);
+
+        for(int i = 0; i < ledAddPositions.count(); i++) {
+            iAnimation->addNewLed(ledAddPositions.at(i));
+        }
+
+        int fromLedNum = INVALID;
+        Led* fromLed = iAnimation->ledAt(ledFromPosition);
+        if(fromLed != NULL) {
+            fromLedNum = fromLed->number();
+        }
+
+        int toLedNum = INVALID;
+        Led* toLed = iAnimation->ledAt(ledToPosition);
+        if(toLed != NULL) {
+            toLedNum = toLed->number();
+        }
+
+        if(moveToClipboard) {
+            iAnimation->moveLedToClipboard(ledFromPosition);
+        }
+
+        iAnimation->pasteLed(ledFromPosition, ledToPosition);
+
+        Led* pastedLed = iAnimation->ledAt(ledToPosition);
+        QCOMPARE(pastedLed->position(), ledToPosition);
+        QCOMPARE(pastedLed->number(), fromLed->number());
+
+    } catch(InvalidPositionException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
 }
 
 void AnimationTests::copyLedTimeAxis_data() {

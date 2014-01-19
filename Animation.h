@@ -68,8 +68,6 @@ public:
     // clipboard actions
 
     void moveLedToClipboard(Position position);
-    void addLedToClipboard(Led* led);
-    void deleteLedFromClipboard(int ledNumber);
 
     // axes
 
@@ -150,6 +148,9 @@ private:
     Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
 
     void doRenumberLed(Position position, int newNumber);
+
+    void addLedToClipboard(Led *led);
+    void deleteLedFromClipboard(int number);
 
     void addLed(Led &led, Position position);
     void addLed(Led & led, int number);

@@ -173,7 +173,9 @@ void Led::copyAxes(const Led &copyLed) {
         copyValueAxis(copyLed, i);
     }
 
-    copyTimeAxis(copyLed);
+    if(iAnimation.timeAxis() != NULL) {
+        copyTimeAxis(copyLed);
+    }
 }
 
 void Led::copyTimeAxis(const Led& copyLed) {
