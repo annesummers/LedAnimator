@@ -29,54 +29,44 @@ void AnimationTests::initTestCase() {
 void AnimationTests::newEmpty_data() {
     QTest::addColumn<int>("numRows");
     QTest::addColumn<int>("numColumns");
-    QTest::addColumn<int>("socketCount");
     QTest::addColumn<QString>("errorString");
 
     QTest::newRow("negative numRows") << INVALID
                                       << DEFAULT_NUM_COLUMNS
-                                      << 0
                                       << "Animation::setupNew : numRows is zero or negative";
 
     QTest::newRow("negative numColumns") << DEFAULT_NUM_ROWS
                                          << INVALID
-                                         << 0
                                          << "Animation::setupNew : numColumns is zero or negative";
 
     QTest::newRow("zero numRows") << 0
                                   << DEFAULT_NUM_COLUMNS
-                                  << 0
                                   << "Animation::setupNew : numRows is zero or negative";
 
     QTest::newRow("zero numColumns") << DEFAULT_NUM_ROWS
-                                     << 0
                                      << 0
                                      << "Animation::setupNew : numColumns is zero or negative";
 
    QTest::newRow("too big numRows") << MAX_ROWS + 1
                                      << DEFAULT_NUM_COLUMNS
-                                     << 0
                                      << "Animation::setupNew : numRows is too big";
 
     QTest::newRow("too big numColumns") << DEFAULT_NUM_ROWS
                                         << MAX_COLUMNS + 1
-                                        << 0
                                         << "Animation::setupNew : numColumns is too big";
 
     QTest::newRow("default") << DEFAULT_NUM_ROWS
                              << DEFAULT_NUM_COLUMNS
-                             << DEFAULT_NUM_ROWS*DEFAULT_NUM_COLUMNS
                              << "";
 
     QTest::newRow("maximum") << MAX_ROWS
                              << MAX_COLUMNS
-                             << MAX_ROWS*MAX_COLUMNS
                              << "";
 }
 
 void AnimationTests::newEmpty() {
     QFETCH(int, numRows);
     QFETCH(int, numColumns);
-    QFETCH(int, socketCount);
     QFETCH(QString, errorString);
 
     QSignalSpy newSocketSpy(iAnimation, SIGNAL(newSocket(int, int)));
@@ -84,7 +74,90 @@ void AnimationTests::newEmpty() {
     try {
         iAnimation->newAnimation(numRows, numColumns);
 
-        QCOMPARE(newSocketSpy.count(), socketCount);
+        QCOMPARE(newSocketSpy.count(), numRows * numColumns);
+
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
+}
+
+void AnimationTests::addNewLed_data() {
+    QTest::addColumn<int>("numRows");
+    QTest::addColumn<int>("numColumns");
+    QTest::addColumn<PositionList>("ledPositions");
+    QTest::addColumn<QString>("errorString");
+
+    int numRows = 1;
+    int numColumns = 1;
+
+    PositionList gridPositions;
+
+    gridPositions.append(Position(INVALID, 0));
+
+    QTest::newRow("negative row") << numRows
+                                  << numColumns
+                                  << gridPositions
+                                  << "Animation::addNewLed : row is negative";
+
+    gridPositions.clear();
+    gridPositions.append(Position(0, INVALID));
+
+    QTest::newRow("negative column") << numRows
+                                     << numColumns
+                                     << gridPositions
+                                     << "Animation::addNewLed : column is negative";
+
+    gridPositions.clear();
+    gridPositions.append(Position(numRows + 1, 0));
+
+    QTest::newRow("row too big") << numRows
+                                 << numColumns
+                                 << gridPositions
+                                 << "Animation::addNewLed : row is bigger than num rows";
+
+    gridPositions.clear();
+    gridPositions.append(Position(0, numColumns + 1));
+
+    QTest::newRow("column too big") << numRows
+                                    << numColumns
+                                    << gridPositions
+                                    << "Animation::addNewLed : column is bigger than num columns";
+
+    gridPositions.clear();
+    gridPositions.append(Position(0, 0));
+
+    QTest::newRow("valid") << numRows
+                           << numColumns
+                           << gridPositions
+                           << "";
+
+    gridPositions.clear();
+    gridPositions.append(Position(0, 0));
+    gridPositions.append(Position(0, 0));
+
+    QTest::newRow("too many leds") << numRows
+                                   << numColumns
+                                   << gridPositions
+                                   << "Animation::addNewLed : num Leds is bigger than num sockets";
+
+}
+
+void AnimationTests::addNewLed() {
+    QFETCH(int, numRows);
+    QFETCH(int, numColumns);
+    QFETCH(PositionList, ledPositions);
+    QFETCH(QString, errorString);
+
+    QSignalSpy newLedSpy(iAnimation, SIGNAL(newLed(int, int)));
+
+    try {
+        iAnimation->newAnimation(numRows, numColumns);
+
+        for(int i = 0; i < ledPositions.count(); i++) {
+            iAnimation->addNewLed(ledPositions.at(i));
+        }
+
+        QCOMPARE(newLedSpy.count(), ledPositions.count());
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);
@@ -94,14 +167,15 @@ void AnimationTests::newEmpty() {
 void AnimationTests::newPopulated_data() {
     QTest::addColumn<int>("numRows");
     QTest::addColumn<int>("numColumns");
-    QTest::addColumn<int>("ledCount");
+    QTest::addColumn<int>("numLeds");
+    QTest::addColumn<PositionList>("ledGridPositions");
     QTest::addColumn<IntList>("ledPositions");
     QTest::addColumn<QString>("errorString");
 
     int numRows = DEFAULT_NUM_ROWS;
     int numColumns = DEFAULT_NUM_COLUMNS;
 
-    QList<Position> gridPositions;
+    PositionList gridPositions;
 
     gridPositions.append(Position(0, 0));
     gridPositions.append(Position(1, 0));
@@ -124,6 +198,7 @@ void AnimationTests::newPopulated_data() {
     QTest::newRow("partial") << numRows
                              << numColumns
                              << numLeds
+                             << gridPositions
                              << positions
                              << "";
     gridPositions.clear();
@@ -149,6 +224,7 @@ void AnimationTests::newPopulated_data() {
     QTest::newRow("all") << numRows
                          << numColumns
                          << numLeds
+                         << gridPositions
                          << positions
                          << "";
 }
@@ -156,92 +232,218 @@ void AnimationTests::newPopulated_data() {
 void AnimationTests::newPopulated() {
     QFETCH(int, numRows);
     QFETCH(int, numColumns);
-    QFETCH(int, ledCount);
+    QFETCH(int, numLeds);
+    QFETCH(PositionList, ledGridPositions);
     QFETCH(IntList, ledPositions);
     QFETCH(QString, errorString);
 
     QSignalSpy newLedSpy(iAnimation, SIGNAL(newLed(int, int)));
 
     try {
-        iAnimation->newAnimation(numRows, numColumns, ledCount, ledPositions);
+        iAnimation->newAnimation(numRows, numColumns, numLeds, ledPositions);
 
-        QCOMPARE(newLedSpy.count(), ledCount);
+        QCOMPARE(newLedSpy.count(), numLeds);
+        QCOMPARE(iAnimation->numLeds(), numLeds);
+
+        for(int i = INITIAL_LED; i < numLeds + INITIAL_LED; i++) {
+            Position position = iAnimation->ledAt(i)->position();
+            QCOMPARE(ledGridPositions.contains(position), true);
+        }
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);
     }
 }
 
-void AnimationTests::addNewLed_data() {
+void AnimationTests::newPopulatedReplace_data() {
+    QTest::addColumn<int>("numRows");
+    QTest::addColumn<int>("numColumns");
+    QTest::addColumn<int>("numLeds");
+    QTest::addColumn<PositionList>("ledGridPositions");
+    QTest::addColumn<IntList>("ledPositions");
+    QTest::addColumn<int>("newNumRows");
+    QTest::addColumn<int>("newNumColumns");
+    QTest::addColumn<int>("newNumLeds");
+    QTest::addColumn<PositionList>("newLedGridPositions");
+    QTest::addColumn<IntList>("newLedPositions");
+    QTest::addColumn<QString>("errorString");
+
+    int numRows = 3;
+    int numColumns = 3;
+
+    PositionList gridPositions;
+
+    gridPositions.append(Position(0, 0));
+    gridPositions.append(Position(0, 1));
+    gridPositions.append(Position(1, 1));
+
+    int numLeds = gridPositions.count();
+
+    IntList positions;
+
+    for(int i = 0; i < numRows * numColumns; i++) {
+        positions.append(INVALID);
+    }
+
+    for(int i = 0; i < numLeds; i++) {
+        positions.replace((gridPositions.at(i).row()*numColumns) + gridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    int newNumRows = 2;
+    int newNumColumns = 2;
+
+    PositionList newGridPositions;
+
+    newGridPositions.append(Position(0, 0));
+    newGridPositions.append(Position(1, 0));
+    newGridPositions.append(Position(1, 1));
+
+    int newNumLeds = newGridPositions.count();
+
+    IntList newPositions;
+
+    for(int i = 0; i < newNumRows * newNumColumns; i++) {
+        newPositions.append(INVALID);
+    }
+
+    for(int i = 0; i < newNumLeds; i++) {
+        newPositions.replace((newGridPositions.at(i).row()*newNumColumns) + newGridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    QTest::newRow("smaller grid") << numRows
+                             << numColumns
+                             << numLeds
+                             << gridPositions
+                             << positions
+                             << newNumRows
+                              << newNumColumns
+                              << newNumLeds
+                              << newGridPositions
+                              << newPositions
+                             << "";
+
+    newNumRows = 4;
+    newNumColumns = 4;
+
+    newPositions.clear();
+
+    for(int i = 0; i < newNumRows * newNumColumns; i++) {
+        newPositions.append(INVALID);
+    }
+
+    for(int i = 0; i < newNumLeds; i++) {
+        newPositions.replace((newGridPositions.at(i).row()*newNumColumns) + newGridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    QTest::newRow("larger grid") << numRows
+                             << numColumns
+                             << numLeds
+                             << gridPositions
+                             << positions
+                             << newNumRows
+                              << newNumColumns
+                              << newNumLeds
+                              << newGridPositions
+                              << newPositions
+                             << "";
+
+    newNumRows = 3;
+    newNumColumns = 3;
+
+    newGridPositions.clear();
+    newGridPositions.append(Position(0, 0));
+    newGridPositions.append(Position(1, 0));
+    newGridPositions.append(Position(1, 1));
+    newGridPositions.append(Position(2, 1));
+
+    newNumLeds = newGridPositions.count();
+
+    newPositions.clear();
+
+    for(int i = 0; i < newNumRows * newNumColumns; i++) {
+        newPositions.append(INVALID);
+    }
+
+    for(int i = 0; i < newNumLeds; i++) {
+        newPositions.replace((newGridPositions.at(i).row()*newNumColumns) + newGridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    QTest::newRow("more leds") << numRows
+                             << numColumns
+                             << numLeds
+                             << gridPositions
+                             << positions
+                             << newNumRows
+                              << newNumColumns
+                              << newNumLeds
+                              << newGridPositions
+                              << newPositions
+                             << "";
+
+    newGridPositions.clear();
+    newGridPositions.append(Position(0, 0));
+    newGridPositions.append(Position(1, 0));
+
+    newNumLeds = newGridPositions.count();
+
+    newPositions.clear();
+
+    for(int i = 0; i < newNumRows * newNumColumns; i++) {
+        newPositions.append(INVALID);
+    }
+
+    for(int i = 0; i < newNumLeds; i++) {
+        newPositions.replace((newGridPositions.at(i).row()*newNumColumns) + newGridPositions.at(i).column(), i + INITIAL_LED);
+    }
+
+    QTest::newRow("fewer leds") << numRows
+                             << numColumns
+                             << numLeds
+                             << gridPositions
+                             << positions
+                             << newNumRows
+                              << newNumColumns
+                              << newNumLeds
+                              << newGridPositions
+                              << newPositions
+                             << "";
+}
+
+void AnimationTests::newPopulatedReplace() {
+    QFETCH(int, numRows);
+    QFETCH(int, numColumns);
+    QFETCH(int, numLeds);
+    QFETCH(PositionList, ledGridPositions);
+    QFETCH(IntList, ledPositions);
+    QFETCH(int, newNumRows);
+    QFETCH(int, newNumColumns);
+    QFETCH(int, newNumLeds);
+    QFETCH(PositionList, newLedGridPositions);
+    QFETCH(IntList, newLedPositions);
+    QFETCH(QString, errorString);
+
+    try {
+        iAnimation->newAnimation(numRows, numColumns, numLeds, ledPositions);
+        iAnimation->newAnimation(newNumRows, newNumColumns, newNumLeds, newLedPositions);
+
+        QCOMPARE(iAnimation->numLeds(), newNumLeds);
+
+        for(int i = INITIAL_LED; i < newNumLeds + INITIAL_LED; i++) {
+            Position position = iAnimation->ledAt(i)->position();
+            QCOMPARE(newLedGridPositions.contains(position), true);
+        }
+
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
+}
+
+void AnimationTests::newEmptyReplace() {
 
 }
 
-void AnimationTests::addNewLed() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::deleteLed_data() {
-
-}
-
-void AnimationTests::deleteLed() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::moveLed_data() {
-
-}
-
-void AnimationTests::moveLed() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::cloneLed_data() {
-
-}
-
-void AnimationTests::cloneLed() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::pasteLed_data() {
-
-}
-
-void AnimationTests::pasteLed() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::copyLedTimeAxis_data() {
-
-}
-
-void AnimationTests::copyLedTimeAxis() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::copyLedValueAxis_data() {
-
-}
-
-void AnimationTests::copyLedValueAxis() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::copyLedCurrentFrame_data() {
-
-}
-
-void AnimationTests::copyLedCurrentFrame() {
-    QCOMPARE(true, true);
-}
-
-void AnimationTests::renumberLed_data() {
-
-}
-
-void AnimationTests::renumberLed() {
-    QCOMPARE(true, true);
+void AnimationTests::newEmptyReplace_data() {
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::ledAt_data() {
@@ -276,12 +478,194 @@ void AnimationTests::ledAt() {
     }
 }
 
+void AnimationTests::deleteLed_data() {
+    QTest::addColumn<int>("numRows");
+    QTest::addColumn<int>("numColumns");
+    QTest::addColumn<PositionList>("ledAddPositions");
+    QTest::addColumn<PositionList>("ledDeletePositions");
+    QTest::addColumn<QString>("errorString");
+
+    int numRows = 1;
+    int numColumns = 1;
+
+    PositionList addPositions;
+
+    addPositions.append(Position(0, 0));
+
+    PositionList deletePositions;
+
+    deletePositions.append(Position(0, 0));
+
+    QTest::newRow("valid") << numRows
+                           << numColumns
+                           << addPositions
+                           << deletePositions
+                           << "";
+
+    addPositions.clear();
+
+    QTest::newRow("led doesn't exist") << numRows
+                                   << numColumns
+                                   << addPositions
+                                   << deletePositions
+                                   << "Animation::deleteLed : led does not exist";
+
+}
+
+void AnimationTests::deleteLed() {
+    QFETCH(int, numRows);
+    QFETCH(int, numColumns);
+    QFETCH(PositionList, ledAddPositions);
+    QFETCH(PositionList, ledDeletePositions);
+    QFETCH(QString, errorString);
+
+    QSignalSpy deleteLedSpy(iAnimation, SIGNAL(ledDeleted(int, int, int)));
+
+    try {
+        iAnimation->newAnimation(numRows, numColumns);
+
+        for(int i = 0; i < ledAddPositions.count(); i++) {
+            iAnimation->addNewLed(ledAddPositions.at(i));
+        }
+
+        for(int i = 0; i < ledDeletePositions.count(); i++) {
+            Led* deleteLed = iAnimation->ledAt(ledDeletePositions.at(i));
+
+            if(deleteLed == NULL) {
+                deleteLed = new Led(iAnimation,
+                                    *iAnimation,
+                                    1,
+                                    ledDeletePositions.at(i),
+                                    NULL);
+            }
+
+            iAnimation->deleteLed(*deleteLed, true);
+        }
+
+        QCOMPARE(deleteLedSpy.count(), ledDeletePositions.count());
+
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
+}
+
+void AnimationTests::moveLed_data() {
+    QTest::addColumn<PositionList>("ledAddPositions");
+    QTest::addColumn<Position>("ledFromPosition");
+    QTest::addColumn<Position>("ledToPosition");
+    QTest::addColumn<QString>("errorString");
+
+    PositionList addPositions;
+
+    addPositions.append(Position(0, 0));
+
+    QTest::newRow("valid") << addPositions
+                           << Position(0, 0)
+                           << Position(1, 0)
+                           << "";
+
+    QTest::newRow("from doesn't exist") << addPositions
+                                       << Position(1, 0)
+                                       << Position(0, 0)
+                                       << "Animation::moveLed : led does not exist";
+
+    addPositions.append(Position(1, 0));
+
+    QTest::newRow("to already exists") << addPositions
+                                       << Position(0, 0)
+                                       << Position(1, 0)
+                                       << "Animation::moveLed : led already in this position";
+}
+
+void AnimationTests::moveLed() {
+    QFETCH(PositionList, ledAddPositions);
+    QFETCH(Position, ledFromPosition);
+    QFETCH(Position, ledToPosition);
+    QFETCH(QString, errorString);
+
+    QSignalSpy moveLedSpy(iAnimation, SIGNAL(ledMoved(int, int, int, int)));
+
+    try {
+        iAnimation->newAnimation(2, 2);
+
+        for(int i = 0; i < ledAddPositions.count(); i++) {
+            iAnimation->addNewLed(ledAddPositions.at(i));
+        }
+
+        int ledNum = INVALID;
+        Led* fromLed = iAnimation->ledAt(ledFromPosition);
+        if(fromLed != NULL) {
+            ledNum = fromLed->number();
+        }
+
+        iAnimation->moveLed(ledFromPosition, ledToPosition);
+
+        Led* movedLed = iAnimation->ledAt(ledToPosition);
+
+        QCOMPARE(movedLed->number(), ledNum);
+        QCOMPARE(movedLed->position(), ledToPosition);
+
+        QCOMPARE(moveLedSpy.count(), 1);
+
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
+}
+
+void AnimationTests::cloneLed_data() {
+
+}
+
+void AnimationTests::cloneLed() {
+    QCOMPARE(true, false);
+}
+
+void AnimationTests::pasteLed_data() {
+
+}
+
+void AnimationTests::pasteLed() {
+    QCOMPARE(true, false);
+}
+
+void AnimationTests::copyLedTimeAxis_data() {
+
+}
+
+void AnimationTests::copyLedTimeAxis() {
+    QCOMPARE(true, false);
+}
+
+void AnimationTests::copyLedValueAxis_data() {
+
+}
+
+void AnimationTests::copyLedValueAxis() {
+    QCOMPARE(true, false);
+}
+
+void AnimationTests::copyLedCurrentFrame_data() {
+
+}
+
+void AnimationTests::copyLedCurrentFrame() {
+    QCOMPARE(true, false);
+}
+
+void AnimationTests::renumberLed_data() {
+
+}
+
+void AnimationTests::renumberLed() {
+    QCOMPARE(true, false);
+}
+
 void AnimationTests::addValueAxis_data() {
 
 }
 
 void AnimationTests::addValueAxis() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::addTimeAxis_data() {
@@ -289,7 +673,7 @@ void AnimationTests::addTimeAxis_data() {
 }
 
 void AnimationTests::addTimeAxis() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::axisAt_data() {
@@ -297,7 +681,7 @@ void AnimationTests::axisAt_data() {
 }
 
 void AnimationTests::axisAt() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::timeAxisAt_data() {
@@ -305,7 +689,7 @@ void AnimationTests::timeAxisAt_data() {
 }
 
 void AnimationTests::timeAxisAt() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::currentTimeAxis_data() {
@@ -313,7 +697,7 @@ void AnimationTests::currentTimeAxis_data() {
 }
 
 void AnimationTests::currentTimeAxis() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::switchTimeAxis_data() {
@@ -321,7 +705,7 @@ void AnimationTests::switchTimeAxis_data() {
 }
 
 void AnimationTests::switchTimeAxis() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::addFunction_data() {
@@ -329,7 +713,7 @@ void AnimationTests::addFunction_data() {
 }
 
 void AnimationTests::addFunction() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::functionAt_data() {
@@ -337,7 +721,7 @@ void AnimationTests::functionAt_data() {
 }
 
 void AnimationTests::functionAt() {
-    QCOMPARE(true, true);
+    QCOMPARE(true, false);
 }
 
 void AnimationTests::cleanupTestCase() {

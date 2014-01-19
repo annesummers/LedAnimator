@@ -216,13 +216,19 @@ void Animation::doAddNewLed(Position position, int ledNum) {
         throw IllegalArgumentException("Animation::addNewLed : column is bigger than num columns");
     }
 
+    int ledNumber = ledNum != INVALID ? ledNum : nextLedNumber();
+
+    if(ledNumber > numColumns() * numRows()) {
+        throw IllegalArgumentException("Animation::addNewLed : num Leds is bigger than num sockets");
+    }
+
     Led* led = new Led(this,
                        *this,
-                       ledNum != INVALID ? ledNum : nextLedNumber(),
+                       ledNumber,
                        position,
                        iUndoStack);
-    addLed(*led, position);
 
+    addLed(*led, position);
 }
 
 void Animation::addLed(Led& led, Position position) {
@@ -249,6 +255,11 @@ void Animation::deleteLed(Led& led, bool deleteObject) {
 
 void Animation::doDeleteLed(Position position, bool deleteObject) {
     Led* led = ledAt(position);
+
+    if(led == NULL) {
+        throw IllegalArgumentException("Animation::deleteLed : led does not exist");
+    }
+
     int number = led->number();
 
     iLeds->removeLed(*led);
@@ -268,15 +279,20 @@ void Animation::moveLed(Position fromPosition, Position toPosition) {
 }
 
 void Animation::doMoveLed(Position fromPosition, Position toPosition) {
-    Led& led = *ledAt(fromPosition);
+    Led* led = ledAt(fromPosition);
+
+    if(led == NULL) {
+        throw IllegalArgumentException("Animation::moveLed : led does not exist");
+    }
+
     Led* toLed = ledAt(toPosition);
 
     if(toLed != NULL) {
-        return;
+        throw IllegalArgumentException("Animation::moveLed : led already in this position");
         //deleteLed(toRow, toColumn);
     }
 
-    iLeds->moveLed(led, fromPosition, toPosition);
+    iLeds->moveLed(*led, fromPosition, toPosition);
 
     emit ledMoved(fromPosition.row(), fromPosition.column(), toPosition.row(), toPosition.column());
 }
@@ -290,42 +306,26 @@ void Animation::cloneLed(Position fromPosition, Position toPosition) {
 }
 
 Led* Animation::doCloneLed(Position fromPosition, Position toPosition) {
-    Led* oldLed = ledAt(toPosition);
-    Led* newLed = NULL;
-    if(oldLed == NULL) {
-        newLed = new Led(this,
+    Led* cloneLed = ledAt(toPosition);
+    Led* oldLed = NULL;
+
+    if(cloneLed == NULL) {
+        cloneLed = new Led(this,
                          *this,
                          nextLedNumber(),
                          toPosition,
                          iUndoStack);
-        addLed(*newLed, toPosition);
+        addLed(*cloneLed, toPosition);
     } else {
-        newLed = oldLed;
-        oldLed = new Led(*newLed);
+        oldLed = new Led(*cloneLed);
     }
 
-    newLed->copyAxes(*ledAt(fromPosition));
+    cloneLed->copyAxes(*ledAt(fromPosition));
 
     return oldLed;
 }
 
 void Animation::doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed) {
-    if(toPosition.row() >= numRows()) {
-        throw IllegalArgumentException("Animation::pasteLed : Row is greater than number of rows");
-    }
-
-    if(toPosition.row() < 0) {
-        throw IllegalArgumentException("Animation::pasteLed : Row is negative");
-    }
-
-    if(toPosition.column() >= numColumns()) {
-        throw IllegalArgumentException("Animation::pasteLed : Column is greater than number of columns");
-     }
-
-    if(toPosition.column() < 0 ) {
-        throw IllegalArgumentException("Animation::pasteLed : Column is negative");
-    }
-
     *toLed = ledAt(toPosition);
 
     Led* led = iClipboardLeds->findLed(fromPosition);

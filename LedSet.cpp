@@ -83,7 +83,6 @@ Led* LedSet::findLed(Position position) const {
 }
 
 Led* LedSet::findLed(int ledNumber) const  {
-
     if(iLeds.contains(ledNumber)) {
         return iLeds.value(ledNumber);
     } else {

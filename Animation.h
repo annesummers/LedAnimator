@@ -14,10 +14,12 @@
 
 #include "LedSet.h"
 #include "engine.h"
-//#include "Frame.h"
 #include "constants.h"
 #include "TimeAxis.h"
 #include "ValueAxis.h"
+#include "LedAnimatorActionBase.h"
+
+using namespace UndoCommands;
 
 namespace AnimatorModel {
 
@@ -25,6 +27,12 @@ class Frame;
 
 class Animation : public QObject {
     Q_OBJECT
+
+    friend class AddLedCommand;
+    friend class DeleteLedCommand;
+    friend class CloneLedCommand;
+    friend class PasteLedCommand;
+    friend class RenumberLedCommand;
 
 public:
     explicit Animation(Engine& engine);
@@ -38,9 +46,6 @@ public:
                       int numColumns);
 
     inline void setUndoStack(QUndoStack& undoStack) { iUndoStack = &undoStack; }
-
-    //void play(bool repeat);
-   //void stop();
 
     // calling through the undo stack
 
@@ -56,21 +61,6 @@ public:
     void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
 
     void renumberLed(Position position, int oldNumber, int newNumber);
-
-    // led functions
-
-    void doAddNewLed(Position position, int ledNum = INVALID);
-    void doDeleteLed(Position position, bool deleteObject);
-
-    void doMoveLed(Position fromPosition, Position toPosition);
-    Led* doCloneLed(Position fromPosition, Position toPosition);
-    void doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
-
-    Led* doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
-    Led* doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
-    Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
-
-    void doRenumberLed(Position position, int newNumber);
 
     Led* ledAt(Position position) const;
     Led* ledAt(int number) const;
@@ -146,6 +136,21 @@ public slots:
     void copyToClipboard();
 
 private:
+    // led functions
+
+    void doAddNewLed(Position position, int ledNum = INVALID);
+    void doDeleteLed(Position position, bool deleteObject);
+
+    void doMoveLed(Position fromPosition, Position toPosition);
+    Led* doCloneLed(Position fromPosition, Position toPosition);
+    void doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
+
+    Led* doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
+    Led* doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
+    Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
+
+    void doRenumberLed(Position position, int newNumber);
+
     void addLed(Led &led, Position position);
     void addLed(Led & led, int number);
 

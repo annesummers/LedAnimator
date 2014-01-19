@@ -34,16 +34,25 @@ private slots:
      void newEmpty();
      void newEmpty_data();
 
-     void newPopulated();
-     void newPopulated_data();
-
-     // led functions
-
      void addNewLed_data();
      void addNewLed();
 
+     void newPopulated();
+     void newPopulated_data();
+
+     void newPopulatedReplace();
+     void newPopulatedReplace_data();
+
+     void newEmptyReplace();
+     void newEmptyReplace_data();
+
+     void ledAt_data();
+     void ledAt();
+
      void deleteLed_data();
      void deleteLed();
+
+     // led functions
 
      void moveLed_data();
      void moveLed();
@@ -65,9 +74,6 @@ private slots:
 
      void renumberLed_data();
      void renumberLed();
-
-     void ledAt_data();
-     void ledAt();
 
      // axes
 

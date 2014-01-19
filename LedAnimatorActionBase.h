@@ -19,7 +19,6 @@ class ColourFrame;
 
 namespace UndoCommands {
 
-
 class LedAnimatorCommandBase : public QUndoCommand {
 
 public:
