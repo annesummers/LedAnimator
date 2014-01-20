@@ -48,26 +48,26 @@ const AnimChar LedAnimByteArrayCodec::readControlCharacter() const {
 }
 
 const AnimChar LedAnimByteArrayCodec::readCharacter() const {
-    if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
-        AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
-        iPosition = iPosition + 2;
-        return character;
-    } else {
+    //if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
+    //    AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
+    //    iPosition = iPosition + 2;
+    //    return character;
+    //} else {
         return AnimChar(iByteArray.at(iPosition++));
-    }
+   // }
 }
 
 void LedAnimByteArrayCodec::writeCharacter(AnimChar character) {
     char value = character.unsignedCharValue();
 
-    if(value == TERMINATING_BYTE ||
-       value == ESCAPE_BYTE ||
-       value == HEADER_BYTE ) {
-        iByteArray.append(ESCAPE_BYTE);
-        iByteArray.append(value ^ XOR_BYTE);
-    } else {
+    //if(value == TERMINATING_BYTE ||
+    //   value == ESCAPE_BYTE ||
+    //   value == HEADER_BYTE ) {
+    //    iByteArray.append(ESCAPE_BYTE);
+    //    iByteArray.append(value ^ XOR_BYTE);
+   // } else {
         iByteArray.append(value);
-    }
+  //  }
 }
 
 void LedAnimByteArrayCodec::writeControlCharacter(AnimChar character) {
@@ -282,34 +282,67 @@ void LedAnimSimpleByteArrayCodec::writeFunctionData(Function function) {
     double redIncrementD = (double)redIncrementF;
     redIncrementD *= multiplier;
     redIncrementD = round(redIncrementD);
+
+    if(redIncrementD > 0) {
+        redIncrementD--;
+    } else if(redIncrementD < 0) {
+        redIncrementD++;
+    }
+
     int redIncrement = (int)redIncrementD;
 
-    char redIncrementHigh = redIncrement;
-    char redIncrementLow = redIncrement >> 8;
-    writeCharacter(redIncrementHigh);
-    writeCharacter(redIncrementLow);
+    unsigned char redIncrement1 = redIncrement;
+    unsigned char redIncrement2 = redIncrement >> 8;
+    unsigned char redIncrement3 = redIncrement >> 16;
+    unsigned char redIncrement4 = redIncrement >> 24;
+    writeCharacter(redIncrement1);
+    writeCharacter(redIncrement2);
+    writeCharacter(redIncrement3);
+    writeCharacter(redIncrement4);
 
     float greenIncrementF = (float)function.greenIncrement();
     double greenIncrementD = (double)greenIncrementF;
     greenIncrementD *= multiplier;
     greenIncrementD = round(greenIncrementD);
+
+    if(greenIncrementD > 0) {
+        greenIncrementD--;
+    } else if(greenIncrementD < 0) {
+        greenIncrementD++;
+    }
+
     int greenIncrement = (int)greenIncrementD;
 
-    char greenIncrementHigh = greenIncrement;
-    char greenIncrementLow = greenIncrement >> 8;
-    writeCharacter(greenIncrementHigh);
-    writeCharacter(greenIncrementLow);
+    unsigned char greenIncrement1 = greenIncrement;
+    unsigned char greenIncrement2 = greenIncrement >> 8;
+    unsigned char greenIncrement3 = greenIncrement >> 16;
+    unsigned char greenIncrement4 = greenIncrement >> 24;
+    writeCharacter(greenIncrement1);
+    writeCharacter(greenIncrement2);
+    writeCharacter(greenIncrement3);
+    writeCharacter(greenIncrement4);
 
     float blueIncrementF = (float)function.blueIncrement();
     double blueIncrementD = (double)blueIncrementF;
     blueIncrementD *= multiplier;
     blueIncrementD = round(blueIncrementD);
+
+    if(blueIncrementD > 0) {
+        blueIncrementD--;
+    } else if(blueIncrementD < 0) {
+        blueIncrementD++;
+    }
+
     int blueIncrement = (int)blueIncrementD;
 
-    char blueIncrementHigh = blueIncrement;
-    char blueIncrementLow = blueIncrement >> 8;
-    writeCharacter(blueIncrementHigh);
-    writeCharacter(blueIncrementLow);
+    unsigned char blueIncrement1 = blueIncrement;
+    unsigned char blueIncrement2 = blueIncrement >> 8;
+    unsigned char blueIncrement3 = blueIncrement >> 16;
+    unsigned char blueIncrement4 = blueIncrement >> 24;
+    writeCharacter(blueIncrement1);
+    writeCharacter(blueIncrement2);
+    writeCharacter(blueIncrement3);
+    writeCharacter(blueIncrement4);
 }
 
 Function LedAnimSimpleByteArrayCodec::readFunctionData() const {
