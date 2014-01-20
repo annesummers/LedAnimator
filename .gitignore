@@ -1,2 +1,4 @@
 *.autosave
 *.user
+*.pro.user
+*.pro.user*
