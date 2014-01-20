@@ -25,16 +25,7 @@ const AnimChar LedAnimStringCodec::readCharacter() const {
 void LedAnimStringCodec::writeCharacter(AnimChar character) {
     unsigned char value = character.unsignedCharValue();
 
-    if(value == TERMINATING_BYTE ||
-       value == ESCAPE_BYTE ||
-       value == HEADER_BYTE ) {
-        iString.append(QString::number(ESCAPE_BYTE));
-        iString.append(",");
-        iString.append(QString::number((value ^ XOR_BYTE)));
-    } else {
-        iString.append(QString::number(value));
-    }
-
+    iString.append(QString::number(value));
     iString.append(",");
 
     int extra = iString.length() - iLastReturn;
