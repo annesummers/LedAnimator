@@ -17,15 +17,14 @@ SOURCES +=  \
     ColourValue.cpp \
     ValueAxis.cpp \
     FunctionValue.cpp \
-    Function.cpp \
     NoValue.cpp \
     LinkedValue.cpp \
     ByteArrayCodec.cpp \
     StringCodec.cpp \
     AxisData.cpp \
     TimeAxisData.cpp \
-    ValueAxisData.cpp
-    Function.cpp \
+    ValueAxisData.cpp \
+    Function.cpp
 
 HEADERS += \
     LedSet.h \
@@ -45,7 +44,6 @@ HEADERS += \
     ValueAxis.h \
     FunctionValue.h \
     FrameValue.h \
-    Function.h \
     NoValue.h \
     LinkedValue.h \
     ByteArrayCodec.h \
@@ -54,5 +52,5 @@ HEADERS += \
     Position.h \
     Range.h \
     TimeAxisData.h \
-    ValueAxisData.h
-    Function.h \
+    ValueAxisData.h \
+    Function.h
