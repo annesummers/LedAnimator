@@ -114,9 +114,9 @@ bool Engine::doLoad(QString fileName) {
     return false;
 }
 
-void Engine::doSave(QString fileName, bool withPositions) {
+void Engine::doSave(QString fileName) {
     LedAnimByteArrayCodec codec(*iAnimation);
-    codec.writeAnimation(withPositions);
+    codec.writeAnimation(true);
 
     QFile file(fileName);
     file.open(QIODevice::WriteOnly);
@@ -125,6 +125,16 @@ void Engine::doSave(QString fileName, bool withPositions) {
 
     QSettings settings;
     settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+}
+
+void Engine::doExport(QString fileName) {
+    LedAnimSimpleByteArrayCodec codec(*iAnimation);
+    codec.writeAnimation(false);
+
+    QFile file(fileName);
+    file.open(QIODevice::WriteOnly);
+    file.write(codec.asByteArray());
+    file.close();
 }
 
 // slots -------------------
@@ -160,13 +170,15 @@ void Engine::exportAnimation() {
         reply = QMessageBox::question(iMainWindow, tr("Animation is missing leds"),
                                     tr("There are leds missing from the animation.  Do you want to continue the export?"),
                                     QMessageBox::Yes | QMessageBox::No);
-        if (reply == QMessageBox::Yes) {
-            QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Export Animation", "~", "Led Animation Files (*.anim)");
-
-            if(fileName != "") {
-                doSave(fileName);
-            }
+        if (reply != QMessageBox::Yes) {
+            return;
         }
+    }
+
+    QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Export Animation", "~", "Led Animation Files (*.anim)");
+
+    if(fileName != "") {
+        doExport(fileName);
     }
 }
 

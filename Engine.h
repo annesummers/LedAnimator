@@ -53,9 +53,6 @@ private slots:
 
     void exportAnimation();
 
-    //void addFrames();
-    //void setNumFrames();
-    //void setFrameFrequency();
     void addTimeAxis();
     void addValueAxis();
 
@@ -64,8 +61,9 @@ private slots:
     void quit();
 
 private:
-    void doSave(QString fileName, bool withPositions = true);
+    void doSave(QString fileName);
     bool doLoad(QString fileName);
+    void doExport(QString fileName);
 
     void setupUI();
 
