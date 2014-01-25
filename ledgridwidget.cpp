@@ -141,12 +141,12 @@ void LedGridWidget::cloneItem(int fromGroup, Position fromPosition, Position toP
     }
 }
 
-void LedGridWidget::pasteItem(int fromGroup, Position fromPosition, Position toPosition) {
+void LedGridWidget::pasteClipboardItem(int fromGroup, Position fromPosition, Position toPosition) {
     Q_UNUSED(fromGroup);// there is only one group
     //qDebug("LedGridWidget::pasteItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
     //                                                        toPosition.row(), toPosition.column());
 
-    iAnimation.pasteLed(fromPosition, toPosition);
+    iAnimation.pasteClipboardLed(fromPosition, toPosition);
 }
 
 void LedGridWidget::moveToClipboard(int group, Position position) {

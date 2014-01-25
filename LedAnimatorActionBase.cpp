@@ -114,7 +114,7 @@ PasteLedCommand::PasteLedCommand(Animation &animation, Position fromPosition, Po
 }
 
 void PasteLedCommand::redo() {
-    iAnimation.doPasteLed(iFromPosition, iToPosition, &iFromLed, &iToLed);
+    iAnimation.doPasteClipboardLed(iFromPosition, iToPosition, &iFromLed, &iToLed);
 
     setText();
 }

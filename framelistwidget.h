@@ -46,7 +46,7 @@ protected:
 
     inline void moveItem(int fromGroup, Position fromPosition, Position toPosition)
         { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
-    inline void pasteItem(int fromGroup, Position fromPosition, Position toPosition)
+    inline void pasteClipboardItem(int fromGroup, Position fromPosition, Position toPosition)
         { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
 
     SelectableWidget& widgetAt(Position position);
