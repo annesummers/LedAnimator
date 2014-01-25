@@ -82,7 +82,7 @@ private:
 
     void moveItem(int fromGroup, Position fromPosition, Position toPosition);
     void cloneItem(int fromGroup, Position fromPosition, Position toPosition);
-    void pasteItem(int fromGroup, Position fromPosition, Position toPosition);
+    void pasteClipboardItem(int fromGroup, Position fromPosition, Position toPosition);
 
     void moveToClipboard(int group, Position position);
 

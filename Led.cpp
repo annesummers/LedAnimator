@@ -28,7 +28,6 @@ Led::Led(QObject* parent,
     iUndoStack(undoStack),
     iHidden(false) {
 
-#ifndef NDEBUG   
     if(!position.isValid()) {
         if(position.row() < 0) {
             throw IllegalArgumentException("Rows argument is invalid");
@@ -38,7 +37,6 @@ Led::Led(QObject* parent,
             throw IllegalArgumentException("Columns argument is invalid");
         }
     }
-#endif
 
     connect(&animation, SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxis()));
     connect(&animation, SIGNAL(valueAxisAdded(int)), this, SLOT(addValueAxis(int)));
@@ -155,7 +153,6 @@ const QColor Led::currentColour() const {
 }
 
 ValueAxisData &Led::axisAt(int axisNum) const {
-#ifndef NDEBUG
     if(axisNum < 0) {
         throw IllegalFrameNumberException("Led::frameAt : Frame number is greater than led number of frames");
     }
@@ -163,7 +160,6 @@ ValueAxisData &Led::axisAt(int axisNum) const {
     if(axisNum > iAxesData.count()) {
         throw IllegalFrameNumberException("Led::frameAt : Frame number is greater than led number of frames");
     }
-#endif
 
     return *(iAxesData.at(axisNum));
 }
@@ -186,8 +182,8 @@ void Led::copyTimeAxis(const Led& copyLed) {
     timeAxis()->copyFrames(*copyLed.timeAxis());
 }
 
-void Led::copyCurrentFrame(const Led& copyLed, int frameNum) {
-
+void Led::copyTimeAxisFrame(const Led& copyLed, int frameNum) {
+    timeAxis()->frameAt(timeAxis()->currentFrameNum()).setValue(copyLed.timeAxis()->frameAt(frameNum).value());
 }
 
 void Led::copyValueAxis(const Led& copyLed, int axisNum) {
@@ -197,7 +193,6 @@ void Led::copyValueAxis(const Led& copyLed, int axisNum) {
 
     axisAt(axisNum).copyFrames(copyLed.axisAt(axisNum));
 }
-
 
 void Led::colourChanged(int frameNum) {
     iAnimation.setSaved(false);

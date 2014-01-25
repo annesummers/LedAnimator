@@ -46,6 +46,9 @@ private slots:
     void addValueAxis_data();
     void addValueAxis();
 
+    void clone_data();
+    void clone();
+
     void move_data();
     void move();
 
@@ -61,14 +64,17 @@ private slots:
     void copyValueAxis_data();
     void copyValueAxis();
 
-    void copyCurrentFrame_data();
-    void copyCurrentFrame();
+    void copyTimeAxisFrame_data();
+    void copyTimeAxisFrame();
 
     void assigment_data();
     void assigment();
 
     void currentColour_data();
     void currentColour();
+
+    void currentFrameChanged_data();
+    void currentFrameChanged();
 
 private:
     Engine*    iEngine;

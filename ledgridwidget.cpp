@@ -130,13 +130,13 @@ void LedGridWidget::cloneItem(int fromGroup, Position fromPosition, Position toP
         iAnimation.cloneLed(fromPosition, toPosition);
         break;
     case ETimeAxis:
-        iAnimation.copyLedTimeAxis(fromPosition, toPosition);
+        static_cast<LedWidget&>(widgetAt(toPosition)).led().copyTimeAxis(static_cast<LedWidget&>(widgetAt(fromPosition)).led());
         break;
     case EValueAxis:
-        iAnimation.copyLedValueAxis(fromPosition, toPosition, iCopySubType);
+        static_cast<LedWidget&>(widgetAt(toPosition)).led().copyValueAxis(static_cast<LedWidget&>(widgetAt(fromPosition)).led(), iCopySubType);
         break;
     case EFrame:
-        iAnimation.copyLedCurrentFrame(fromPosition, toPosition, iCopySubType);
+        static_cast<LedWidget&>(widgetAt(toPosition)).led().copyTimeAxisFrame(static_cast<LedWidget&>(widgetAt(fromPosition)).led(), iCopySubType);
         break;
     }
 }

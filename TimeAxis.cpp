@@ -10,11 +10,11 @@ TimeAxis::TimeAxis(QObject *parent,
                    Animation& animation,
                    int lowValue,
                    int highValue,
-                   int speed,
+                   int frequency,
                    int priority,
                    bool isOpaque) :
     Axis(parent, animation, lowValue, highValue, lowValue, priority, isOpaque),
-    iSpeed(speed),
+    iFrequency(frequency),
     iBackgroundColour(QColor(-1, -1, -1)),
     iIsPlaying(false),
     iRepeat(false),
@@ -38,7 +38,7 @@ void TimeAxis::play(bool repeat) {
         iRepeat = repeat;
         iPlayTimer = new QTimer(this);
         connect(iPlayTimer, SIGNAL(timeout()), this, SLOT(nextFrame()));
-        iPlayTimer->start(speed());
+        iPlayTimer->start(frequency());
 
         iIsPlaying = true;
     }

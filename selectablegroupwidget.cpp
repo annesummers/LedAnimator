@@ -441,7 +441,7 @@ bool SelectableGroupWidget::doHandleMimeData(QDataStream& dataStream,
             if(move) {
                 moveItem(fromGroupNumber, oldPosition, newPosition);
             } else if(cut) {
-                pasteItem(fromGroupNumber, oldPosition, newPosition);
+                pasteClipboardItem(fromGroupNumber, oldPosition, newPosition);
             } else {
                 cloneItem(fromGroupNumber, oldPosition, newPosition);
             }

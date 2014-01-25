@@ -16,15 +16,15 @@ public:
                       Animation &animation,
                       int lowValue,
                       int highValue,
-                      int speed,
+                      int frequency,
                       int priority,
                       bool isOpaque);
 
-    void setSpeed(const int speed);
+    void setSpeed(const int frequency);
     void setLowValue(const int lowValue);
     void setHighValue(const int highValue);
 
-    inline int speed() const { return iSpeed; }
+    inline int frequency() const { return iFrequency; }
 
     inline bool usesBackgroundColour() const { return iBackgroundColour.isValid(); }
     inline const QColor backgroundColour() const { return iBackgroundColour; }
@@ -45,7 +45,7 @@ public slots:
     void nextFrame();
 
 private:
-    const int iSpeed;
+    const int iFrequency;
     QColor iBackgroundColour;
 
     bool iIsPlaying;

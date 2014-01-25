@@ -816,7 +816,7 @@ void AnimationTests::cutAndPasteLed() {
             iAnimation->moveLedToClipboard(ledFromPosition);
         }
 
-        iAnimation->pasteLed(ledFromPosition, ledToPosition);
+        iAnimation->pasteClipboardLed(ledFromPosition, ledToPosition);
 
         Led* pastedLed = iAnimation->ledAt(ledToPosition);
         QCOMPARE(pastedLed->position(), ledToPosition);
@@ -825,30 +825,6 @@ void AnimationTests::cutAndPasteLed() {
     } catch(InvalidPositionException& e) {
         QCOMPARE(e.errorMessage(), errorString);
     }
-}
-
-void AnimationTests::copyLedTimeAxis_data() {
-
-}
-
-void AnimationTests::copyLedTimeAxis() {
-    QCOMPARE(true, false);
-}
-
-void AnimationTests::copyLedValueAxis_data() {
-
-}
-
-void AnimationTests::copyLedValueAxis() {
-    QCOMPARE(true, false);
-}
-
-void AnimationTests::copyLedCurrentFrame_data() {
-
-}
-
-void AnimationTests::copyLedCurrentFrame() {
-    QCOMPARE(true, false);
 }
 
 void AnimationTests::renumberLed_data() {
@@ -860,35 +836,67 @@ void AnimationTests::renumberLed() {
 }
 
 void AnimationTests::addValueAxis_data() {
-
+    QTest::addColumn<int>("lowValue");
+    QTest::addColumn<int>("highValue");
+    QTest::addColumn<int>("zeroValue");
+    QTest::addColumn<int>("priority");
+    QTest::addColumn<bool>("isOpaque");
 }
 
 void AnimationTests::addValueAxis() {
-    QCOMPARE(true, false);
+    QFETCH(int, lowValue);
+    QFETCH(int, highValue);
+    QFETCH(int, zeroValue);
+    QFETCH(int, priority);
+    QFETCH(bool, isOpaque);
+
+    try {
+        iAnimation->newAnimation(2, 2);
+
+        int axisNum = iAnimation->addValueAxis(lowValue, highValue, zeroValue, priority, isOpaque);
+
+        QCOMPARE(iAnimation->numValueAxes(), axisNum - 1);
+
+        QCOMPARE(iAnimation->axisAt(axisNum).lowValue(), lowValue);
+        QCOMPARE(iAnimation->axisAt(axisNum).highValue(), highValue);
+        QCOMPARE(iAnimation->axisAt(axisNum).zeroValue(), zeroValue);
+        QCOMPARE(iAnimation->axisAt(axisNum).priority(), priority);
+        QCOMPARE(iAnimation->axisAt(axisNum).isOpaque(), isOpaque);
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
 }
 
 void AnimationTests::addTimeAxis_data() {
-
+    QTest::addColumn<int>("lowValue");
+    QTest::addColumn<int>("highValue");
+    QTest::addColumn<int>("frequency");
+    QTest::addColumn<int>("priority");
+    QTest::addColumn<bool>("isOpaque");
 }
 
 void AnimationTests::addTimeAxis() {
-    QCOMPARE(true, false);
-}
+    QFETCH(int, lowValue);
+    QFETCH(int, highValue);
+    QFETCH(int, frequency);
+    QFETCH(int, priority);
+    QFETCH(bool, isOpaque);
 
-void AnimationTests::axisAt_data() {
+    try {
+        iAnimation->newAnimation(2, 2);
 
-}
+        iAnimation->addTimeAxis(lowValue, highValue, zeroValue, priority, isOpaque);
 
-void AnimationTests::axisAt() {
-    QCOMPARE(true, false);
-}
+        QVERIFY(iAnimation->timeAxis() != NULL);
 
-void AnimationTests::timeAxisAt_data() {
-
-}
-
-void AnimationTests::timeAxisAt() {
-    QCOMPARE(true, false);
+        QCOMPARE(iAnimation->timeAxis()->lowValue(), lowValue);
+        QCOMPARE(iAnimation->timeAxis()->highValue(), highValue);
+        QCOMPARE(iAnimation->timeAxis()-frequency(), zeroValue);
+        QCOMPARE(iAnimation->timeAxis()->priority(), priority);
+        QCOMPARE(iAnimation->timeAxis()->isOpaque(), isOpaque);
+    } catch(IllegalArgumentException& e) {
+        QCOMPARE(e.errorMessage(), errorString);
+    }
 }
 
 void AnimationTests::currentTimeAxis_data() {
@@ -912,14 +920,6 @@ void AnimationTests::addFunction_data() {
 }
 
 void AnimationTests::addFunction() {
-    QCOMPARE(true, false);
-}
-
-void AnimationTests::functionAt_data() {
-
-}
-
-void AnimationTests::functionAt() {
     QCOMPARE(true, false);
 }
 

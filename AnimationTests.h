@@ -63,15 +63,6 @@ private slots:
      void cutAndPasteLed_data();
      void cutAndPasteLed();
 
-     void copyLedTimeAxis_data();
-     void copyLedTimeAxis();
-
-     void copyLedValueAxis_data();
-     void copyLedValueAxis();
-
-     void copyLedCurrentFrame_data();
-     void copyLedCurrentFrame();
-
      void renumberLed_data();
      void renumberLed();
 
@@ -83,12 +74,6 @@ private slots:
      void addTimeAxis_data();
      void addTimeAxis();
 
-     void axisAt_data();
-     void axisAt();
-
-     void timeAxisAt_data();
-     void timeAxisAt();
-
      void currentTimeAxis_data();
      void currentTimeAxis();
 
@@ -99,9 +84,6 @@ private slots:
 
      void addFunction_data();
      void addFunction();
-
-     void functionAt_data();
-     void functionAt();
 
      void cleanupTestCase();
 

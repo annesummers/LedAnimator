@@ -331,17 +331,17 @@ Led* Animation::doCloneLed(Position fromPosition, Position toPosition) {
     return oldLed;
 }
 
-void Animation::pasteLed(Position fromPosition, Position toPosition) {
+void Animation::pasteClipboardLed(Position fromPosition, Position toPosition) {
     if(iUndoStack == NULL) {
         Led* fromLed;
         Led* toLed;
-        doPasteLed(fromPosition, toPosition, &fromLed, &toLed);
+        doPasteClipboardLed(fromPosition, toPosition, &fromLed, &toLed);
     } else {
         iUndoStack->push(new PasteLedCommand(*this, fromPosition, toPosition));
     }
 }
 
-void Animation::doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed) {
+void Animation::doPasteClipboardLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed) {
     Led* to = ledAt(toPosition);
     Led* from = iClipboardLeds->findLed(fromPosition);
 
@@ -361,55 +361,6 @@ void Animation::doPasteLed(Position fromPosition, Position toPosition, Led **fro
     *fromLed = from;
     *toLed = to;
 }
-
-void Animation::copyLedTimeAxis(Position fromPosition, Position toPosition) {
-    doCopyLedTimeAxis(fromPosition, toPosition);
-}
-
-Led* Animation::doCopyLedTimeAxis(Position fromPosition, Position toPosition) {
-    Led* fromLed = ledAt(fromPosition);
-    Led* toLed = ledAt(toPosition);
-    if(toLed == NULL || fromLed == NULL) {
-        throw InvalidPositionException("MISSING LED");
-    }
-
-    toLed->copyTimeAxis(*fromLed);
-
-    return toLed;
-}
-
-void Animation::copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum) {
-    doCopyLedValueAxis(fromPosition, toPosition, axisNum);
-}
-
-Led* Animation::doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum) {
-    Led* fromLed = ledAt(fromPosition);
-    Led* toLed = ledAt(toPosition);
-    if(toLed == NULL || fromLed == NULL) {
-        throw InvalidPositionException("MISSING LED");
-    }
-
-    toLed->copyValueAxis(*fromLed, axisNum);
-
-    return toLed;
-}
-
-void Animation::copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum) {
-    doCopyLedCurrentFrame(fromPosition, toPosition, copyFrameNum);
-}
-
-Led* Animation::doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum) {
-    Led* fromLed = ledAt(fromPosition);
-    Led* toLed = ledAt(toPosition);
-    if(toLed == NULL || fromLed == NULL) {
-        throw InvalidPositionException("MISSING LED");
-    }
-
-    toLed->timeAxis()->frameAt(toLed->timeAxis()->currentFrameNum()).setValue(fromLed->timeAxis()->frameAt(copyFrameNum).value());
-
-    return toLed;
-}
-
 
 void Animation::moveLedToClipboard(Position position) {
     addLedToClipboard(ledAt(position));

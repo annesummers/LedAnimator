@@ -104,7 +104,7 @@ protected:
 
     virtual void moveItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
     virtual void cloneItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
-    virtual void pasteItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
+    virtual void pasteClipboardItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
 
     virtual void moveToClipboard(int group, Position position)
         { Q_UNUSED(group); Q_UNUSED(position); }

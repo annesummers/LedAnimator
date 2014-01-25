@@ -102,6 +102,14 @@ void LedTests::move() {
     QCOMPARE(true, true);
 }
 
+void LedTests::clone_data() {
+}
+
+void LedTests::clone(){
+    QCOMPARE(true, true);
+}
+
+
 void LedTests::paste_data() {
 
 }
@@ -134,11 +142,11 @@ void LedTests::copyValueAxis() {
     QCOMPARE(true, true);
 }
 
-void LedTests::copyCurrentFrame_data() {
+void LedTests::copyTimeAxisFrame_data() {
 
 }
 
-void LedTests::copyCurrentFrame() {
+void LedTests::copyTimeAxisFrame() {
     QCOMPARE(true, true);
 }
 

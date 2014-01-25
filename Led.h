@@ -51,7 +51,7 @@ public:
 
     void copyAxes(const Led& copyLed);
     void copyTimeAxis(const Led& copyLed);
-    void copyCurrentFrame(const Led& copyLed, int frameNum);
+    void copyTimeAxisFrame(const Led& copyLed, int frameNum);
     void copyValueAxis(const Led& copyLed, int axisNum);
 
    // inline Animation& animation() { return iAnimation; }

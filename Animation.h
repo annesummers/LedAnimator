@@ -54,11 +54,11 @@ public:
 
     void moveLed(Position fromPosition, Position toPosition);
     void cloneLed(Position fromPosition, Position toPosition);
-    void pasteLed(Position fromPosition, Position toPosition);
+    void pasteClipboardLed(Position fromPosition, Position toPosition);
 
-    void copyLedTimeAxis(Position fromPosition, Position toPosition);
-    void copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
-    void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
+   // void copyLedTimeAxis(Position fromPosition, Position toPosition);
+   // void copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
+   // void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
 
     void renumberLed(Position position, int oldNumber, int newNumber);
 
@@ -93,7 +93,6 @@ public:
     int addFunction(Function function);
 
     inline Function functionAt(int number) { return iFunctions.at(number); }
-
     inline int numFunctions() { return iFunctions.size(); }
 
     // getters
@@ -141,11 +140,11 @@ private:
 
     void doMoveLed(Position fromPosition, Position toPosition);
     Led* doCloneLed(Position fromPosition, Position toPosition);
-    void doPasteLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
+    void doPasteClipboardLed(Position fromPosition, Position toPosition, Led **fromLed, Led **toLed);
 
-    Led* doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
-    Led* doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
-    Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
+   // Led* doCopyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
+   // Led* doCopyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
+   // Led* doCopyLedTimeAxis(Position fromPosition, Position toPosition);
 
     void doRenumberLed(Position position, int newNumber);
 
@@ -153,7 +152,7 @@ private:
     void deleteLedFromClipboard(int number);
 
     void addLed(Led &led, Position position);
-    void addLed(Led & led, int number);
+    //void addLed(Led & led, int number);
 
     void removeLed(Led& led);
 
