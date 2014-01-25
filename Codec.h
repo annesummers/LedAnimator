@@ -20,6 +20,7 @@ class Led;
 class Frame;
 class Axis;
 class FunctionValue;
+class AxisData;
 }
 
 using namespace AnimatorModel;
@@ -72,11 +73,17 @@ protected:
     virtual void writePositionData() { }
     virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); QList<int> positions; return positions; }
 
-    void writeAxisData(int iAxisNum);
-    void readAxisData(int iAxisNum);
+    void writeTimeAxisData();
+    void readTimeAxisData();
+
+    void writeValueAxisData(int iAxisNum);
+    void readValueAxisData(int iAxisNum);
 
     void writeAxis(int iAxisNum);
     void readAxis(int iAxisNum);
+
+    void writeRanges(AxisData& axisData);
+    void readRanges(AxisData &axisData);
 
     virtual void writeColour(Frame& frame) = 0;
     virtual void writeColour(QColor colour) = 0;
@@ -89,7 +96,7 @@ protected:
     virtual Function readFunctionData() const = 0;
 
     Animation& iAnimation;
-    bool iWriteLedNumber;
+    bool iVerbose;
 };
 
 

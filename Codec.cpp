@@ -53,7 +53,7 @@ LedAnimCodec::LedAnimCodec(Animation& animation) :
 
 void LedAnimCodec::writeAnimation(bool withPositions) {
     if(withPositions) {
-        iWriteLedNumber = true;
+        iVerbose = true;
     }
 
     writeControlCharacter(HEADER_BYTE);
@@ -81,8 +81,7 @@ void LedAnimCodec::writeAnimation(bool withPositions) {
         writeAxis(i);
     }
 
-
-    writeAxisData(kTimeAxisNum);
+    writeTimeAxisData();
 
     writeControlCharacter(TERMINATING_BYTE);
 }
@@ -108,7 +107,7 @@ void LedAnimCodec::readAnimation() {
 
     int numFunctions = readCharacter().intValue();
     for(int i = 0; i < numFunctions; i++) {
-        readFunctionData();
+        iAnimation.addFunction(readFunctionData());
     }
 
     int numAxes = readCharacter().intValue();
@@ -119,7 +118,7 @@ void LedAnimCodec::readAnimation() {
         readAxis(i);
     }
 
-    readAxisData(kTimeAxisNum);
+    readTimeAxisData();
 
     if (readCharacter().unsignedCharValue() != TERMINATING_BYTE) {
         throw new InvalidAnimationException("No terminating byte");
@@ -155,25 +154,61 @@ void LedAnimCodec::writeAxis(int axisNum) {
         writeCharacter(axis->highValue());
         writeCharacter(iAnimation.axisAt(axisNum).zeroValue());
 
+        writeValueAxisData(axisNum);
+    }
+}
+
+void LedAnimCodec::writeValueAxisData(int axisNum) {
+    int ledNum = INITIAL_LED;
+    Axis* axis = &iAnimation.axisAt(axisNum);
+
+    int totalRangeCount = 0;
+
+    for(int i = 0; i < iAnimation.numLeds(); i++) {
+        while(iAnimation.isMissing(ledNum)) {
+            qDebug("led %d is missing", ledNum);
+            ledNum++;
+        }
+
+        AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
+        totalRangeCount += axisData.numRanges();
+        writeCharacter(axisData.numRanges());
+    }
+
+    //unsigned char totalRangeCountHigh = totalRangeCount;
+    //unsigned char totalRangeCountLow = totalRangeCount >> 8;
+
+    //writeCharacter(totalRangeCountHigh);
+    //writeCharacter(totalRangeCountLow);
+
+    ledNum = INITIAL_LED;
+
+    for(int i = 0; i < iAnimation.numLeds(); i++) {
+        while(iAnimation.isMissing(ledNum)) {
+            qDebug("led %d is missing", ledNum);
+            ledNum++;
+        }
+
+        AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
+        //axisData.calculateRanges();
+
+        writeRanges(axisData);
+    }
+
+    if(iVerbose) {
         for (int frame = axis->lowValue(); frame <= axis->highValue(); frame++) {
-            int ledNum = INITIAL_LED;
+            ledNum = INITIAL_LED;
             for(int i = 0; i < iAnimation.numLeds(); i++) {
                 while(iAnimation.isMissing(ledNum)) {
                     qDebug("led %d is missing", ledNum);
                     ledNum++;
                 }
 
-                if(iWriteLedNumber) {
+                if(iVerbose) {
                     writeCharacter(ledNum);
                 }
 
-                AxisData* axisData = NULL;
-
-                if(axisNum == kTimeAxisNum) {
-                    axisData = iAnimation.ledAt(ledNum)->timeAxis();
-                } else {
-                    axisData = &iAnimation.ledAt(ledNum)->axisAt(axisNum);
-                }
+                AxisData* axisData = &iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
                 writeCharacter(axisData->frameAt(frame).value().type());
 
@@ -190,12 +225,30 @@ void LedAnimCodec::writeAxis(int axisNum) {
             }
         }
     }
-
 }
 
-void LedAnimCodec::writeAxisData(int axisNum) {
-    Q_UNUSED(axisNum);
+void LedAnimCodec::writeRanges(AxisData &axisData) {
+    writeCharacter(axisData.numRanges());
+    for(int i = 0; i < axisData.numRanges(); i++) {
+        Range range = axisData.rangeAt(i);
+        writeCharacter(range.lowValue());
+        writeCharacter(range.highValue());
+        writeCharacter(range.anchor());
+        writeCharacter(range.function());
+    }
+}
 
+void LedAnimCodec::readRanges(AxisData& axisData) {
+    int numRanges = readCharacter().intValue();
+    for(int i = 0; i < numRanges; i++) {
+        axisData.setRange(readCharacter().intValue(),
+                            readCharacter().intValue(),
+                            readCharacter().intValue(),
+                            iAnimation.functionAt(readCharacter().intValue()));
+    }
+}
+
+void LedAnimCodec::writeTimeAxisData() {
     Axis* axis = iAnimation.timeAxis();
 
     for (int frame = axis->lowValue(); frame <= axis->highValue(); frame++) {
@@ -206,7 +259,7 @@ void LedAnimCodec::writeAxisData(int axisNum) {
                 ledNum++;
             }
 
-            if(iWriteLedNumber) {
+            if(iVerbose) {
                 writeCharacter(ledNum);
             }
 
@@ -235,8 +288,6 @@ void LedAnimCodec::writeAxisData(int axisNum) {
 }
 
 void LedAnimCodec::readAxis(int axisNum) {
-    Axis* axis = NULL;
-
     int axisType = readCharacter().intValue();
     int priority = readCharacter().intValue();
     bool opaque = readCharacter().boolValue();
@@ -257,47 +308,75 @@ void LedAnimCodec::readAxis(int axisNum) {
         int zeroValue = readCharacter().intValue();
 
         iAnimation.addValueAxis(lowValue, highValue, zeroValue, priority, opaque);
-        axis = &iAnimation.axisAt(axisNum);
 
-        for(int frame = axis->lowValue(); frame <= axis->highValue(); frame++) {
-            int ledNum = INITIAL_LED;
-            for(int i = 0; i < iAnimation.numLeds(); i++) {
-                readCharacter();
-                while(iAnimation.isMissing(ledNum)){
-                    ledNum++;
-                }
+        readValueAxisData(axisNum);
+    }
+}
 
-                Led* led = iAnimation.ledAt(ledNum++);
+void LedAnimCodec::readValueAxisData(int axisNum) {
+    Axis* axis = &iAnimation.axisAt(axisNum);
+    int ledNum = INITIAL_LED;
 
-                AxisData* axisData = NULL;
+   // unsigned char totalNumRangesHigh = readCharacter().unsignedCharValue();
+   // unsigned char totalNumRangesLow = readCharacter().unsignedCharValue();
 
-                if(axisNum == kTimeAxisNum) {
-                    axisData = led->timeAxis();
-                } else {
-                    axisData = &led->axisAt(axisNum);
-                }
+   // int totalNumRanges = totalNumRangesHigh;
+   // totalNumRanges |= totalNumRangesLow << 8;
 
-                char frameType = readCharacter().unsignedCharValue();
+    for(int i = 0; i < iAnimation.numLeds(); i++) {
+        while(iAnimation.isMissing(ledNum)){
+            ledNum++;
+        }
 
-                switch(frameType) {
-                case kColour:
-                    axisData->frameAt(frame).doSetValue(*(new ColourValue(led, readColour())));
-                    break;
-                case kFunction:
-                    Frame& newFrame = axisData->frameAt(frame);
-                    newFrame.doSetValue(readFunction(newFrame));
-                    break;
-                }
+        readCharacter();
+    }
 
+    ledNum = INITIAL_LED;
+    for(int i = 0; i < iAnimation.numLeds(); i++) {
+        while(iAnimation.isMissing(ledNum)){
+            ledNum++;
+        }
 
+        ValueAxisData& axisData = iAnimation.ledAt(ledNum++)->axisAt(axisNum);
+
+        readRanges(axisData);
+    }
+
+    for(int frame = axis->lowValue(); frame <= axis->highValue(); frame++) {
+        ledNum = INITIAL_LED;
+        for(int i = 0; i < iAnimation.numLeds(); i++) {
+            readCharacter();
+            while(iAnimation.isMissing(ledNum)){
+                ledNum++;
             }
+
+            Led* led = iAnimation.ledAt(ledNum++);
+
+            AxisData* axisData = NULL;
+
+           // if(axisNum == kTimeAxisNum) {
+           //     axisData = led->timeAxis();
+           // } else {
+                axisData = &led->axisAt(axisNum);
+          //  }
+
+            char frameType = readCharacter().unsignedCharValue();
+
+            switch(frameType) {
+            case kColour:
+                axisData->frameAt(frame).doSetValue(*(new ColourValue(led, readColour())));
+                break;
+            case kFunction:
+                Frame& newFrame = axisData->frameAt(frame);
+                newFrame.doSetValue(readFunction(newFrame));
+                break;
+            }
+
         }
     }
 }
 
-void LedAnimCodec::readAxisData(int axisNum) {
-    Q_UNUSED(axisNum);
-
+void LedAnimCodec::readTimeAxisData() {
     Axis* axis = iAnimation.timeAxis();
 
     if(axis != NULL) {

@@ -37,6 +37,12 @@ public:
     void setLastInRange(int number, Function function);
     void setAnchorInRange(int number);
 
+    void setRange(int first, int last, int anchor, Function function);
+    void calculateRanges();
+
+    Range rangeAt(int index) { return iFunctionRanges.at(index); }
+    inline int numRanges() { return iFunctionRanges.count(); }
+
     virtual void copyFrames(const AxisData &copyAxis);
 
     virtual void lowValueChanged(const int lowValue) = 0;

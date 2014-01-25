@@ -40,6 +40,24 @@ AxisData::AxisData(QObject *parent,
     connect(iSignalMapper, SIGNAL(mapped(int)), &led, SLOT(colourChanged(int)));
 }
 
+void AxisData::calculateRanges() {
+      setRange(iAxis.lowValue(),
+               iAxis.zeroValue(),
+               iAxis.zeroValue(),
+               frameAt(iAxis.zeroValue() - 1).function());
+
+      setRange(iAxis.zeroValue(),
+               iAxis.highValue(),
+               iAxis.zeroValue(),
+               frameAt(iAxis.zeroValue() + 1).function());
+}
+
+void AxisData::setRange(int first, int last, int anchor, Function function) {
+    setFirstInRange(first);
+    setAnchorInRange(anchor);
+    setLastInRange(last, function);
+}
+
 void AxisData::setAnchorInRange(int number) {
     iNewAnchor = number;
     iHasNewAnchor = true;
