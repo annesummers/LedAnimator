@@ -25,8 +25,20 @@ public:
 protected slots:
     void initTestCase();
 
+    void init();
+    void cleanup();
+
+    void constructor_data();
+    void constructor();
+
     void setCurrentFrame_data();
     void setCurrentFrame();
+
+    void setLowValue_data();
+    void setLowValue();
+
+    void setHighValue_data();
+    void setHighValue();
 
     void cleanupTestCase();
 

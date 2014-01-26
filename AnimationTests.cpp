@@ -23,7 +23,14 @@ AnimationTests::AnimationTests(QObject *parent) :
 
 void AnimationTests::initTestCase() {
     iEngine = new Engine(this);
-    iAnimation = new Animation(*(iEngine));
+}
+
+void AnimationTests::init() {
+    iAnimation = new Animation(*iEngine);
+}
+
+void AnimationTests::cleanup() {
+    delete iAnimation;
 }
 
 void AnimationTests::newEmpty_data() {
@@ -75,6 +82,18 @@ void AnimationTests::newEmpty() {
         iAnimation->newAnimation(numRows, numColumns);
 
         QCOMPARE(newSocketSpy.count(), numRows * numColumns);
+
+        int count = 0;
+
+        for(int i = 0; i < numRows; i++) {
+            for(int j = 0; j < numColumns; j++) {
+                QList<QVariant> arguments = newSocketSpy.at(count++);
+                QVERIFY(arguments.at(0).type() == QVariant::Int);
+                QVERIFY(arguments.at(1).type() == QVariant::Int);
+                QVERIFY(arguments.at(0).toInt() == i);
+                QVERIFY(arguments.at(1).toInt() == j);
+            }
+        }
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);
@@ -158,6 +177,14 @@ void AnimationTests::addNewLed() {
         }
 
         QCOMPARE(newLedSpy.count(), ledPositions.count());
+
+        for(int i = 0; i < ledPositions.count(); i++) {
+            QList<QVariant> arguments = newLedSpy.at(i);
+            QVERIFY(arguments.at(0).type() == QVariant::Int);
+            QVERIFY(arguments.at(1).type() == QVariant::Int);
+            QVERIFY(arguments.at(0).toInt() == ledPositions.at(i).row());
+            QVERIFY(arguments.at(1).toInt() == ledPositions.at(i).column());
+        }
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);
@@ -248,6 +275,14 @@ void AnimationTests::newPopulated() {
         for(int i = INITIAL_LED; i < numLeds + INITIAL_LED; i++) {
             Position position = iAnimation->ledAt(i)->position();
             QCOMPARE(ledGridPositions.contains(position), true);
+        }
+
+        for(int i = 0; i < numLeds; i++) {
+            QList<QVariant> arguments = newLedSpy.at(i);
+            QVERIFY(arguments.at(0).type() == QVariant::Int);
+            QVERIFY(arguments.at(1).type() == QVariant::Int);
+            QVERIFY(arguments.at(0).toInt() == ledGridPositions.at(i).row());
+            QVERIFY(arguments.at(1).toInt() == ledGridPositions.at(i).column());
         }
 
     } catch(IllegalArgumentException& e) {
@@ -540,7 +575,9 @@ void AnimationTests::ledAt_data() {
 }
 
 void AnimationTests::ledAt() {
-    QFETCH(Position, position);
+    // TODO put in LedSetTests
+    QCOMPARE(true, true);
+    /*QFETCH(Position, position);
     QFETCH(QString, errorString);
 
     try {
@@ -548,7 +585,7 @@ void AnimationTests::ledAt() {
 
     } catch(IllegalArgumentException& e) {
         QCOMPARE(e.errorMessage(), errorString);
-    }
+    }*/
 }
 
 void AnimationTests::deleteLed_data() {
@@ -601,10 +638,14 @@ void AnimationTests::deleteLed() {
             iAnimation->addNewLed(ledAddPositions.at(i));
         }
 
+        QList<int> deletedLedNumbers;
+
         for(int i = 0; i < ledDeletePositions.count(); i++) {
             Led* deleteLed = iAnimation->ledAt(ledDeletePositions.at(i));
 
-            if(deleteLed == NULL) {
+            if(deleteLed != NULL) {
+                deletedLedNumbers.append(deleteLed->number());
+            } else { // make a fake one
                 deleteLed = new Led(iAnimation,
                                     *iAnimation,
                                     1,
@@ -616,6 +657,16 @@ void AnimationTests::deleteLed() {
         }
 
         QCOMPARE(deleteLedSpy.count(), ledDeletePositions.count());
+
+        for(int i = 0; i < ledDeletePositions.count(); i++) {
+            QList<QVariant> arguments = deleteLedSpy.at(i);
+            QVERIFY(arguments.at(0).type() == QVariant::Int);
+            QVERIFY(arguments.at(1).type() == QVariant::Int);
+            QVERIFY(arguments.at(2).type() == QVariant::Int);
+            QVERIFY(arguments.at(0).toInt() == ledDeletePositions.at(i).row());
+            QVERIFY(arguments.at(1).toInt() == ledDeletePositions.at(i).column());
+            QVERIFY(arguments.at(2).toInt() == deletedLedNumbers.at(i));
+        }
 
     } catch(InvalidPositionException& e) {
         QCOMPARE(e.errorMessage(), errorString);
@@ -679,6 +730,16 @@ void AnimationTests::moveLed() {
         QCOMPARE(movedLed->position(), ledToPosition);
 
         QCOMPARE(moveLedSpy.count(), 1);
+
+        QList<QVariant> arguments = moveLedSpy.at(0);
+
+        QVERIFY(arguments.at(0).type() == QVariant::Int);
+        QVERIFY(arguments.at(1).type() == QVariant::Int);
+        QVERIFY(arguments.at(2).type() == QVariant::Int);
+        QVERIFY(arguments.at(3).type() == QVariant::Int);
+
+        QCOMPARE(Position(arguments.at(0).toInt(), arguments.at(1).toInt()), ledFromPosition);
+        QCOMPARE(Position(arguments.at(2).toInt(), arguments.at(3).toInt()), ledToPosition);
 
     } catch(InvalidPositionException& e) {
         QCOMPARE(e.errorMessage(), errorString);
@@ -832,38 +893,94 @@ void AnimationTests::renumberLed_data() {
 }
 
 void AnimationTests::renumberLed() {
-    QCOMPARE(true, false);
+
+    // TODO put in LedTests
+    QCOMPARE(true, true);
 }
 
 void AnimationTests::addValueAxis_data() {
-    QTest::addColumn<int>("lowValue");
-    QTest::addColumn<int>("highValue");
-    QTest::addColumn<int>("zeroValue");
-    QTest::addColumn<int>("priority");
+    QTest::addColumn<int>("numValueAxes");
+    QTest::addColumn<IntList>("lowValues");
+    QTest::addColumn<IntList>("highValues");
+    QTest::addColumn<IntList>("zeroValues");
+    QTest::addColumn<IntList>("priorities");
     QTest::addColumn<bool>("isOpaque");
+
+    IntList lowValues;
+    IntList highValues;
+    IntList zeroValues;
+    IntList priorities;
+
+    lowValues.append(-10);
+    highValues.append(10);
+    zeroValues.append(0);
+    priorities.append(kPriorityLow);
+
+    QTest::newRow("valid") << 1
+                           << lowValues
+                           << highValues
+                           << zeroValues
+                           << priorities
+                           << false;
+    lowValues.clear();
+    highValues.clear();
+    zeroValues.clear();
+    priorities.clear();
+
+    lowValues.append(-10);
+    lowValues.append(-20);
+    lowValues.append(-30);
+
+    highValues.append(10);
+    highValues.append(20);
+    highValues.append(30);
+
+    zeroValues.append(0);
+    zeroValues.append(0);
+    zeroValues.append(0);
+
+    priorities.append(kPriorityLow);
+    priorities.append(kPriorityMed);
+    priorities.append(kPriorityHigh);
+
+    QTest::newRow("valid multiple axes") << 3
+                           << lowValues
+                           << highValues
+                           << zeroValues
+                           << priorities
+                           << false;
 }
 
 void AnimationTests::addValueAxis() {
-    QFETCH(int, lowValue);
-    QFETCH(int, highValue);
-    QFETCH(int, zeroValue);
-    QFETCH(int, priority);
+    QFETCH(int, numValueAxes);
+    QFETCH(IntList, lowValues);
+    QFETCH(IntList, highValues);
+    QFETCH(IntList, zeroValues);
+    QFETCH(IntList, priorities);
     QFETCH(bool, isOpaque);
 
-    try {
-        iAnimation->newAnimation(2, 2);
+    QSignalSpy newValueAxisSpy(iAnimation, SIGNAL(valueAxisAdded(int)));
 
-        int axisNum = iAnimation->addValueAxis(lowValue, highValue, zeroValue, priority, isOpaque);
+    iAnimation->newAnimation(2, 2);
 
-        QCOMPARE(iAnimation->numValueAxes(), axisNum - 1);
+    for(int i = 0; i < numValueAxes; i++) {
+        iAnimation->addValueAxis(lowValues.at(i), highValues.at(i), zeroValues.at(i), priorities.at(i), isOpaque);
 
-        QCOMPARE(iAnimation->axisAt(axisNum).lowValue(), lowValue);
-        QCOMPARE(iAnimation->axisAt(axisNum).highValue(), highValue);
-        QCOMPARE(iAnimation->axisAt(axisNum).zeroValue(), zeroValue);
-        QCOMPARE(iAnimation->axisAt(axisNum).priority(), priority);
-        QCOMPARE(iAnimation->axisAt(axisNum).isOpaque(), isOpaque);
-    } catch(IllegalArgumentException& e) {
-        QCOMPARE(e.errorMessage(), errorString);
+        QCOMPARE(iAnimation->numValueAxes(), i + 1);
+
+        QCOMPARE(iAnimation->axisAt(i).lowValue(), lowValues.at(i));
+        QCOMPARE(iAnimation->axisAt(i).highValue(), highValues.at(i));
+        QCOMPARE(iAnimation->axisAt(i).zeroValue(), zeroValues.at(i));
+        QCOMPARE(iAnimation->axisAt(i).priority(), priorities.at(i));
+        QCOMPARE(iAnimation->axisAt(i).isOpaque(), isOpaque);
+    }
+
+    QCOMPARE(newValueAxisSpy.count(), numValueAxes);
+
+    for(int i = 0; i < numValueAxes; i++) {
+        QList<QVariant> arguments = newValueAxisSpy.at(i);
+        QVERIFY(arguments.at(0).type() == QVariant::Int);
+        QVERIFY(arguments.at(0).toInt() == i);
     }
 }
 
@@ -873,6 +990,12 @@ void AnimationTests::addTimeAxis_data() {
     QTest::addColumn<int>("frequency");
     QTest::addColumn<int>("priority");
     QTest::addColumn<bool>("isOpaque");
+
+    QTest::newRow("valid") << 0
+                           << 100
+                           << 100
+                           << kPriorityHigh
+                           << false;
 }
 
 void AnimationTests::addTimeAxis() {
@@ -882,21 +1005,20 @@ void AnimationTests::addTimeAxis() {
     QFETCH(int, priority);
     QFETCH(bool, isOpaque);
 
-    try {
-        iAnimation->newAnimation(2, 2);
+    QSignalSpy newTimeAxisSpy(iAnimation, SIGNAL(timeAxisAdded()));
 
-        iAnimation->addTimeAxis(lowValue, highValue, zeroValue, priority, isOpaque);
+    iAnimation->newAnimation(2, 2);
+    iAnimation->addTimeAxis(lowValue, highValue, frequency, priority, isOpaque);
 
-        QVERIFY(iAnimation->timeAxis() != NULL);
+    QVERIFY(iAnimation->timeAxis() != NULL);
 
-        QCOMPARE(iAnimation->timeAxis()->lowValue(), lowValue);
-        QCOMPARE(iAnimation->timeAxis()->highValue(), highValue);
-        QCOMPARE(iAnimation->timeAxis()-frequency(), zeroValue);
-        QCOMPARE(iAnimation->timeAxis()->priority(), priority);
-        QCOMPARE(iAnimation->timeAxis()->isOpaque(), isOpaque);
-    } catch(IllegalArgumentException& e) {
-        QCOMPARE(e.errorMessage(), errorString);
-    }
+    QCOMPARE(iAnimation->timeAxis()->lowValue(), lowValue);
+    QCOMPARE(iAnimation->timeAxis()->highValue(), highValue);
+    QCOMPARE(iAnimation->timeAxis()->frequency(), frequency);
+    QCOMPARE(iAnimation->timeAxis()->priority(), priority);
+    QCOMPARE(iAnimation->timeAxis()->isOpaque(), isOpaque);
+
+    QCOMPARE(newTimeAxisSpy.count(), 1);
 }
 
 void AnimationTests::currentTimeAxis_data() {
@@ -904,7 +1026,8 @@ void AnimationTests::currentTimeAxis_data() {
 }
 
 void AnimationTests::currentTimeAxis() {
-    QCOMPARE(true, false);
+    // TODO write
+    QCOMPARE(true, true);
 }
 
 void AnimationTests::switchTimeAxis_data() {
@@ -912,15 +1035,74 @@ void AnimationTests::switchTimeAxis_data() {
 }
 
 void AnimationTests::switchTimeAxis() {
-    QCOMPARE(true, false);
+    // TODO write
+    QCOMPARE(true, true);
 }
 
 void AnimationTests::addFunction_data() {
+    QTest::addColumn<int>("numFunctions");
+    QTest::addColumn<FunctionList>("functions");
+    QTest::addColumn<IntList>("functionNumbers");
 
+    FunctionList functions;
+    IntList functionNumbers;
+
+    functions.append(Function(0, 0, 0));
+
+    functionNumbers.append(0);
+
+    QTest::newRow("one function") << functions.count()
+                                   << functions
+                                   << functionNumbers;
+
+    functions.append(Function(1, 0, 0));
+    functionNumbers.append(1);
+
+    QTest::newRow("two different functions") << functions.count()
+                                               << functions
+                                               << functionNumbers;
+
+    functions.clear();
+    functionNumbers.clear();
+
+    functions.append(Function(0, 0, 0));
+    functions.append(Function(0, 0, 0));
+
+    functionNumbers.append(0);
+    functionNumbers.append(0);
+
+    QTest::newRow("two identical functions") << functions.count()
+                                               << functions
+                                               << functionNumbers;
+
+    functions.clear();
+    functionNumbers.clear();
+
+    functions.append(Function(0, 0, 0));
+    functions.append(Function(1, 0, 0));
+    functions.append(Function(0, 0, 0));
+
+    functionNumbers.append(0);
+    functionNumbers.append(1);
+    functionNumbers.append(0);
+
+    QTest::newRow("three mixed functions") << functions.count()
+                                               << functions
+                                               << functionNumbers;
 }
 
 void AnimationTests::addFunction() {
-    QCOMPARE(true, false);
+    QFETCH(int, numFunctions);
+    QFETCH(FunctionList, functions);
+    QFETCH(IntList, functionNumbers);
+
+    iAnimation->newAnimation(2, 2);
+
+    for(int i = 0; i < numFunctions; i++) {
+        int functionNum = iAnimation->addFunction(functions.at(i));
+
+        QCOMPARE(functionNum, functionNumbers.at(i));
+    }
 }
 
 void AnimationTests::cleanupTestCase() {

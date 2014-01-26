@@ -115,6 +115,8 @@ void Animation::newAnimation(int numRows,
         iLeds->clearPositions();
     }
 
+    iClipboardLeds->clearPositions();
+
     int ledNum = INITIAL_LED;
 
     iLeds->clearMissing();
@@ -139,27 +141,29 @@ void Animation::newAnimation(int numRows,
 }
 
 void Animation::addTimeAxis(int lowValue,
-                 int highValue,
-                 int speed,
-                  int priority,
-                  bool isOpaque) {
+                            int highValue,
+                            int frequency,
+                            int priority,
+                            bool isOpaque) {
+
     iTimeAxis = new TimeAxis(this,
                              *this,
                              lowValue,
                              highValue,
-                             speed,
+                             frequency,
                              priority,
                              isOpaque);
 
     emit timeAxisAdded();
 }
 
-int Animation::addValueAxis(int lowValue,
-                 int highValue,
-                 int zeroValue,
-                  int priority,
-                  bool isOpaque) {
+void Animation::addValueAxis(int lowValue,
+                            int highValue,
+                            int zeroValue,
+                            int priority,
+                            bool isOpaque) {
     int axisNumber = iAxes.count();
+
     ValueAxis* axis = new ValueAxis(this,
                                     *this,
                                     axisNumber,
@@ -172,8 +176,6 @@ int Animation::addValueAxis(int lowValue,
     iAxes.append(axis);
 
     emit valueAxisAdded(axisNumber);
-
-    return axisNumber;
 }
 
 ValueAxis &Animation::axisAt(int number) const {

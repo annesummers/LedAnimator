@@ -21,18 +21,6 @@ TimeAxis::TimeAxis(QObject *parent,
     iPlayTimer(NULL) {
 }
 
-void TimeAxis::setLowValue(const int lowValue) {
-    iLowValue = lowValue;
-
-    emit lowValueChanged(lowValue);
-}
-
-void TimeAxis::setHighValue(const int highValue) {
-    iHighValue = highValue;
-
-    emit highValueChanged(highValue);
-}
-
 void TimeAxis::play(bool repeat) {
     if(!isPlaying()) {
         iRepeat = repeat;

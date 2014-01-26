@@ -37,6 +37,12 @@ private slots:
     void constructor_data();
     void constructor();
 
+    void copyConstructor_data();
+    void copyConstructor();
+
+    void assigment_data();
+    void assigment();
+
     void setCurrentValue_data();
     void setCurrentValue();
 
@@ -66,9 +72,6 @@ private slots:
 
     void copyTimeAxisFrame_data();
     void copyTimeAxisFrame();
-
-    void assigment_data();
-    void assigment();
 
     void currentColour_data();
     void currentColour();

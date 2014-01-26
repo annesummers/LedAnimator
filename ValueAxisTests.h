@@ -4,12 +4,12 @@
 #include <QtTest/QtTest>
 
 #include "AxisTests.h"
+#include "ValueAxis.h"
 
 class Engine;
 
 namespace AnimatorModel {
 class Animation;
-class ValueAxis;
 }
 
 using namespace AnimatorModel;
@@ -24,9 +24,17 @@ public:
 
 private slots:
     void initTestCase();
+
+    void init();
+    void cleanup();
+
+    void constructor_data();
+    void constructor();
+
     void cleanupTestCase();
 
-private :
+private:
+    inline ValueAxis* valueAxis() { return static_cast<ValueAxis*>(iAxis); }
 };
 
 }

@@ -18,6 +18,10 @@ typedef QList<Position> PositionList;
 
 Q_DECLARE_METATYPE ( PositionList )
 
+typedef QList<Function> FunctionList;
+
+Q_DECLARE_METATYPE ( FunctionList )
+
 const QString TEST_MIME_TYPE = "ledanimatortests/x-testitemdata";
 
 #endif // TESTCONSTANTS_H

@@ -15,6 +15,5 @@ ValueAxis::ValueAxis(QObject *parent,
                      int priority,
                      bool isOpaque) :
       Axis(parent, animation, lowValue, highValue, zeroValue, priority, isOpaque),
-      iNumber(number) {
-  }
+      iNumber(number) {}
 

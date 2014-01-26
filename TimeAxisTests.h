@@ -25,20 +25,23 @@ public:
 private slots:
     void initTestCase();
 
+    void init();
+    void cleanup();
+
+    void constructor_data();
+    void constructor();
+
     void play();
     void stop();
 
-    void setRepeating_data();
-    void setRepeating();
+    void setBackgroundColour_data();
+    void setBackgroundColour();
 
-    void setSpeed_data();
-    void setSpeed();
+    void setFrequency_data();
+    void setFrequency();
 
-    void setLowValue_data();
-    void setLowValue();
-
-    void setHighValue_data();
-    void setHighValue();
+    void nextFrame_data();
+    void nextFrame();
 
     void cleanupTestCase();
 

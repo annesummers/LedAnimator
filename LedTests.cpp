@@ -10,6 +10,7 @@
 
 #include "Animation.h"
 #include "Led.h"
+#include "LinkedValue.h"
 
 #include "exceptions.h"
 #include "constants.h"
@@ -28,6 +29,7 @@ void LedTests::initTestCase() {
 
 void LedTests::init() {
     iAnimation = new Animation(*iEngine);
+    iAnimation->newAnimation(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS);
 }
 
 void LedTests::cleanup() {
@@ -36,40 +38,72 @@ void LedTests::cleanup() {
 
 void LedTests::constructor_data() {
     QTest::addColumn<Position>("position");
+    QTest::addColumn<int>("number");
     QTest::addColumn<QString>("error");
 
     QTest::newRow("negative row") << Position(INVALID, 1)
-                                  << "Rows argument is invalid";
+                                  << 1
+                                  << "Led:led : rows argument is invalid";
 
     QTest::newRow("negative column") << Position(1, INVALID)
-                                     << "Columns argument is invalid";
+                                     << 1
+                                     << "Led:led : columns argument is invalid";
+
+    QTest::newRow("negative column") << Position(1, 1)
+                                     << 0
+                                     << "Led:led : number is invalid";
 
     QTest::newRow("valid") << Position(1, 1)
-                             << "";
+                           << 1
+                           << "";
 }
 
 void LedTests::constructor() {
     QFETCH(Position, position);
+    QFETCH(int, number);
     QFETCH(QString, error);
 
-    Led* led = NULL;
-
     try {
-        iAnimation->newAnimation(DEFAULT_NUM_ROWS, DEFAULT_NUM_COLUMNS);
-
-        led = new Led(iAnimation,
+        Led* led = new Led(iAnimation,
                       *iAnimation,
-                      INITIAL_LED,
+                      number,
                       position,
                       NULL);
 
         QCOMPARE(led->position(), position);
+        QCOMPARE(led->number(), number);
 
     } catch(IllegalArgumentException& e){
         QCOMPARE(e.errorMessage(), error);
 
         return;
     }
+}
+
+void LedTests::copyConstructor_data() {
+    QTest::addColumn<Position>("position");
+    QTest::addColumn<int>("number");
+
+    QTest::newRow("valid") << Position(1, 1)
+                           << 1;
+}
+
+void LedTests::copyConstructor() {
+    QFETCH(Position, position);
+    QFETCH(int, number);
+
+    Led* led = new Led(iAnimation,
+                  *iAnimation,
+                  number,
+                  position,
+                  NULL);
+
+    Led* copyLed = new Led(*led);
+
+    QCOMPARE(copyLed->position(), led->position());
+    QCOMPARE(copyLed->number(), led->number());
+
+    // TODO add axis tests
 }
 
 void LedTests::setCurrentValue_data() {
@@ -83,15 +117,81 @@ void LedTests::addTimeAxis_data() {
 }
 
 void LedTests::addTimeAxis() {
-    QCOMPARE(true, true);
+    iAnimation->addTimeAxis(0, 100, 100, kPriorityLow, false);
+
+    Led* led = new Led(iAnimation,
+                       *iAnimation,
+                       1,
+                       Position(0,0),
+                       NULL);
+
+    led->addTimeAxis();
+
+    QVERIFY(led->timeAxis() != NULL);
 }
 
 void LedTests::addValueAxis_data() {
+    QTest::addColumn<int>("numValueAxes");
+    QTest::addColumn<bool>("addTimeAxis");
+    QTest::addColumn<int>("currentFrameNum");
 
+    QTest::newRow("one axis no time axis") << 1
+                            << false
+                            << 0;
+
+    QTest::newRow("three axes no time axis") << 3
+                           << false
+                           << 0;
+
+    QTest::newRow("one axis time axis") << 1
+                           << true
+                           << 1;
+
+    QTest::newRow("three axis time axis") << 3
+                           << true
+                           << 1;
 }
 
 void LedTests::addValueAxis() {
-    QCOMPARE(true, true);
+    QFETCH(int, numValueAxes);
+    QFETCH(bool, addTimeAxis);
+    QFETCH(int, currentFrameNum);
+
+    if(addTimeAxis) {
+        iAnimation->addTimeAxis(0, 100, 100, kPriorityLow, false);
+        //iAnimation->timeAxis()->setCurrentFrame(currentFrameNum);
+    }
+
+    for(int i = 0; i < numValueAxes; i++) {
+        iAnimation->addValueAxis(-10, 10, 0, kPriorityLow, false);
+    }
+
+    Led* led = new Led(iAnimation,
+                       *iAnimation,
+                       1,
+                       Position(0,0),
+                       NULL);
+
+    if(addTimeAxis) {
+        led->addTimeAxis();
+    }
+
+    for(int i = 0; i < numValueAxes; i++) {
+        led->addValueAxis(i);
+
+        QCOMPARE(led->axisAt(i).axis().lowValue(), iAnimation->axisAt(i).lowValue());
+        QCOMPARE(led->axisAt(i).axis().highValue(), iAnimation->axisAt(i).highValue());
+        QCOMPARE(led->axisAt(i).axis().zeroValue(), iAnimation->axisAt(i).zeroValue());
+        QCOMPARE(led->axisAt(i).axis().priority(), iAnimation->axisAt(i).priority());
+        QCOMPARE(led->axisAt(i).axis().isOpaque(), iAnimation->axisAt(i).isOpaque());
+
+        if(addTimeAxis) {
+            ValueAxisData& axis = led->axisAt(i);
+
+            QCOMPARE(static_cast<const LinkedValue&>(axis.frameAt(axis.axis().zeroValue()).value()).colour(),
+                    static_cast<const ColourValue&>(led->timeAxis()->currentFrame().value()).colour());
+        }
+    }
 }
 
 void LedTests::move_data() {
@@ -163,6 +263,13 @@ void LedTests::currentColour_data() {
 }
 
 void LedTests::currentColour() {
+    QCOMPARE(true, true);
+}
+
+void LedTests::currentFrameChanged_data() {
+}
+
+void LedTests::currentFrameChanged(){
     QCOMPARE(true, true);
 }
 

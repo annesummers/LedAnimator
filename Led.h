@@ -39,7 +39,7 @@ public:
     inline TimeAxisData* timeAxis() const { return iTimeAxisData; }
     ValueAxisData& axisAt(int axisNum) const;
 
-    void setCurrentValue(FrameValue& value);
+    void setTimeAxisCurrentValue(FrameValue& value);
 
     inline void setNumber(int newNumber) { Selectable::setNumber(newNumber); emit ledUpdated(); }
 

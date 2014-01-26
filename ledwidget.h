@@ -23,7 +23,7 @@ public:
 
     inline Led &led() const { return static_cast<Led&>(iItem); }
 
-    void setValue(FrameValue &value) { led().setCurrentValue(value); }
+    void setValue(FrameValue &value) { led().setTimeAxisCurrentValue(value); }
     const QColor colour() const {return led().currentColour(); }
 
 private slots:

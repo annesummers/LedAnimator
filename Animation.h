@@ -73,11 +73,11 @@ public:
 
     void addTimeAxis(int lowValue,
                      int highValue,
-                     int speed,
+                     int frequency,
                      int priority,
                      bool isOpaque);
 
-    int addValueAxis(int lowValue,
+    void addValueAxis(int lowValue,
                      int highValue,
                      int zeroValue,
                      int priority,

@@ -11,6 +11,14 @@ TimeAxisTests::TimeAxisTests(QObject *parent) :
 {
 }
 
+void TimeAxisTests::init() {
+
+}
+
+void TimeAxisTests::cleanup() {
+
+}
+
 void TimeAxisTests::initTestCase() {
     iAnimation = new Animation(*(new Engine(this)));
 
@@ -43,6 +51,14 @@ void TimeAxisTests::initTestCase() {
                              positions);
 }
 
+void TimeAxisTests::constructor_data(){
+
+}
+
+void TimeAxisTests::constructor(){
+    QCOMPARE(true, true);
+}
+
 void TimeAxisTests::play() {
     iAnimation->addTimeAxis(0, 2, 1, kPriorityMed, false);
     iAxis = iAnimation->timeAxis();
@@ -63,32 +79,24 @@ void TimeAxisTests::stop() {
     QCOMPARE(timeAxis()->isPlaying(), false);
 }
 
-void TimeAxisTests::setRepeating_data() {
+void TimeAxisTests::setBackgroundColour_data() {
 
 }
-
-void TimeAxisTests::setRepeating() {
+void TimeAxisTests::setBackgroundColour() {
     QCOMPARE(true, true);
 }
 
-void TimeAxisTests::setSpeed_data() {
+void TimeAxisTests::setFrequency_data() {
 
 }
-void TimeAxisTests::setSpeed() {
+void TimeAxisTests::setFrequency() {
     QCOMPARE(true, true);
 }
 
-void TimeAxisTests::setLowValue_data() {
+void TimeAxisTests::nextFrame_data() {
 
 }
-void TimeAxisTests::setLowValue() {
-    QCOMPARE(true, true);
-}
-
-void TimeAxisTests::setHighValue_data() {
-
-}
-void TimeAxisTests::setHighValue() {
+void TimeAxisTests::nextFrame() {
     QCOMPARE(true, true);
 }
 

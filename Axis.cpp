@@ -23,8 +23,25 @@ Axis::Axis(QObject *parent,
     iOpaque(isOpaque),
     iPriority(priority) {
 
-    emit lowValueChanged(iLowValue);
-    emit highValueChanged(iHighValue);
+    if(iLowValue > iHighValue) {
+        throw IllegalArgumentException("Axis:Axis : low value is greater than high value");
+    }
+
+    if(iZeroValue < iLowValue) {
+        throw IllegalArgumentException("Axis:Axis : zero value is smaller than low value");
+    }
+
+    if(iZeroValue > iHighValue) {
+        throw IllegalArgumentException("Axis:Axis : zero value is greater than high value");
+    }
+
+    if(iPriority > kPriorityHigh) {
+        throw IllegalArgumentException("Axis:Axis : priority is greater than highest priority");
+    }
+
+    if(iPriority < kPriorityLow) {
+        throw IllegalArgumentException("Axis:Axis : priority is smaller than lowest priority");
+    }
 }
 
 int Axis::numFrames() const {
@@ -43,3 +60,24 @@ void Axis::setCurrentFrame(int frame) {
     iCurrentFrame = frame;
     emit currentFrameChanged(iCurrentFrame);
 }
+
+void Axis::setLowValue(const int lowValue) {
+    iLowValue = lowValue;
+
+    if(iZeroValue < iLowValue) {
+        throw IllegalArgumentException("Axis:setLowValue : zero value is smaller than low value");
+    }
+
+    emit lowValueChanged(iLowValue);
+}
+
+void Axis::setHighValue(const int highValue) {
+    iHighValue = highValue;
+
+    if(iZeroValue > iHighValue) {
+        throw IllegalArgumentException("Axis:setHighValue : zero value is greater than high value");
+    }
+
+    emit highValueChanged(iHighValue);
+}
+

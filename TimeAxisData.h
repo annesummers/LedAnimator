@@ -21,8 +21,6 @@ public:
                           Led &led,
                           QUndoStack *undoStack);
 
-    //void copyFrames(const AxisData &copyAxis);
-
     virtual void lowValueChanged(const int lowValue);
     virtual void highValueChanged(const int highValue);
     virtual void zeroValueChanged(const int zeroValue);

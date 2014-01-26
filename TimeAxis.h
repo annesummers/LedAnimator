@@ -20,9 +20,7 @@ public:
                       int priority,
                       bool isOpaque);
 
-    void setSpeed(const int frequency);
-    void setLowValue(const int lowValue);
-    void setHighValue(const int highValue);
+    void setFrequency(const int frequency);
 
     inline int frequency() const { return iFrequency; }
 

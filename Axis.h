@@ -30,9 +30,8 @@ public:
     inline int highValue() const { return iHighValue; }
     inline int zeroValue() const { return iZeroValue; }
 
-    //inline const void setLowValue(const int lowValue) { iLowValue = lowValue; }
-   // inline const void setHighValue(const int highValue) { iHighValue = highValue; }
-   // inline const void setZeroValue(const int zeroValue) { iZeroValue = zeroValue; }
+    void setLowValue(const int lowValue);
+    void setHighValue(const int highValue);
 
     int numFrames() const;
     inline int currentFrameNum() const { return iCurrentFrame; }

@@ -1,24 +1,26 @@
-#ifndef AXISDATATESTS_H
-#define AXISDATATESTS_H
+#ifndef VALUEAXISDATATESTS_H
+#define VALUEAXISDATATESTS_H
 
-#include <QObject>
 #include <QtTest/QtTest>
+
+#include "AxisDataTests.h"
 
 class Engine;
 
 namespace AnimatorModel {
 class Animation;
+class ValueAxisData;
 }
 
 using namespace AnimatorModel;
 
 namespace AnimatorTest {
 
-class AxisDataTests : public QObject {
+class ValueAxisDataTests : public AxisDataTests {
     Q_OBJECT
 
 public:
-    explicit AxisDataTests(QObject *parent = 0);
+    ValueAxisDataTests(QObject *parent = 0);
 
 private slots:
     void initTestCase();
@@ -29,8 +31,8 @@ private slots:
     void constructor_data();
     void constructor();
 
-    void newRange_data();
-    void newRange();
+    void setLinkedValue_data();
+    void setLinkedValue();
 
     void copyFrames_data();
     void copyFrames();
@@ -38,10 +40,9 @@ private slots:
     void cleanupTestCase();
 
 private:
-    Engine*    iEngine;
-    Animation* iAnimation;
-
+    //inline ValueAxisData* valueAxis() { return static_cast<ValueAxisData*>(iAxisData); }
 };
+
 }
 
-#endif // AXISDATATESTS_H
+#endif // VALUEAXISDATATESTS_H

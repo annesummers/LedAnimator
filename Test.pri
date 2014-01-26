@@ -9,7 +9,8 @@ SOURCES += \
     LedTests.cpp \
     AxisDataTests.cpp \
     FrameTests.cpp \
-    enginetests.cpp
+    enginetests.cpp \
+    ValueAxisDataTests.cpp
 
     HEADERS += \
     enginetests.h \
@@ -20,7 +21,8 @@ SOURCES += \
     AnimationTests.h \
     LedTests.h \
     AxisDataTests.h \
-    FrameTests.h
+    FrameTests.h \
+    ValueAxisDataTests.h
 
 
     #ledanimcodectests.h \

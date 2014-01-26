@@ -30,12 +30,16 @@ Led::Led(QObject* parent,
 
     if(!position.isValid()) {
         if(position.row() < 0) {
-            throw IllegalArgumentException("Rows argument is invalid");
+            throw IllegalArgumentException("Led:led : rows argument is invalid");
         }
 
         if(position.column() < 0) {
-            throw IllegalArgumentException("Columns argument is invalid");
+            throw IllegalArgumentException("Led:led : columns argument is invalid");
         }
+    }
+
+    if(number < INITIAL_LED) {
+        throw IllegalArgumentException("Led:led : number is invalid");
     }
 
     connect(&animation, SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxis()));
@@ -88,12 +92,12 @@ void Led::addValueAxis(int axisNumber) {
                                        *this,
                                        iUndoStack));
 
-    qDebug() << number() << "Adding axis " << axisNumber;
-
-    currentFrameChanged(iTimeAxisData->currentFrameNum());
+    if(iTimeAxisData != NULL) {
+        currentFrameChanged(iTimeAxisData->currentFrameNum());
+    }
 }
 
-void Led::setCurrentValue(FrameValue& value) {
+void Led::setTimeAxisCurrentValue(FrameValue& value) {
     iTimeAxisData->frameAt(iTimeAxisData->axis().currentFrameNum()).setValue(value);
 }
 
