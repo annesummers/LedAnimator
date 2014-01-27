@@ -173,6 +173,8 @@ void LedAnimCodec::writeValueAxisData(int axisNum) {
         AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
         totalRangeCount += axisData.numRanges();
         writeCharacter(axisData.numRanges());
+
+        ledNum++;
     }
 
     ledNum = INITIAL_LED;
@@ -186,6 +188,8 @@ void LedAnimCodec::writeValueAxisData(int axisNum) {
         AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
         writeRanges(axisData);
+
+        ledNum++;
     }
 
     if(iVerbose) {
@@ -310,6 +314,8 @@ void LedAnimCodec::readValueAxisData(int axisNum) {
         }
 
         readCharacter();
+
+        ledNum++;
     }
 
     ledNum = INITIAL_LED;
@@ -318,9 +324,11 @@ void LedAnimCodec::readValueAxisData(int axisNum) {
             ledNum++;
         }
 
-        ValueAxisData& axisData = iAnimation.ledAt(ledNum++)->axisAt(axisNum);
+        ValueAxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
         readRanges(axisData);
+
+        ledNum++;
     }
 
     for(int frame = axis->lowValue(); frame <= axis->highValue(); frame++) {
@@ -331,7 +339,7 @@ void LedAnimCodec::readValueAxisData(int axisNum) {
                 ledNum++;
             }
 
-            Led* led = iAnimation.ledAt(ledNum++);
+            Led* led = iAnimation.ledAt(ledNum);
 
             AxisData* axisData = &led->axisAt(axisNum);
 
@@ -346,6 +354,8 @@ void LedAnimCodec::readValueAxisData(int axisNum) {
                 newFrame.doSetValue(readFunction(newFrame));
                 break;
             }
+
+            ledNum++;
 
         }
     }
@@ -364,7 +374,7 @@ void LedAnimCodec::readTimeAxisData() {
                 ledNum++;
             }
 
-            Led* led = iAnimation.ledAt(ledNum++);
+            Led* led = iAnimation.ledAt(ledNum);
 
             AxisData* axisData = led->timeAxis();
             char frameType = readCharacter().unsignedCharValue();
@@ -379,7 +389,7 @@ void LedAnimCodec::readTimeAxisData() {
                 break;
             }
 
-
+            ledNum++;
         }
     }
     }
