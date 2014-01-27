@@ -104,56 +104,65 @@ void Led::setTimeAxisCurrentValue(FrameValue& value) {
 const QColor Led::currentColour() const {
     const Frame& frame = iTimeAxisData->currentFrame();
     QColor colour = frame.colour();
+    QColor backgroundColour = static_cast<TimeAxis&>(iTimeAxisData->axis()).backgroundColour();
+    int red = colour.red();
+    int green = colour.green();
+    int blue = colour.blue();
+    int bgred = backgroundColour.red();
+    int bggreen = backgroundColour.green();
+    int bgblue = backgroundColour.blue();
 
-    if(colour != static_cast<TimeAxis&>(iTimeAxisData->axis()).backgroundColour()) {
-        Function combinedFunction;
+    if(static_cast<TimeAxis&>(iTimeAxisData->axis()).usesBackgroundColour() &&
+            red == backgroundColour.red() &&
+            colour.green() == backgroundColour.green() &&
+            colour.blue() == backgroundColour.blue()) {
+        return colour;
+    }
+    Function combinedFunction;
 
-        for(int i = 0; i < iAnimation.numValueAxes(); i++) {
-            if(i < iAxesData.count()) {
-                Function function = axisAt(i).currentFrame().function();
+    for(int i = 0; i < iAnimation.numValueAxes(); i++) {
+        if(i < iAxesData.count()) {
+            Function function = axisAt(i).currentFrame().function();
 
-                if(!function.isNull()) {
-                    combinedFunction += function;
-                }
+            if(!function.isNull()) {
+                combinedFunction += function;
             }
         }
-
-        float currentRedValue = frame.colour().redF();
-        float currentGreenValue = frame.colour().greenF();
-        float currentBlueValue = frame.colour().blueF();
-
-        currentRedValue += combinedFunction.redIncrement();
-        currentGreenValue += combinedFunction.greenIncrement();
-        currentBlueValue += combinedFunction.blueIncrement();
-
-        if(currentRedValue > 1) {
-            currentRedValue = 1;
-        }
-
-        if(currentBlueValue > 1) {
-            currentBlueValue = 1;
-        }
-
-        if(currentGreenValue > 1) {
-            currentGreenValue = 1;
-        }
-
-        if(currentRedValue < 0) {
-            currentRedValue = 0;
-        }
-
-        if(currentBlueValue < 0) {
-            currentBlueValue = 0;
-        }
-
-        if(currentGreenValue < 0) {
-            currentGreenValue = 0;
-        }
-
-        colour = QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
     }
 
-    return colour;
+    float currentRedValue = frame.colour().redF();
+    float currentGreenValue = frame.colour().greenF();
+    float currentBlueValue = frame.colour().blueF();
+
+    currentRedValue += combinedFunction.redIncrement();
+    currentGreenValue += combinedFunction.greenIncrement();
+    currentBlueValue += combinedFunction.blueIncrement();
+
+    if(currentRedValue > 1) {
+        currentRedValue = 1;
+    }
+
+    if(currentBlueValue > 1) {
+        currentBlueValue = 1;
+    }
+
+    if(currentGreenValue > 1) {
+        currentGreenValue = 1;
+    }
+
+    if(currentRedValue < 0) {
+        currentRedValue = 0;
+    }
+
+    if(currentBlueValue < 0) {
+        currentBlueValue = 0;
+    }
+
+    if(currentGreenValue < 0) {
+        currentGreenValue = 0;
+    }
+
+    return QColor::fromRgbF(currentRedValue, currentGreenValue, currentBlueValue);
 }
 
 ValueAxisData &Led::axisAt(int axisNum) const {
