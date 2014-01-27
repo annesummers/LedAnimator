@@ -103,21 +103,17 @@ void Led::setTimeAxisCurrentValue(FrameValue& value) {
 
 const QColor Led::currentColour() const {
     const Frame& frame = iTimeAxisData->currentFrame();
+
     QColor colour = frame.colour();
     QColor backgroundColour = static_cast<TimeAxis&>(iTimeAxisData->axis()).backgroundColour();
-    int red = colour.red();
-    int green = colour.green();
-    int blue = colour.blue();
-    int bgred = backgroundColour.red();
-    int bggreen = backgroundColour.green();
-    int bgblue = backgroundColour.blue();
 
     if(static_cast<TimeAxis&>(iTimeAxisData->axis()).usesBackgroundColour() &&
-            red == backgroundColour.red() &&
+            colour.red() == backgroundColour.red() &&
             colour.green() == backgroundColour.green() &&
             colour.blue() == backgroundColour.blue()) {
         return colour;
     }
+
     Function combinedFunction;
 
     for(int i = 0; i < iAnimation.numValueAxes(); i++) {
