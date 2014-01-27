@@ -19,6 +19,16 @@ TimeAxis::TimeAxis(QObject *parent,
     iIsPlaying(false),
     iRepeat(false),
     iPlayTimer(NULL) {
+
+    if(iFrequency < 100) {
+        iFrequency = 100;
+    }
+
+    // this is a massive hack to get over the fact that the
+    // frequency is not being saved out properly
+
+    // a proper fix will fix the codec to use an unsigned int to
+    // store the frequency so it will not overflow
 }
 
 void TimeAxis::play(bool repeat) {

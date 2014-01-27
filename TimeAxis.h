@@ -43,7 +43,7 @@ public slots:
     void nextFrame();
 
 private:
-    const int iFrequency;
+    int iFrequency;
     QColor iBackgroundColour;
 
     bool iIsPlaying;
