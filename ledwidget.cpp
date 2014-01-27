@@ -123,8 +123,10 @@ void LedWidget::addExtraActions(QMenu* menu) {
 // events ------------------------------------
 
 void LedWidget::mouseMoveEvent(QMouseEvent *event) {
-    SelectableWidget::mouseMoveEvent(event);
-    gridWidget().setCurrentLed(led());
+    if(!colourGroup().colourDialog().isVisible()) {
+        SelectableWidget::mouseMoveEvent(event);
+        gridWidget().setCurrentLed(led());
+    }
 }
 
 void LedWidget::paintEvent(QPaintEvent *) {
