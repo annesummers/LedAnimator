@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 #include <QClipboard>
+#include <QStandardPaths>
 
 using namespace ImportExport;
 
@@ -46,10 +47,8 @@ void Engine::start() {
 
     if(animFileName == "") {
         newAnimation(false);
-    } else {
-        if(!doLoad(animFileName)) {
-            newAnimation(false);
-        }
+    } else if(!doLoad(animFileName)) {
+        newAnimation(false);
     }
 }
 
@@ -154,12 +153,36 @@ void Engine::newAnimation(bool askSaveOld) {
 
 void Engine::loadAnimation() {
     if(askSaveAnimation()) {
-        QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Open Animation", "~", "Led Animation Files (*.anim)");
+        QSettings settings;
 
-        if(fileName != "") {
-            if(!doLoad(fileName)) {
-                // TODO what if we don't find the file?
-            }
+        QVariant var = settings.value(SETTINGS_USER_OPEN_PATH, "");
+        QString loadPath = var.toString();
+
+        if(loadPath == "") {
+            loadPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+        }
+
+        QFileDialog* fileDialog = new QFileDialog(iMainWindow, "Open Animation", loadPath);
+
+        QStringList filters;
+        filters << "Led Animator files (*.laan)"
+                << "All files (*)";
+
+        fileDialog->setNameFilters(filters);
+        fileDialog->setFileMode(QFileDialog::ExistingFile);
+        fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+
+        if(fileDialog->exec() == QDialog::Accepted) {
+            QString fileName = "";
+
+            QStringList fileNames = fileDialog->selectedFiles();
+            fileName = fileNames.takeFirst();
+
+            settings.setValue(SETTINGS_USER_OPEN_PATH, fileDialog->directory().absolutePath());
+
+            delete fileDialog;
+
+            doLoad(fileName);
         }
     }
 }
@@ -175,10 +198,36 @@ void Engine::exportAnimation() {
         }
     }
 
-    QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Export Animation", "~", "Led Animation Files (*.anim)");
+    QSettings settings;
 
-    if(fileName != "") {
-        doExport(fileName);
+    QVariant var = settings.value(SETTINGS_USER_EXPORT_PATH, "");
+    QString exportPath = var.toString();
+
+    if(exportPath == "") {
+        exportPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    }
+
+    QFileDialog fileDialog(iMainWindow, "Export Animation", exportPath);
+
+    QStringList filters;
+    filters << "Led Animator export Files (*.lax)"
+            << "All files (*)";
+
+    fileDialog.setNameFilters(filters);
+    fileDialog.setFileMode(QFileDialog::AnyFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+
+    if(fileDialog.exec() == QDialog::Accepted) {
+        QString fileName = "";
+
+        QStringList fileNames = fileDialog.selectedFiles();
+        fileName = fileNames.takeFirst();
+
+        settings.setValue(SETTINGS_USER_EXPORT_PATH, fileDialog.directory().absolutePath());
+
+        if(fileName != "") {
+            doExport(fileName);
+        }
     }
 }
 
@@ -191,10 +240,37 @@ void Engine::saveAnimation() {
 }
 
 void Engine::saveAnimationAs() {
-    QString fileName = QFileDialog::getSaveFileName(iMainWindow, "Save Animation", "~", "Led Animation Files (*.anim)");
+    QSettings settings;
 
-    if(fileName != "") {
-        doSave(fileName);
+    QVariant var = settings.value(SETTINGS_USER_SAVE_PATH, "");
+    QString savePath = var.toString();
+
+    if(savePath == "") {
+        savePath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    }
+
+    QFileDialog fileDialog(iMainWindow, "Save Animation");
+
+    QStringList filters;
+    filters << "Led Animator files (*.laan)"
+            << "All files (*)";
+
+    fileDialog.setNameFilters(filters);
+    fileDialog.setFileMode(QFileDialog::AnyFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setDirectory(QDir(savePath));
+
+    if(fileDialog.exec() == QDialog::Accepted) {
+        QString fileName = "";
+
+        QStringList fileNames = fileDialog.selectedFiles();
+        fileName = fileNames.takeFirst();
+
+        settings.setValue(SETTINGS_USER_SAVE_PATH, fileDialog.directory().absolutePath());
+
+        if(fileName != "") {
+            doSave(fileName);
+        }
     }
 }
 
@@ -253,7 +329,10 @@ void Engine::addValueAxis() {
 }
 
 void Engine::importBitmap() {
-    QString fileName = QFileDialog::getOpenFileName(iMainWindow, "Import bitmap", "~", "PNG (*.png)");
+    QString fileName = QFileDialog::getOpenFileName(iMainWindow,
+                                                    "Import bitmap",
+                                                    QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
+                                                    "PNG (*.png)");
 
     if(fileName != "") {
         setupUI();
