@@ -4,7 +4,7 @@
 **                                      **
 *****************************************/
 
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 #include "Led.h"
 #include "ledwidget.h"
@@ -136,13 +136,21 @@ MainWindow::MainWindow(Engine& engine) :
 
 MainWindow::~MainWindow() {
     writeSettings();
+
+    if(iTimeAxisMainWidget != NULL) {
+        delete iTimeAxisMainWidget;
+    }
+
+    for(ValueAxisDetailsWidget* detailsWidget : iValueAxisDetailsWidgets) {
+        delete detailsWidget;
+    }
 }
 
 void MainWindow::showTimeAxisDetails() {
-    // TODO store so we can delete
-    QWidget* widget1 = new QWidget(NULL);
+    iTimeAxisMainWidget = new QWidget(NULL);
+    iTimeAxisMainWidget->setWindowTitle(QString("Time Axis"));
 
-    FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(widget1);
+    FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(iTimeAxisMainWidget);
     frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
 
     connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
@@ -151,12 +159,11 @@ void MainWindow::showTimeAxisDetails() {
 
     frameDetailsWidget->highValueChanged(iEngine.animation().timeAxis()->highValue());
 
-    TimeAxisPlayWidget* playInfoWidget = new TimeAxisPlayWidget(widget1, iEngine.animation(), *iEngine.animation().timeAxis());
+    TimeAxisPlayWidget* playInfoWidget = new TimeAxisPlayWidget(iTimeAxisMainWidget, iEngine.animation(), *iEngine.animation().timeAxis());
     playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
 
-    TimeAxisDetailsWidget* axisDetailsWidget = new TimeAxisDetailsWidget(widget1, iEngine.animation(), *iEngine.animation().timeAxis(), iEngine);
-    axisDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
-   // animationDetailsWidget->show();
+    TimeAxisDetailsWidget* axisDetailsWidget = new TimeAxisDetailsWidget(iTimeAxisMainWidget, iEngine.animation(), *iEngine.animation().timeAxis(), iEngine);
+    axisDetailsWidget->setObjectName(QString::fromUtf8("TimeAxisDetailsWidget"));
 
     QGridLayout* gridLayout = new QGridLayout();
     gridLayout->setObjectName(QString::fromUtf8("verticalLayout"));
@@ -165,7 +172,7 @@ void MainWindow::showTimeAxisDetails() {
     gridLayout->addWidget(frameDetailsWidget, 0, 1, 1, 1);
     gridLayout->addWidget(axisDetailsWidget, 1, 0, 1, 2);
 
-    QHBoxLayout* mainLayout = new QHBoxLayout(widget1);
+    QHBoxLayout* mainLayout = new QHBoxLayout(iTimeAxisMainWidget);
     mainLayout->setObjectName(QString::fromUtf8("mainLayout"));
 
     mainLayout->addLayout(gridLayout);
@@ -173,16 +180,19 @@ void MainWindow::showTimeAxisDetails() {
     connect(&iEngine.animation(), SIGNAL(ledDeleted(int, int, int)), axisDetailsWidget, SLOT(ledDeleted(int, int, int)));
     connect(&iEngine.animation(), SIGNAL(ledRenumbered(int,int,int)), axisDetailsWidget, SLOT(ledRenumbered(int, int, int)));
     connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), axisDetailsWidget, SLOT(currentFrameChanged(int)));
-   // connect(&engine.animation(), SIGNAL(numFramesChanged(int)), animationDetailsWidget, SLOT(numFramesChanged(int)));
+
    // connect(&engine.animation(), SIGNAL(framesInserted(int,int)), animationDetailsWidget, SLOT(framesInserted(int, int)));
 
-    widget1->show();
+    iTimeAxisMainWidget->show();
 }
 
 void MainWindow::showValueAxisDetails(int axisNumber) {
-    // TODO store so we can delete
     ValueAxisDetailsWidget* axisDetailsWidget = new ValueAxisDetailsWidget(NULL, iEngine.animation(), iEngine.animation().axisAt(axisNumber), iEngine);
+
+    iValueAxisDetailsWidgets.append(axisDetailsWidget);
+
     axisDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
+    axisDetailsWidget->setWindowTitle(QString("Value Axis %1").arg(axisNumber));
     axisDetailsWidget->show();
 
     connect(&iEngine.animation(), SIGNAL(ledDeleted(int, int, int)), axisDetailsWidget, SLOT(ledDeleted(int, int, int)));

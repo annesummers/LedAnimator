@@ -17,6 +17,7 @@ class Engine;
 namespace AnimatorUi {
 
 class SelectableGroupGroupWidget;
+class ValueAxisDetailsWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT    
@@ -51,6 +52,9 @@ private:
 
     QAction*        iAddTimeAxisAction;
     QAction*        iAddValueAxisAction;
+
+    QWidget*                        iTimeAxisMainWidget;
+    QList<ValueAxisDetailsWidget*>  iValueAxisDetailsWidgets;
 
     QUndoStack*     iUndoStack;
 };
