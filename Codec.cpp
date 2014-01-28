@@ -95,12 +95,12 @@ void LedAnimCodec::writeHeader() {
 }
 
 void LedAnimCodec::readHeader() {
-
+/*
      if (readCharacter().unsignedCharValue() != HEADER_BYTE) {
          throw new InvalidAnimationException("No header byte");
      }
-
-    /*if(!isAnimatorFile()) {
+*/
+    if(!isAnimatorFile()) {
         throw InvalidFileException("The file is not a valid Led Animator file");
     }
 
@@ -115,7 +115,7 @@ void LedAnimCodec::readHeader() {
     if(fileVersionHigh < VERSION_HIGH ||
        fileVersionHigh == VERSION_HIGH && fileVersionLow > VERSION_LOW) {
         throw InvalidFileException("The file version is too low");
-    }*/
+    }
 }
 
 void LedAnimCodec::readAnimation() {
