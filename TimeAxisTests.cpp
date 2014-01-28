@@ -86,10 +86,10 @@ void TimeAxisTests::setBackgroundColour() {
     QCOMPARE(true, true);
 }
 
-void TimeAxisTests::setFrequency_data() {
+void TimeAxisTests::setFrameRate_data() {
 
 }
-void TimeAxisTests::setFrequency() {
+void TimeAxisTests::setFrameRate() {
     QCOMPARE(true, true);
 }
 

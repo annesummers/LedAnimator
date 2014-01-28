@@ -138,7 +138,7 @@ void LedAnimCodec::writeAxis(int axisNum) {
 
         writeCharacter(axis->lowValue());
         writeCharacter(axis->highValue());
-        writeCharacter(iAnimation.timeAxis()->frequency());
+        writeCharacter(iAnimation.timeAxis()->frameRate());
         writeCharacter(iAnimation.timeAxis()->usesBackgroundColour());
         if(iAnimation.timeAxis()->usesBackgroundColour()) {
             writeColour(iAnimation.timeAxis()->backgroundColour());
@@ -187,6 +187,11 @@ void LedAnimCodec::writeValueAxisData(int axisNum) {
 
         AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
+        if(ledNum == 61) {
+            qDebug() << 61;
+        }
+
+        //axisData.calculateRanges();
         writeRanges(axisData);
 
         ledNum++;
@@ -286,9 +291,9 @@ void LedAnimCodec::readAxis(int axisNum) {
     if(axisNum == kTimeAxisNum) {
         int lowValue = readCharacter().intValue();
         int highValue = readCharacter().intValue();
-        int speed = readCharacter().intValue();
+        int frameRate = readCharacter().intValue();
 
-        iAnimation.addTimeAxis(lowValue, highValue, speed, priority, opaque);
+        iAnimation.addTimeAxis(lowValue, highValue, frameRate, priority, opaque);
 
         if(readCharacter().boolValue()) {
             iAnimation.timeAxis()->setBackgroundColour(readColour());

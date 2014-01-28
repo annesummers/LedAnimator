@@ -37,8 +37,8 @@ private slots:
     void setBackgroundColour_data();
     void setBackgroundColour();
 
-    void setFrequency_data();
-    void setFrequency();
+    void setFrameRate_data();
+    void setFrameRate();
 
     void nextFrame_data();
     void nextFrame();

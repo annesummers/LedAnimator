@@ -142,7 +142,7 @@ void Animation::newAnimation(int numRows,
 
 void Animation::addTimeAxis(int lowValue,
                             int highValue,
-                            int frequency,
+                            int frameRate,
                             int priority,
                             bool isOpaque) {
 
@@ -150,7 +150,7 @@ void Animation::addTimeAxis(int lowValue,
                              *this,
                              lowValue,
                              highValue,
-                             frequency,
+                             frameRate,
                              priority,
                              isOpaque);
 

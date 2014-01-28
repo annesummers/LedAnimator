@@ -20,14 +20,14 @@ public:
     ~NewTimeAxisDialog();
 
     int iNumFrames;
-    int iSpeed;
+    int iFrameRate;
 
     int iPriority;
     bool iOpaque;
 
 private slots:
     void on_iNumFramesSpin_valueChanged(int newValue);
-    void on_iSpeedSpin_valueChanged(int newValue);
+    void on_iFrameRateSpin_valueChanged(int newValue);
 
 private:
     Ui::NewTimeAxisDialog *ui;

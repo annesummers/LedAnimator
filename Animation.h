@@ -73,7 +73,7 @@ public:
 
     void addTimeAxis(int lowValue,
                      int highValue,
-                     int frequency,
+                     int frameRate,
                      int priority,
                      bool isOpaque);
 

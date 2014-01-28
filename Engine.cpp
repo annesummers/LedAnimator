@@ -105,6 +105,10 @@ bool Engine::doLoad(QString fileName) {
 
         QSettings settings;
         settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+
+        //fileName = fileName.right(fileName.size() - fileName.lastIndexOf("/") - 1);
+
+        iMainWindow->setWindowTitle(fileName);
         iMainWindow->show();
 
         return true;
@@ -311,7 +315,7 @@ void Engine::addTimeAxis() {
     if(newTimeAxisDialog.exec() == QDialog::Accepted) {
         iAnimation->addTimeAxis(0,
                                 newTimeAxisDialog.iNumFrames - 1,
-                                newTimeAxisDialog.iSpeed,
+                                newTimeAxisDialog.iFrameRate,
                                 newTimeAxisDialog.iPriority,
                                 newTimeAxisDialog.iOpaque);
     }

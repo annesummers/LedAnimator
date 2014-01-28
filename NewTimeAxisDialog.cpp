@@ -22,6 +22,6 @@ void NewTimeAxisDialog::on_iNumFramesSpin_valueChanged(int newValue) {
     iNumFrames = newValue;
 }
 
-void NewTimeAxisDialog::on_iSpeedSpin_valueChanged(int newValue) {
-    iSpeed = newValue;
+void NewTimeAxisDialog::on_iFrameRateSpin_valueChanged(int newValue) {
+    iFrameRate = newValue;
 }

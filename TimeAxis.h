@@ -16,13 +16,13 @@ public:
                       Animation &animation,
                       int lowValue,
                       int highValue,
-                      int frequency,
+                      int frameRate,
                       int priority,
                       bool isOpaque);
 
-    void setFrequency(const int frequency);
+    void setframeRate(const int frequency);
 
-    inline int frequency() const { return iFrequency; }
+    inline int frameRate() const { return iFrameRate; }
 
     inline bool usesBackgroundColour() const { return iBackgroundColour.isValid(); }
     inline const QColor backgroundColour() const { return iBackgroundColour; }
@@ -43,7 +43,7 @@ public slots:
     void nextFrame();
 
 private:
-    int iFrequency;
+    int iFrameRate;
     QColor iBackgroundColour;
 
     bool iIsPlaying;

@@ -987,7 +987,7 @@ void AnimationTests::addValueAxis() {
 void AnimationTests::addTimeAxis_data() {
     QTest::addColumn<int>("lowValue");
     QTest::addColumn<int>("highValue");
-    QTest::addColumn<int>("frequency");
+    QTest::addColumn<int>("frameRate");
     QTest::addColumn<int>("priority");
     QTest::addColumn<bool>("isOpaque");
 
@@ -1001,20 +1001,20 @@ void AnimationTests::addTimeAxis_data() {
 void AnimationTests::addTimeAxis() {
     QFETCH(int, lowValue);
     QFETCH(int, highValue);
-    QFETCH(int, frequency);
+    QFETCH(int, frameRate);
     QFETCH(int, priority);
     QFETCH(bool, isOpaque);
 
     QSignalSpy newTimeAxisSpy(iAnimation, SIGNAL(timeAxisAdded()));
 
     iAnimation->newAnimation(2, 2);
-    iAnimation->addTimeAxis(lowValue, highValue, frequency, priority, isOpaque);
+    iAnimation->addTimeAxis(lowValue, highValue, frameRate, priority, isOpaque);
 
     QVERIFY(iAnimation->timeAxis() != NULL);
 
     QCOMPARE(iAnimation->timeAxis()->lowValue(), lowValue);
     QCOMPARE(iAnimation->timeAxis()->highValue(), highValue);
-    QCOMPARE(iAnimation->timeAxis()->frequency(), frequency);
+    QCOMPARE(iAnimation->timeAxis()->frameRate(), frameRate);
     QCOMPARE(iAnimation->timeAxis()->priority(), priority);
     QCOMPARE(iAnimation->timeAxis()->isOpaque(), isOpaque);
 

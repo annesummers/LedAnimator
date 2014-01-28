@@ -9,7 +9,7 @@
 
 #include <QString>
 
-const int DEFAULT_FRAME_FREQUENCY = 500;
+const int DEFAULT_FRAME_RATE = 500;
 const int DEFAULT_NUM_ROWS = 4;
 const int DEFAULT_NUM_COLUMNS = 4;
 const int DEFAULT_NUM_FRAMES = 100;
