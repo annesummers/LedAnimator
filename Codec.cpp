@@ -56,7 +56,7 @@ void LedAnimCodec::writeAnimation(bool withPositions) {
         iVerbose = true;
     }
 
-    writeControlCharacter(HEADER_BYTE);
+    writeHeader();
 
     int numLeds = iAnimation.numLeds();
     char numLedsHigh = numLeds;
@@ -86,11 +86,39 @@ void LedAnimCodec::writeAnimation(bool withPositions) {
     writeControlCharacter(TERMINATING_BYTE);
 }
 
-void LedAnimCodec::readAnimation() {
-    if (readCharacter().unsignedCharValue() != HEADER_BYTE) {
-        throw new InvalidAnimationException("No header byte");
+void LedAnimCodec::writeHeader() {
+    QString header = "LAAN";
+
+    writeString(header.toStdString().c_str());
+    writeCharacter(VERSION_HIGH);
+    writeCharacter(VERSION_LOW);
+}
+
+void LedAnimCodec::readHeader() {
+
+     if (readCharacter().unsignedCharValue() != HEADER_BYTE) {
+         throw new InvalidAnimationException("No header byte");
+     }
+
+    /*if(!isAnimatorFile()) {
+        throw InvalidFileException("The file is not a valid Led Animator file");
     }
 
+    unsigned char fileVersionHigh = readCharacter().unsignedCharValue();
+    unsigned char fileVersionLow = readCharacter().unsignedCharValue();
+
+    if(fileVersionHigh > VERSION_HIGH ||
+       fileVersionHigh == VERSION_HIGH && fileVersionLow < VERSION_LOW) {
+        throw InvalidFileException("The file version is too low");
+    }
+
+    if(fileVersionHigh < VERSION_HIGH ||
+       fileVersionHigh == VERSION_HIGH && fileVersionLow > VERSION_LOW) {
+        throw InvalidFileException("The file version is too low");
+    }*/
+}
+
+void LedAnimCodec::readAnimation() {
     unsigned char numLedsHigh = readCharacter().unsignedCharValue();
     unsigned char numLedsLow = readCharacter().unsignedCharValue();
 

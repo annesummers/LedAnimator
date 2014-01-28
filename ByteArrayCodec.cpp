@@ -48,26 +48,49 @@ const AnimChar LedAnimByteArrayCodec::readControlCharacter() const {
 }
 
 const AnimChar LedAnimByteArrayCodec::readCharacter() const {
-    //if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
-    //    AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
-    //    iPosition = iPosition + 2;
-    //    return character;
-    //} else {
+#ifdef CODEC_USE_ESCAPE_CHARS
+    if(iByteArray.at(iPosition) == ESCAPE_BYTE) {
+        AnimChar character(iByteArray.at(iPosition+1) ^ XOR_BYTE);
+        iPosition = iPosition + 2;
+        return character;
+    } else {
         return AnimChar(iByteArray.at(iPosition++));
-   // }
+    }
+#else
+    return AnimChar(iByteArray.at(iPosition++));
+#endif
 }
 
 void LedAnimByteArrayCodec::writeCharacter(AnimChar character) {
     char value = character.unsignedCharValue();
 
-    //if(value == TERMINATING_BYTE ||
-    //   value == ESCAPE_BYTE ||
-    //   value == HEADER_BYTE ) {
-    //    iByteArray.append(ESCAPE_BYTE);
-    //    iByteArray.append(value ^ XOR_BYTE);
-   // } else {
+#ifdef CODEC_USE_ESCAPE_CHARS
+    if(value == TERMINATING_BYTE ||
+       value == ESCAPE_BYTE ||
+       value == HEADER_BYTE ) {
+        iByteArray.append(ESCAPE_BYTE);
+        iByteArray.append(value ^ XOR_BYTE);
+    } else {
         iByteArray.append(value);
-  //  }
+    }
+#else
+    iByteArray.append(value);
+#endif
+}
+
+bool LedAnimByteArrayCodec::isAnimatorFile() const {
+    QString header;
+
+    header.append(readCharacter().unsignedCharValue());
+    header.append(readCharacter().unsignedCharValue());
+    header.append(readCharacter().unsignedCharValue());
+    header.append(readCharacter().unsignedCharValue());
+
+    return header == headerString();
+}
+
+void LedAnimByteArrayCodec::writeString(QString string) {
+    iByteArray.append(string);
 }
 
 void LedAnimByteArrayCodec::writeControlCharacter(AnimChar character) {
@@ -264,7 +287,6 @@ void LedAnimSimpleByteArrayCodec::writeColour(QColor colour) {
 const QColor LedAnimSimpleByteArrayCodec::readColour() const {
     return QColor();
 }
-
 void LedAnimSimpleByteArrayCodec::writeFunction(Frame& frame) {
     const FunctionValue& value = static_cast<const FunctionValue&>(frame.value());
 

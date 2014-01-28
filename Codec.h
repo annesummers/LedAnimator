@@ -58,20 +58,28 @@ public:
     explicit LedAnimCodec(Animation &animation);
 
     void writeAnimation(bool withPositions);
+
+    void readHeader();
     void readAnimation();
 
 protected:
     virtual const AnimChar readCharacter() const = 0;
     virtual void writeCharacter(AnimChar character) = 0;
 
+    virtual void writeString(QString string) = 0;
+    virtual bool isAnimatorFile() const = 0;
+
     virtual void writeControlCharacter(AnimChar character) = 0;
     virtual const AnimChar readControlCharacter() const = 0;
 
     virtual const QByteArray&  asByteArray() const = 0;
     virtual const QString     asString() const = 0;
+    virtual const QString  headerString() const = 0;
 
     virtual void writePositionData() { }
     virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); QList<int> positions; return positions; }
+
+    void writeHeader();
 
     void writeTimeAxisData();
     void readTimeAxisData();

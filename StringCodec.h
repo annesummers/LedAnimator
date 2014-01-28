@@ -16,15 +16,18 @@ public:
 
 protected:
     const AnimChar readCharacter() const;
+
     void writeCharacter(AnimChar character);
+    virtual void writeString(QString string);
+
+    inline const QString headerString() const { return "LAEX"; }
+
+    bool isAnimatorFile() const;
 
     void writeControlCharacter(AnimChar character);
     const AnimChar readControlCharacter() const { return AnimChar(); }
 
     const QByteArray &asByteArray() const;
-
-    //void writeAxisData(int axisNum);
-    //void readAxisData(int iAxisNum);
 
     virtual void writeColour(Frame& frame);
     virtual void writeColour(QColor colour);

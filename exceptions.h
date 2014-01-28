@@ -93,6 +93,14 @@ public:
     inline NotImplementedException(QString errorMessage) : AnimatorException (errorMessage) {}
 
 };
+
+class InvalidFileException : public AnimatorException {
+
+public:
+    inline InvalidFileException(QString errorMessage) : AnimatorException (errorMessage) {}
+
+};
+
 }
 
 #endif // EXCEPTIONS_H

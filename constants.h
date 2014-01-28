@@ -14,6 +14,9 @@ const int DEFAULT_NUM_ROWS = 4;
 const int DEFAULT_NUM_COLUMNS = 4;
 const int DEFAULT_NUM_FRAMES = 100;
 
+const int VERSION_HIGH = 0;
+const int VERSION_LOW = 1;
+
 const int MAX_ROWS = 250;
 const int MAX_COLUMNS = 250;
 const int MAX_FRAMES = 999;

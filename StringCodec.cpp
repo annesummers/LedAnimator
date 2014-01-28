@@ -35,6 +35,14 @@ void LedAnimStringCodec::writeCharacter(AnimChar character) {
     }
 }
 
+void LedAnimStringCodec::writeString(QString string) {
+    iString.append(string);
+}
+
+bool LedAnimStringCodec::isAnimatorFile() const {
+    return true;
+}
+
 void LedAnimStringCodec::writeControlCharacter(AnimChar character) {
     int value = character.intValue();
 

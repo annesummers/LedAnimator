@@ -14,6 +14,8 @@
 #include "NewValueAxisDialog.h"
 #include "NewTimeAxisDialog.h"
 #include "importbitmap.h"
+#include "exceptions.h"
+
 
 #include <QFile>
 #include <QFileDialog>
@@ -25,6 +27,7 @@
 #include <QStandardPaths>
 
 using namespace ImportExport;
+using namespace Exception;
 
 Engine::Engine(QObject *parent) :
     QObject(parent),
@@ -96,20 +99,29 @@ bool Engine::doLoad(QString fileName) {
         QByteArray anim = file.readAll();
         file.close();
 
-        setupUI();
-
         LedAnimByteArrayCodec codec(*iAnimation, anim);
-        codec.readAnimation();
+        try {
+            codec.readHeader();
 
-        iAnimation->setFileName(fileName);
+            setupUI();
 
-        QSettings settings;
-        settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+            codec.readAnimation();
 
-        //fileName = fileName.right(fileName.size() - fileName.lastIndexOf("/") - 1);
+            iAnimation->setFileName(fileName);
 
-        iMainWindow->setWindowTitle(fileName);
-        iMainWindow->show();
+            QSettings settings;
+            settings.setValue(SETTINGS_USER_CURRENT_ANIM, fileName);
+
+            //fileName = fileName.right(fileName.size() - fileName.lastIndexOf("/") - 1);
+
+            iMainWindow->setWindowTitle(fileName);
+            iMainWindow->show();
+
+        } catch(InvalidFileException exception) {
+            QMessageBox::critical(iMainWindow,
+                                  "Error Loading Animation",
+                                  exception.errorMessage());
+        }
 
         return true;
     }
