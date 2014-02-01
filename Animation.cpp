@@ -102,7 +102,7 @@ void Animation::newAnimation(int numRows,
 
     for(int i = 0; i < numRows; i++) {
         for(int j = 0; j < numColumns; j++) {
-            emit newSocket(i, j);
+            emit newSocketAdded(i, j);
         }
     }
 
@@ -244,7 +244,7 @@ void Animation::addLed(Led& led, Position position) {
         led.addValueAxis(i);
     }
 
-    emit newLed(position.row(), position.column());
+    emit newLedAdded(position.row(), position.column());
 }
 
 void Animation::deleteLed(Led& led, bool deleteObject) {

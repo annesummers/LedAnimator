@@ -119,8 +119,8 @@ signals:
     void timeAxisAdded();
     void valueAxisAdded(int axisNumber);
 
-    void newLed(int row, int column);
-    void newSocket(int row, int column);
+    void newLedAdded(int row, int column);
+    void newSocketAdded(int row, int column);
 
     void ledDeleted(int row, int column, int number);
     void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
