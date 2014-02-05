@@ -11,6 +11,7 @@
 #include <QMenuBar>
 #include <QUndoStack>
 #include <QUndoView>
+#include <QSignalMapper>
 
 class Engine;
 
@@ -39,6 +40,8 @@ public slots:
     void showTimeAxisDetails();
     void showValueAxisDetails(int);
 
+    void deleteValueAxisDetails(int axisNumber);
+
 protected:
     void closeEvent(QCloseEvent *event);
     
@@ -53,10 +56,14 @@ private:
     QAction*        iAddTimeAxisAction;
     QAction*        iAddValueAxisAction;
 
-    QWidget*                        iTimeAxisMainWidget;
-    QList<ValueAxisDetailsWidget*>  iValueAxisDetailsWidgets;
+    QMenu*        iDeleteValueAxisMenu;
+
+    QWidget*        iTimeAxisMainWidget;
+    QMap<int, ValueAxisDetailsWidget*>  iValueAxisDetailsWidgets;
 
     QUndoStack*     iUndoStack;
+
+    QSignalMapper* iDeleteValueAxisSignalMapper;
 };
 }
 #endif // MAINWINDOW_H

@@ -50,6 +50,7 @@ MainWindow::MainWindow(Engine& engine) :
 
     connect(&engine.animation(), SIGNAL(timeAxisAdded()), this, SLOT(showTimeAxisDetails()));
     connect(&engine.animation(), SIGNAL(valueAxisAdded(int)), this, SLOT(showValueAxisDetails(int)));
+    connect(&engine.animation(), SIGNAL(valueAxisDeleted(int)), this, SLOT(deleteValueAxisDetails(int)));
 
     QMenu* fileMenu = new QMenu("&File", this);
     QAction* newAction = fileMenu->addAction("&New animation...");
@@ -114,22 +115,36 @@ MainWindow::MainWindow(Engine& engine) :
 
     QMenu* animationMenu = new QMenu("&Animation", this);
     QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");
+    connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
+
     animationMenu->addSeparator();
+
     iAddTimeAxisAction = animationMenu->addAction("Add &time axis");
     iAddValueAxisAction = animationMenu->addAction("Add &value axis");
-    //QAction* addFramesAction = animationMenu->addAction("&Add frames");
-    //QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
-    animationMenu->addSeparator();
-    QAction* setFrameRateAction = animationMenu->addAction("Set &frame rate");
 
-    connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
     connect(iAddTimeAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addTimeAxis()));
     connect(iAddValueAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addValueAxis()));
+
     iAddTimeAxisAction->setEnabled(false);
     iAddValueAxisAction->setEnabled(true);
+
+    animationMenu->addSeparator();
+
+    QAction* setFrameRateAction = animationMenu->addAction("Set &frame rate");
+    connect(setFrameRateAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameRate()));
+
+    animationMenu->addSeparator();
+
+    iDeleteValueAxisMenu = animationMenu->addMenu("D&elete value axis");
+    iDeleteValueAxisMenu->setEnabled(false);
+
+    iDeleteValueAxisSignalMapper = new QSignalMapper(this);
+    connect(iDeleteValueAxisSignalMapper, SIGNAL(mapped(int)), &iEngine.animation(), SLOT(deleteValueAxis(int)));
+
+    //QAction* addFramesAction = animationMenu->addAction("&Add frames");
+    //QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
     //connect(addFramesAction, SIGNAL(triggered()), &iEngine, SLOT(addFrames()));
     //connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
-    connect(setFrameRateAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameRate()));
 
     menuBar()->addMenu(animationMenu);
 }
@@ -189,14 +204,30 @@ void MainWindow::showTimeAxisDetails() {
 void MainWindow::showValueAxisDetails(int axisNumber) {
     ValueAxisDetailsWidget* axisDetailsWidget = new ValueAxisDetailsWidget(NULL, iEngine.animation(), iEngine.animation().axisAt(axisNumber), iEngine);
 
-    iValueAxisDetailsWidgets.append(axisDetailsWidget);
+    iValueAxisDetailsWidgets.insert(axisNumber, axisDetailsWidget);
 
     axisDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
     axisDetailsWidget->setWindowTitle(QString("Value Axis %1").arg(axisNumber));
     axisDetailsWidget->show();
 
+    iDeleteValueAxisMenu->setEnabled(true);
+
     connect(&iEngine.animation(), SIGNAL(ledDeleted(int, int, int)), axisDetailsWidget, SLOT(ledDeleted(int, int, int)));
     connect(&iEngine.animation(), SIGNAL(ledRenumbered(int,int,int)), axisDetailsWidget, SLOT(ledRenumbered(int, int, int)));
+
+    QAction* deleteValueAxisAction = iDeleteValueAxisMenu->addAction(QString("%1").arg(axisNumber));
+
+    iDeleteValueAxisSignalMapper->setMapping(deleteValueAxisAction, axisNumber);
+    connect(deleteValueAxisAction, SIGNAL(triggered()), iDeleteValueAxisSignalMapper, SLOT(map()));
+}
+
+void MainWindow::deleteValueAxisDetails(int axisNumber) {
+    ValueAxisDetailsWidget* widget = iValueAxisDetailsWidgets.take(axisNumber);
+    delete widget;
+
+    if(iEngine.animation().numValueAxes() == 0) {
+        iDeleteValueAxisMenu->setEnabled(false);
+    }
 }
 
 void MainWindow::writeSettings() {

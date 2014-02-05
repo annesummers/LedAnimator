@@ -119,6 +119,8 @@ signals:
     void timeAxisAdded();
     void valueAxisAdded(int axisNumber);
 
+    void valueAxisDeleted(int number);
+
     void newLedAdded(int row, int column);
     void newSocketAdded(int row, int column);
 
@@ -129,6 +131,8 @@ signals:
 public slots:
     inline void setFileName(QString fileName) { iFileName = fileName; }
     inline void setSaved(bool saved) { iIsSaved = saved; }
+
+    void deleteValueAxis(int number);
 
     void copyToClipboard();
 

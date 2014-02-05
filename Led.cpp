@@ -44,6 +44,7 @@ Led::Led(QObject* parent,
 
     connect(&animation, SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxis()));
     connect(&animation, SIGNAL(valueAxisAdded(int)), this, SLOT(addValueAxis(int)));
+    connect(&animation, SIGNAL(valueAxisDeleted(int)), this, SLOT(deleteValueAxis(int)));
 
 
    // connect(&(animation), SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
@@ -62,6 +63,7 @@ Led::Led(const Led& copyLed) :
 
     connect(&iAnimation, SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxis()));
     connect(&iAnimation, SIGNAL(valueAxisAdded(int)), this, SLOT(addValueAxis(int)));
+    connect(&iAnimation, SIGNAL(valueAxisDeleted(int)), this, SLOT(deleteValueAxis(int)));
 
    // connect(&iAnimation, SIGNAL(framesInserted(int,int)), this, SLOT(framesInserted(int, int)));
 }
@@ -95,6 +97,15 @@ void Led::addValueAxis(int axisNumber) {
     if(iTimeAxisData != NULL) {
         currentFrameChanged(iTimeAxisData->currentFrameNum());
     }
+}
+
+
+void Led::deleteValueAxis(int axisNumber) {
+    ValueAxisData* data = iAxesData.at(axisNumber);
+
+    delete data;
+
+    iAxesData.removeAt(axisNumber);
 }
 
 void Led::setTimeAxisCurrentValue(FrameValue& value) {
