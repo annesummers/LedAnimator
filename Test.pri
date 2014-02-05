@@ -9,12 +9,11 @@ SOURCES += \
     LedTests.cpp \
     AxisDataTests.cpp \
     FrameTests.cpp \
-    enginetests.cpp \
-    ValueAxisDataTests.cpp
+    ValueAxisDataTests.cpp \
+    CodecTests.cpp \
+    EngineTests.cpp
 
     HEADERS += \
-    enginetests.h \
-    testconstants.h \
     AxisTests.h \
     ValueAxisTests.h \
     TimeAxisTests.h \
@@ -22,10 +21,11 @@ SOURCES += \
     LedTests.h \
     AxisDataTests.h \
     FrameTests.h \
-    ValueAxisDataTests.h
+    ValueAxisDataTests.h \
+    CodecTests.h \
+    EngineTests.h \
+    TestConstants.h
 
-
-    #ledanimcodectests.h \
     #colourwidgettests.h \
     #selectablewidgettests.h \
     #selectablewidgettestbase.h \
