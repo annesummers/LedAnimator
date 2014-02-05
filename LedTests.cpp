@@ -106,13 +106,6 @@ void LedTests::copyConstructor() {
     // TODO add axis tests
 }
 
-void LedTests::setCurrentValue_data() {
-}
-
-void LedTests::setCurrentValue() {
-    QCOMPARE(true, true);
-}
-
 void LedTests::addTimeAxis_data() {
 }
 
@@ -157,6 +150,18 @@ void LedTests::addValueAxis() {
     QFETCH(bool, addTimeAxis);
     QFETCH(int, currentFrameNum);
 
+    Led* led = new Led(iAnimation,
+                       *iAnimation,
+                       1,
+                       Position(0,0),
+                       NULL);
+
+    /*if(addTimeAxis) {
+        led->addTimeAxis();
+    }*/
+
+
+
     if(addTimeAxis) {
         iAnimation->addTimeAxis(0, 100, 100, kPriorityLow, false);
         //iAnimation->timeAxis()->setCurrentFrame(currentFrameNum);
@@ -166,18 +171,8 @@ void LedTests::addValueAxis() {
         iAnimation->addValueAxis(-10, 10, 0, kPriorityLow, false);
     }
 
-    Led* led = new Led(iAnimation,
-                       *iAnimation,
-                       1,
-                       Position(0,0),
-                       NULL);
-
-    if(addTimeAxis) {
-        led->addTimeAxis();
-    }
-
     for(int i = 0; i < numValueAxes; i++) {
-        led->addValueAxis(i);
+        //led->addValueAxis(i);
 
         QCOMPARE(led->axisAt(i).axis().lowValue(), iAnimation->axisAt(i).lowValue());
         QCOMPARE(led->axisAt(i).axis().highValue(), iAnimation->axisAt(i).highValue());
@@ -194,7 +189,83 @@ void LedTests::addValueAxis() {
     }
 }
 
-void LedTests::move_data() {
+void LedTests::setTimeAxisCurrentValue_data() {
+
+}
+
+void LedTests::setTimeAxisCurrentValue() {
+    Led* led = new Led(iAnimation,
+                       *iAnimation,
+                       1,
+                       Position(0,0),
+                       NULL);
+
+    iAnimation->addTimeAxis(0, 10, 100, kPriorityLow, false);
+    ColourValue* frameValue = new ColourValue(led, QColor(Qt::blue));
+
+    for(int i = 0; i < 10; i++) {
+        iAnimation->timeAxis()->setCurrentFrame(i);
+
+        led->setTimeAxisCurrentValue(*frameValue);
+
+        QCOMPARE(led->currentColour(), QColor(Qt::blue));
+    }
+}
+
+void LedTests::copyAxes_data() {
+
+}
+
+void LedTests::copyAxes() {
+    QCOMPARE(true, true);
+}
+
+void LedTests::currentColour_data() {
+
+}
+
+void LedTests::currentColour() {
+    QCOMPARE(true, true);
+}
+
+void LedTests::currentFrameChanged_data() {
+}
+
+void LedTests::currentFrameChanged() {
+    QCOMPARE(true, true);
+}
+
+void LedTests::colourChanged_data() {
+    QTest::addColumn<int>("currentFrame");
+
+    QTest::newRow("zero") << 0;
+    QTest::newRow("five") << 5;
+    QTest::newRow("nine") << 9;
+
+}
+
+void LedTests::colourChanged() {
+    QFETCH(int, currentFrame);
+
+    Led* led = new Led(iAnimation,
+                       *iAnimation,
+                       1,
+                       Position(0,0),
+                       NULL);
+
+    QSignalSpy updatedSpy(led, SIGNAL(updated()));
+
+    iAnimation->addTimeAxis(0, 10, 100, kPriorityLow, false);
+    iAnimation->timeAxis()->setCurrentFrame(currentFrame);
+
+    for(int i = 0; i < 10; i++) {
+        led->colourChanged(i);
+
+        QCOMPARE(updatedSpy.count(), (i >= currentFrame) ? 1 : 0);
+    }
+}
+
+/*void LedTests::move_data() {
 
 }
 
@@ -225,54 +296,7 @@ void LedTests::copyAxes_data() {
 void LedTests::copyAxes() {
     QCOMPARE(true, true);
 }
-
-void LedTests::copyTimeAxis_data() {
-
-}
-
-void LedTests::copyTimeAxis() {
-    QCOMPARE(true, true);
-}
-
-void LedTests::copyValueAxis_data() {
-
-}
-
-void LedTests::copyValueAxis() {
-    QCOMPARE(true, true);
-}
-
-void LedTests::copyTimeAxisFrame_data() {
-
-}
-
-void LedTests::copyTimeAxisFrame() {
-    QCOMPARE(true, true);
-}
-
-void LedTests::assigment_data() {
-
-}
-
-void LedTests::assigment() {
-    QCOMPARE(true, true);
-}
-
-void LedTests::currentColour_data() {
-
-}
-
-void LedTests::currentColour() {
-    QCOMPARE(true, true);
-}
-
-void LedTests::currentFrameChanged_data() {
-}
-
-void LedTests::currentFrameChanged(){
-    QCOMPARE(true, true);
-}
-
+*/
 
 /*
 void LedTests::numFramesChanged_data() {

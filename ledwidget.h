@@ -31,7 +31,7 @@ private slots:
     void setGroup();
 
     void deleteLed();
-    void ledUpdated();
+    void updated();
 
     void setAsBackgroundColour();
 

@@ -4,7 +4,7 @@
 **                                      **
 *****************************************/
 
-#include "selectable.h"
+#include "Selectable.h"
 
 using namespace AnimatorModel;
 
@@ -18,5 +18,5 @@ Selectable::Selectable(QObject *parent, Animation& animation, int number) :
 void Selectable::select(bool isSelected) {
     iIsSelected = isSelected;
 
-    emit selected();
+    emit updated();
 }

@@ -13,9 +13,6 @@
 using namespace AnimatorUi;
 using namespace AnimatorModel;
 
-typedef QList<Position> PositionList;
-Q_DECLARE_METATYPE ( PositionList )
-
 namespace AnimatorTest {
 
 const int MAX_TEST_WIDGETS = 4;

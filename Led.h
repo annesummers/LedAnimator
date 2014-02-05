@@ -41,26 +41,28 @@ public:
 
     void setTimeAxisCurrentValue(FrameValue& value);
 
-    inline void setNumber(int newNumber) { Selectable::setNumber(newNumber); emit ledUpdated(); }
+   // inline void setNumber(int newNumber) { Selectable::setNumber(newNumber); emit ledUpdated(); }
 
     inline void setHidden(bool isHidden) { iHidden = isHidden; }
     inline bool isHidden() const { return iHidden; }
 
-    void move(Position newPosition);
+    void move(Position &toPosition);
+    void clone(Position& toPosition);
     void paste(Led &copyLed);
 
     void copyAxes(const Led& copyLed);
-    void copyTimeAxis(const Led& copyLed);
-    void copyTimeAxisFrame(const Led& copyLed, int frameNum);
-    void copyValueAxis(const Led& copyLed, int axisNum);
+
+    //void copyTimeAxis(const Led& copyLed);
+    //void copyTimeAxisFrame(const Led& copyLed, int frameNum);
+    //void copyValueAxis(const Led& copyLed, int axisNum);
 
    // inline Animation& animation() { return iAnimation; }
 
-    Led& operator=(const Led& led);
+    //Led& operator=(const Led& led);
 
-signals:
-    void ledUpdated();
-    void updated();
+//signals:
+    //void ledUpdated();
+    //void updated();
 
 public slots:
     void addTimeAxis();

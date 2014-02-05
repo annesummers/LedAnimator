@@ -23,14 +23,14 @@ public:
     void select(bool isSelected);
 
     inline int number() const { return iNumber; }
+    inline void setNumber(int newNumber) { iNumber = newNumber; }
 
 protected:
-    inline void setNumber(int newNumber) { iNumber = newNumber; }
 
     Animation& iAnimation;
 
 signals:
-    void selected();
+    void updated();
 
 private:
     bool    iIsSelected;

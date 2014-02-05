@@ -381,7 +381,7 @@ LedDetails::LedDetails(AxisDetailsWidget& parent, Led &led, QLabel &label, Frame
     iDetailsWidget(parent) {
 
     connect(&closeButton, SIGNAL(clicked()), this, SLOT(closeClicked()));
-    connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
+    connect(&led, SIGNAL(updated()), this, SLOT(ledUpdated()));
 
     ledUpdated();
 }

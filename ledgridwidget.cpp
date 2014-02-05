@@ -125,18 +125,22 @@ void LedGridWidget::cloneItem(int fromGroup, Position fromPosition, Position toP
     //qDebug("LedGridWidget::copyItem : from %d,%d to %d,%d", fromPosition.row(), fromPosition.column(),
     //                                                        toPosition.row(), toPosition.column());
 
+    LedWidget& toWidget = static_cast<LedWidget&>(widgetAt(toPosition));
+    LedWidget& fromWidget = static_cast<LedWidget&>(widgetAt(fromPosition));
+
     switch(iCopyType) {
     case EClone:
         iAnimation.cloneLed(fromPosition, toPosition);
         break;
     case ETimeAxis:
-        static_cast<LedWidget&>(widgetAt(toPosition)).led().copyTimeAxis(static_cast<LedWidget&>(widgetAt(fromPosition)).led());
+        toWidget.led().timeAxis()->copyFrames(*fromWidget.led().timeAxis());
         break;
     case EValueAxis:
-        static_cast<LedWidget&>(widgetAt(toPosition)).led().copyValueAxis(static_cast<LedWidget&>(widgetAt(fromPosition)).led(), iCopySubType);
+        toWidget.led().axisAt(iCopySubType).copyFrames(fromWidget.led().axisAt(iCopySubType));
         break;
     case EFrame:
-        static_cast<LedWidget&>(widgetAt(toPosition)).led().copyTimeAxisFrame(static_cast<LedWidget&>(widgetAt(fromPosition)).led(), iCopySubType);
+        toWidget.led().timeAxis()->frameAt(toWidget.led().timeAxis()->currentFrameNum()).setValue(
+                    fromWidget.led().timeAxis()->frameAt(iCopySubType).value());
         break;
     }
 }

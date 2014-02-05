@@ -19,23 +19,25 @@ ValueAxisData::ValueAxisData(QObject *parent,
     iFunctionRanges.append(Range(axis.zeroValue(), axis.zeroValue(), axis.highValue(), 0));
 
     for(int i = axis.lowValue(); i < axis.zeroValue(); i++) {
-        frameAt(i).setValue(*(new FunctionValue(parent, Function(), 0)));
+        frameAt(i).doSetValue(*(new FunctionValue(parent, Function(), 0)));
     }
 
     frameAt(iAxis.zeroValue()).setValue(*(new LinkedValue(parent, QColor())));
 
     for(int i = axis.zeroValue() + 1; i <= axis.highValue(); i++) {
-        frameAt(i).setValue(*(new FunctionValue(parent, Function(), 0)));
+        frameAt(i).doSetValue(*(new FunctionValue(parent, Function(), 0)));
     }
 }
 
 
 void ValueAxisData::setLinkedValue(LinkedValue& linkedValue) {
-    frameAt(iAxis.zeroValue()).setValue(linkedValue);
+    frameAt(iAxis.zeroValue()).doSetValue(linkedValue);
 }
 
 void ValueAxisData::copyFrames(const AxisData &copyAxis) {
-    Q_UNUSED(copyAxis);
+    AxisData::copyFrames(copyAxis);
+
+    //iFunctionRanges = copyAxis.iFunctionRanges;
 }
 
 void ValueAxisData::lowValueChanged(const int lowValue) {

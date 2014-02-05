@@ -139,11 +139,14 @@ void ColourGroupWidget::functionFadeTo(QColor fadeToColour) {
                                 parameters.endColour,
                                 parameters.increments);
 
+    FrameWidget& first = static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column())));
+    FrameWidget& last = static_cast<FrameWidget&>(widgetAt(Position(0, parameters.lastPosition.column())));
+
     if(parameters.columnIncrement) {
 
-        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setAnchorInRange();
-        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setFirstInRange();
-        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.lastPosition.column()))).setLastInRange(fadeCalculator->function());
+        first.frame().setAnchorInRange();
+        first.frame().setFirstInRange();
+        last.frame().setLastInRange(fadeCalculator->function());
 
     //    for(int i = parameters.firstPosition.column() + 1; i <= parameters.lastPosition.column(); i++) {
     //        static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
@@ -153,9 +156,9 @@ void ColourGroupWidget::functionFadeTo(QColor fadeToColour) {
      //       static_cast<ColourWidget&>(widgetAt(Position(0, i))).setValue(*(new FunctionValue(this, fadeCalculator->function())));
      //   }
 
-        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setAnchorInRange();
-        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.lastPosition.column()))).setFirstInRange();
-        static_cast<FrameWidget&>(widgetAt(Position(0, parameters.firstPosition.column()))).setLastInRange(fadeCalculator->function());
+        first.frame().setAnchorInRange();
+        last.frame().setFirstInRange();
+        first.frame().setLastInRange(fadeCalculator->function());
     }
 }
 

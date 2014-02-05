@@ -14,7 +14,7 @@ TimeAxisData::TimeAxisData(QObject *parent,
     AxisData(parent, animation, axis, led, undoStack) {
 
     for(int i = axis.lowValue(); i <= axis.highValue(); i++) {
-        frameAt(i).setValue(*(new ColourValue(parent,
+        frameAt(i).doSetValue(*(new ColourValue(parent,
                                               QColor())));
     }
 }

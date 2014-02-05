@@ -40,11 +40,8 @@ private slots:
     void copyConstructor_data();
     void copyConstructor();
 
-    void assigment_data();
-    void assigment();
-
-    void setCurrentValue_data();
-    void setCurrentValue();
+    void setTimeAxisCurrentValue_data();
+    void setTimeAxisCurrentValue();
 
     void addTimeAxis_data();
     void addTimeAxis();
@@ -52,32 +49,26 @@ private slots:
     void addValueAxis_data();
     void addValueAxis();
 
-    void clone_data();
+    /*void clone_data();
     void clone();
 
     void move_data();
     void move();
 
     void paste_data();
-    void paste();
+    void paste();*/
 
     void copyAxes_data();
     void copyAxes();
-
-    void copyTimeAxis_data();
-    void copyTimeAxis();
-
-    void copyValueAxis_data();
-    void copyValueAxis();
-
-    void copyTimeAxisFrame_data();
-    void copyTimeAxisFrame();
 
     void currentColour_data();
     void currentColour();
 
     void currentFrameChanged_data();
     void currentFrameChanged();
+
+    void colourChanged_data();
+    void colourChanged();
 
 private:
     Engine*    iEngine;
