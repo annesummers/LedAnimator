@@ -256,19 +256,30 @@ void LedGridWidget::addLed(int row, int column, Led* led) {
         led = iAnimation.ledAt(Position(row, column));
     }
 
-    LedWidget* widget = new LedWidget(this, *this, *led);
+    SelectableWidget& socketWidget = widgetAt(Position(row, column));
 
-    addWidget(widget, Position(row, column));
+    addWidget(new LedWidget(this, *this, *led), Position(row, column));
+
+    //delete &socketWidget;
 }
 
 void LedGridWidget::addSocket(int row, int column) {
     GridItem* item = new GridItem(this, iAnimation, INVALID, Position(row, column));
+
     addWidget(new SocketWidget(this, *this, *item), Position(row, column));
 }
 
 void LedGridWidget::ledDeleted(int row, int column, int ledNumber) {
     qDebug("LedGridWidget::ledDeleted : %d,%d #%d", row, column, ledNumber);
+    SelectableWidget& ledWidget = widgetAt(Position(row, column));
+
+    if(ledWidget.isSelected()) {
+        toggle(ledWidget);
+    }
+
     addSocket(row, column);
+
+    //delete &ledWidget;
 
     update();
 }
@@ -276,7 +287,12 @@ void LedGridWidget::ledDeleted(int row, int column, int ledNumber) {
 void LedGridWidget::ledMoved(int oldRow, int oldColumn, int newRow, int newColumn) {
     qDebug("LedGridWidget::ledMoved : from %d,%d to %d,%d", oldRow, oldColumn, newRow, newColumn);
 
+    SelectableWidget& ledWidget = widgetAt(Position(oldRow, oldColumn));
+
     addSocket(oldRow, oldColumn);
+
+    //delete &ledWidget;
+
     addLed(newRow, newColumn, iAnimation.ledAt(Position(newRow, newColumn)));
 }
 /*
