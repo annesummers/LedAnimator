@@ -76,6 +76,8 @@ protected:
     virtual const QString     asString() const = 0;
     virtual const QString  headerString() const = 0;
 
+    void writeInt(int integer);
+
     virtual void writePositionData() { }
     virtual QList<int> readPositionData(int* numRows, int* numColumns, int numLeds) { Q_UNUSED(numRows); Q_UNUSED(numColumns); Q_UNUSED(numLeds); QList<int> positions; return positions; }
 
