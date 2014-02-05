@@ -121,6 +121,8 @@ bool Engine::doLoad(QString fileName) {
             QMessageBox::critical(iMainWindow,
                                   "Error Loading Animation",
                                   exception.errorMessage());
+
+            return false;
         }
 
         return true;
