@@ -36,7 +36,7 @@ MainWindow::MainWindow(Engine& engine) :
     LedGridWidget* ledGridWidget = new LedGridWidget(this, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
-    connect(&engine.animation(), SIGNAL(newLed(int, int)), ledGridWidget, SLOT(addLed(int, int)));
+    connect(&engine.animation(), SIGNAL(newLedAdded(int, int)), ledGridWidget, SLOT(addLed(int, int)));
     connect(&engine.animation(), SIGNAL(newSocket(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
     connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), ledGridWidget, SLOT(ledDeleted(int, int, int)));
     connect(&engine.animation(), SIGNAL(ledMoved(int, int, int, int)), ledGridWidget, SLOT(ledMoved(int, int, int, int)));
