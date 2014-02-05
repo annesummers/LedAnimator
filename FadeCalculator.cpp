@@ -57,9 +57,9 @@ void FadeCalculator::start() {
 }
 
 void FadeCalculator::nextColour() {
-    iCurrentRedValue -= iRedIncrement;
-    iCurrentGreenValue -= iGreenIncrement;
-    iCurrentBlueValue -= iBlueIncrement;
+    iCurrentRedValue += iRedIncrement;
+    iCurrentGreenValue += iGreenIncrement;
+    iCurrentBlueValue += iBlueIncrement;
 
     //qDebug("red : %f green : %f blue %f", iCurrentRedValue, iCurrentGreenValue, iCurrentBlueValue);
 
