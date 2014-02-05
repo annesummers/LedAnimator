@@ -111,7 +111,7 @@ void LedAnimCodec::readHeader() {
     unsigned char fileVersionHigh = readCharacter().unsignedCharValue();
     unsigned char fileVersionLow = readCharacter().unsignedCharValue();
 
-   /* if(fileVersionHigh > VERSION_HIGH ||
+    if(fileVersionHigh > VERSION_HIGH ||
        fileVersionHigh == VERSION_HIGH && fileVersionLow < VERSION_LOW) {
         throw InvalidFileException("The file version is too low");
     }
@@ -119,7 +119,7 @@ void LedAnimCodec::readHeader() {
     if(fileVersionHigh < VERSION_HIGH ||
        fileVersionHigh == VERSION_HIGH && fileVersionLow > VERSION_LOW) {
         throw InvalidFileException("The file version is too low");
-    }*/
+    }
 }
 
 void LedAnimCodec::readAnimation() {
