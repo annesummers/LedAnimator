@@ -119,8 +119,8 @@ MainWindow::MainWindow(Engine& engine) :
     iAddValueAxisAction = animationMenu->addAction("Add &value axis");
     //QAction* addFramesAction = animationMenu->addAction("&Add frames");
     //QAction* setNumFramesAction = animationMenu->addAction("Set &number of frames");
-    //animationMenu->addSeparator();
-    //QAction* setFrameFrequencyAction = animationMenu->addAction("Set &frame frequency");
+    animationMenu->addSeparator();
+    QAction* setFrameRateAction = animationMenu->addAction("Set &frame rate");
 
     connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
     connect(iAddTimeAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addTimeAxis()));
@@ -129,7 +129,7 @@ MainWindow::MainWindow(Engine& engine) :
     iAddValueAxisAction->setEnabled(true);
     //connect(addFramesAction, SIGNAL(triggered()), &iEngine, SLOT(addFrames()));
     //connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
-    //connect(setFrameFrequencyAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameFrequency()));
+    connect(setFrameRateAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameRate()));
 
     menuBar()->addMenu(animationMenu);
 }

@@ -297,6 +297,19 @@ void Engine::quit() {
     emit doQuit();
 }
 
+void Engine::setFrameRate() {
+    bool ok;
+    int rate = QInputDialog::getInt(iMainWindow, tr("Choose time axis frame rate"),
+                                  tr("Frame rate (ms):"),
+                                    iAnimation->timeAxis()->frameRate(),
+                                    MIN_FRAME_RATE,
+                                    MAX_FRAME_RATE,
+                                    1, &ok);
+    if (ok) {
+        iAnimation->timeAxis()->setFrameRate(rate);
+    }
+}
+
 /*void Engine::addFrames() {
     bool ok;
     int numFrames = QInputDialog::getInt(iMainWindow, tr("Add how many frames?"),
@@ -312,15 +325,6 @@ void Engine::setNumFrames() {
                                   tr("Number of frames:"), 1, 1, 1000, 1, &ok);
     if (ok) {
         //iAnimation->setNumFrames(numFrames);
-    }
-}
-
-void Engine::setFrameFrequency() {
-    bool ok;
-    int frequency = QInputDialog::getInt(iMainWindow, tr("Choose animation frame frequency"),
-                                  tr("Frame frequency (ms):"), 1000, 1, 10000, 1, &ok);
-    if (ok) {
-        //iAnimation->setFrameFrequency(frequency);
     }
 }*/
 
