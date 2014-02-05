@@ -20,9 +20,9 @@ TimeAxis::TimeAxis(QObject *parent,
     iRepeat(false),
     iPlayTimer(NULL) {
 
-    if(iFrameRate < 100) {
-        iFrameRate = 100;
-    }
+   // if(iFrameRate < 100) {
+   //     iFrameRate = 100;
+   // }
 
     // this is a massive hack to get over the fact that the
     // frameRate is not being saved out properly
@@ -56,9 +56,8 @@ void TimeAxis::stop() {
 
 void TimeAxis::nextFrame() {
     if(currentFrameNum() == highValue()) {
-        if(iRepeat) {
-            setCurrentFrame(lowValue());
-        } else {
+        setCurrentFrame(lowValue());
+        if(!iRepeat) {
             stop();
         }
     } else {
