@@ -126,7 +126,8 @@ void LedAnimCodec::readAnimation() {
     unsigned char numLedsHigh = readCharacter().unsignedCharValue();
     unsigned char numLedsLow = readCharacter().unsignedCharValue();
 
-    int numLeds =  numLedsHigh |= numLedsLow << 8;
+    int numLeds = numLedsHigh;
+    numLeds |= numLedsLow << 8;
 
     int numRows;
     int numColumns;
@@ -326,7 +327,8 @@ void LedAnimCodec::readAxis(int axisNum) {
 
         unsigned char frameRateHigh = readCharacter().unsignedCharValue();
         unsigned char frameRateLow = readCharacter().unsignedCharValue();
-        int frameRate =  frameRateHigh |= frameRateLow << 8;
+        int frameRate = frameRateHigh;
+        frameRate |= frameRateLow << 8;
 
         iAnimation.addTimeAxis(lowValue, highValue, frameRate, priority, opaque);
 
