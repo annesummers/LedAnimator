@@ -123,8 +123,9 @@ void LedWidget::addExtraActions(QMenu* menu) {
 // events ------------------------------------
 
 void LedWidget::mouseMoveEvent(QMouseEvent *event) {
-    if(!colourGroup().colourDialog().isVisible()) {
+    if(event->buttons() != Qt::LeftButton) {
         SelectableWidget::mouseMoveEvent(event);
+
         gridWidget().setCurrentLed(led());
     }
 }
