@@ -178,6 +178,16 @@ void Animation::addValueAxis(int lowValue,
     emit valueAxisAdded(axisNumber);
 }
 
+void Animation::deleteValueAxis(int number) {
+    ValueAxis* axis = iAxes.at(number);
+
+    emit valueAxisDeleted(number);
+
+    delete axis;
+
+    iAxes.removeAt(number);
+}
+
 ValueAxis &Animation::axisAt(int number) const {
     return *(iAxes.at(number));
 }

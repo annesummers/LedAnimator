@@ -4,7 +4,7 @@
 **                                      **
 *****************************************/
 
-#include "ledanimcodectests.h"
+#include "CodecTests.h"
 
 using namespace AnimatorTest;
 
@@ -31,10 +31,11 @@ void LedAnimCodecTests::writeByteArrayAnimation() {
     QCOMPARE(true, true);
 }
 
-void LedAnimCodecTests::readStringAnimation_data() {
+void LedAnimCodecTests::writeSimpleByteArrayAnimation_data() {
+
 }
 
-void LedAnimCodecTests::readStringAnimation() {
+void LedAnimCodecTests::writeSimpleByteArrayAnimation() {
     QCOMPARE(true, true);
 }
 

@@ -67,6 +67,9 @@ public:
 public slots:
     void addTimeAxis();
     void addValueAxis(int axisNumber);
+
+    void deleteValueAxis(int axisNumber);
+
     void currentFrameChanged(int currentFrame);
    // void framesInserted(int numFrames, int numFramesAdded);
     void colourChanged(int frameNum);

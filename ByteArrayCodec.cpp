@@ -117,7 +117,7 @@ void LedAnimByteArrayCodec::writePositionData() {
             }
         } while(!position.isValid());
 
-        writeCharacter(ledNum++);
+        writeInt(ledNum++);
         writeCharacter(position.row());
         writeCharacter(position.column());
     }
@@ -138,12 +138,12 @@ QList<int> LedAnimByteArrayCodec::readPositionData(int* numRows, int* numColumns
     unsigned int column;
 
     for(int i = 0; i < numLeds; i++) {
-        ledNum = readCharacter().unsignedCharValue();
 
-        //unsigned char ledNumHigh = readCharacter().unsignedCharValue();
-       // unsigned char ledNumLow = readCharacter().unsignedCharValue();
+        unsigned char ledNumHigh = readCharacter().unsignedCharValue();
+        unsigned char ledNumLow = readCharacter().unsignedCharValue();
 
-        //ledNum =  ledNumHigh |= ledNumLow << 8;
+        ledNum = ledNumHigh;
+        ledNum |= ledNumLow << 8;
         row = readCharacter().unsignedCharValue();
         column = readCharacter().unsignedCharValue();
 

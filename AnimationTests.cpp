@@ -76,7 +76,7 @@ void AnimationTests::newEmpty() {
     QFETCH(int, numColumns);
     QFETCH(QString, errorString);
 
-    QSignalSpy newSocketSpy(iAnimation, SIGNAL(newSocket(int, int)));
+    QSignalSpy newSocketSpy(iAnimation, SIGNAL(newSocketAdded(int, int)));
 
     try {
         iAnimation->newAnimation(numRows, numColumns);
@@ -167,7 +167,7 @@ void AnimationTests::addNewLed() {
     QFETCH(PositionList, ledPositions);
     QFETCH(QString, errorString);
 
-    QSignalSpy newLedSpy(iAnimation, SIGNAL(newLed(int, int)));
+    QSignalSpy newLedSpy(iAnimation, SIGNAL(newLedAdded(int, int)));
 
     try {
         iAnimation->newAnimation(numRows, numColumns);
@@ -264,7 +264,7 @@ void AnimationTests::newPopulated() {
     QFETCH(IntList, ledPositions);
     QFETCH(QString, errorString);
 
-    QSignalSpy newLedSpy(iAnimation, SIGNAL(newLed(int, int)));
+    QSignalSpy newLedSpy(iAnimation, SIGNAL(newLedAdded(int, int)));
 
     try {
         iAnimation->newAnimation(numRows, numColumns, numLeds, ledPositions);

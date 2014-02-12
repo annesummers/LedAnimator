@@ -19,16 +19,6 @@ TimeAxis::TimeAxis(QObject *parent,
     iIsPlaying(false),
     iRepeat(false),
     iPlayTimer(NULL) {
-
-    if(iFrameRate < 100) {
-        iFrameRate = 100;
-    }
-
-    // this is a massive hack to get over the fact that the
-    // frameRate is not being saved out properly
-
-    // a proper fix will fix the codec to use an unsigned int to
-    // store the frameRate so it will not overflow
 }
 
 void TimeAxis::play(bool repeat) {
@@ -56,9 +46,8 @@ void TimeAxis::stop() {
 
 void TimeAxis::nextFrame() {
     if(currentFrameNum() == highValue()) {
-        if(iRepeat) {
-            setCurrentFrame(lowValue());
-        } else {
+        setCurrentFrame(lowValue());
+        if(!iRepeat) {
             stop();
         }
     } else {

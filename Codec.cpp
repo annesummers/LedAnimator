@@ -58,11 +58,7 @@ void LedAnimCodec::writeAnimation(bool withPositions) {
 
     writeHeader();
 
-    int numLeds = iAnimation.numLeds();
-    char numLedsHigh = numLeds;
-    char numLedsLow = numLeds >> 8;
-    writeCharacter(numLedsHigh);
-    writeCharacter(numLedsLow);
+    writeInt(iAnimation.numLeds());
 
     if(withPositions) {
         writePositionData();
@@ -84,6 +80,14 @@ void LedAnimCodec::writeAnimation(bool withPositions) {
     writeTimeAxisData();
 
     writeControlCharacter(TERMINATING_BYTE);
+}
+
+void LedAnimCodec::writeInt(int integer) {
+    unsigned char integerHigh = integer;
+    unsigned char integerLow = integer >> 8;
+
+    writeCharacter(integerHigh);
+    writeCharacter(integerLow);
 }
 
 void LedAnimCodec::writeHeader() {
@@ -122,7 +126,8 @@ void LedAnimCodec::readAnimation() {
     unsigned char numLedsHigh = readCharacter().unsignedCharValue();
     unsigned char numLedsLow = readCharacter().unsignedCharValue();
 
-    int numLeds =  numLedsHigh |= numLedsLow << 8;
+    int numLeds = numLedsHigh;
+    numLeds |= numLedsLow << 8;
 
     int numRows;
     int numColumns;
@@ -166,7 +171,7 @@ void LedAnimCodec::writeAxis(int axisNum) {
 
         writeCharacter(axis->lowValue());
         writeCharacter(axis->highValue());
-        writeCharacter(iAnimation.timeAxis()->frameRate());
+        writeInt(iAnimation.timeAxis()->frameRate());
         writeCharacter(iAnimation.timeAxis()->usesBackgroundColour());
         if(iAnimation.timeAxis()->usesBackgroundColour()) {
             writeColour(iAnimation.timeAxis()->backgroundColour());
@@ -235,7 +240,7 @@ void LedAnimCodec::writeValueAxisData(int axisNum) {
                 }
 
                 if(iVerbose) {
-                    writeCharacter(ledNum);
+                    writeInt(ledNum);
                 }
 
                 AxisData* axisData = &iAnimation.ledAt(ledNum)->axisAt(axisNum);
@@ -290,7 +295,7 @@ void LedAnimCodec::writeTimeAxisData() {
             }
 
             if(iVerbose) {
-                writeCharacter(ledNum);
+                writeInt(ledNum);
             }
 
             AxisData* axisData = iAnimation.ledAt(ledNum)->timeAxis();
@@ -319,7 +324,11 @@ void LedAnimCodec::readAxis(int axisNum) {
     if(axisNum == kTimeAxisNum) {
         int lowValue = readCharacter().intValue();
         int highValue = readCharacter().intValue();
-        int frameRate = readCharacter().intValue();
+
+        unsigned char frameRateHigh = readCharacter().unsignedCharValue();
+        unsigned char frameRateLow = readCharacter().unsignedCharValue();
+        int frameRate = frameRateHigh;
+        frameRate |= frameRateLow << 8;
 
         iAnimation.addTimeAxis(lowValue, highValue, frameRate, priority, opaque);
 
@@ -368,6 +377,7 @@ void LedAnimCodec::readValueAxisData(int axisNum) {
         ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
             readCharacter();
+            readCharacter();
             while(iAnimation.isMissing(ledNum)){
                 ledNum++;
             }
@@ -402,6 +412,7 @@ void LedAnimCodec::readTimeAxisData() {
     for(int frame = axis->lowValue(); frame <= axis->highValue(); frame++) {
         int ledNum = INITIAL_LED;
         for(int i = 0; i < iAnimation.numLeds(); i++) {
+            readCharacter();
             readCharacter();
             while(iAnimation.isMissing(ledNum)){
                 ledNum++;

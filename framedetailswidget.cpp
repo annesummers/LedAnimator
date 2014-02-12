@@ -8,6 +8,8 @@ FrameDetailsWidget::FrameDetailsWidget(QWidget *parent) :
     ui(new Ui::FrameDetailsWidget)
 {
     ui->setupUi(this);
+
+    currentFrameChanged(0);
 }
 
 FrameDetailsWidget::~FrameDetailsWidget()

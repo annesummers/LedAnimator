@@ -12,6 +12,9 @@ NewTimeAxisDialog::NewTimeAxisDialog(QWidget *parent, Engine& engine) :
     ui(new Ui::NewTimeAxisDialog),
     iEngine(engine) {
     ui->setupUi(this);
+
+    iNumFrames = ui->iNumFramesSpin->value();
+    iFrameRate = ui->iFrameRateSpin->value();
 }
 
 NewTimeAxisDialog::~NewTimeAxisDialog() {

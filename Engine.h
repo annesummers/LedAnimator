@@ -58,6 +58,8 @@ private slots:
 
     void importBitmap();
 
+    void setFrameRate();
+
     void quit();
 
 private:

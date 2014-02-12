@@ -27,8 +27,8 @@ private slots:
     void writeByteArrayAnimation_data();
     void writeByteArrayAnimation();
 
-    void readStringAnimation_data();
-    void readStringAnimation();
+    void writeSimpleByteArrayAnimation_data();
+    void writeSimpleByteArrayAnimation();
 
     void writeStringAnimation_data();
     void writeStringAnimation();

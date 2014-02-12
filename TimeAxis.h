@@ -20,7 +20,7 @@ public:
                       int priority,
                       bool isOpaque);
 
-    void setframeRate(const int frequency);
+    inline void setFrameRate(const int frameRate) { iFrameRate = frameRate; }
 
     inline int frameRate() const { return iFrameRate; }
 

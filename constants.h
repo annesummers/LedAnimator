@@ -14,8 +14,8 @@ const int DEFAULT_NUM_ROWS = 4;
 const int DEFAULT_NUM_COLUMNS = 4;
 const int DEFAULT_NUM_FRAMES = 100;
 
-const int VERSION_HIGH = 0;
-const int VERSION_LOW = 1;
+const int VERSION_HIGH = 2;
+const int VERSION_LOW = 0;
 
 const int MAX_ROWS = 250;
 const int MAX_COLUMNS = 250;
@@ -23,6 +23,9 @@ const int MAX_FRAMES = 999;
 
 const int INVALID = -1;
 const int INITIAL_LED = 1;
+
+const int MIN_FRAME_RATE = 10;
+const int MAX_FRAME_RATE = 10000;
 
 const int LED_RADIUS = 15;
 const int LED_OFFSET_X = LED_RADIUS*2 + 40;
@@ -40,7 +43,7 @@ const int XOR_BYTE = 0x20;
 
 const QString COMPANY_NAME = "Gigantic Sheep Ltd.";
 const QString APP_NAME = "Led Animator";
-const QString COMPANY_DOMAIN = "com.onebadmouse";
+const QString COMPANY_DOMAIN = "com.giganticsheep";
 
 const QString SETTINGS_USER_CURRENT_ANIM = "user/currentAnim";
 const QString SETTINGS_USER_EXPORT_PATH = "user/exportPath";
