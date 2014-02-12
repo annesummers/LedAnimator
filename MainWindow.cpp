@@ -11,7 +11,8 @@
 #include "ledgridgroupwidget.h"
 #include "ledgridwidget.h"
 #include "TimeAxisPlayWidget.h"
-#include "engine.h"
+#include "Engine.h"
+#include "exceptions.h"
 #include "Animation.h"
 #include "TimeAxisDetailsWidget.h"
 #include "ValueAxisDetailsWidget.h"
@@ -22,9 +23,12 @@
 #include "constants.h"
 
 using namespace AnimatorUi;
+using namespace Exception;
 
 MainWindow::MainWindow(Engine& engine) :
-    iEngine(engine) {
+    iEngine(engine),
+    iDeleteValueAxisMenu(NULL),
+    iShowValueAxisMenu(NULL) {
 
     setWindowTitle(APP_NAME);
 
@@ -48,8 +52,8 @@ MainWindow::MainWindow(Engine& engine) :
 
     setCentralWidget(ledGridGroupWidget);
 
-    connect(&engine.animation(), SIGNAL(timeAxisAdded()), this, SLOT(showTimeAxisDetails()));
-    connect(&engine.animation(), SIGNAL(valueAxisAdded(int)), this, SLOT(showValueAxisDetails(int)));
+    connect(&engine.animation(), SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxisDetails()));
+    connect(&engine.animation(), SIGNAL(valueAxisAdded(int)), this, SLOT(addValueAxisDetails(int)));
     connect(&engine.animation(), SIGNAL(valueAxisDeleted(int)), this, SLOT(deleteValueAxisDetails(int)));
 
     QMenu* fileMenu = new QMenu("&File", this);
@@ -88,13 +92,9 @@ MainWindow::MainWindow(Engine& engine) :
     iPasteWrapAction = editMenu->addAction("Paste &wrap");
 
     connect(iCutAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(cutSelected()));
-    //connect(iCutAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(cutSelected()));
     connect(iCopyAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(copySelected()));
-   // connect(iCopyAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(copySelected()));
     connect(iPasteAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(paste()));
-  //  connect(iPasteAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(paste()));
     connect(iPasteWrapAction, SIGNAL(triggered()), ledGridGroupWidget, SLOT(pasteWrap()));
- //   connect(iPasteWrapAction, SIGNAL(triggered()), animationDetailsWidget, SLOT(pasteWrap()));
 
     iCutAction->setEnabled(false);
     iCopyAction->setEnabled(false);
@@ -113,14 +113,14 @@ MainWindow::MainWindow(Engine& engine) :
 
     menuBar()->addMenu(editMenu);
 
-    QMenu* animationMenu = new QMenu("&Animation", this);
-    QAction* copyToClipboardAction = animationMenu->addAction("&Copy to clipboard");
+    iAnimationMenu = new QMenu("&Animation", this);
+    QAction* copyToClipboardAction = iAnimationMenu->addAction("&Copy to clipboard");
     connect(copyToClipboardAction, SIGNAL(triggered()), &(iEngine.animation()), SLOT(copyToClipboard()));
 
-    animationMenu->addSeparator();
+    iAnimationMenu->addSeparator();
 
-    iAddTimeAxisAction = animationMenu->addAction("Add &time axis");
-    iAddValueAxisAction = animationMenu->addAction("Add &value axis");
+    iAddTimeAxisAction = iAnimationMenu->addAction("Add &time axis");
+    iAddValueAxisAction = iAnimationMenu->addAction("Add &value axis");
 
     connect(iAddTimeAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addTimeAxis()));
     connect(iAddValueAxisAction, SIGNAL(triggered()), &iEngine, SLOT(addValueAxis()));
@@ -128,15 +128,18 @@ MainWindow::MainWindow(Engine& engine) :
     iAddTimeAxisAction->setEnabled(false);
     iAddValueAxisAction->setEnabled(true);
 
-    animationMenu->addSeparator();
+    iAnimationMenu->addSeparator();
 
-    QAction* setFrameRateAction = animationMenu->addAction("Set &frame rate");
+    QAction* setFrameRateAction = iAnimationMenu->addAction("Set &frame rate");
     connect(setFrameRateAction, SIGNAL(triggered()), &iEngine, SLOT(setFrameRate()));
 
-    animationMenu->addSeparator();
+    iAnimationMenu->addSeparator();
 
-    iDeleteValueAxisMenu = animationMenu->addMenu("D&elete value axis");
-    iDeleteValueAxisMenu->setEnabled(false);
+    iShowValueAxisSignalMapper = new QSignalMapper(this);
+    connect(iShowValueAxisSignalMapper, SIGNAL(mapped(int)), this, SLOT(showValueAxisDetails(int)));
+
+    iShowTimeAxisAction = iAnimationMenu->addAction(tr("Show t&ime axis"));
+    connect(iAddTimeAxisAction, SIGNAL(triggered()), this, SLOT(showTimeAxisDetails()));
 
     iDeleteValueAxisSignalMapper = new QSignalMapper(this);
     connect(iDeleteValueAxisSignalMapper, SIGNAL(mapped(int)), &iEngine.animation(), SLOT(deleteValueAxis(int)));
@@ -146,7 +149,7 @@ MainWindow::MainWindow(Engine& engine) :
     //connect(addFramesAction, SIGNAL(triggered()), &iEngine, SLOT(addFrames()));
     //connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
 
-    menuBar()->addMenu(animationMenu);
+    menuBar()->addMenu(iAnimationMenu);
 }
 
 MainWindow::~MainWindow() {
@@ -161,7 +164,7 @@ MainWindow::~MainWindow() {
     }
 }
 
-void MainWindow::showTimeAxisDetails() {
+void MainWindow::addTimeAxisDetails() {
     iTimeAxisMainWidget = new QWidget(NULL);
     iTimeAxisMainWidget->setWindowTitle(QString("Time Axis"));
 
@@ -196,21 +199,38 @@ void MainWindow::showTimeAxisDetails() {
     connect(&iEngine.animation(), SIGNAL(ledRenumbered(int,int,int)), axisDetailsWidget, SLOT(ledRenumbered(int, int, int)));
     connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), axisDetailsWidget, SLOT(currentFrameChanged(int)));
 
+    connect(iCutAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(cutSelected()));
+    connect(iCopyAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(copySelected()));
+    connect(iPasteAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(paste()));
+    connect(iPasteWrapAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(pasteWrap()));
    // connect(&engine.animation(), SIGNAL(framesInserted(int,int)), animationDetailsWidget, SLOT(framesInserted(int, int)));
 
+    showTimeAxisDetails();
+}
+
+void MainWindow::showTimeAxisDetails() {
     iTimeAxisMainWidget->show();
 }
 
-void MainWindow::showValueAxisDetails(int axisNumber) {
+void MainWindow::hideTimeAxisDetails() {
+    iTimeAxisMainWidget->hide();
+}
+
+void MainWindow::addValueAxisDetails(int axisNumber) {
+    if(axisNumber != iValueAxisDetailsWidgets.size()) {
+        throw InvalidAxisNumberException("WRONG");
+    }
+
     ValueAxisDetailsWidget* axisDetailsWidget = new ValueAxisDetailsWidget(NULL, iEngine.animation(), iEngine.animation().axisAt(axisNumber), iEngine);
 
-    iValueAxisDetailsWidgets.insert(axisNumber, axisDetailsWidget);
+    iValueAxisDetailsWidgets.append(axisDetailsWidget);
 
     axisDetailsWidget->setObjectName(QString::fromUtf8("AnimationDetailsWidget"));
     axisDetailsWidget->setWindowTitle(QString("Value Axis %1").arg(axisNumber));
-    axisDetailsWidget->show();
 
-    iDeleteValueAxisMenu->setEnabled(true);
+    if(iDeleteValueAxisMenu == NULL) {
+        iDeleteValueAxisMenu = iAnimationMenu->addMenu("D&elete value axis");
+    }
 
     connect(&iEngine.animation(), SIGNAL(ledDeleted(int, int, int)), axisDetailsWidget, SLOT(ledDeleted(int, int, int)));
     connect(&iEngine.animation(), SIGNAL(ledRenumbered(int,int,int)), axisDetailsWidget, SLOT(ledRenumbered(int, int, int)));
@@ -219,14 +239,71 @@ void MainWindow::showValueAxisDetails(int axisNumber) {
 
     iDeleteValueAxisSignalMapper->setMapping(deleteValueAxisAction, axisNumber);
     connect(deleteValueAxisAction, SIGNAL(triggered()), iDeleteValueAxisSignalMapper, SLOT(map()));
+
+    if(iShowValueAxisMenu == NULL) {
+        iShowValueAxisMenu = iAnimationMenu->addMenu("S&how value axis");
+    }
+
+    QAction* showValueAxisAction = iShowValueAxisMenu->addAction(QString("%1").arg(axisNumber));
+
+    iShowValueAxisSignalMapper->setMapping(showValueAxisAction, axisNumber);
+    connect(showValueAxisAction, SIGNAL(triggered()), iShowValueAxisSignalMapper, SLOT(map()));
+
+    connect(iCutAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(cutSelected()));
+    connect(iCopyAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(copySelected()));
+    connect(iPasteAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(paste()));
+    connect(iPasteWrapAction, SIGNAL(triggered()), axisDetailsWidget, SLOT(pasteWrap()));
+
+    showValueAxisDetails(axisNumber);
+}
+
+void MainWindow::showValueAxisDetails(int axisNumber) {
+    ValueAxisDetailsWidget* detailsWidget = iValueAxisDetailsWidgets.at(axisNumber);
+
+    detailsWidget->show();
+}
+
+void MainWindow::hideValueAxisDetails(int axisNumber) {
+    ValueAxisDetailsWidget* detailsWidget = iValueAxisDetailsWidgets.at(axisNumber);
+
+    detailsWidget->hide();
 }
 
 void MainWindow::deleteValueAxisDetails(int axisNumber) {
-    ValueAxisDetailsWidget* widget = iValueAxisDetailsWidgets.take(axisNumber);
+    ValueAxisDetailsWidget* widget = iValueAxisDetailsWidgets.at(axisNumber);
+    iValueAxisDetailsWidgets.removeAt(axisNumber);
     delete widget;
 
     if(iEngine.animation().numValueAxes() == 0) {
-        iDeleteValueAxisMenu->setEnabled(false);
+        delete iDeleteValueAxisMenu;
+        iDeleteValueAxisMenu = NULL;
+
+        delete iShowValueAxisMenu;
+        iShowValueAxisMenu = NULL;
+    } else {
+        QList<QAction*> deleteActions = iDeleteValueAxisMenu->actions();
+        QList<QAction*> showActions = iShowValueAxisMenu->actions();
+        for(int i = 0; i < deleteActions.size(); i++) {
+            QAction* deleteAction = deleteActions.at(i);
+            iDeleteValueAxisMenu->removeAction(deleteAction);
+            iDeleteValueAxisSignalMapper->removeMappings(deleteAction);
+
+            QAction* showAction = showActions.at(i);
+            iShowValueAxisMenu->removeAction(showAction);
+            iShowValueAxisSignalMapper->removeMappings(showAction);
+        }
+
+        for(int i = 0; i < iEngine.animation().numValueAxes(); i++) {
+            QAction* deleteValueAxisAction = iDeleteValueAxisMenu->addAction(QString("%1").arg(i));
+            iDeleteValueAxisSignalMapper->setMapping(deleteValueAxisAction, i);
+            connect(deleteValueAxisAction, SIGNAL(triggered()), iDeleteValueAxisSignalMapper, SLOT(map()));
+
+            QAction* showValueAxisAction = iShowValueAxisMenu->addAction(QString("%1").arg(i));
+            iShowValueAxisSignalMapper->setMapping(showValueAxisAction, i);
+            connect(showValueAxisAction, SIGNAL(triggered()), iShowValueAxisSignalMapper, SLOT(map()));
+
+            iValueAxisDetailsWidgets.at(i)->setWindowTitle(QString("Value Axis %1").arg(i));
+        }
     }
 }
 

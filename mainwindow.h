@@ -37,8 +37,14 @@ public:
     void setEnabledCopyAction(bool enabled);
 
 public slots:
+    void addTimeAxisDetails();
+    void addValueAxisDetails(int);
+
+    void showValueAxisDetails(int axisNumber);
     void showTimeAxisDetails();
-    void showValueAxisDetails(int);
+
+    void hideValueAxisDetails(int axisNumber);
+    void hideTimeAxisDetails();
 
     void deleteValueAxisDetails(int axisNumber);
 
@@ -56,14 +62,20 @@ private:
     QAction*        iAddTimeAxisAction;
     QAction*        iAddValueAxisAction;
 
-    QMenu*        iDeleteValueAxisMenu;
+    QAction*        iShowTimeAxisAction;
+
+    QMenu* iAnimationMenu;
+
+    QMenu*          iDeleteValueAxisMenu;
+    QMenu*          iShowValueAxisMenu;
 
     QWidget*        iTimeAxisMainWidget;
-    QMap<int, ValueAxisDetailsWidget*>  iValueAxisDetailsWidgets;
+    QList<ValueAxisDetailsWidget*>  iValueAxisDetailsWidgets;
 
     QUndoStack*     iUndoStack;
 
     QSignalMapper* iDeleteValueAxisSignalMapper;
+    QSignalMapper* iShowValueAxisSignalMapper;
 };
 }
 #endif // MAINWINDOW_H

@@ -73,10 +73,10 @@ public:
 
 };
 
-class IllegalAxisNumberException : public AnimatorException {
+class InvalidAxisNumberException : public AnimatorException {
 
 public:
-    inline IllegalAxisNumberException(QString errorMessage) : AnimatorException (errorMessage) {}
+    inline InvalidAxisNumberException(QString errorMessage) : AnimatorException (errorMessage) {}
 
 };
 
