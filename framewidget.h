@@ -36,7 +36,7 @@ protected:
     void setValue(FrameValue &value) { frame().setValue(value); }
 
     inline Qt::DropActions dropActions() const { return Qt::CopyAction; }
-    inline Qt::DropActions dragActions() const { return Qt::CopyAction; }
+    inline Qt::DropActions dragActions() const { return Qt::IgnoreAction; }
     inline Qt::DropAction  defaultDropAction() const { return Qt::CopyAction; }
     inline Qt::DropAction  controlDropAction() const { return Qt::IgnoreAction; }
 
