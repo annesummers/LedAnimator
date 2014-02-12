@@ -39,7 +39,7 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 
     connect(iFadeToAction, SIGNAL(triggered()), this, SLOT(fadeTo()));
 
-    connect(&item, SIGNAL(selected()), this, SLOT(selected()));
+    connect(&item, SIGNAL(updated()), this, SLOT(selected()));
 
     iSignalMapper = new QSignalMapper(this);
     iSignalMapper->setMapping(&colourGroup().colourDialog(), iItem.number());
@@ -125,5 +125,5 @@ void ColourWidget::addExtraActions(QMenu *menu) {
 void ColourWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     SelectableWidget::mouseDoubleClickEvent(event);
 
-    chooseColour();
+    //chooseColour();
 }

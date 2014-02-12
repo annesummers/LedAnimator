@@ -22,7 +22,7 @@ SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item
 
     connect(iAddLedAction, SIGNAL(triggered()), this, SLOT(addLed()));
 
-    connect(&iItem, SIGNAL(selected()), this, SLOT(selected()));
+    connect(&iItem, SIGNAL(updated()), this, SLOT(selected()));
 }
 
 SocketWidget::~SocketWidget() {
