@@ -139,7 +139,7 @@ MainWindow::MainWindow(Engine& engine) :
     connect(iShowValueAxisSignalMapper, SIGNAL(mapped(int)), this, SLOT(showValueAxisDetails(int)));
 
     iShowTimeAxisAction = iAnimationMenu->addAction(tr("Show t&ime axis"));
-    connect(iAddTimeAxisAction, SIGNAL(triggered()), this, SLOT(showTimeAxisDetails()));
+    connect(iShowTimeAxisAction, SIGNAL(triggered()), this, SLOT(showTimeAxisDetails()));
 
     iDeleteValueAxisSignalMapper = new QSignalMapper(this);
     connect(iDeleteValueAxisSignalMapper, SIGNAL(mapped(int)), &iEngine.animation(), SLOT(deleteValueAxis(int)));

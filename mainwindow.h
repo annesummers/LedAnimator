@@ -36,7 +36,7 @@ public:
     void setEnabledCutAction(bool enabled);
     void setEnabledCopyAction(bool enabled);
 
-public slots:
+private slots:
     void addTimeAxisDetails();
     void addValueAxisDetails(int);
 
