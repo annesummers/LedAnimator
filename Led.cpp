@@ -59,6 +59,14 @@ Led::Led(const Led& copyLed) :
     iUndoStack(copyLed.iUndoStack),
     iHidden(false) {
 
+    if(copyLed.timeAxis() != NULL) {
+        addTimeAxis();
+    }
+
+    for(int i = 0; i < copyLed.iAxesData.size(); i++) {
+        addValueAxis(i);
+    }
+
     copyAxes(copyLed);
 
     connect(&iAnimation, SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxis()));
@@ -186,35 +194,15 @@ ValueAxisData &Led::axisAt(int axisNum) const {
 
 void Led::copyAxes(const Led &copyLed) {
     for(int i = 0; i < iAnimation.numValueAxes(); i++) {
-        //axisAt(i) = copyLed.axisAt(i);//.copyFrames(copyLed.axisAt(i));
+        //axisAt(i) = copyLed.axisAt(i);
         axisAt(i).copyFrames(copyLed.axisAt(i));
     }
 
     if(iAnimation.timeAxis() != NULL) {
-        //timeAxis() = copyLed.timeAxis();//->copyFrames(*copyLed.timeAxis());
+        //timeAxis() = copyLed.timeAxis();
         timeAxis()->copyFrames(*copyLed.timeAxis());
     }
 }
-
-/*void Led::copyTimeAxis(const Led& copyLed) {
-    if(iTimeAxisData == NULL) {
-        addTimeAxis();
-    }
-
-    timeAxis()->copyFrames(*copyLed.timeAxis());
-}
-
-void Led::copyTimeAxisFrame(const Led& copyLed, int frameNum) {
-    timeAxis()->frameAt(timeAxis()->currentFrameNum()).setValue(copyLed.timeAxis()->frameAt(frameNum).value());
-}
-
-void Led::copyValueAxis(const Led& copyLed, int axisNum) {
-    if(iAxesData.size() < axisNum - 1) {
-        addValueAxis(axisNum);
-    }
-
-    axisAt(axisNum).copyFrames(copyLed.axisAt(axisNum));
-}*/
 
 void Led::colourChanged(int frameNum) {
     iAnimation.setSaved(false);
