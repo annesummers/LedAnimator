@@ -22,6 +22,8 @@
 
 #include "constants.h"
 
+#include <QScrollArea>
+
 using namespace AnimatorUi;
 using namespace Exception;
 
@@ -36,9 +38,28 @@ MainWindow::MainWindow(Engine& engine) :
 
     iUndoStack = new QUndoStack(this);
 
-    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(this, engine);
-    LedGridWidget* ledGridWidget = new LedGridWidget(this, engine.animation(), *ledGridGroupWidget);
+    QScrollArea* scrollArea = new QScrollArea(this);
+    scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setFrameStyle(QFrame::Box);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    QHBoxLayout *layout = new QHBoxLayout(scrollArea);
+
+    LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(scrollArea, engine);
+    LedGridWidget* ledGridWidget = new LedGridWidget(scrollArea, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
+
+     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+     sizePolicy.setHorizontalStretch(0);
+     sizePolicy.setVerticalStretch(0);
+     sizePolicy.setHeightForWidth(ledGridWidget->sizePolicy().hasHeightForWidth());
+     ledGridWidget->setSizePolicy(sizePolicy);
+
+     layout->addWidget(ledGridGroupWidget);
+
+     scrollArea->setWidget(ledGridWidget);
 
     connect(&engine.animation(), SIGNAL(newLedAdded(int, int)), ledGridWidget, SLOT(addLed(int, int)));
     connect(&engine.animation(), SIGNAL(newSocketAdded(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
@@ -50,7 +71,7 @@ MainWindow::MainWindow(Engine& engine) :
     iLedDetailsWidget->show();
     connect(ledGridWidget, SIGNAL(currentLedDetails(int, int, int, QColor)), iLedDetailsWidget, SLOT(currentLedDetails(int, int, int, QColor)));
 
-    setCentralWidget(ledGridGroupWidget);
+    setCentralWidget(scrollArea);
 
     connect(&engine.animation(), SIGNAL(timeAxisAdded()), this, SLOT(addTimeAxisDetails()));
     connect(&engine.animation(), SIGNAL(valueAxisAdded(int)), this, SLOT(addValueAxisDetails(int)));
