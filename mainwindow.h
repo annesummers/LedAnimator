@@ -12,6 +12,7 @@
 #include <QUndoStack>
 #include <QUndoView>
 #include <QSignalMapper>
+#include <QSize>
 
 class Engine;
 
@@ -49,6 +50,8 @@ private slots:
 
     void deleteValueAxisDetails(int axisNumber);
 
+    void handleMaxSize(QSize maximumSize);
+
 protected:
     void closeEvent(QCloseEvent *event);
     
@@ -79,6 +82,8 @@ private:
 
     QSignalMapper* iDeleteValueAxisSignalMapper;
     QSignalMapper* iShowValueAxisSignalMapper;
+
+    QSize iPreferredSize;
 };
 }
 #endif // MAINWINDOW_H

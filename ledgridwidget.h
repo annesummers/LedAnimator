@@ -55,6 +55,8 @@ signals:
     void renumberLed(int row, int column, int oldNumber);
     void currentLedDetails(int number, int row, int column, QColor colour);
 
+    void maxSizeChanged(QSize maximumSize);
+
 public slots:
     void addLed(int row, int column, Led *led = NULL);
     void copySelected();

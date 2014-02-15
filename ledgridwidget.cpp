@@ -37,11 +37,6 @@ LedGridWidget::LedGridWidget(QWidget* parent, Animation &animation, ColourGroupG
 
     iDragArea.setRect(0, 0, 0, 0);
 
-    QSizePolicy policy = sizePolicy();
-    policy.setHorizontalStretch(0);
-    policy.setVerticalStretch(0);
-    setSizePolicy(policy);
-
     setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -95,13 +90,24 @@ void LedGridWidget::addWidget(SelectableWidget *widget, Position position) {
     iContainerWidget->setMinimumHeight(gridHeight());
     iContainerWidget->setMinimumWidth(gridWidth());
 
-    resize(gridWidth() + BORDER*2, gridHeight() + BORDER*2);
+    QSize windowSize(gridWidth() + BORDER*2, gridHeight() + BORDER*2);
 
-    setMinimumHeight(gridHeight() + BORDER*2);
-    setMinimumWidth(gridWidth() + BORDER*2);
+    resize(windowSize.width(), windowSize.height());
 
-    setMaximumHeight(gridHeight() + BORDER*2);
-    setMaximumWidth(gridWidth() + BORDER*2);
+    setMinimumHeight(windowSize.height());
+    setMinimumWidth(windowSize.width());
+
+    setMaximumHeight(windowSize.height());
+    setMaximumWidth(windowSize.width());
+
+    parentWidget()->setMaximumHeight(windowSize.height() + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
+    parentWidget()->setMaximumWidth(windowSize.width() + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
+
+    emit maxSizeChanged(QSize(windowSize.width() + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent),
+                              windowSize.height() + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent)));
+
+   // parentWidget()->parentWidget()->setMaximumHeight(gridHeight() + BORDER*2 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
+   // parentWidget()->parentWidget()->setMaximumWidth(gridWidth() + BORDER*2 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
 
     if(numRows() < position.row() + 1) {
         setMaxRow(position.row() + 1);

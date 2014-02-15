@@ -34,8 +34,6 @@ MainWindow::MainWindow(Engine& engine) :
 
     setWindowTitle(APP_NAME);
 
-    readSettings();
-
     iUndoStack = new QUndoStack(this);
 
     QScrollArea* scrollArea = new QScrollArea(this);
@@ -49,17 +47,15 @@ MainWindow::MainWindow(Engine& engine) :
     LedGridWidget* ledGridWidget = new LedGridWidget(scrollArea, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
 
-     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-     sizePolicy.setHorizontalStretch(0);
-     sizePolicy.setVerticalStretch(0);
-     sizePolicy.setHeightForWidth(ledGridWidget->sizePolicy().hasHeightForWidth());
-     ledGridWidget->setSizePolicy(sizePolicy);
+    QHBoxLayout *layout = new QHBoxLayout(scrollArea);
 
-     QHBoxLayout *layout = new QHBoxLayout(scrollArea);
+    scrollArea->setWidget(ledGridWidget);
+    layout->addWidget(ledGridWidget);
 
-     scrollArea->setWidget(ledGridWidget);
-     layout->addWidget(ledGridWidget);
+    QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    scrollArea->setSizePolicy(sizePolicy);
 
+    connect(ledGridWidget, SIGNAL(maxSizeChanged(QSize)), this, SLOT(handleMaxSize(QSize)));
 
     connect(&engine.animation(), SIGNAL(newLedAdded(int, int)), ledGridWidget, SLOT(addLed(int, int)));
     connect(&engine.animation(), SIGNAL(newSocketAdded(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
@@ -171,6 +167,8 @@ MainWindow::MainWindow(Engine& engine) :
     //connect(setNumFramesAction, SIGNAL(triggered()), &iEngine, SLOT(setNumFrames()));
 
     menuBar()->addMenu(iAnimationMenu);
+
+    readSettings();
 }
 
 MainWindow::~MainWindow() {
@@ -330,6 +328,13 @@ void MainWindow::deleteValueAxisDetails(int axisNumber) {
     }
 }
 
+void MainWindow::handleMaxSize(QSize maximumSize) {
+    setMaximumHeight(maximumSize.height());
+    setMaximumWidth(maximumSize.width());
+
+    resize(iPreferredSize);
+}
+
 void MainWindow::writeSettings() {
     QSettings settings;
 
@@ -343,7 +348,10 @@ void MainWindow::readSettings() {
     QSettings settings;
 
     settings.beginGroup(SETTINGS_MAIN_WINDOW);
-    resize(settings.value("size", QSize(600, 300)).toSize());
+
+    iPreferredSize = settings.value("size", QSize(600, 300)).toSize();
+    resize(iPreferredSize);
+
     move(settings.value("pos", QPoint(200, 200)).toPoint());
     settings.endGroup();
 }
