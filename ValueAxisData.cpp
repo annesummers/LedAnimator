@@ -22,7 +22,7 @@ ValueAxisData::ValueAxisData(QObject *parent,
         frameAt(i).doSetValue(*(new FunctionValue(parent, Function(), 0)));
     }
 
-    frameAt(iAxis.zeroValue()).setValue(*(new LinkedValue(parent, QColor())));
+    frameAt(iAxis.zeroValue()).doSetValue(*(new LinkedValue(parent, QColor())));
 
     for(int i = axis.zeroValue() + 1; i <= axis.highValue(); i++) {
         frameAt(i).doSetValue(*(new FunctionValue(parent, Function(), 0)));
