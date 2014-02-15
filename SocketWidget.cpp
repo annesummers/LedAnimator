@@ -4,7 +4,7 @@
 **                                      **
 *****************************************/
 
-#include "socketwidget.h"
+#include "SocketWidget.h"
 
 #include "selectablegroupwidget.h"
 
@@ -15,7 +15,8 @@ SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item
     iAddLedAction(NULL) {
 
     setObjectName("SocketWidget");
-    setAcceptDrops(false);
+    setAcceptDrops(true);
+    setMouseTracking(true);
 
     iAddLedAction = new QAction(tr("&Add led"), this);
     iAddLedAction->setStatusTip(tr("Add a new led"));
@@ -45,6 +46,12 @@ void SocketWidget::selected() {
 }
 
 // events -----------------------------------
+
+void SocketWidget::mouseMoveEvent(QMouseEvent *event) {
+    SelectableWidget::mouseMoveEvent(event);
+
+    gridWidget().setCurrentPosition(gridItem().position());
+}
 
 void SocketWidget::paintEvent(QPaintEvent *) {
     QPainter painter(this);

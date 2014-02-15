@@ -49,11 +49,13 @@ public:
     bool shouldMoveLeds();
 
     void setCurrentLed(Led& led);
+    void setCurrentPosition(Position position);
 
 signals:
     void hideLed(int number);
     void renumberLed(int row, int column, int oldNumber);
-    void currentLedDetails(int number, int row, int column, QColor colour);
+    void currentLedChanged(int number, QColor colour);
+    void currentPositionChanged(int row, int column);
 
     void maxSizeChanged(QSize maximumSize);
 

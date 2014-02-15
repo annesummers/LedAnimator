@@ -82,7 +82,7 @@ void LedGridWidget::addWidget(SelectableWidget *widget, Position position) {
     iLedGridLayout->setColumnMinimumWidth(position.column(), widget->width() + 4);
     iLedGridLayout->setRowMinimumHeight(position.row(), widget->height() + 4);
 
-    resize(gridWidth(), gridHeight());
+    //resize(gridWidth(), gridHeight());
 
     iContainerWidget->setMaximumHeight(gridHeight());
     iContainerWidget->setMaximumWidth(gridWidth());
@@ -105,9 +105,6 @@ void LedGridWidget::addWidget(SelectableWidget *widget, Position position) {
 
     emit maxSizeChanged(QSize(windowSize.width() + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent),
                               windowSize.height() + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent)));
-
-   // parentWidget()->parentWidget()->setMaximumHeight(gridHeight() + BORDER*2 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
-   // parentWidget()->parentWidget()->setMaximumWidth(gridWidth() + BORDER*2 + qApp->style()->pixelMetric(QStyle::PM_ScrollBarExtent));
 
     if(numRows() < position.row() + 1) {
         setMaxRow(position.row() + 1);
@@ -256,7 +253,11 @@ void LedGridWidget::renumberLed(Led& led) {
 void LedGridWidget::setCurrentLed(Led& led) {
     iCurrentLed = &led;
 
-    emit currentLedDetails(led.number(), led.position().row(), led.position().column(), led.currentColour());
+    emit currentLedChanged(led.number(), led.currentColour());
+}
+
+void LedGridWidget::setCurrentPosition(Position position) {
+    emit currentPositionChanged(position.row(), position.column());
 }
 
 // slots --------------------

@@ -125,6 +125,7 @@ void LedWidget::addExtraActions(QMenu* menu) {
 void LedWidget::mouseMoveEvent(QMouseEvent *event) {
     SelectableWidget::mouseMoveEvent(event);
 
+    gridWidget().setCurrentPosition(led().position());
     gridWidget().setCurrentLed(led());
 }
 

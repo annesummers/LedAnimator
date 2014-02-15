@@ -65,7 +65,8 @@ MainWindow::MainWindow(Engine& engine) :
     iLedDetailsWidget = new LedDetailsWidget(NULL);
     iLedDetailsWidget->setObjectName(QString::fromUtf8("ledDetailsWidget"));
     iLedDetailsWidget->show();
-    connect(ledGridWidget, SIGNAL(currentLedDetails(int, int, int, QColor)), iLedDetailsWidget, SLOT(currentLedDetails(int, int, int, QColor)));
+    connect(ledGridWidget, SIGNAL(currentLedChanged(int, QColor)), iLedDetailsWidget, SLOT(handleCurrentLedChanged(int,QColor)));
+    connect(ledGridWidget, SIGNAL(currentPositionChanged(int,int)), iLedDetailsWidget, SLOT(handleCurrentPositionChanged(int,int)));
 
     setCentralWidget(scrollArea);
 

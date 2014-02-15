@@ -18,7 +18,8 @@ public:
     ~LedDetailsWidget();
 
 private slots:
-    void currentLedDetails(int number, int row, int column, QColor colour);
+    void handleCurrentLedChanged(int number, QColor colour);
+    void handleCurrentPositionChanged(int row, int column);
     
 private:
     Ui::LedDetailsWidget *ui;
