@@ -39,7 +39,7 @@ ColourWidget::ColourWidget(QWidget* parent, ColourGroupWidget &groupWidget, Sele
 
     connect(iFadeToAction, SIGNAL(triggered()), this, SLOT(fadeTo()));
 
-    connect(&item, SIGNAL(updated()), this, SLOT(selected()));
+    connect(&item, SIGNAL(updated()), this, SLOT(update()));
 
     iSignalMapper = new QSignalMapper(this);
     iSignalMapper->setMapping(&colourGroup().colourDialog(), iItem.number());
@@ -73,7 +73,7 @@ void ColourWidget::colourDialogAccepted(int number) {
     iSignalMapper->disconnect(this);
 }
 
-void ColourWidget::updated() {
+void ColourWidget::update() {
     int hue = colour().hue();
     if(hue == -1) {
         hue = 0;
@@ -84,7 +84,7 @@ void ColourWidget::updated() {
                .arg(colour().saturation())
                .arg(colour().value()));
 
-    update();
+    QWidget::update();
 }
 
 void ColourWidget::fade() {

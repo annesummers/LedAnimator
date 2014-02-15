@@ -84,20 +84,20 @@ TimeAxisPlayWidget::TimeAxisPlayWidget(QWidget* parent, Animation& animation, Ti
 
     gridLayout->addWidget(iRepeatButton, 0, 5, 1, 1);
 
-    QObject::connect(iFirstButton, SIGNAL(clicked()), this, SLOT(firstClicked()));
-    QObject::connect(iPreviousButton, SIGNAL(clicked()), this, SLOT(previousClicked()));
-    QObject::connect(iPlayButton, SIGNAL(clicked()), this, SLOT(playClicked()));
-    QObject::connect(iNextButton, SIGNAL(clicked()), this, SLOT(nextClicked()));
-    QObject::connect(iLastButton, SIGNAL(clicked()), this, SLOT(lastClicked()));
-    QObject::connect(iRepeatButton, SIGNAL(clicked()), this, SLOT(repeatClicked()));
+    QObject::connect(iFirstButton, SIGNAL(clicked()), this, SLOT(first()));
+    QObject::connect(iPreviousButton, SIGNAL(clicked()), this, SLOT(previous()));
+    QObject::connect(iPlayButton, SIGNAL(clicked()), this, SLOT(play()));
+    QObject::connect(iNextButton, SIGNAL(clicked()), this, SLOT(next()));
+    QObject::connect(iLastButton, SIGNAL(clicked()), this, SLOT(last()));
+    QObject::connect(iRepeatButton, SIGNAL(clicked()), this, SLOT(repeat()));
 
-    QObject::connect(&iTimeAxis, SIGNAL(currentFrameChanged(int)), this, SLOT(currentFrameChanged(int)));
-    QObject::connect(&iTimeAxis, SIGNAL(stopped()), this, SLOT(stopped()));
+    QObject::connect(&iTimeAxis, SIGNAL(handleCurrentFrameChanged(int)), this, SLOT(handleCurrentFrameChanged(int)));
+    QObject::connect(&iTimeAxis, SIGNAL(stop()), this, SLOT(stop()));
 }
 
 // slots ---------------------------------
 
-void TimeAxisPlayWidget::currentFrameChanged(int currentFrame) {
+void TimeAxisPlayWidget::handleCurrentFrameChanged(int currentFrame) {
     //iFrameNumberLabel->setText(QString("%1").arg(currentFrame));
     if(currentFrame == iTimeAxis.lowValue()) {
         iFirstButton->setEnabled(false);
@@ -112,7 +112,7 @@ void TimeAxisPlayWidget::currentFrameChanged(int currentFrame) {
     }
 }
 
-void TimeAxisPlayWidget::playClicked() {
+void TimeAxisPlayWidget::play() {
     // TODO can we use a state machine here?
     if(!iTimeAxis.isPlaying()) {
         iTimeAxis.play(iRepeatButton->isChecked());
@@ -122,11 +122,11 @@ void TimeAxisPlayWidget::playClicked() {
     }
 }
 
-void TimeAxisPlayWidget::lastClicked() {
+void TimeAxisPlayWidget::last() {
     iTimeAxis.setCurrentFrame(iTimeAxis.highValue());
 }
 
-void TimeAxisPlayWidget::nextClicked() {
+void TimeAxisPlayWidget::next() {
     int frame = iTimeAxis.currentFrameNum() + 1;
     if(frame > iTimeAxis.highValue()) {
         frame = iTimeAxis.highValue();
@@ -135,7 +135,7 @@ void TimeAxisPlayWidget::nextClicked() {
     iTimeAxis.setCurrentFrame(frame);
 }
 
-void TimeAxisPlayWidget::previousClicked() {
+void TimeAxisPlayWidget::previous() {
     int frame = iTimeAxis.currentFrameNum() - 1;
     if(frame < iTimeAxis.lowValue()) {
         frame = iTimeAxis.lowValue();
@@ -144,14 +144,14 @@ void TimeAxisPlayWidget::previousClicked() {
     iTimeAxis.setCurrentFrame(frame);
 }
 
-void TimeAxisPlayWidget::firstClicked() {
+void TimeAxisPlayWidget::first() {
     iTimeAxis.setCurrentFrame(iTimeAxis.lowValue());
 }
 
-void TimeAxisPlayWidget::repeatClicked() {
+void TimeAxisPlayWidget::repeat() {
     iTimeAxis.setRepeating(iTimeAxis.isRepeating());
 }
 
-void TimeAxisPlayWidget::stopped() {
+void TimeAxisPlayWidget::stop() {
     iPlayButton->setIcon(QIcon(":/images/play.png"));
 }

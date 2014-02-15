@@ -29,7 +29,7 @@ public:
     inline bool isSelected() { return iItem.isSelected(); }
 
 private slots:
-    inline void selected() { update(); }
+   // inline void selected() { update(); }
 
     void cut();
     void copy();

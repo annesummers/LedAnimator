@@ -9,7 +9,7 @@ FrameDetailsWidget::FrameDetailsWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    currentFrameChanged(0);
+    handleCurrentFrameChanged(0);
 }
 
 FrameDetailsWidget::~FrameDetailsWidget()
@@ -17,11 +17,11 @@ FrameDetailsWidget::~FrameDetailsWidget()
     delete ui;
 }
 
-void FrameDetailsWidget::currentFrameChanged(int currentFrame) {
+void FrameDetailsWidget::handleCurrentFrameChanged(int currentFrame) {
     ui->currentFrame->setText(QString("%1").arg(currentFrame));
 }
 
-void FrameDetailsWidget::highValueChanged(int highValue) {
+void FrameDetailsWidget::handleHighValueChanged(int highValue) {
     ui->numFrames->setText(QString("%1").arg(highValue));
 }
 

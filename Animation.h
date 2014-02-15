@@ -56,10 +56,6 @@ public:
     void cloneLed(Position fromPosition, Position toPosition);
     void pasteClipboardLed(Position fromPosition, Position toPosition);
 
-   // void copyLedTimeAxis(Position fromPosition, Position toPosition);
-   // void copyLedValueAxis(Position fromPosition, Position toPosition, int axisNum);
-   // void copyLedCurrentFrame(Position fromPosition, Position toPosition, int copyFrameNum);
-
     void renumberLed(Position position, int oldNumber, int newNumber);
 
     Led* ledAt(Position position) const;

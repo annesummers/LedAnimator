@@ -276,7 +276,7 @@ void LedGridWidget::addSocket(int row, int column) {
     addWidget(new SocketWidget(this, *this, *item), Position(row, column));
 }
 
-void LedGridWidget::ledDeleted(int row, int column, int ledNumber) {
+void LedGridWidget::handleLedDeleted(int row, int column, int ledNumber) {
     qDebug("LedGridWidget::ledDeleted : %d,%d #%d", row, column, ledNumber);
     SelectableWidget& ledWidget = widgetAt(Position(row, column));
 
@@ -289,7 +289,7 @@ void LedGridWidget::ledDeleted(int row, int column, int ledNumber) {
     update();
 }
 
-void LedGridWidget::ledMoved(int oldRow, int oldColumn, int newRow, int newColumn) {
+void LedGridWidget::handleLedMoved(int oldRow, int oldColumn, int newRow, int newColumn) {
     qDebug("LedGridWidget::ledMoved : from %d,%d to %d,%d", oldRow, oldColumn, newRow, newColumn);
 
     addSocket(oldRow, oldColumn);

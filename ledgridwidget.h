@@ -65,9 +65,8 @@ public slots:
 
 private slots:
     void addSocket(int row, int column);
-    void ledDeleted(int row, int column, int ledNumber);
-    void ledMoved(int oldRow, int oldColumn, int newRow, int newColumn);
-
+    void handleLedDeleted(int row, int column, int ledNumber);
+    void handleLedMoved(int oldRow, int oldColumn, int newRow, int newColumn);
 
 protected:
     void mousePressEvent(QMouseEvent* event);

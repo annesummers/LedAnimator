@@ -25,26 +25,26 @@ FrameListWidget::FrameListWidget(QWidget *parent,
     // create the zero widget
     FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().zeroValue()));
     iFramesList.insert(0, frame);
-    connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
+    connect(&frame->frame(), SIGNAL(updated()), this, SLOT(update()));
 
-    lowValueChanged(0, axisData.axis().lowValue());
-    highValueChanged(0, axisData.axis().highValue());
+    handleLowValueChanged(0, axisData.axis().lowValue());
+    handleHighValueChanged(0, axisData.axis().highValue());
 
     setFocusPolicy(Qt::ClickFocus);
 
-    connect(&axisData.axis(), SIGNAL(lowValueChanged(int)), this, SLOT(lowValueChanged(int)));
-    connect(&axisData.axis(), SIGNAL(highValueChanged(int)), this, SLOT(highValueChanged(int)));
-    connect(&axisData.axis(), SIGNAL(framesInserted(int, int)), this, SLOT(framesInserted(int, int)));
+    connect(&axisData.axis(), SIGNAL(handleLowValueChanged(int)), this, SLOT(handleLowValueChanged(int)));
+    connect(&axisData.axis(), SIGNAL(handleHighValueChanged(int)), this, SLOT(handleHighValueChanged(int)));
+    connect(&axisData.axis(), SIGNAL(handleFramesInserted(int, int)), this, SLOT(handleFramesInserted(int, int)));
 }
 
 // slots --------------------
 
-void FrameListWidget::lowValueChanged(int oldLowValue, int lowValue) {
+void FrameListWidget::handleLowValueChanged(int oldLowValue, int lowValue) {
     if(lowValue < oldLowValue) {  // we need to add more frames
         for(int i = 0; i <  qAbs(lowValue - oldLowValue); i++) {
             FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().lowValue() + i));
             iFramesList.insert(i, frame);
-            connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
+            connect(&frame->frame(), SIGNAL(updated()), this, SLOT(update()));
         }
     } else if (lowValue > oldLowValue ) {  // we need to remove some frames; take them from the start
         for(int i = 0; i <  qAbs(oldLowValue - lowValue); i++) {
@@ -65,12 +65,12 @@ void FrameListWidget::setSize() {
     doResize();
 }
 
-void FrameListWidget::highValueChanged(int oldHighValue, int highValue) {
+void FrameListWidget::handleHighValueChanged(int oldHighValue, int highValue) {
     if(highValue > oldHighValue) {  // we need to add more frames
         for(int i = qAbs(highValue - oldHighValue) - 1; i >= 0 ; i--) {
             FrameWidget* frame = new FrameWidget(this, *this, iAxisData.frameAt(iAxisData.axis().highValue() - i));
             iFramesList.append(frame);
-            connect(&frame->frame(), SIGNAL(updateAll()), this, SLOT(updateAll()));
+            connect(&frame->frame(), SIGNAL(updated()), this, SLOT(update()));
         }
     } else if (highValue < oldHighValue ) {  // we need to remove some frames; take them from the end
         for(int i = qAbs(oldHighValue - highValue); i >= 0; i--) {
@@ -84,11 +84,7 @@ void FrameListWidget::highValueChanged(int oldHighValue, int highValue) {
     setSize();
 }
 
-void FrameListWidget::updateAll() {
-    update();
-}
-
-void FrameListWidget::framesInserted(int numFrames, int framesAdded) {
+void FrameListWidget::handleFramesInserted(int numFrames, int framesAdded) {
     Q_UNUSED(numFrames);
     Q_UNUSED(framesAdded);
 }

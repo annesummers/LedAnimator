@@ -18,10 +18,10 @@ public:
     ~FrameDetailsWidget();
 
 public slots:
-    void highValueChanged(int highValue);
+    void handleHighValueChanged(int highValue);
 
 private slots:
-    void currentFrameChanged(int currentFrame);
+    void handleCurrentFrameChanged(int currentFrame);
  //   void framesInserted(int numFrames, int framesAdded);
     
 private:

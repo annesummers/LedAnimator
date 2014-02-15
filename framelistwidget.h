@@ -30,11 +30,9 @@ signals:
     void resized();
 
 private slots:
-    void lowValueChanged(int oldLowValue, int lowValue);
-    void highValueChanged(int oldHighValue, int highValue);
-    void framesInserted(int numFrames, int framesAdded);
-
-    void updateAll();
+    void handleLowValueChanged(int oldLowValue, int lowValue);
+    void handleHighValueChanged(int oldHighValue, int highValue);
+    void handleFramesInserted(int numFrames, int framesAdded);
 
 protected:
     bool validKeyPress(Qt::Key key);

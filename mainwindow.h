@@ -50,7 +50,7 @@ private slots:
 
     void deleteValueAxisDetails(int axisNumber);
 
-    void handleMaxSize(QSize maximumSize);
+    void handleMaxSizeChanged(QSize maximumSize);
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -68,7 +68,7 @@ private:
 
     QAction*        iShowTimeAxisAction;
 
-    QMenu* iAnimationMenu;
+    QMenu*          iAnimationMenu;
 
     QMenu*          iDeleteValueAxisMenu;
     QMenu*          iShowValueAxisMenu;

@@ -55,7 +55,7 @@ MainWindow::MainWindow(Engine& engine) :
     QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     scrollArea->setSizePolicy(sizePolicy);
 
-    connect(ledGridWidget, SIGNAL(maxSizeChanged(QSize)), this, SLOT(handleMaxSize(QSize)));
+    connect(ledGridWidget, SIGNAL(maxSizeChanged(QSize)), this, SLOT(handleMaxSizeChanged(QSize)));
 
     connect(&engine.animation(), SIGNAL(newLedAdded(int, int)), ledGridWidget, SLOT(addLed(int, int)));
     connect(&engine.animation(), SIGNAL(newSocketAdded(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
@@ -197,7 +197,7 @@ void MainWindow::addTimeAxisDetails() {
     connect(iEngine.animation().timeAxis(), SIGNAL(highValueChanged(int)), frameDetailsWidget, SLOT(highValueChanged(int)));
     //connect(&engine.animation(), SIGNAL(framesInserted(int,int)), frameDetailsWidget, SLOT(framesInserted(int, int)));
 
-    frameDetailsWidget->highValueChanged(iEngine.animation().timeAxis()->highValue());
+    frameDetailsWidget->handleHighValueChanged(iEngine.animation().timeAxis()->highValue());
 
     TimeAxisPlayWidget* playInfoWidget = new TimeAxisPlayWidget(iTimeAxisMainWidget, iEngine.animation(), *iEngine.animation().timeAxis());
     playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));
@@ -329,7 +329,7 @@ void MainWindow::deleteValueAxisDetails(int axisNumber) {
     }
 }
 
-void MainWindow::handleMaxSize(QSize maximumSize) {
+void MainWindow::handleMaxSizeChanged(QSize maximumSize) {
     setMaximumHeight(maximumSize.height());
     setMaximumWidth(maximumSize.width());
 

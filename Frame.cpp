@@ -60,7 +60,7 @@ void Frame::doSetValue(const FrameValue& value) {
     iValue = (FrameValue*)(&value);
 
     if(value.type() == kLinked) {
-        emit updateAll();
+        emit updated();
     } else {
         if(value.type() == kFunction) {
 

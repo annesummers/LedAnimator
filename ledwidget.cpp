@@ -23,7 +23,7 @@ LedWidget::LedWidget(QWidget *parent, /*Animation& animation,*/ ColourGroupWidge
     setAcceptDrops(false);
 
     //connect(&led, SIGNAL(ledUpdated()), this, SLOT(ledUpdated()));
-    connect(&led, SIGNAL(updated()), this, SLOT(updated()));
+    connect(&led, SIGNAL(updated()), this, SLOT(update()));
 
     iRenumberAction = new QAction(tr("&Renumber..."), this);
     iRenumberAction->setStatusTip(tr("Renumber this led"));
@@ -86,8 +86,8 @@ void LedWidget::copyFrame() {
     gridWidget().copySelectedLedsCurrentFrames();
 }
 
-void LedWidget::updated() {
-    ColourWidget::updated();
+void LedWidget::update() {
+    ColourWidget::update();
 
     gridWidget().setCurrentLed(led());
 }

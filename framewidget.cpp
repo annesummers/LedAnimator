@@ -36,9 +36,9 @@ FrameWidget::FrameWidget(QWidget* parent, ColourGroupWidget& frameGroup, Frame& 
 
     connect(iFunctionFadeToAction, SIGNAL(triggered()), this, SLOT(functionFadeTo()));
 
-    connect(&frame, SIGNAL(valueChanged()), this, SLOT(updated()));
+    connect(&frame, SIGNAL(valueChanged()), this, SLOT(update()));
 
-    updated();
+    update();
 }
 
 void FrameWidget::addDefaultAction(QMenu* menu) {

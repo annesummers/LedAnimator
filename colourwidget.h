@@ -32,7 +32,7 @@ public:
     virtual void setValue(FrameValue& value) = 0;
 
 protected slots:
-    virtual void updated();
+    virtual void update();
     void chooseColour();
 
 private slots:

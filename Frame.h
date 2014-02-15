@@ -68,7 +68,6 @@ protected:
 
 signals:
     void valueChanged();
-    void updateAll();
 
 private:
 };

@@ -15,7 +15,7 @@ SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item
     iAddLedAction(NULL) {
 
     setObjectName("SocketWidget");
-    setAcceptDrops(true);
+    setAcceptDrops(false);
     setMouseTracking(true);
 
     iAddLedAction = new QAction(tr("&Add led"), this);

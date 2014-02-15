@@ -52,18 +52,6 @@ public:
 
     void copyAxes(const Led& copyLed);
 
-    //void copyTimeAxis(const Led& copyLed);
-    //void copyTimeAxisFrame(const Led& copyLed, int frameNum);
-    //void copyValueAxis(const Led& copyLed, int axisNum);
-
-   // inline Animation& animation() { return iAnimation; }
-
-    //Led& operator=(const Led& led);
-
-//signals:
-    //void ledUpdated();
-    //void updated();
-
 public slots:
     void addTimeAxis();
     void addValueAxis(int axisNumber);
