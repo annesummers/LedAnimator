@@ -21,7 +21,7 @@ RenumberLedDialog::RenumberLedDialog(QWidget *parent, Animation &animation) :
         }
     }
 
-    ui->ledNumberCombo->insertItem(0, QString("%1").arg(animation.nextLedNumber()));
+    //ui->ledNumberCombo->insertItem(0, QString("%1").arg(animation.nextLedNumber()));
     ui->ledNumberCombo->setCurrentIndex(0);
 }
 
@@ -29,6 +29,27 @@ RenumberLedDialog::~RenumberLedDialog() {
     delete ui;
 }
 
-void AnimatorUi::RenumberLedDialog::on_ledNumberCombo_currentIndexChanged(const QString &chosenNumber) {
-    iNewNumber = chosenNumber.toInt();
+void RenumberLedDialog::on_ledNumberCombo_currentIndexChanged(const QString &chosenNumber) {
+    if(ui->buttonGroup->checkedButton() == ui->missing) {
+        iNewNumber = chosenNumber.toInt();
+    }
+}
+
+void RenumberLedDialog::on_ledNumberSpin_valueChanged(int newValue) {
+    if(ui->buttonGroup->checkedButton() == ui->choose) {
+        iNewNumber = newValue;
+    }
+}
+
+void RenumberLedDialog::on_missing_toggled() {
+    if(ui->missing->isChecked()) {
+        iNewNumber = ui->ledNumberCombo->currentIndex();
+    }
+}
+
+void RenumberLedDialog::on_choose_toggled() {
+    if(ui->choose->isChecked()) {
+        iNewNumber = ui->ledNumberSpin->value();
+    }
+
 }

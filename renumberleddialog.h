@@ -26,6 +26,9 @@ public:
     
 private slots:
     void on_ledNumberCombo_currentIndexChanged(const QString &chosenNumber);
+    void on_ledNumberSpin_valueChanged(int newValue);
+    void on_missing_toggled();
+    void on_choose_toggled();
 
 private:
     Ui::RenumberLedDialog *ui;
