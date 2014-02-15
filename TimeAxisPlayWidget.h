@@ -28,16 +28,16 @@ public:
     explicit TimeAxisPlayWidget(QWidget* parent, Animation &animation, AnimatorModel::TimeAxis &timeAxis);
 
 private slots:
-    void playClicked();
-    void firstClicked();
-    void previousClicked();
-    void nextClicked();
-    void lastClicked();
-    void repeatClicked();
+    void play();
+    void first();
+    void previous();
+    void next();
+    void last();
+    void repeat();
 
-    void stopped();
+    void stop();
 
-    void currentFrameChanged(int currentFrame);
+    void handleCurrentFrameChanged(int currentFrame);
 
 private:
     Animation&      iAnimation;

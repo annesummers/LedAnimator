@@ -25,7 +25,6 @@ public:
 
 private slots:
     void addLed();
-    void selected();
 
 protected:
    void paintEvent(QPaintEvent *);

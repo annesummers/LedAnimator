@@ -23,7 +23,7 @@ SocketWidget::SocketWidget(QWidget *parent, LedGridWidget& group, GridItem& item
 
     connect(iAddLedAction, SIGNAL(triggered()), this, SLOT(addLed()));
 
-    connect(&iItem, SIGNAL(updated()), this, SLOT(selected()));
+    connect(&iItem, SIGNAL(updated()), this, SLOT(update()));
 }
 
 SocketWidget::~SocketWidget() {
@@ -39,10 +39,6 @@ void SocketWidget::addDefaultAction(QMenu *menu) {
 
 void SocketWidget::addLed() {
     gridWidget().addSelectedLeds();
-}
-
-void SocketWidget::selected() {
-    update();
 }
 
 // events -----------------------------------
