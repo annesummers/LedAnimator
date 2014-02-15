@@ -45,8 +45,6 @@ MainWindow::MainWindow(Engine& engine) :
     scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
-    QHBoxLayout *layout = new QHBoxLayout(scrollArea);
-
     LedGridGroupWidget* ledGridGroupWidget = new LedGridGroupWidget(scrollArea, engine);
     LedGridWidget* ledGridWidget = new LedGridWidget(scrollArea, engine.animation(), *ledGridGroupWidget);
     ledGridWidget->setObjectName(QString::fromUtf8("LedGridWidget"));
@@ -57,9 +55,11 @@ MainWindow::MainWindow(Engine& engine) :
      sizePolicy.setHeightForWidth(ledGridWidget->sizePolicy().hasHeightForWidth());
      ledGridWidget->setSizePolicy(sizePolicy);
 
-     layout->addWidget(ledGridGroupWidget);
+     QHBoxLayout *layout = new QHBoxLayout(scrollArea);
 
      scrollArea->setWidget(ledGridWidget);
+     layout->addWidget(ledGridWidget);
+
 
     connect(&engine.animation(), SIGNAL(newLedAdded(int, int)), ledGridWidget, SLOT(addLed(int, int)));
     connect(&engine.animation(), SIGNAL(newSocketAdded(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
