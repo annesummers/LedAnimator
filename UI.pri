@@ -7,7 +7,6 @@ SOURCES += \
     framelistwidget.cpp \
     colourgroupwidget.cpp \
     colourwidget.cpp \
-    socketwidget.cpp \
     selectablegroupwidget.cpp \
     selectablewidget.cpp \
     selectablegroupgroupwidget.cpp \
@@ -24,7 +23,8 @@ SOURCES += \
     NewAnimationDialog.cpp \
     NewValueAxisDialog.cpp \
     NewTimeAxisDialog.cpp \
-    LedDetailsWidget.cpp
+    LedDetailsWidget.cpp \
+    SocketWidget.cpp
 
 HEADERS += \
     ledwidget.h \
@@ -36,7 +36,6 @@ HEADERS += \
     grouplistwidget.h \
     colourgroupwidget.h \
     colourwidget.h \
-    socketwidget.h \
     selectablegroupwidget.h \
     selectablewidget.h \
     ledgridwidget.h \
@@ -50,7 +49,8 @@ HEADERS += \
     NewAnimationDialog.h \
     NewValueAxisDialog.h \
     MainWindow.h \
-    NewTimeAxisDialog.h
+    NewTimeAxisDialog.h \
+    SocketWidget.h
 
 
 
