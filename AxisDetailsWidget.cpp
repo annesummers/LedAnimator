@@ -99,42 +99,6 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
 
     mainLayout->addLayout(contentsLayout);
 
-    /*QWidget* widget = new QWidget(this);
-    widget->setObjectName(QString::fromUtf8("widget"));
-
-    //iGridLayout->addWidget(widget, 0, 0, 1, 1);
-
-
-
-    iGridLayout = new QGridLayout();
-    iGridLayout->setObjectName(QString::fromUtf8("iGridLayout"));
-
-    QWidget* spacer = new QWidget(this);
-    spacer->setObjectName(QString::fromUtf8("spacer"));
-
-    QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    sizePolicy1.setHorizontalStretch(0);
-    sizePolicy1.setVerticalStretch(0);
-    sizePolicy1.setHeightForWidth(spacer->sizePolicy().hasHeightForWidth());
-    spacer->setSizePolicy(sizePolicy1);
-
-    QVBoxLayout* verticalLayout = new QVBoxLayout();
-    verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-    verticalLayout->addLayout(iGridLayout);
-    verticalLayout->addWidget(spacer);
-
-    QHBoxLayout* horizontalLayout_2 = new QHBoxLayout(iScrollAreaWidgetContents);
-    horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
-    horizontalLayout_2->addLayout(verticalLayout);
-
-    QHBoxLayout* horizontalLayout = new QHBoxLayout(iScrollAreaWidgetContents);
-    horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-    horizontalLayout->addWidget(scrollArea);
-
-    QVBoxLayout* mainVerticalLayout = new QVBoxLayout();
-    mainVerticalLayout->setObjectName(QString::fromUtf8("mainVerticalLayout"));
-    mainVerticalLayout->addWidget(spacer);*/
-
     setAcceptDrops(true);
 
     connect(iFrameSlider, SIGNAL(valueChanged(int)), &axis, SLOT(setCurrentFrame(int)));

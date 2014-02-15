@@ -24,8 +24,6 @@ public:
     explicit FrameListWidget(QWidget *parent,
                              const AxisData& axisData,
                              ColourGroupGroupWidget &framesListGroup);
-
-  //  const Led& led() { return iLed; }
     void doResize();
 
 signals:
