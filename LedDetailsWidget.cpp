@@ -9,6 +9,8 @@ LedDetailsWidget::LedDetailsWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LedDetailsWidget) {
     ui->setupUi(this);
+
+    setWindowTitle(QString("Led Details"));
 }
 
 LedDetailsWidget::~LedDetailsWidget() {

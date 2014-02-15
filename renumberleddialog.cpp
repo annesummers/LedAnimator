@@ -23,6 +23,8 @@ RenumberLedDialog::RenumberLedDialog(QWidget *parent, Animation &animation) :
 
     //ui->ledNumberCombo->insertItem(0, QString("%1").arg(animation.nextLedNumber()));
     ui->ledNumberCombo->setCurrentIndex(0);
+
+    setWindowTitle(QString("Renumber Led"));
 }
 
 RenumberLedDialog::~RenumberLedDialog() {

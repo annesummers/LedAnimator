@@ -15,6 +15,8 @@ NewTimeAxisDialog::NewTimeAxisDialog(QWidget *parent, Engine& engine) :
 
     iNumFrames = ui->iNumFramesSpin->value();
     iFrameRate = ui->iFrameRateSpin->value();
+
+    setWindowTitle(QString("New Time Axis Details"));
 }
 
 NewTimeAxisDialog::~NewTimeAxisDialog() {

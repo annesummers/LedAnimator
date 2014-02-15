@@ -19,6 +19,7 @@ namespace AnimatorUi {
 
 class SelectableGroupGroupWidget;
 class ValueAxisDetailsWidget;
+class LedDetailsWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT    
@@ -71,6 +72,8 @@ private:
 
     QWidget*        iTimeAxisMainWidget;
     QList<ValueAxisDetailsWidget*>  iValueAxisDetailsWidgets;
+
+    LedDetailsWidget* iLedDetailsWidget;
 
     QUndoStack*     iUndoStack;
 

@@ -17,6 +17,8 @@ NewAnimationDialog::NewAnimationDialog(QWidget *parent, Engine &engine) :
 
     iNumRows = ui->iNumRowsSpin->value();
     iNumColumns = ui->iNumColumnsSpin->value();
+
+    setWindowTitle(QString("New Animation Details"));
 }
 
 NewAnimationDialog::~NewAnimationDialog() {

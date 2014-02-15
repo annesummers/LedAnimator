@@ -16,6 +16,8 @@ NewValueAxisDialog::NewValueAxisDialog(QWidget *parent, Engine &engine) :
 
     iLowValue = ui->iLowValueSpin->value();
     iHighValue = ui->iHighValueSpin->value();
+
+    setWindowTitle(QString("New Value Axis Details"));
 }
 
 NewValueAxisDialog::~NewValueAxisDialog() {

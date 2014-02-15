@@ -45,10 +45,10 @@ MainWindow::MainWindow(Engine& engine) :
     connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), ledGridWidget, SLOT(ledDeleted(int, int, int)));
     connect(&engine.animation(), SIGNAL(ledMoved(int, int, int, int)), ledGridWidget, SLOT(ledMoved(int, int, int, int)));
 
-    LedDetailsWidget* ledDetailsWidget = new LedDetailsWidget(NULL);
-    ledDetailsWidget->setObjectName(QString::fromUtf8("ledDetailsWidget"));
-    ledDetailsWidget->show();
-    connect(ledGridWidget, SIGNAL(currentLedDetails(int, int, int, QColor)), ledDetailsWidget, SLOT(currentLedDetails(int, int, int, QColor)));
+    iLedDetailsWidget = new LedDetailsWidget(NULL);
+    iLedDetailsWidget->setObjectName(QString::fromUtf8("ledDetailsWidget"));
+    iLedDetailsWidget->show();
+    connect(ledGridWidget, SIGNAL(currentLedDetails(int, int, int, QColor)), iLedDetailsWidget, SLOT(currentLedDetails(int, int, int, QColor)));
 
     setCentralWidget(ledGridGroupWidget);
 
@@ -162,6 +162,8 @@ MainWindow::~MainWindow() {
     for(ValueAxisDetailsWidget* detailsWidget : iValueAxisDetailsWidgets) {
         delete detailsWidget;
     }
+
+    delete iLedDetailsWidget;
 }
 
 void MainWindow::addTimeAxisDetails() {
