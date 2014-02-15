@@ -99,11 +99,6 @@ void LedAnimCodec::writeHeader() {
 }
 
 void LedAnimCodec::readHeader() {
-/*
-     if (readCharacter().unsignedCharValue() != HEADER_BYTE) {
-         throw new InvalidAnimationException("No header byte");
-     }
-*/
     if(!isAnimatorFile()) {
         throw InvalidFileException("The file is not a valid Led Animator file");
     }
@@ -218,11 +213,9 @@ void LedAnimCodec::writeValueAxisData(int axisNum) {
             ledNum++;
         }
 
-        AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
+        writeInt(ledNum);
 
-        if(ledNum == 61) {
-            qDebug() << 61;
-        }
+        AxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
         //axisData.calculateRanges();
         writeRanges(axisData);
@@ -239,9 +232,7 @@ void LedAnimCodec::writeValueAxisData(int axisNum) {
                     ledNum++;
                 }
 
-                if(iVerbose) {
-                    writeInt(ledNum);
-                }
+                writeInt(ledNum);
 
                 AxisData* axisData = &iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
@@ -294,9 +285,7 @@ void LedAnimCodec::writeTimeAxisData() {
                 ledNum++;
             }
 
-            if(iVerbose) {
-                writeInt(ledNum);
-            }
+            writeInt(ledNum);
 
             AxisData* axisData = iAnimation.ledAt(ledNum)->timeAxis();
 
@@ -365,6 +354,9 @@ void LedAnimCodec::readValueAxisData(int axisNum) {
         while(iAnimation.isMissing(ledNum)){
             ledNum++;
         }
+
+        readCharacter();
+        readCharacter();
 
         ValueAxisData& axisData = iAnimation.ledAt(ledNum)->axisAt(axisNum);
 
