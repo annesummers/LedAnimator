@@ -91,8 +91,8 @@ TimeAxisPlayWidget::TimeAxisPlayWidget(QWidget* parent, Animation& animation, Ti
     QObject::connect(iLastButton, SIGNAL(clicked()), this, SLOT(last()));
     QObject::connect(iRepeatButton, SIGNAL(clicked()), this, SLOT(repeat()));
 
-    QObject::connect(&iTimeAxis, SIGNAL(handleCurrentFrameChanged(int)), this, SLOT(handleCurrentFrameChanged(int)));
-    QObject::connect(&iTimeAxis, SIGNAL(stop()), this, SLOT(stop()));
+    QObject::connect(&iTimeAxis, SIGNAL(currentFrameChanged(int)), this, SLOT(handleCurrentFrameChanged(int)));
+    QObject::connect(&iTimeAxis, SIGNAL(stopped()), this, SLOT(stop()));
 }
 
 // slots ---------------------------------

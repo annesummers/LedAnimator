@@ -59,8 +59,8 @@ MainWindow::MainWindow(Engine& engine) :
 
     connect(&engine.animation(), SIGNAL(newLedAdded(int, int)), ledGridWidget, SLOT(addLed(int, int)));
     connect(&engine.animation(), SIGNAL(newSocketAdded(int, int)), ledGridWidget, SLOT(addSocket(int, int)));
-    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), ledGridWidget, SLOT(ledDeleted(int, int, int)));
-    connect(&engine.animation(), SIGNAL(ledMoved(int, int, int, int)), ledGridWidget, SLOT(ledMoved(int, int, int, int)));
+    connect(&engine.animation(), SIGNAL(ledDeleted(int, int, int)), ledGridWidget, SLOT(handleLedDeleted(int, int, int)));
+    connect(&engine.animation(), SIGNAL(ledMoved(int, int, int, int)), ledGridWidget, SLOT(handleLedMoved(int, int, int, int)));
 
     iLedDetailsWidget = new LedDetailsWidget(NULL);
     iLedDetailsWidget->setObjectName(QString::fromUtf8("ledDetailsWidget"));
@@ -193,8 +193,8 @@ void MainWindow::addTimeAxisDetails() {
     FrameDetailsWidget* frameDetailsWidget = new FrameDetailsWidget(iTimeAxisMainWidget);
     frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
 
-    connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(currentFrameChanged(int)));
-    connect(iEngine.animation().timeAxis(), SIGNAL(highValueChanged(int)), frameDetailsWidget, SLOT(highValueChanged(int)));
+    connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(handleCurrentFrameChanged(int)));
+    connect(iEngine.animation().timeAxis(), SIGNAL(highValueChanged(int)), frameDetailsWidget, SLOT(handleHighValueChanged(int)));
     //connect(&engine.animation(), SIGNAL(framesInserted(int,int)), frameDetailsWidget, SLOT(framesInserted(int, int)));
 
     frameDetailsWidget->handleHighValueChanged(iEngine.animation().timeAxis()->highValue());
