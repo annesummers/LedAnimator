@@ -113,7 +113,7 @@ void FrameWidget::paintEvent(QPaintEvent *) {
     if(frame().isSelected() ){
         painter.setPen(Qt::white);
     } else {
-        painter.setPen(Qt::black);
+        painter.setPen(Qt::darkGray);
     }
 
     painter.setBrush(Qt::NoBrush);

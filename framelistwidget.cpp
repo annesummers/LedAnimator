@@ -32,9 +32,9 @@ FrameListWidget::FrameListWidget(QWidget *parent,
 
     setFocusPolicy(Qt::ClickFocus);
 
-    connect(&axisData.axis(), SIGNAL(handleLowValueChanged(int)), this, SLOT(handleLowValueChanged(int)));
-    connect(&axisData.axis(), SIGNAL(handleHighValueChanged(int)), this, SLOT(handleHighValueChanged(int)));
-    connect(&axisData.axis(), SIGNAL(handleFramesInserted(int, int)), this, SLOT(handleFramesInserted(int, int)));
+    connect(&axisData.axis(), SIGNAL(lowValueChanged(int)), this, SLOT(handleLowValueChanged(int)));
+    connect(&axisData.axis(), SIGNAL(highValueChanged(int)), this, SLOT(handleHighValueChanged(int)));
+    connect(&axisData.axis(), SIGNAL(framesInserted(int, int)), this, SLOT(handleFramesInserted(int, int)));
 }
 
 // slots --------------------
@@ -59,8 +59,11 @@ void FrameListWidget::handleLowValueChanged(int oldLowValue, int lowValue) {
 }
 
 void FrameListWidget::setSize() {
-    setMinimumWidth((iAxisData.axis().numFrames() + 2) * 7);
-    setMaximumWidth((iAxisData.axis().numFrames() + 2) * 7);
+   // setMinimumWidth((iAxisData.axis().numFrames() + 2) * parentWidget()->width()/iAxisData.axis().numFrames());
+   // setMaximumWidth((iAxisData.axis().numFrames() + 2) * parentWidget()->width()/iAxisData.axis().numFrames());
+
+    setMaximumHeight(FRAME_HEIGHT);
+    setMinimumHeight(FRAME_HEIGHT);
 
     doResize();
 }
@@ -128,14 +131,17 @@ void FrameListWidget::cloneItem(int fromGroup, Position fromPosition, Position t
 // events ------------------------------------
 
 void FrameListWidget::resizeEvent(QResizeEvent *) {
-    qDebug("FrameListWidget resize event");
+    //qDebug("FrameListWidget resize event");
     doResize();
 }
 
 void FrameListWidget::doResize() {
-    if(!iResized) {
-        qDebug("FrameListWidget doresize");
-        iResized = true;
+   // if(!iResized) {
+        qDebug() << "FrameListWidget doresize " << width();
+
+        //setMinimumWidth((iAxisData.axis().numFrames() + 2) * parentWidget()->width()/iAxisData.axis().numFrames());
+        //setMaximumWidth((iAxisData.axis().numFrames() + 2) * parentWidget()->width()/iAxisData.axis().numFrames());
+        //iResized = true;
         int numFrames = iFramesList.count();
 
         if(numFrames > 0) {
@@ -147,11 +153,11 @@ void FrameListWidget::doResize() {
                 iFramesList.at(i)->move(frameWidth*(i), 0);
             }
 
-            resize(frameWidth * (numFrames+2), height());//width() - extra + (20 - frameWidth), height());
+          //  resize(frameWidth * (numFrames+2), height());//width() - extra + (20 - frameWidth), height());
 
-            emit resized();
+            //emit resized();
         }
-    } else {
-        iResized = false;
-    }
+   // } else {
+   //     iResized = false;
+   // }
 }

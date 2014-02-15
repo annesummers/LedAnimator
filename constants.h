@@ -21,6 +21,9 @@ const int MAX_ROWS = 250;
 const int MAX_COLUMNS = 250;
 const int MAX_FRAMES = 999;
 
+const int FRAME_HEIGHT = 24;
+const int FRAME_SPACING = 2;
+
 const int INVALID = -1;
 const int INITIAL_LED = 1;
 

@@ -62,6 +62,8 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     scrollAreaLayout->addLayout(iGridLayout);
     scrollAreaLayout->addItem(verticalSpacer);
 
+    iGridLayout->setVerticalSpacing(FRAME_SPACING);
+
     iFrameSlider = new QSlider(this);
     iFrameSlider->setObjectName(QString::fromUtf8("horizontalSlider"));
     iFrameSlider->setOrientation(Qt::Horizontal);
@@ -85,8 +87,12 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     QHBoxLayout* topHorizontalLayout = new QHBoxLayout();
     topHorizontalLayout->setObjectName(QString::fromUtf8("topHorizontalLayout"));
 
-    topHorizontalLayout->addWidget(iFrameSlider);
+    QSpacerItem* spacer = new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed);
     topHorizontalLayout->addWidget(iCloseAll);
+    topHorizontalLayout->addItem(spacer);
+
+    topHorizontalLayout->addWidget(iFrameSlider);
+    topHorizontalLayout->addItem(spacer);
 
     QVBoxLayout* contentsLayout = new QVBoxLayout();
     contentsLayout->setObjectName(QString::fromUtf8("contentsLayout"));
@@ -160,11 +166,17 @@ void AxisDetailsWidget::doResize() {
 
     width = width - extra;
 
-    iScrollAreaWidgetContents->setFramesSize(QSize(width, iFrameSlider->height()));
+    iScrollAreaWidgetContents->setFramesSize(QSize(width, iLedDetails.count()*(FRAME_HEIGHT+FRAME_SPACING)));
     iScrollAreaWidgetContents->setFramesPos(QPoint(iFrameSlider->pos().x() + (10 - frameWidth/2), iFrameSlider->pos().y()));
     iScrollAreaWidgetContents->update();
 
     iFrameSlider->resize(width+(20 - frameWidth), iFrameSlider->height());
+
+    for(int i = 0; i < iLedDetails.size(); i++) {
+        if(iLedDetails[i] != NULL) {
+            iLedDetails[i]->setWidth(width);
+        }
+    }
 }
 
 // slots ---------------------------
@@ -196,18 +208,20 @@ void AxisDetailsWidget::addLed(int row, int column) {
         qDebug("add new led, %d, %d", row, column);
 
         QLabel* ledNumberLabel = new QLabel(this);
+        ledNumberLabel->setMaximumWidth(25);
+        ledNumberLabel->setMinimumWidth(25);
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, axisData(*led), *this);//, count);
         QToolButton* closeButton = new QToolButton(this);
         closeButton->setObjectName(QString::fromUtf8("detailsClose"));
         closeButton->setIcon(QIcon(":/images/delete.png"));
 
-        iGridLayout->addWidget(ledNumberLabel, count, 0);
-        iGridLayout->addWidget(framesListWidget, count, 1);
-        iGridLayout->setColumnStretch(1, 1);
-        iGridLayout->addWidget(closeButton, count, 2);
-        iGridLayout->addWidget(new QWidget(), count, 3);
-        iGridLayout->setColumnStretch(3, 2);
+        iGridLayout->addWidget(closeButton, count, 0);
+        iGridLayout->addWidget(ledNumberLabel, count, 1);
+        iGridLayout->addWidget(framesListWidget, count, 2);
+       // iGridLayout->setColumnStretch(1, 1);
+       // iGridLayout->addWidget(new QWidget(), count, 3);
+       // iGridLayout->setColumnStretch(3, 2);
 
         iLedDetails.insert(led->number(), new LedDetails(*this,
                                                          *led,
@@ -245,8 +259,8 @@ void AxisDetailsWidget::ledRenumbered(int row, int column, int oldNumber) {
 }
 
 void AxisDetailsWidget::framesResized() {
-    qDebug("animationdetails framesResized");
-    if(iResize == 0) {
+    //qDebug("animationdetails framesResized");
+    /*if(iResize == 0) {
         doResize();
 
         LedDetails* details;
@@ -257,13 +271,15 @@ void AxisDetailsWidget::framesResized() {
 
     } else {
         iResize++;
-    }
+    }*/
 }
 
 void AxisDetailsWidget::closeAllClicked() {
     LedDetails* details;
     foreach(details, iLedDetails) {
-        deleteLed(*details);
+        if(details != NULL) {
+            deleteLed(*details);
+        }
     }
 }
 
@@ -325,7 +341,7 @@ void ScrollContentsWidget::paintEvent(QPaintEvent *) {
         int currentFramePosition = (iAxis.currentFrameNum())*frameWidth;
 
         QPainter painter(this);
-        painter.setPen(Qt::black);
+        painter.setPen(Qt::darkGray);
         QPoint topPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
                         iFramesSize.height() - 8);
         QPoint bottomPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
@@ -358,6 +374,10 @@ void LedDetails::closeClicked() {
 
 void LedDetails::ledUpdated() {
     iLabel.setText(QString("%1").arg(iLed.number()));
+}
+
+void LedDetails::setWidth(int width) {
+    iFramesListWidget.resize(width, iFramesListWidget.height());
 }
 
 

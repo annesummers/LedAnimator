@@ -114,6 +114,7 @@ public:
 
     inline int ledNumber() { return iLed.number(); }
     inline FrameListWidget& frameList() { return iFramesListWidget; }
+    void setWidth(int width);
 
 private slots:
     void closeClicked();
