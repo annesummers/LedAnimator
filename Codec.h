@@ -23,6 +23,11 @@ class FunctionValue;
 class AxisData;
 }
 
+const int HEADER_BYTE = 0x56;
+const int TERMINATING_BYTE = 0x45;
+const int ESCAPE_BYTE = 0x02;
+const int XOR_BYTE = 0x20;
+
 using namespace AnimatorModel;
 
 namespace ImportExport {

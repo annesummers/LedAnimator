@@ -17,12 +17,12 @@ const int DEFAULT_NUM_FRAMES = 100;
 const int VERSION_HIGH = 3;
 const int VERSION_LOW = 0;
 
+const int FRAME_HEIGHT = 24;
+const int FRAME_SPACING = 2;
+
 const int MAX_ROWS = 250;
 const int MAX_COLUMNS = 250;
 const int MAX_FRAMES = 999;
-
-const int FRAME_HEIGHT = 24;
-const int FRAME_SPACING = 2;
 
 const int INVALID = -1;
 const int INITIAL_LED = 1;
@@ -34,15 +34,10 @@ const int LED_RADIUS = 15;
 const int LED_OFFSET_X = LED_RADIUS*2 + 40;
 const int LED_OFFSET_Y = LED_OFFSET_X;
 
-const int SLIDER_HEIGHT = 40;
-const int SLIDER_OFFSET = 2;
+//const int SLIDER_HEIGHT = 40;
+//const int SLIDER_OFFSET = 2;
 
 const int BORDER = 12;
-
-const int HEADER_BYTE = 0x56;
-const int TERMINATING_BYTE = 0x45;
-const int ESCAPE_BYTE = 0x02;
-const int XOR_BYTE = 0x20;
 
 const QString COMPANY_NAME = "Gigantic Sheep Ltd.";
 const QString APP_NAME = "Led Animator";
