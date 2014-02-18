@@ -89,3 +89,9 @@ void SocketWidget::keyPressEvent(QKeyEvent *event) {
         paste(false);
     }
 }
+
+void SocketWidget::mouseDoubleClickEvent(QMouseEvent* event) {
+    SelectableWidget::mouseDoubleClickEvent(event);
+
+    addLed();
+}

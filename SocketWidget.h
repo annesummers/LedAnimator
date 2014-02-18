@@ -30,6 +30,7 @@ protected:
    void paintEvent(QPaintEvent *);
    void keyPressEvent(QKeyEvent *event);
    void mouseMoveEvent(QMouseEvent *event);
+   void mouseDoubleClickEvent(QMouseEvent* event);
 
    inline Qt::DropActions dropActions() const { return Qt::CopyAction | Qt::MoveAction; }
    inline Qt::DropActions dragActions() const { return Qt::IgnoreAction; }
