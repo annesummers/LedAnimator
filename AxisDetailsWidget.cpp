@@ -22,6 +22,11 @@
 using namespace AnimatorUi;
 using namespace Exception;
 
+const int LED_LABEL_WIDTH = 25;
+
+const int SCROLL_AREA_MARGIN = 3;
+const int SLIDER_TICK_OFFSET = 8;
+
 AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
                                      Animation &animation,
                                      Axis &axis,
@@ -33,7 +38,7 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     iFramesListWidth(0),
     iFrameSlider(NULL),
     iGridLayout(NULL),
-    iResize(false) {
+    iResize(true) {
 
     iGridLayout = new QGridLayout();
     iGridLayout->setObjectName(QString::fromUtf8("gridLayout"));
@@ -49,10 +54,12 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     iScrollAreaWidgetContents = new ScrollContentsWidget(this, animation, axis);
     iScrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
     iScrollAreaWidgetContents->setGeometry(QRect(0, 0, 531, 305));
+
     QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(iScrollAreaWidgetContents->sizePolicy().hasHeightForWidth());
+
     iScrollAreaWidgetContents->setSizePolicy(sizePolicy);
     scrollArea->setWidget(iScrollAreaWidgetContents);
 
@@ -87,11 +94,13 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     QHBoxLayout* topHorizontalLayout = new QHBoxLayout();
     topHorizontalLayout->setObjectName(QString::fromUtf8("topHorizontalLayout"));
 
+    iSliderSpacer = new QSpacerItem(LED_LABEL_WIDTH + SCROLL_AREA_MARGIN + SLIDER_TICK_OFFSET, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed);
+
     topHorizontalLayout->addWidget(iCloseAll);
-    topHorizontalLayout->addItem(new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed));
+    topHorizontalLayout->addItem(iSliderSpacer);
 
     topHorizontalLayout->addWidget(iFrameSlider);
-    topHorizontalLayout->addItem(new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed));
+    topHorizontalLayout->addItem(new QSpacerItem(SCROLL_AREA_MARGIN + SLIDER_TICK_OFFSET, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     QVBoxLayout* contentsLayout = new QVBoxLayout();
     contentsLayout->setObjectName(QString::fromUtf8("contentsLayout"));
@@ -158,6 +167,7 @@ void AxisDetailsWidget::deleteLed(LedDetails &details) {
 
 void AxisDetailsWidget::doResize() {
     qDebug("animationdetails doresize");
+
     int numFrames = iAxis.numFrames();
     int width = iFrameSlider->width();
     int extra = width%numFrames;
@@ -165,17 +175,22 @@ void AxisDetailsWidget::doResize() {
 
     width = width - extra;
 
-    iScrollAreaWidgetContents->setFramesSize(QSize(width, iLedDetails.count()*(FRAME_HEIGHT+FRAME_SPACING)));
-    iScrollAreaWidgetContents->setFramesPos(QPoint(iFrameSlider->pos().x() + (10 - frameWidth/2), iFrameSlider->pos().y()));
-    iScrollAreaWidgetContents->update();
+    iSliderSpacer->changeSize(LED_LABEL_WIDTH + SCROLL_AREA_MARGIN + SLIDER_TICK_OFFSET + frameWidth/2, iFrameSlider->height());
 
-    iFrameSlider->resize(width+(20 - frameWidth), iFrameSlider->height());
+//    layout()->invalidate();
+
+    iScrollAreaWidgetContents->setFramesSize(QSize(width, iLedDetails.count()*(FRAME_HEIGHT+FRAME_SPACING)));
+    iScrollAreaWidgetContents->setFramesPos(QPoint(iFrameSlider->pos().x() - SLIDER_TICK_OFFSET + SCROLL_AREA_MARGIN, iFrameSlider->pos().y()));
+    iScrollAreaWidgetContents->update();
 
     for(int i = 0; i < iLedDetails.size(); i++) {
         if(iLedDetails[i] != NULL) {
             iLedDetails[i]->setWidth(width);
         }
     }
+
+    iFrameSlider->resize(width + (SLIDER_TICK_OFFSET*2 - frameWidth), iFrameSlider->height());
+
 }
 
 // slots ---------------------------
@@ -207,8 +222,8 @@ void AxisDetailsWidget::addLed(int row, int column) {
         qDebug("add new led, %d, %d", row, column);
 
         QLabel* ledNumberLabel = new QLabel(this);
-        ledNumberLabel->setMaximumWidth(25);
-        ledNumberLabel->setMinimumWidth(25);
+        ledNumberLabel->setMaximumWidth(LED_LABEL_WIDTH);
+        ledNumberLabel->setMinimumWidth(LED_LABEL_WIDTH);
 
         FrameListWidget* framesListWidget = new FrameListWidget(this, axisData(*led), *this);//, count);
         QToolButton* closeButton = new QToolButton(this);
@@ -228,10 +243,11 @@ void AxisDetailsWidget::addLed(int row, int column) {
                                                          *framesListWidget,
                                                          *closeButton));
 
-        connect(framesListWidget, SIGNAL(resized()), this, SLOT(framesResized()));
-
         iCloseAll->setEnabled(true);
         iScrollAreaWidgetContents->setShowCurrentFrameLine(true);
+
+        doResize();
+        layout()->invalidate();
     }
 }
 
@@ -255,22 +271,6 @@ void AxisDetailsWidget::ledRenumbered(int row, int column, int oldNumber) {
         deleteLed(*iLedDetails.value(oldNumber));
         addLed(row, column);
     }
-}
-
-void AxisDetailsWidget::framesResized() {
-    //qDebug("animationdetails framesResized");
-    /*if(iResize == 0) {
-        doResize();
-
-        LedDetails* details;
-        foreach(details, iLedDetails) {
-            details->frameList().doResize();
-            iResize--;
-        }
-
-    } else {
-        iResize++;
-    }*/
 }
 
 void AxisDetailsWidget::closeAllClicked() {
@@ -337,13 +337,13 @@ ScrollContentsWidget::ScrollContentsWidget(QWidget* parent, Animation& animation
 void ScrollContentsWidget::paintEvent(QPaintEvent *) {
     if(iShowLine) {
         int frameWidth = iFramesSize.width()/(iAxis.numFrames());
-        int currentFramePosition = (iAxis.currentFrameNum())*frameWidth;
+        int currentFramePosition = (iAxis.currentFrameNum() - iAxis.lowValue())*frameWidth;
 
         QPainter painter(this);
         painter.setPen(Qt::darkGray);
-        QPoint topPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
+        QPoint topPoint(currentFramePosition + iFramesPos.x(),
                         iFramesSize.height() - 8);
-        QPoint bottomPoint(currentFramePosition + iFramesPos.x() + frameWidth/2,
+        QPoint bottomPoint(currentFramePosition + iFramesPos.x(),
                            height() - iFramesSize.height() - 8);
         painter.drawLine(topPoint, bottomPoint);
     }

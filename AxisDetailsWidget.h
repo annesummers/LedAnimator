@@ -45,7 +45,6 @@ private slots:
     void ledDeleted(int row, int column, int ledNumber);
     void ledRenumbered(int row, int column, int oldNumber);
 
-    void framesResized();
     void closeAllClicked();
 
 protected:
@@ -76,6 +75,8 @@ private:
     QGridLayout*            iGridLayout;
     ScrollContentsWidget*   iScrollAreaWidgetContents;
     QToolButton*            iCloseAll;
+
+    QSpacerItem* iSliderSpacer;
 
     QHash<int, LedDetails*> iLedDetails;
 
