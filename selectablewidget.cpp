@@ -99,49 +99,47 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
+    /*  if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
+      qDebug("mouseRelease : control modifier");
+    }
+
+    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+      qDebug("mouseRelease : shift modifier");
+    }
+
+    if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
+      qDebug("mouseRelease : meta modifier");
+    }*/
+
+    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
+      iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
+      return;
+    }
+
+    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
+      (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
+       if(iSelectableGroup.isAnySelected()) {
+           iSelectableGroup.toggle(*this);
+       } else {
+           iSelectableGroup.toggleOne(*this, false);
+       }
+
+       return;
+    }
+
+    if(!iDoubleClick) {
+        iSelectableGroup.toggleOne(*this);
+    } else {
+        iDoubleClick = false;
+    }
+
     iDragStartPosition = event->pos();
 }
 
 void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
     //qDebug("singleWidget mouseRelease");
-    if (event->button() == Qt::RightButton) {
+    if (event->button() != Qt::LeftButton) {
         return;
-    }
-
-    if(event->button() == Qt::LeftButton) {
-      /*  if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-            qDebug("mouseRelease : control modifier");
-        }
-
-        if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-            qDebug("mouseRelease : shift modifier");
-        }
-
-        if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
-            qDebug("mouseRelease : meta modifier");
-        }*/
-
-        if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-            iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
-            return;
-        }
-
-        if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
-            (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
-             if(iSelectableGroup.isAnySelected()) {
-                 iSelectableGroup.toggle(*this);
-             } else {
-                 iSelectableGroup.toggleOne(*this, false);
-             }
-
-             return;
-        }
-
-        if(!iDoubleClick) {
-            iSelectableGroup.toggleOne(*this);
-        } else {
-            iDoubleClick = false;
-        }
     }
 }
 

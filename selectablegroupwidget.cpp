@@ -266,30 +266,20 @@ void SelectableGroupWidget::doGroupSelection() {
 
     QString widgetType = widgetAt(firstPosition).objectName();
 
-    int topLeftRow;
-    int topLeftColumn;
-    int bottomRightRow;
-    int bottomRightColumn;
+    int rowEnd = lastPosition.row();
+    int columnEnd = lastPosition.column();
 
-    if(firstPosition.row() < lastPosition.row()) {
-        topLeftRow = firstPosition.row();
-        bottomRightRow = lastPosition.row();
-    } else {
-        topLeftRow = lastPosition.row();
-        bottomRightRow = firstPosition.row();
-    }
+    bool rowIncrement = firstPosition.row() <= lastPosition.row();
+    bool columnIncrement = firstPosition.column() <= lastPosition.column();
 
-    if(firstPosition.column() < lastPosition.column()) {
-        topLeftColumn = firstPosition.column();
-        bottomRightColumn = lastPosition.column();
-    } else {
-        topLeftColumn = lastPosition.column();
-        bottomRightColumn = firstPosition.column();
-    }
+    for(int row = firstPosition.row();
+        rowIncrement ? row <= rowEnd : row >= rowEnd;
+        rowIncrement ? row++ : row--) {
+        for(int column = firstPosition.column();
+            columnIncrement ? column <= columnEnd : column >= columnEnd;
+            columnIncrement ? column++ : column--) {
 
-    for(int i = topLeftRow; i < bottomRightRow + 1; i++) {
-        for(int j = topLeftColumn; j < bottomRightColumn + 1; j++) {
-            SelectableWidget& widget = widgetAt(Position(i, j));
+           SelectableWidget& widget = widgetAt(Position(row, column));
             if(widget.objectName() == widgetType) {
                 doSelect(widget, true);
             }
