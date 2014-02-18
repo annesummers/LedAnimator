@@ -11,7 +11,9 @@ SOURCES += \
     FrameTests.cpp \
     ValueAxisDataTests.cpp \
     CodecTests.cpp \
-    EngineTests.cpp
+    EngineTests.cpp \
+    selectablewidgettestbase.cpp \
+    selectablewidgettests.cpp
 
     HEADERS += \
     AxisTests.h \
@@ -24,4 +26,6 @@ SOURCES += \
     ValueAxisDataTests.h \
     CodecTests.h \
     EngineTests.h \
-    TestConstants.h
+    TestConstants.h \
+    selectablewidgettestbase.h \
+    selectablewidgettests.h

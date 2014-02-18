@@ -16,7 +16,7 @@ using namespace AnimatorTest;
 
 SelectableGroupTestWidget::SelectableGroupTestWidget(QWidget *parent, Animation& animation,
                                                      int maxRow, int maxColumn, SelectableGroupGroupWidget &groupGroupWidget, int groupNumber) :
-    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroupWidget, groupNumber) {
+    SelectableGroupWidget(parent, maxRow, maxColumn, groupGroupWidget) {
 
     // TODO yuck this is horrilbe
 

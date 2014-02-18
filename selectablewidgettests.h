@@ -64,7 +64,7 @@ public:
 
     void moveItem(int fromGroup, Position fromPosition, Position toPosition)
         { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
-    void pasteItem(int fromGroup, Position fromPosition, Position toPosition)
+    void pasteClipboardItem(int fromGroup, Position fromPosition, Position toPosition)
         { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }
     void cloneItem(int fromGroup, Position fromPosition, Position toPosition)
         { Q_UNUSED(fromGroup); Q_UNUSED(fromPosition); Q_UNUSED(toPosition); }

@@ -13,7 +13,7 @@
 #include "ValueAxisTests.h"
 #include "AxisDataTests.h"
 #include "ValueAxisDataTests.h"
-//#include "selectablewidgettests.h"
+#include "selectablewidgettests.h"
 //#include "colourwidgettests.h"
 //#include "ledsocketinteractiontests.h"
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
     FrameTests frameTests;
     LedTests ledTests;
     //LedAnimCodecTests tc5;
-    //SelectableWidgetTests tc6;
+    SelectableWidgetTests selectionTests;
     //ColourWidgetTests tc7;
     //LedSocketInteractionTests tc8;
 
@@ -44,5 +44,6 @@ int main(int argc, char **argv) {
             QTest::qExec(&axisDataTests, argc, argv) ||
             QTest::qExec(&valueAxisDataTests, argc, argv)||
             QTest::qExec(&frameTests, argc, argv)||
-            QTest::qExec(&ledTests, argc, argv);
+            QTest::qExec(&ledTests, argc, argv) ||
+            QTest::qExec(&selectionTests, argc, argv);
 }

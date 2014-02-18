@@ -10,6 +10,7 @@
 #include <QMetaType>
 
 #include "Position.h"
+#include "Function.h"
 
 typedef QList<int> IntList;
 Q_DECLARE_METATYPE ( IntList )
