@@ -258,10 +258,12 @@ void LedTests::colourChanged() {
     iAnimation->addTimeAxis(0, 10, 100, kPriorityLow, false);
     iAnimation->timeAxis()->setCurrentFrame(currentFrame);
 
+    QCOMPARE(updatedSpy.count(), 1);
+
     for(int i = 0; i < 10; i++) {
         led->colourChanged(i);
 
-        QCOMPARE(updatedSpy.count(), (i >= currentFrame) ? 1 : 0);
+        QCOMPARE(updatedSpy.count(), (i >= currentFrame) ? 2 : 1);
     }
 }
 
