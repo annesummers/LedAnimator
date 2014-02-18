@@ -295,6 +295,10 @@ void SelectableGroupWidget::doGroupSelection() {
             }
         }
     }
+
+    if(iAreas.last().lastSelected() != iLastSelected) {
+        iAreas.last().setLastSelected(iLastSelected);
+    }
 }
 
 SelectableWidget& SelectableGroupWidget::widgetAt(Position position) {
