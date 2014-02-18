@@ -87,7 +87,6 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     QHBoxLayout* topHorizontalLayout = new QHBoxLayout();
     topHorizontalLayout->setObjectName(QString::fromUtf8("topHorizontalLayout"));
 
-    QSpacerItem* spacer = new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed);
     topHorizontalLayout->addWidget(iCloseAll);
     topHorizontalLayout->addItem(new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed));
 
