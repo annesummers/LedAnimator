@@ -89,10 +89,10 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
 
     QSpacerItem* spacer = new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed);
     topHorizontalLayout->addWidget(iCloseAll);
-    topHorizontalLayout->addItem(spacer);
+    topHorizontalLayout->addItem(new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     topHorizontalLayout->addWidget(iFrameSlider);
-    topHorizontalLayout->addItem(spacer);
+    topHorizontalLayout->addItem(new QSpacerItem(45, iFrameSlider->height(), QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     QVBoxLayout* contentsLayout = new QVBoxLayout();
     contentsLayout->setObjectName(QString::fromUtf8("contentsLayout"));
