@@ -99,6 +99,21 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
+ /*   if((QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier &&
+       (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier
+            !) {
+
+    }*/
+
+    iDragStartPosition = event->pos();
+}
+
+void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
+    //qDebug("singleWidget mouseRelease");
+    if (event->button() != Qt::LeftButton) {
+        return;
+    }
+
     /*  if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
       qDebug("mouseRelease : control modifier");
     }
@@ -132,15 +147,6 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
     } else {
         iDoubleClick = false;
     }
-
-    iDragStartPosition = event->pos();
-}
-
-void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
-    //qDebug("singleWidget mouseRelease");
-    if (event->button() != Qt::LeftButton) {
-        return;
-    }
 }
 
 void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -150,19 +156,25 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
         return;
     }
 
+  //  if(iSelectableGroup.isSingleSelected()) {
+   //      iSelectableGroup.selectOne(*this);
+
+   // }
+
     bool group = iSelectableGroup.isAreaSelected();
     bool multiple = iSelectableGroup.isMultipleSelected();
     if(!group &&
        !multiple) {
         iSelectableGroup.selectOne(*this);
-      //  qDebug("select one on drag");
-    }/* else {
+        qDebug("select one on drag");
+    }
+ else {
         if(group) {
             qDebug("group selected on drag");
         } else if(multiple) {
             qDebug("multiple selected on drag");
         }
-    }*/
+    }
 
     QDrag *drag = new QDrag(this);
     drag->setMimeData(iSelectableGroup.mimeData(false));
