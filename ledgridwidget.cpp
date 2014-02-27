@@ -336,14 +336,13 @@ bool LedGridWidget::validKeyPress(Qt::Key key) {
 // events ---------------------------
 
 void LedGridWidget::mousePressEvent(QMouseEvent* event) {
-    qDebug("gridWidget mousePress");
+    SelectableGroupWidget::mousePressEvent(event);
+
     if (event->button() == Qt::LeftButton &&
        (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
 
         iDragStartPosition = event->pos();
         iDragArea.setRect(0, 0, 0, 0);
-
-        clearAllSelection();
     }
 }
 

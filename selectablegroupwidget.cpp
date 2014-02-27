@@ -491,3 +491,13 @@ void SelectableGroupWidget::keyPressEvent(QKeyEvent *event) {
         }
     }*/
 }
+
+void SelectableGroupWidget::mousePressEvent(QMouseEvent* event) {
+    //qDebug("singleWidget mousePress");
+    if (event->button() != Qt::LeftButton) {
+        return;
+    }
+
+    clearAllSelection();
+
+}

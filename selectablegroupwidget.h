@@ -100,6 +100,7 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent* event);
 
     virtual bool validKeyPress(Qt::Key key) = 0;
 
