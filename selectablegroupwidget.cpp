@@ -96,9 +96,9 @@ void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool multipleAr
 
     Position position = widgetPosition(widget);
 
-    if((multipleAreas && lastSelectedPosition().isValid()) ||
+    if((multipleAreas && firstSelectedPosition().isValid()) ||
        !iGroupGroup.isOtherSelected(iGroupNumber)) {
-        doSelectArea(lastSelectedPosition(), position, multipleAreas);
+        doSelectArea(firstSelectedPosition(), position, multipleAreas);
         return;
     }
 
@@ -195,6 +195,20 @@ void SelectableGroupWidget::setLastSelected(SelectableWidget *widget) {
     }
 }
 
+Position SelectableGroupWidget::firstSelectedPosition() const {
+    return iFirstSelected;
+}
+
+void SelectableGroupWidget::setFirstSelected(SelectableWidget *widget) {
+    if(widget == NULL) {
+        //qDebug("setLastSelected NONE");
+        iFirstSelected = Position();
+    } else {
+        iFirstSelected = widgetPosition(*widget);
+        //qDebug("setLastSelected %d,%d", iLastSelected.row(), iLastSelected.column());
+    }
+}
+
 void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bool singleSelect) {
     Position position = widgetPosition(widget);
 
@@ -204,8 +218,11 @@ void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bo
             widgetType = iSelected.at(0)->objectName();
         }
 
-        if(iSelected.count() == 0 ||
-           widget.objectName() == widgetType) {
+        if(iSelected.count() == 0 || widget.objectName() == widgetType) {
+            if(iSelected.count() == 0) {
+                setFirstSelected(&widget);
+            }
+
             setLastSelected(&widget);
 
             if(!lastSelectedPosition().isValid() || position < lastSelectedPosition()) {
@@ -228,6 +245,7 @@ void SelectableGroupWidget::doSelect(SelectableWidget &widget, bool selected, bo
 
         if(iSelected.count() == 0) {
             setLastSelected(NULL);
+            setFirstSelected(NULL);
             //qDebug("REMOVE LAST");
 
             iGroupGroup.selectGroup(iGroupNumber, false);
@@ -258,6 +276,8 @@ void SelectableGroupWidget::sortSelected() {
             i--;
         }
     }
+
+    setFirstSelected(iSelected.at(0));
 }
 
 void SelectableGroupWidget::doGroupSelection() {

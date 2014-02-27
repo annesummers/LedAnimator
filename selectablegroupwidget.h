@@ -87,6 +87,7 @@ public:
     void doSelectDirection(Qt::Key direction);
 
     Position lastSelectedPosition() const;
+    Position firstSelectedPosition() const;
 
     inline int groupNumber() const { return iGroupNumber; }
 
@@ -126,6 +127,7 @@ private:
     void clearSelection();
 
     void setLastSelected(SelectableWidget *widget);
+    void setFirstSelected(SelectableWidget *widget);
 
     void doGroupSelection();
     void doSelect(SelectableWidget &widget, bool selectedItems, bool singleSelect = false);
@@ -142,6 +144,7 @@ private:
     QList<Area> iAreas;
 
     Position iTopLeftSelected;
+    Position iFirstSelected;
     Position iLastSelected;
 };
 
