@@ -32,9 +32,9 @@ FrameListWidget::FrameListWidget(QWidget *parent,
 
     setFocusPolicy(Qt::ClickFocus);
 
-    connect(&axisData.axis(), SIGNAL(lowValueChanged(int)), this, SLOT(handleLowValueChanged(int)));
-    connect(&axisData.axis(), SIGNAL(highValueChanged(int)), this, SLOT(handleHighValueChanged(int)));
-    connect(&axisData.axis(), SIGNAL(framesInserted(int, int)), this, SLOT(handleFramesInserted(int, int)));
+    connect(&axisData.axis(), SIGNAL(lowValueChanged(int, int)), this, SLOT(handleLowValueChanged(int, int)));
+    connect(&axisData.axis(), SIGNAL(highValueChanged(int, int)), this, SLOT(handleHighValueChanged(int, int)));
+  //  connect(&axisData.axis(), SIGNAL(framesInserted(int, int)), this, SLOT(handleFramesInserted(int, int)));
 }
 
 // slots --------------------

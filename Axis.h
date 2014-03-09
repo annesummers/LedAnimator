@@ -43,8 +43,8 @@ public:
 
 signals:
     void currentFrameChanged(int currentFrameNum);
-    void lowValueChanged(const int lowValue);
-    void highValueChanged(const int highValue);
+    void lowValueChanged(const int oldLowValue, const int lowValue);
+    void highValueChanged(const int oldHighValue, const int highValue);
 
 public slots:
     void setCurrentFrame(int frame);

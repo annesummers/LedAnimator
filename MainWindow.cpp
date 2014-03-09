@@ -194,10 +194,10 @@ void MainWindow::addTimeAxisDetails() {
     frameDetailsWidget->setObjectName(QString::fromUtf8("frameDetailsWidget"));
 
     connect(iEngine.animation().timeAxis(), SIGNAL(currentFrameChanged(int)), frameDetailsWidget, SLOT(handleCurrentFrameChanged(int)));
-    connect(iEngine.animation().timeAxis(), SIGNAL(highValueChanged(int)), frameDetailsWidget, SLOT(handleHighValueChanged(int)));
+    connect(iEngine.animation().timeAxis(), SIGNAL(highValueChanged(int, int)), frameDetailsWidget, SLOT(handleHighValueChanged(int, int)));
     //connect(&engine.animation(), SIGNAL(framesInserted(int,int)), frameDetailsWidget, SLOT(framesInserted(int, int)));
 
-    frameDetailsWidget->handleHighValueChanged(iEngine.animation().timeAxis()->highValue());
+    frameDetailsWidget->handleHighValueChanged(0, iEngine.animation().timeAxis()->highValue());
 
     TimeAxisPlayWidget* playInfoWidget = new TimeAxisPlayWidget(iTimeAxisMainWidget, iEngine.animation(), *iEngine.animation().timeAxis());
     playInfoWidget->setObjectName(QString::fromUtf8("PlayInfoWidget"));

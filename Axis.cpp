@@ -62,22 +62,26 @@ void Axis::setCurrentFrame(int frame) {
 }
 
 void Axis::setLowValue(const int lowValue) {
+    int oldLowValue = iLowValue;
+
     iLowValue = lowValue;
 
     if(iZeroValue < iLowValue) {
         throw IllegalArgumentException("Axis:setLowValue : zero value is smaller than low value");
     }
 
-    emit lowValueChanged(iLowValue);
+    emit lowValueChanged(oldLowValue, iLowValue);
 }
 
 void Axis::setHighValue(const int highValue) {
+    int oldHighValue = iHighValue;
+
     iHighValue = highValue;
 
     if(iZeroValue > iHighValue) {
         throw IllegalArgumentException("Axis:setHighValue : zero value is greater than high value");
     }
 
-    emit highValueChanged(iHighValue);
+    emit highValueChanged(oldHighValue, iHighValue);
 }
 

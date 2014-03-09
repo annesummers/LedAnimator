@@ -21,7 +21,7 @@ void FrameDetailsWidget::handleCurrentFrameChanged(int currentFrame) {
     ui->currentFrame->setText(QString("%1").arg(currentFrame));
 }
 
-void FrameDetailsWidget::handleHighValueChanged(int highValue) {
+void FrameDetailsWidget::handleHighValueChanged(int oldHighValue, int highValue) {
     ui->numFrames->setText(QString("%1").arg(highValue));
 }
 

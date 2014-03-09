@@ -18,7 +18,7 @@ public:
     ~FrameDetailsWidget();
 
 public slots:
-    void handleHighValueChanged(int highValue);
+    void handleHighValueChanged(int oldHighValue, int highValue);
 
 private slots:
     void handleCurrentFrameChanged(int currentFrame);
