@@ -51,44 +51,21 @@ bool SelectableGroupWidget::isSingleSelected() const {
 
 // selecting ----------------------------
 
-void SelectableGroupWidget::toggle(SelectableWidget &widget) {
-   // qDebug("select %d", !widget.isSelected());
-    bool select = !widget.isSelected();
+void SelectableGroupWidget::select(SelectableWidget &widget, bool select) {
+    qDebug() << "select " << select;
 
-    doSelect(widget, select);
+    doSelect(widget, select, false);
 
-    if(isSingleSelected()) {
-        clearAreaSelection();
-        iAreas.append(Area(lastSelectedPosition(), lastSelectedPosition()));
-    }
-}
-
-void SelectableGroupWidget::toggleOne(SelectableWidget &widget, bool singleSelect) {
-  //  qDebug("toggleOne");
-    bool selected = false;
-
-    if(iSelected.count() > 1 ||
-       (iSelected.count() == 1 &&
-        iSelected.at(0) != &widget) ||
-       iSelected.isEmpty()) {
-        selected = true;
-    }
-
-    if(selected){
-        selectOne(widget, singleSelect);
-    } else {
-        clearAllSelection();
-    }
+    clearAreaSelection();
 }
 
 void SelectableGroupWidget::selectOne(SelectableWidget &widget, bool singleSelect) {
-  //  qDebug("selectOne");
+    qDebug("selectOne");
     clearSelection();
 
     doSelect(widget, true, singleSelect);
 
     clearAreaSelection();
-    iAreas.append(Area(lastSelectedPosition(), lastSelectedPosition()));
 }
 
 void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool multipleAreas) {
@@ -96,20 +73,20 @@ void SelectableGroupWidget::selectArea(SelectableWidget& widget, bool multipleAr
 
     Position position = widgetPosition(widget);
 
+    if(!multipleAreas) {
+        clearAllSelection();
+    }
+
     if((multipleAreas && firstSelectedPosition().isValid()) ||
        !iGroupGroup.isOtherSelected(iGroupNumber)) {
-        doSelectArea(firstSelectedPosition(), position, multipleAreas);
+        doSelectArea(firstSelectedPosition(), position);
         return;
     }
 
     iGroupGroup.selectArea(iGroupNumber, position, multipleAreas);
 }
 
-void SelectableGroupWidget::doSelectArea(Position start, Position end, bool multipleAreas) {
-    if(!multipleAreas) {
-        clearAllSelection();
-    }
-
+void SelectableGroupWidget::doSelectArea(Position start, Position end) {
     iAreas.append(Area(start, end));
 
     doGroupSelection();
@@ -122,6 +99,10 @@ void SelectableGroupWidget::selectDirection(Qt::Key direction, bool singleSelect
 
     if(singleSelect) {
         iGroupGroup.selectSingleGroup(*this);
+    }
+
+    if(isSingleSelected()) {
+        iAreas.append(Area(lastSelectedPosition(), lastSelectedPosition()));
     }
 
     int lastRow = iAreas.last().lastSelected().row();
@@ -369,7 +350,7 @@ bool SelectableGroupWidget::handleMimeData(QByteArray mimeData, SelectableWidget
     Position position = widgetPosition(dropWidget);
 
     if(dropWidget.isSelected()) {
-        toggle(dropWidget);  // unselect the drop widget
+        select(dropWidget, false);  // unselect the drop widget
     }
 
     //qDebug("drop group number is %d", iGroupNumber);
@@ -386,7 +367,7 @@ void SelectableGroupWidget::doWriteMimeData(QDataStream& dataStream, bool cut) {
     foreach(widget, iSelected) {
         Position position = widgetPosition(*widget);
 
-        //qDebug("WriteMimeData : Adding item at %d,%d", position.row(), position.column());
+        qDebug("WriteMimeData : Adding item at %d,%d", position.row(), position.column());
         dataStream << position.row() << position.column();
 
         if(cut) {
@@ -464,7 +445,7 @@ bool SelectableGroupWidget::doHandleMimeData(QDataStream& dataStream,
 
     clearAllSelection();
     for(int i = 0; i < newPositions.count(); i++) {
-        toggle(widgetAt(newPositions.at(i)));
+        select(widgetAt(newPositions.at(i)), true);
     }
 
     return cut;

@@ -168,7 +168,7 @@ void LedGridWidget::addSelectedLeds() {
     QList<Position> newPositions;
 
     foreach(widget, selectedItems()) {
-        toggle(*widget);
+        select(*widget, false);
 
         Position position = widgetPosition(*widget);
         iAnimation.addNewLed(position);
@@ -177,7 +177,7 @@ void LedGridWidget::addSelectedLeds() {
     }
 
     for(int i = 0; i < newPositions.count(); i++) {
-        toggle(widgetAt(newPositions.at(i)));
+        select(widgetAt(newPositions.at(i)), true);
     }
 
     iAnimation.setSaved(false);
@@ -281,7 +281,7 @@ void LedGridWidget::handleLedDeleted(int row, int column, int ledNumber) {
     SelectableWidget& ledWidget = widgetAt(Position(row, column));
 
     if(ledWidget.isSelected()) {
-        toggle(ledWidget);
+        select(ledWidget, false);
     }
 
     addSocket(row, column);

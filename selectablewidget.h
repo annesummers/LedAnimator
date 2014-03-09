@@ -9,6 +9,7 @@
 
 #include <QWidget>
 #include <QMenu>
+#include <QMimeData>
 
 #include "selectable.h"
 
@@ -60,7 +61,8 @@ protected:
     virtual inline bool canCut() { return false; }
     virtual inline bool canCopy() { return true; }
 
-  //  QMimeData* mimeData(bool cut);
+    QMimeData* mimeData(bool cut);
+    const QByteArray writeMimeData(bool cut);
 
     void addCutAction(QMenu* menu);
     void addPasteActions(QMenu* menu);

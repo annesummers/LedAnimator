@@ -94,7 +94,7 @@ void SelectableWidgetTests::select() {
     SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(NULL, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
 
     for(int i = 0; i < selectedPoints.count(); i++) {
-        groupWidget->toggle(groupWidget->widgetAt(selectedPoints.at(i)));
+        groupWidget->select(groupWidget->widgetAt(selectedPoints.at(i)), this);
     }
 
     compareAreaPoints(groupWidget, selectedPoints);
@@ -124,7 +124,7 @@ void SelectableWidgetTests::selectOne() {
     SelectableGroupGroupTestWidget* groupGroupWidget = new SelectableGroupGroupTestWidget(NULL, *iEngine);
     SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
 
-    groupWidget->selectOne(groupWidget->widgetAt(selectedPoint));
+    groupWidget->selectOne(groupWidget->widgetAt(selectedPoint), true);
 
     QList<Position> selPoint;
     selPoint.append(selectedPoint);
@@ -145,7 +145,7 @@ void SelectableWidgetTests::selectArea() {
     SelectableGroupGroupTestWidget* groupGroupWidget = new SelectableGroupGroupTestWidget(NULL, *iEngine);
     SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
 
-    groupWidget->selectOne(groupWidget->widgetAt(firstSelected));
+    groupWidget->selectOne(groupWidget->widgetAt(firstSelected), true);
     groupWidget->selectArea(groupWidget->widgetAt(secondSelected), false);
 
     QList<Position> selectedPoints;
@@ -170,7 +170,7 @@ void SelectableWidgetTests::selectDirection() {
     SelectableGroupGroupTestWidget* groupGroupWidget = new SelectableGroupGroupTestWidget(NULL, *iEngine);
     SelectableGroupTestWidget* groupWidget = new SelectableGroupTestWidget(groupGroupWidget, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
 
-    groupWidget->selectOne(groupWidget->widgetAt(firstSelected));
+    groupWidget->selectOne(groupWidget->widgetAt(firstSelected), true);
 
     int direction;
     foreach(direction, selectedDirections) {
@@ -206,8 +206,8 @@ void SelectableWidgetTests::selectOneSelectExternal() {
     SelectableGroupTestWidget* groupWidget1 = new SelectableGroupTestWidget(groupGroupWidget, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 0);
     SelectableGroupTestWidget* groupWidget2 = new SelectableGroupTestWidget(groupGroupWidget, *iAnimation, maxRow, maxColumn, *groupGroupWidget, 1);
 
-    groupWidget1->selectOne(groupWidget1->widgetAt(selectedPoint));
-    groupWidget2->selectOne(groupWidget2->widgetAt(selectedPoint));
+    groupWidget1->selectOne(groupWidget1->widgetAt(selectedPoint), true);
+    groupWidget2->selectOne(groupWidget2->widgetAt(selectedPoint), true);
 
     QCOMPARE(groupWidget1->selectedItems().count(), 0);
     QCOMPARE(groupWidget2->selectedItems().count(), 1);
@@ -266,7 +266,7 @@ void SelectableWidgetTests::clickOneClickOne_data() {
                                 << maxColumns
                                 << Position(1,1)
                                 << Position(1,1)
-                                << Position(INVALID, INVALID);
+                                << Position(1, 1);
 
     QTest::newRow("click one click different") << maxRows
                                 << maxColumns

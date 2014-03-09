@@ -49,11 +49,8 @@ public:
                                    int numColumns,
                                    SelectableGroupGroupWidget &groupGroupWidget);
 
-    void selectOne(SelectableWidget &selectable, bool singleSelect = true);
-
-    void toggleOne(SelectableWidget &widget, bool singleSelect = true);
-    void toggle(SelectableWidget &widget);
-
+    void selectOne(SelectableWidget &selectable, bool singleSelect);
+    void select(SelectableWidget &widget, bool select);
     void selectArea(SelectableWidget& widget, bool multipleAreas);
 
     bool isAreaSelected() const;
@@ -83,7 +80,7 @@ public:
 
     void doWriteMimeData(QDataStream& dataStream, bool cut);
     bool doHandleMimeData(QDataStream& dataStream, int fromGroupNumber, Position dropPosition, int *originRow, int *originColumn, bool wrap, bool move);
-    void doSelectArea(Position start, Position end, bool multipleAreas);
+    void doSelectArea(Position start, Position end);
     void doSelectDirection(Qt::Key direction);
 
     Position lastSelectedPosition() const;
@@ -98,6 +95,9 @@ public:
     inline const Position lastSelectedAreaPosition() const { if(iAreas.count() == 1) {
             return iAreas.first().lastSelected(); } else { return Position();} }
 
+    virtual void moveToClipboard(int group, Position position)
+        { Q_UNUSED(group); Q_UNUSED(position); }
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void mousePressEvent(QMouseEvent* event);
@@ -107,9 +107,6 @@ protected:
     virtual void moveItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
     virtual void cloneItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
     virtual void pasteClipboardItem(int fromGroup, Position fromPosition, Position toPosition) = 0;
-
-    virtual void moveToClipboard(int group, Position position)
-        { Q_UNUSED(group); Q_UNUSED(position); }
 
     inline int selectedCount() const { return iSelected.count(); }
 

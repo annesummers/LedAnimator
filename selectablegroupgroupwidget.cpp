@@ -264,7 +264,7 @@ void SelectableGroupGroupWidget::selectArea(int startGroupNumber, Position end, 
     iterator.previous();
 
     while(iterator.hasNext() && counter++ < numGroups) {
-        iterator.next().doSelectArea(start, end, multipleAreas);
+        iterator.next().doSelectArea(start, end);//, multipleAreas);
     }
 
     if(!multipleAreas) {

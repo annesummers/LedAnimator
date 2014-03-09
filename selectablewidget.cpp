@@ -99,12 +99,6 @@ void SelectableWidget::mousePressEvent(QMouseEvent* event) {
         return;
     }
 
- /*   if((QApplication::keyboardModifiers() & Qt::ControlModifier) != Qt::ControlModifier &&
-       (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier
-            !) {
-
-    }*/
-
     iDragStartPosition = event->pos();
 }
 
@@ -114,36 +108,23 @@ void SelectableWidget::mouseReleaseEvent(QMouseEvent* event){
         return;
     }
 
-    /*  if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
-      qDebug("mouseRelease : control modifier");
-    }
-
-    if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
-      qDebug("mouseRelease : shift modifier");
-    }
-
-    if((QApplication::keyboardModifiers() & Qt::MetaModifier) == Qt::MetaModifier) {
-      qDebug("mouseRelease : meta modifier");
-    }*/
-
     if((QApplication::keyboardModifiers() & Qt::ShiftModifier) == Qt::ShiftModifier) {
       iSelectableGroup.selectArea(*this, (QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier);
       return;
     }
 
-    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier &&
-      (QApplication::keyboardModifiers() & Qt::ShiftModifier) != Qt::ShiftModifier) {
+    if((QApplication::keyboardModifiers() & Qt::ControlModifier) == Qt::ControlModifier) {
        if(iSelectableGroup.isAnySelected()) {
-           iSelectableGroup.toggle(*this);
+           iSelectableGroup.select(*this, !isSelected());
        } else {
-           iSelectableGroup.toggleOne(*this, false);
+           iSelectableGroup.selectOne(*this, false);
        }
 
        return;
     }
 
     if(!iDoubleClick) {
-        iSelectableGroup.toggleOne(*this);
+        iSelectableGroup.selectOne(*this, false);
     } else {
         iDoubleClick = false;
     }
@@ -161,26 +142,58 @@ void SelectableWidget::mouseMoveEvent(QMouseEvent *event) {
 
    // }
 
-    bool group = iSelectableGroup.isAreaSelected();
+   /* bool group = iSelectableGroup.isAreaSelected();
     bool multiple = iSelectableGroup.isMultipleSelected();
     if(!group &&
        !multiple) {
         iSelectableGroup.selectOne(*this);
         qDebug("select one on drag");
-    }
- else {
+    } else {
         if(group) {
             qDebug("group selected on drag");
         } else if(multiple) {
             qDebug("multiple selected on drag");
         }
-    }
+    }*/
 
     QDrag *drag = new QDrag(this);
-    drag->setMimeData(iSelectableGroup.mimeData(false));
+    if(isSelected()) {
+        drag->setMimeData(iSelectableGroup.mimeData(false));
+    } else {
+        drag->setMimeData(mimeData(false));
+    }
+
     drag->setHotSpot(pos());
 
     drag->exec(dragActions());
+}
+
+QMimeData* SelectableWidget::mimeData(bool cut) {
+    QMimeData *data = new QMimeData;
+    data->setData(iSelectableGroup.mimeType(), writeMimeData(cut));
+
+    return data;
+}
+
+const QByteArray SelectableWidget::writeMimeData(bool cut) {
+    QByteArray itemData;
+    QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+
+    dataStream << 1;  // selected group count
+    dataStream << iSelectableGroup.groupNumber();
+    dataStream << cut;
+    dataStream << 1;  // selected widget count
+
+    Position position = iSelectableGroup.widgetPosition(*this);
+
+    qDebug("WriteMimeData : Adding item at %d,%d", position.row(), position.column());
+    dataStream << position.row() << position.column();
+
+    if(cut) {
+        iSelectableGroup.moveToClipboard(iSelectableGroup.groupNumber(), position);
+    }
+
+    return itemData;
 }
 
 void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -190,7 +203,7 @@ void SelectableWidget::mouseDoubleClickEvent(QMouseEvent* event) {
     }
 
     iDoubleClick = true;
-    iSelectableGroup.selectOne(*this);
+    iSelectableGroup.selectOne(*this, true);
 }
 
 void SelectableWidget::dragEnterEvent(QDragEnterEvent* event) {
@@ -217,7 +230,7 @@ void SelectableWidget::contextMenuEvent(QContextMenuEvent *event) {
    // qDebug("contextMenuevent");
 
     if(!isSelected()) {
-        iSelectableGroup.selectOne(*this);
+        iSelectableGroup.selectOne(*this, true);
     }
 
     QMenu menu(this);
