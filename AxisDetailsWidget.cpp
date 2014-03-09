@@ -37,8 +37,7 @@ AxisDetailsWidget::AxisDetailsWidget(QWidget* parent,
     iFramesListX(0),
     iFramesListWidth(0),
     iFrameSlider(NULL),
-    iGridLayout(NULL),
-    iResize(true) {
+    iGridLayout(NULL) {
 
     iGridLayout = new QGridLayout();
     iGridLayout->setObjectName(QString::fromUtf8("gridLayout"));

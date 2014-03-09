@@ -68,6 +68,8 @@ private:
 
     Animation& iAnimation;
 
+    QHash<int, LedDetails*> iLedDetails;
+
     int iFramesListX;
     int iFramesListWidth;
 
@@ -77,10 +79,6 @@ private:
     QToolButton*            iCloseAll;
 
     QSpacerItem* iSliderSpacer;
-
-    QHash<int, LedDetails*> iLedDetails;
-
-    int iResize;
 };
 
 class ScrollContentsWidget : public QWidget {
