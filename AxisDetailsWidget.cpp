@@ -165,7 +165,7 @@ void AxisDetailsWidget::deleteLed(LedDetails &details) {
 }
 
 void AxisDetailsWidget::doResize() {
-    qDebug("animationdetails doresize");
+   // qDebug("animationdetails doresize");
 
     int numFrames = iAxis.numFrames();
     int width = iFrameSlider->width();
@@ -182,9 +182,9 @@ void AxisDetailsWidget::doResize() {
     iScrollAreaWidgetContents->setFramesPos(QPoint(iFrameSlider->pos().x() - SLIDER_TICK_OFFSET + SCROLL_AREA_MARGIN, iFrameSlider->pos().y()));
     iScrollAreaWidgetContents->update();
 
-    for(int i = 0; i < iLedDetails.size(); i++) {
-        if(iLedDetails[i] != NULL) {
-            iLedDetails[i]->setWidth(width);
+    for(int i = 0; i < iLedDetails.count(); i++) {
+        if(iLedDetails.value(i) != NULL) {
+            iLedDetails.value(i)->setWidth(width);
         }
     }
 
@@ -284,7 +284,7 @@ void AxisDetailsWidget::closeAllClicked() {
 // events -------------------------------------
 
 void AxisDetailsWidget::resizeEvent(QResizeEvent*) {
-    qDebug("animation details resize event");
+   // qDebug("animation details resize event");
     doResize();
 }
 
